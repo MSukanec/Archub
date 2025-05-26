@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertProjectSchema, insertUserSchema, insertOrganizationSchema } from "@shared/schema";
+import { insertProjectSchema, insertUserSchema, insertOrganizationSchema, insertActionSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -198,6 +198,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error: any) {
       if (error.message === 'Organization not found') {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
+  // Actions routes
+  app.get('/api/actions', async (req, res) => {
+    try {
+      const actions = await storage.getAllActions();
+      res.json(actions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/actions', async (req, res) => {
+    try {
+      const actionData = insertActionSchema.parse(req.body);
+      const action = await storage.createAction(actionData);
+      res.status(201).json(action);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Invalid action data', details: error.errors });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
+  app.patch('/api/actions/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const data = insertActionSchema.partial().parse(req.body);
+      
+      const action = await storage.updateAction(id, data);
+      res.json(action);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Invalid action data', details: error.errors });
+      } else if (error.message === 'Action not found') {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
+  app.delete('/api/actions/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteAction(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      if (error.message === 'Action not found') {
         res.status(404).json({ error: error.message });
       } else {
         res.status(500).json({ error: error.message });

@@ -4,13 +4,16 @@ import {
   organizationMembers, 
   projects, 
   activities,
+  actions,
   type User, 
   type InsertUser,
   type Organization,
   type InsertOrganization,
   type Project,
   type InsertProject,
-  type Activity
+  type Activity,
+  type Action,
+  type InsertAction
 } from "@shared/schema";
 
 export interface IStorage {
@@ -36,6 +39,12 @@ export interface IStorage {
   // Activities
   getRecentActivities(limit?: number): Promise<Activity[]>;
   createActivity(activity: Omit<Activity, 'id' | 'createdAt'>): Promise<Activity>;
+  
+  // Actions
+  getAllActions(): Promise<Action[]>;
+  createAction(action: InsertAction): Promise<Action>;
+  updateAction(id: number, action: Partial<InsertAction>): Promise<Action>;
+  deleteAction(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -44,10 +53,12 @@ export class MemStorage implements IStorage {
   private organizationMembers: Map<number, any>;
   private projects: Map<number, Project>;
   private activities: Map<number, Activity>;
+  private actions: Map<number, Action>;
   private currentUserId: number;
   private currentOrgId: number;
   private currentProjectId: number;
   private currentActivityId: number;
+  private currentActionId: number;
 
   constructor() {
     this.users = new Map();
@@ -55,10 +66,12 @@ export class MemStorage implements IStorage {
     this.organizationMembers = new Map();
     this.projects = new Map();
     this.activities = new Map();
+    this.actions = new Map();
     this.currentUserId = 1;
     this.currentOrgId = 1;
     this.currentProjectId = 1;
     this.currentActivityId = 1;
+    this.currentActionId = 1;
     
     // Create initial admin user
     this.initializeAdminUser();

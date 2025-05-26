@@ -46,6 +46,7 @@ const sectionConfig = {
       { view: 'admin-users' as View, icon: Users, label: 'Usuarios' },
       { view: 'admin-units' as View, icon: Ruler, label: 'Unidades' },
       { view: 'admin-elements' as View, icon: Blocks, label: 'Elementos' },
+      { view: 'admin-actions' as View, icon: Zap, label: 'Acciones' },
     ],
   },
   profile: {
