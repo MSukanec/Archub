@@ -76,28 +76,7 @@ export default function AdminOrganizations() {
 
   const { data: organizations = [], isLoading, error } = useQuery({
     queryKey: ['organizations'],
-    queryFn: async () => {
-      try {
-        const response = await fetch('/api/organizations');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const text = await response.text();
-        console.log('Raw response:', text);
-        
-        try {
-          const data = JSON.parse(text);
-          console.log('Organizations data:', data);
-          return data;
-        } catch (parseError) {
-          console.error('JSON parse error:', parseError);
-          throw new Error('Invalid JSON response from server');
-        }
-      } catch (fetchError) {
-        console.error('Fetch error:', fetchError);
-        throw fetchError;
-      }
-    },
+    queryFn: organizationsService.getAll,
   });
 
   const form = useForm<OrganizationFormData>({
@@ -117,20 +96,11 @@ export default function AdminOrganizations() {
           .replace(/^-+|-+$/g, '') + 
         '-' + Math.random().toString(36).substr(2, 6);
       
-      const response = await fetch('/api/organizations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          slug: slug,
-        }),
+      return organizationsService.create({
+        ...data,
+        slug: slug,
+        owner_id: 1, // Using default owner for now
       });
-      
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
@@ -152,17 +122,7 @@ export default function AdminOrganizations() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
-      const response = await fetch(`/api/organizations/${selectedOrganization.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      
-      return response.json();
+      return organizationsService.update(selectedOrganization.id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
@@ -185,15 +145,7 @@ export default function AdminOrganizations() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/organizations/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      
-      return response.json();
+      return organizationsService.delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
