@@ -10,6 +10,7 @@ export type View =
   | 'admin-users'
   | 'admin-units'
   | 'admin-elements'
+  | 'admin-actions'
   | 'admin-permissions'
   | 'profile-info'
   | 'profile-subscription'

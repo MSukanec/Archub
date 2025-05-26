@@ -11,7 +11,8 @@ import {
   Bell,
   MoreHorizontal,
   Ruler,
-  Blocks
+  Blocks,
+  Zap
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
