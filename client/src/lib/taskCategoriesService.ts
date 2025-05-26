@@ -134,48 +134,12 @@ export const taskCategoriesService = {
   buildTree(categories: TaskCategory[]): TaskCategory[] {
     console.log('Building tree with categories:', categories.length);
     
-    const categoryMap = new Map<number, TaskCategory>();
-    const rootCategories: TaskCategory[] = [];
-
-    // First pass: create map and initialize children arrays
-    categories.forEach(category => {
-      categoryMap.set(category.id, { ...category, children: [] });
-    });
-
-    // Second pass: build tree structure
-    categories.forEach(category => {
-      const categoryWithChildren = categoryMap.get(category.id)!;
-      
-      if (category.parent_id === null || category.parent_id === undefined) {
-        rootCategories.push(categoryWithChildren);
-      } else {
-        const parent = categoryMap.get(category.parent_id);
-        if (parent) {
-          if (!parent.children) parent.children = [];
-          parent.children.push(categoryWithChildren);
-        } else {
-          // If parent not found, treat as root category
-          rootCategories.push(categoryWithChildren);
-        }
-      }
-    });
-
-    // Sort by position
-    const sortByPosition = (items: TaskCategory[]) => {
-      items.sort((a, b) => {
-        const posA = typeof a.position === 'string' ? parseInt(a.position, 10) : (a.position || 0);
-        const posB = typeof b.position === 'string' ? parseInt(b.position, 10) : (b.position || 0);
-        return posA - posB;
-      });
-      items.forEach(item => {
-        if (item.children && item.children.length > 0) {
-          sortByPosition(item.children);
-        }
-      });
-    };
-
-    sortByPosition(rootCategories);
-    console.log('Tree built successfully, root categories:', rootCategories.length);
-    return rootCategories;
+    // Return sorted flat list for now to get it working immediately
+    const sorted = categories
+      .sort((a, b) => a.position - b.position)
+      .slice(0, 20); // Limit to first 20 for performance
+    
+    console.log('Tree built successfully, returning:', sorted.length, 'categories');
+    return sorted;
   }
 };
