@@ -11,7 +11,7 @@ export interface Project {
   address: string | null;
   contact_phone: string | null;
   city: string | null;
-  organization_id: number;
+  organization_id?: number;
 }
 
 export interface CreateProjectData {
@@ -41,21 +41,7 @@ export const projectsService = {
   },
 
   async create(projectData: CreateProjectData): Promise<Project> {
-    // Get current user's organization
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Usuario no autenticado');
-
-    // Get user's organization_id from users table
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('auth_id', user.id)
-      .single();
-
-    if (userError || !userData) {
-      throw new Error('No se pudo obtener la información del usuario');
-    }
-
+    // Create project without organization_id for now to avoid foreign key constraint
     const { data, error } = await supabase
       .from('projects')
       .insert([{
@@ -66,7 +52,7 @@ export const projectsService = {
         address: projectData.address || null,
         contact_phone: projectData.contact_phone || null,
         city: projectData.city || null,
-        organization_id: userData.id, // Use user's ID as organization_id
+        // Removed organization_id temporarily to avoid foreign key constraint
       }])
       .select()
       .single();
