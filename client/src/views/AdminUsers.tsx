@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { usersService, User } from '@/lib/usersService';
-import AdminUsersModal from '@/components/modals/AdminUsersModal';
+// import AdminUsersModal from '@/components/modals/AdminUsersModal';
 
 export default function AdminUsers() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -199,14 +199,14 @@ export default function AdminUsers() {
       </div>
 
       {/* Modals */}
-      <AdminUsersModal
+      {/* <AdminUsersModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setSelectedUser(null);
         }}
         user={selectedUser}
-      />
+      /> */}
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
