@@ -57,6 +57,8 @@ interface CreateProjectModalProps {
 export default function CreateProjectModal({ isOpen, onClose, project }: CreateProjectModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+  const { setCurrentProject } = useProjectStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
 
   const form = useForm<CreateProjectFormData>({
@@ -118,8 +120,19 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         return projectsService.create(data);
       }
     },
-    onSuccess: () => {
+    onSuccess: async (createdProject) => {
       queryClient.invalidateQueries({ queryKey: ['user-projects'] });
+      
+      // If creating a new project, set it as current and save to preferences
+      if (!project && user) {
+        setCurrentProject(createdProject);
+        try {
+          await userPreferencesService.updateLastProject(user.id, createdProject.id);
+        } catch (error) {
+          console.error('Error saving project preference:', error);
+        }
+      }
+      
       toast({
         title: project ? 'Proyecto actualizado' : 'Proyecto creado',
         description: project ? 'El proyecto ha sido actualizado exitosamente' : 'El proyecto ha sido creado exitosamente',
