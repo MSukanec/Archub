@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 
@@ -58,6 +59,7 @@ const sectionConfig = {
 export default function SecondarySidebar() {
   const { currentSection, currentView, setView } = useNavigationStore();
   const { user, logout } = useAuthStore();
+  const { isSecondarySidebarVisible } = useSidebarStore();
 
   const config = sectionConfig[currentSection];
 
@@ -77,9 +79,9 @@ export default function SecondarySidebar() {
       {/* Navigation Menu */}
       <nav className="flex-1 p-2">
         <div className="space-y-1">
-          {config.items.map(({ view, icon: Icon, label }) => (
+          {config.items.map(({ view, icon: Icon, label }, index) => (
             <button
-              key={view}
+              key={`${view}-${index}`}
               onClick={() => setView(view)}
               className={cn(
                 "w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all duration-200",

@@ -1,6 +1,8 @@
 import { ChartLine, Building, Settings, User } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
+import { useSidebarStore } from '@/stores/sidebarStore';
 import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 
 const navigationItems = [
   { section: 'dashboard' as Section, icon: ChartLine, label: 'Dashboard' },
@@ -10,9 +12,19 @@ const navigationItems = [
 
 export default function PrimarySidebar() {
   const { currentSection, setSection } = useNavigationStore();
+  const { setSecondarySidebarVisible } = useSidebarStore();
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    setSecondarySidebarVisible(isHovered);
+  }, [isHovered, setSecondarySidebarVisible]);
 
   return (
-    <div className="w-16 bg-surface border-r border-border flex flex-col items-center py-4 space-y-2">
+    <div 
+      className="w-16 bg-surface border-r border-border flex flex-col items-center py-4 space-y-2"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Logo */}
       <div className="mb-6">
         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">

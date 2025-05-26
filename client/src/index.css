@@ -3,30 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --background: 15 15 15; /* #0f0f0f */
+  --background: 0 0% 24%; /* #3d3d3d */
   --foreground: 0 0% 98%; /* #fafafa */
-  --muted: 24 10% 10%; /* #1a1a1a */
+  --muted: 0 0% 20%; /* #333333 */
   --muted-foreground: 240 4% 64%; /* #a3a3a3 */
-  --popover: 24 10% 10%; /* #1a1a1a */
+  --popover: 0 0% 20%; /* #333333 */
   --popover-foreground: 0 0% 98%; /* #fafafa */
-  --card: 24 10% 10%; /* #1a1a1a */
+  --card: 0 0% 20%; /* #333333 */
   --card-foreground: 0 0% 98%; /* #fafafa */
-  --border: 24 10% 17%; /* #2a2a2a */
-  --input: 24 10% 17%; /* #2a2a2a */
-  --primary: 22 100% 52%; /* #ff6f04 */
+  --border: 0 0% 30%; /* #4d4d4d */
+  --input: 0 0% 30%; /* #4d4d4d */
+  --primary: 216 100% 66%; /* #4f9eff */
   --primary-foreground: 0 0% 98%; /* #fafafa */
-  --secondary: 24 10% 17%; /* #2a2a2a */
+  --secondary: 0 0% 30%; /* #4d4d4d */
   --secondary-foreground: 0 0% 98%; /* #fafafa */
-  --accent: 24 10% 17%; /* #2a2a2a */
+  --accent: 0 0% 30%; /* #4d4d4d */
   --accent-foreground: 0 0% 98%; /* #fafafa */
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 98%; /* #fafafa */
-  --ring: 22 100% 52%; /* #ff6f04 */
+  --ring: 216 100% 66%; /* #4f9eff */
   --radius: 0.5rem;
   
   /* Surface variations for better hierarchy */
-  --surface: 24 10% 10%; /* #1a1a1a */
-  --surface-light: 24 10% 17%; /* #2a2a2a */
+  --surface: 0 0% 20%; /* #333333 */
+  --surface-light: 0 0% 30%; /* #4d4d4d */
 }
 
 .light {
