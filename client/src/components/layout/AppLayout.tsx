@@ -36,14 +36,17 @@ export default function AppLayout() {
   useEffect(() => {
     // Check initial auth state
     authService.getCurrentUser().then(({ user }) => {
+      console.log('Initial auth check:', user);
       if (user) {
-        setUser({
+        const authUser = {
           id: user.id,
           email: user.email || '',
           firstName: user.user_metadata?.first_name || '',
           lastName: user.user_metadata?.last_name || '',
           role: user.user_metadata?.role || 'user',
-        });
+        };
+        console.log('Setting user:', authUser);
+        setUser(authUser);
       } else {
         setUser(null);
       }
@@ -52,6 +55,7 @@ export default function AppLayout() {
 
     // Listen for auth changes
     const { data: { subscription } } = authService.onAuthStateChange((user) => {
+      console.log('Auth state changed:', user);
       setUser(user);
     });
 

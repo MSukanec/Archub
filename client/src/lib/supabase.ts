@@ -3,6 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Key exists:', !!supabaseAnonKey);
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type AuthUser = {
@@ -15,10 +18,12 @@ export type AuthUser = {
 
 export const authService = {
   async signIn(email: string, password: string) {
+    console.log('Attempting sign in with:', email);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    console.log('Sign in response:', { data, error });
     return { data, error };
   },
 
