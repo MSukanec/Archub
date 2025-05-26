@@ -21,6 +21,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { authService } from '@/lib/supabase';
+import { organizationsService } from '@/lib/organizationsService';
+import { useQuery } from '@tanstack/react-query';
 
 const profileSchema = z.object({
   firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -36,6 +38,13 @@ export default function ProfileInfo() {
   const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [confirmationText, setConfirmationText] = useState('');
+
+  // Obtener la organización del usuario
+  const { data: organization } = useQuery({
+    queryKey: ['current-organization'],
+    queryFn: organizationsService.getCurrentUserOrganization,
+  });
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -61,10 +70,20 @@ export default function ProfileInfo() {
   };
 
   const handleDeleteClick = () => {
+    setConfirmationText('');
     setShowDeleteModal(true);
   };
 
   const handleConfirmDelete = async () => {
+    if (!organization || confirmationText !== organization.name) {
+      toast({
+        title: "Error",
+        description: "Debes escribir exactamente el nombre de tu organización para confirmar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // TODO: Implement account deletion logic
       toast({
@@ -73,6 +92,7 @@ export default function ProfileInfo() {
         variant: "destructive",
       });
       setShowDeleteModal(false);
+      setConfirmationText('');
       await authService.signOut();
       logout();
     } catch (error) {
@@ -84,6 +104,8 @@ export default function ProfileInfo() {
       setShowDeleteModal(false);
     }
   };
+
+  const isDeleteConfirmationValid = organization && confirmationText === organization.name;
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -358,30 +380,46 @@ export default function ProfileInfo() {
               <AlertTriangle className="h-6 w-6" />
               ⚠️ PELIGRO: Eliminar Cuenta
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-3">
-              <p className="font-semibold text-red-700 dark:text-red-400">
-                Esta acción NO se puede deshacer.
-              </p>
-              <p>
-                Al eliminar tu cuenta se borrarán <strong>permanentemente</strong>:
-              </p>
-              <ul className="list-disc list-inside space-y-1 text-sm">
-                <li>Todos tus proyectos y presupuestos</li>
-                <li>Toda la información de tu organización</li>
-                <li>Todos los archivos y documentos</li>
-                <li>Todo el historial de actividades</li>
-                <li>Tu perfil y configuraciones</li>
-              </ul>
-              <p className="font-medium text-red-700 dark:text-red-400">
-                Esta acción es IRREVERSIBLE. ¿Estás completamente seguro?
-              </p>
+            <AlertDialogDescription>
+              <div className="space-y-3">
+                <div className="font-semibold text-red-700 dark:text-red-400">
+                  Esta acción NO se puede deshacer.
+                </div>
+                <div>
+                  Al eliminar tu cuenta se borrarán <strong>permanentemente</strong>:
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li>Todos tus proyectos y presupuestos</li>
+                  <li>Toda la información de tu organización</li>
+                  <li>Todos los archivos y documentos</li>
+                  <li>Todo el historial de actividades</li>
+                  <li>Tu perfil y configuraciones</li>
+                </ul>
+                <div className="font-medium text-red-700 dark:text-red-400">
+                  Esta acción es IRREVERSIBLE. ¿Estás completamente seguro?
+                </div>
+                {organization && (
+                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border">
+                    <div className="text-sm font-medium mb-2">
+                      Para confirmar, escribe el nombre de tu organización: <span className="font-mono bg-gray-200 dark:bg-gray-700 px-1 rounded">{organization.name}</span>
+                    </div>
+                    <Input
+                      value={confirmationText}
+                      onChange={(e) => setConfirmationText(e.target.value)}
+                      placeholder="Nombre de la organización"
+                      className="mt-2"
+                    />
+                  </div>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No, mantener mi cuenta</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setConfirmationText('')}>No, mantener mi cuenta</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDelete}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+              disabled={!isDeleteConfirmationValid}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Sí, eliminar permanentemente
             </AlertDialogAction>
