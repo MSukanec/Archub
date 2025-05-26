@@ -7,23 +7,24 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState } from 'react';
+import { usersService } from '@/lib/usersService';
 
 export default function Users() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ['/api/users'],
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: usersService.getAll,
   });
 
   if (isLoading) {
     return <UsersSkeleton />;
   }
 
-  const filteredUsers = users?.filter((user: any) =>
-    user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredUsers = users.filter((user: any) =>
+    (user.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  );
 
   return (
     <div className="space-y-8">
@@ -63,9 +64,9 @@ export default function Users() {
             <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
+            <div className="text-2xl font-bold">{users.length}</div>
             <p className="text-xs text-muted-foreground">
-              Solo tú por ahora
+              {users.length === 1 ? 'Solo tú por ahora' : 'usuarios registrados'}
             </p>
           </CardContent>
         </Card>
@@ -76,9 +77,9 @@ export default function Users() {
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
+            <div className="text-2xl font-bold">{users.filter(u => u.role === 'admin').length}</div>
             <p className="text-xs text-muted-foreground">
-              1 propietario
+              {users.filter(u => u.role === 'admin').length} administradores
             </p>
           </CardContent>
         </Card>
@@ -129,19 +130,19 @@ export default function Users() {
                   <div className="flex items-center space-x-4">
                     <Avatar>
                       <AvatarFallback>
-                        {user.firstName[0]}{user.lastName[0]}
+                        {user.full_name ? user.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2) : user.email[0].toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-medium text-foreground">
-                        {user.firstName} {user.lastName}
+                        {user.full_name || user.email}
                       </h3>
                       <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Badge variant="default" className="bg-primary/10 text-primary">
-                      Propietario
+                    <Badge variant="default" className={user.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary-foreground'}>
+                      {user.role === 'admin' ? 'Administrador' : 'Usuario'}
                     </Badge>
                     <Button variant="outline" size="sm">
                       Gestionar
