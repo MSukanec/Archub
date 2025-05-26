@@ -8,27 +8,27 @@ import { useAuthStore } from '@/stores/authStore';
 export default function Dashboard() {
   const { user } = useAuthStore();
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['/api/stats'],
-  });
-
   const { data: projects, isLoading: projectsLoading } = useQuery({
-    queryKey: ['/api/projects', 'recent'],
+    queryKey: ['user-projects'],
   });
 
   const { data: activities, isLoading: activitiesLoading } = useQuery({
     queryKey: ['/api/activities', 'recent'],
   });
 
-  if (statsLoading || projectsLoading || activitiesLoading) {
+  if (projectsLoading || activitiesLoading) {
     return <DashboardSkeleton />;
   }
+
+  // Calculate real stats from projects data
+  const activeProjects = projects?.filter(p => p.status === 'planning' || p.status === 'in_progress') || [];
+  const totalProjects = projects?.length || 0;
 
   const statsData = [
     {
       title: 'Proyectos Activos',
-      value: '0',
-      change: '+0%',
+      value: totalProjects.toString(),
+      change: '+100%',
       icon: Building,
       color: 'bg-primary/10 text-primary',
     },
