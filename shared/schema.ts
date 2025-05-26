@@ -58,8 +58,6 @@ export const activities = pgTable("activities", {
 export const actions = pgTable("actions", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  description: text("description"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Insert schemas
