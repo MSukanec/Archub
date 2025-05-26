@@ -1,0 +1,201 @@
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
+import { usersService, CreateUserData, User } from '@/lib/usersService';
+
+const userFormSchema = z.object({
+  email: z.string().email('Email inválido').min(1, 'El email es requerido'),
+  full_name: z.string().min(1, 'El nombre es requerido'),
+  role: z.string().min(1, 'El rol es requerido'),
+});
+
+type UserFormData = z.infer<typeof userFormSchema>;
+
+interface AdminUsersModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  user?: User | null; // Para edición
+}
+
+export default function AdminUsersModal({ 
+  isOpen, 
+  onClose, 
+  user 
+}: AdminUsersModalProps) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      email: user?.email || '',
+      full_name: user?.full_name || '',
+      role: user?.role || 'user',
+    },
+  });
+
+  // Reset form when user changes (for editing)
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        email: user.email,
+        full_name: user.full_name || '',
+        role: user.role,
+      });
+    } else {
+      form.reset({
+        email: '',
+        full_name: '',
+        role: 'user',
+      });
+    }
+  }, [user, form]);
+
+  const createMutation = useMutation({
+    mutationFn: async (data: UserFormData) => {
+      return usersService.create(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast({
+        title: 'Éxito',
+        description: 'Usuario creado correctamente',
+      });
+      onClose();
+      form.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Error al crear el usuario',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: UserFormData) => {
+      return usersService.update(user!.id, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast({
+        title: 'Éxito',
+        description: 'Usuario actualizado correctamente',
+      });
+      onClose();
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Error al actualizar el usuario',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const onSubmit = (data: UserFormData) => {
+    if (user) {
+      updateMutation.mutate(data);
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>
+            {user ? 'Editar Usuario' : 'Nuevo Usuario'}
+          </DialogTitle>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="usuario@ejemplo.com"
+                      type="email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="full_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre completo</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Nombre del usuario"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rol</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar rol" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="user">Usuario</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="admin">Administrador</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {createMutation.isPending || updateMutation.isPending 
+                  ? (user ? 'Actualizando...' : 'Creando...') 
+                  : (user ? 'Actualizar' : 'Crear')
+                }
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

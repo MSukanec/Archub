@@ -13,6 +13,7 @@ import AdminOrganizations from '@/views/AdminOrganizations';
 import AdminUnits from '@/views/AdminUnits';
 import AdminElements from '@/views/AdminElements';
 import AdminActions from '@/views/AdminActions';
+import AdminUsers from '@/views/AdminUsers';
 
 import ProfileInfo from '@/views/ProfileInfo';
 import Subscription from '@/views/Subscription';
@@ -24,7 +25,7 @@ const viewComponents = {
   'projects-overview': ProjectsOverview,
   'projects-list': ProjectsList,
   'admin-organizations': AdminOrganizations,
-  'admin-users': AdminOrganizations, // Temporarily using organizations view
+  'admin-users': AdminUsers,
   'admin-units': AdminUnits,
   'admin-elements': AdminElements,
   'admin-actions': AdminActions,
