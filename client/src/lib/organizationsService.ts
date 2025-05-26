@@ -22,7 +22,14 @@ export const organizationsService = {
   async getAll(): Promise<Organization[]> {
     const { data, error } = await supabase
       .from('organizations')
-      .select('*')
+      .select(`
+        *,
+        owner:users!organizations_owner_id_fkey(
+          id,
+          full_name,
+          email
+        )
+      `)
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -30,7 +37,13 @@ export const organizationsService = {
       throw new Error(error.message);
     }
     
-    return data || [];
+    // Transform data to include owner_name
+    const transformedData = (data || []).map(org => ({
+      ...org,
+      owner_name: org.owner?.full_name || org.owner?.email || 'Sin asignar'
+    }));
+    
+    return transformedData;
   },
 
   async create(orgData: CreateOrganizationData): Promise<Organization> {

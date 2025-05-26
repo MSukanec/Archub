@@ -209,6 +209,7 @@ export default function AdminOrganizations() {
     form.reset({
       name: organization.name,
       slug: organization.slug || '',
+      owner_id: organization.owner_id,
     });
     setIsEditModalOpen(true);
   };
@@ -479,6 +480,34 @@ export default function AdminOrganizations() {
                         value={field.value || ''}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="owner_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Propietario</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar propietario" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {users.map((user: any) => (
+                          <SelectItem key={user.id} value={user.id.toString()}>
+                            {user.full_name || user.email} ({user.role})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
