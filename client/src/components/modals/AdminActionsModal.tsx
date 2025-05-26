@@ -12,7 +12,6 @@ import { actionsService, CreateActionData } from '@/lib/actionsService';
 
 const actionFormSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
-  description: z.string().min(1, 'La descripción es requerida'),
 });
 
 type ActionFormData = z.infer<typeof actionFormSchema>;
@@ -35,7 +34,6 @@ export default function AdminActionsModal({
     resolver: zodResolver(actionFormSchema),
     defaultValues: {
       name: action?.name || '',
-      description: action?.description || '',
     },
   });
 
@@ -44,7 +42,7 @@ export default function AdminActionsModal({
       return actionsService.create(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/actions'] });
+      queryClient.invalidateQueries({ queryKey: ['actions'] });
       toast({
         title: 'Éxito',
         description: 'Acción creada correctamente',
@@ -66,7 +64,7 @@ export default function AdminActionsModal({
       return actionsService.update(action.id, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/actions'] });
+      queryClient.invalidateQueries({ queryKey: ['actions'] });
       toast({
         title: 'Éxito',
         description: 'Acción actualizada correctamente',

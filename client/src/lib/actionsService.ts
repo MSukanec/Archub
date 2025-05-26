@@ -3,12 +3,10 @@ import { supabase } from './supabase';
 export interface Action {
   id: number;
   name: string;
-  description?: string;
 }
 
 export interface CreateActionData {
   name: string;
-  description?: string;
 }
 
 export const actionsService = {
@@ -29,7 +27,7 @@ export const actionsService = {
   async create(actionData: CreateActionData): Promise<Action> {
     const { data, error } = await supabase
       .from('actions')
-      .insert([actionData])
+      .insert([{ name: actionData.name }])
       .select()
       .single();
     
@@ -44,7 +42,7 @@ export const actionsService = {
   async update(id: number, actionData: Partial<CreateActionData>): Promise<Action> {
     const { data, error } = await supabase
       .from('actions')
-      .update(actionData)
+      .update({ name: actionData.name })
       .eq('id', id)
       .select()
       .single();
