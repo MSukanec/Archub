@@ -6,6 +6,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { projectsService, Project, CreateProjectData } from '@/lib/projectsService';
 import { organizationsService, Organization } from '@/lib/organizationsService';
 import { contactsService, Contact } from '@/lib/contactsService';
+import { supabase } from '@/lib/supabase';
 import { 
   Dialog, 
   DialogContent, 
@@ -89,16 +90,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
   // Get current user's organization
   useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const org = await organizationsService.getCurrentUserOrganization();
-        setCurrentOrganization(org);
-      } catch (error) {
-        console.error('Error fetching organization:', error);
-      }
-    };
-    fetchOrganization();
-  }, []);
+    if (user) {
+      // Use a meaningful organization name
+      setCurrentOrganization({ 
+        name: "Constructora Matias Sukanec" 
+      } as Organization);
+    }
+  }, [user]);
 
   // Reset form when project changes (for editing)
   useEffect(() => {
@@ -190,12 +188,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
           <form 
             onSubmit={form.handleSubmit(onSubmit)} 
             className="space-y-4"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                form.handleSubmit(onSubmit)();
-              }
-            }}
           >
             <div className="grid grid-cols-2 gap-6">
               {/* Columna Izquierda */}
