@@ -49,15 +49,30 @@ export const projectsService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Usuario no autenticado');
 
-    // Get user's organization from the users table
+    // First, let's check what columns exist in the users table
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('*')
       .eq('auth_id', user.id)
       .single();
     
-    if (userError || !userData?.organization_id) {
-      console.error('Error getting user organization:', userError);
+    if (userError || !userData) {
+      console.error('Error getting user data:', userError);
+      console.log('Available user data:', userData);
+      throw new Error('No se pudo obtener los datos del usuario');
+    }
+    
+    console.log('Full user data:', userData);
+    
+    // Check if user has an organization through organization_members table
+    const { data: memberData, error: memberError } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', userData.id)
+      .single();
+    
+    if (memberError || !memberData?.organization_id) {
+      console.error('Error getting user organization membership:', memberError);
       throw new Error('No se pudo obtener la organización del usuario');
     }
 
@@ -71,7 +86,7 @@ export const projectsService = {
         address: projectData.address || null,
         contact_phone: projectData.contact_phone || null,
         city: projectData.city || null,
-        organization_id: userData.organization_id, // Use user's actual organization_id
+        organization_id: memberData.organization_id, // Use user's actual organization_id
         is_active: true,
       }])
       .select()
