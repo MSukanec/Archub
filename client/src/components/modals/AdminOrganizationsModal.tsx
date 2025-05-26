@@ -58,9 +58,9 @@ export default function AdminOrganizationsModal({
   const form = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
-      name: organization?.name || '',
-      slug: organization?.slug || '',
-      owner_id: organization?.owner_id || undefined,
+      name: '',
+      slug: '',
+      owner_id: undefined,
     },
   });
 
@@ -139,9 +139,11 @@ export default function AdminOrganizationsModal({
   useEffect(() => {
     if (organization) {
       form.reset({
-        name: organization.name,
+        name: organization.name || '',
         slug: organization.slug || '',
-        owner_id: organization.owner_id,
+        owner_id: typeof organization.owner_id === 'string' 
+          ? parseInt(organization.owner_id) 
+          : organization.owner_id,
       });
     } else {
       form.reset({
@@ -193,7 +195,7 @@ export default function AdminOrganizationsModal({
                     <Input 
                       placeholder="nombre-organización"
                       {...field}
-                      value={field.value || ''}
+                      value={field.value ?? ''}
                     />
                   </FormControl>
                   <FormMessage />
