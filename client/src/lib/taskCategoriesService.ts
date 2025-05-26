@@ -47,14 +47,16 @@ export const taskCategoriesService = {
       
       console.log(`Found ${data.length} categories`);
       
-      // Build hierarchical tree structure
-      const treeData = this.buildTree(data);
-      console.log('Returning tree data:', treeData.length, 'root categories');
-      return treeData;
+      // First return sorted flat list to ensure it works
+      const sortedData = data.sort((a, b) => a.position - b.position);
+      console.log('Returning sorted data:', sortedData.length, 'categories');
+      return sortedData;
       
     } catch (err) {
-      console.error('Connection error:', err);
-      throw new Error('Error de conexión. Por favor verifica la configuración de Supabase.');
+      console.error('Detailed error:', err);
+      console.error('Error type:', typeof err);
+      console.error('Error message:', err instanceof Error ? err.message : 'Unknown error');
+      throw err; // Re-throw the original error to see what's happening
     }
   },
 
@@ -154,47 +156,53 @@ export const taskCategoriesService = {
   buildTree(categories: TaskCategory[]): TaskCategory[] {
     console.log('Building tree with categories:', categories.length);
     
-    // Create a map for quick lookup
-    const categoryMap = new Map<number, TaskCategory & { children: TaskCategory[] }>();
-    
-    // Initialize all categories with empty children array
-    categories.forEach(category => {
-      categoryMap.set(category.id, { ...category, children: [] });
-    });
-
-    const rootCategories: TaskCategory[] = [];
-
-    // Build the tree structure
-    categories.forEach(category => {
-      const categoryWithChildren = categoryMap.get(category.id)!;
+    try {
+      // Create a map for quick lookup - using any to avoid type issues
+      const categoryMap = new Map<number, any>();
       
-      if (category.parent_id === null || category.parent_id === undefined) {
-        // This is a root category
-        rootCategories.push(categoryWithChildren);
-      } else {
-        // This is a child category
-        const parent = categoryMap.get(category.parent_id);
-        if (parent) {
-          parent.children.push(categoryWithChildren);
-        } else {
-          // Parent not found, treat as root
-          rootCategories.push(categoryWithChildren);
-        }
-      }
-    });
+      // Initialize all categories with empty children array
+      categories.forEach(category => {
+        categoryMap.set(category.id, { ...category, children: [] });
+      });
 
-    // Sort by position at each level
-    const sortByPosition = (items: TaskCategory[]) => {
-      items.sort((a, b) => a.position - b.position);
-      items.forEach(item => {
-        if ('children' in item && item.children && item.children.length > 0) {
-          sortByPosition(item.children);
+      const rootCategories: any[] = [];
+
+      // Build the tree structure
+      categories.forEach(category => {
+        const categoryWithChildren = categoryMap.get(category.id);
+        
+        if (category.parent_id === null || category.parent_id === undefined) {
+          // This is a root category
+          rootCategories.push(categoryWithChildren);
+        } else {
+          // This is a child category
+          const parent = categoryMap.get(category.parent_id);
+          if (parent) {
+            parent.children.push(categoryWithChildren);
+          } else {
+            // Parent not found, treat as root
+            rootCategories.push(categoryWithChildren);
+          }
         }
       });
-    };
 
-    sortByPosition(rootCategories);
-    console.log('Tree built successfully, returning:', rootCategories.length, 'root categories');
-    return rootCategories;
+      // Sort by position at each level
+      const sortByPosition = (items: any[]) => {
+        items.sort((a, b) => a.position - b.position);
+        items.forEach(item => {
+          if (item.children && item.children.length > 0) {
+            sortByPosition(item.children);
+          }
+        });
+      };
+
+      sortByPosition(rootCategories);
+      console.log('Tree built successfully, returning:', rootCategories.length, 'root categories');
+      return rootCategories;
+    } catch (error) {
+      console.error('Error building tree:', error);
+      // If tree building fails, return flat sorted list
+      return categories.sort((a, b) => a.position - b.position);
+    }
   }
 };
