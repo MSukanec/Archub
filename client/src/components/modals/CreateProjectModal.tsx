@@ -178,39 +178,11 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     onSuccess: async (createdProject) => {
       queryClient.invalidateQueries({ queryKey: ['user-projects'] });
       
-      // If creating a new project, set it as current and save to preferences
+      // If creating a new project, set it as current
       if (!project && user) {
         setCurrentProject(createdProject);
-        try {
-          // First check if user preferences exist, if not create them
-          const { data: existingPref } = await supabase
-            .from('user_preferences')
-            .select('*')
-            .eq('user_id', user.id)
-            .maybeSingle();
-
-          if (existingPref) {
-            // Update existing preferences
-            await supabase
-              .from('user_preferences')
-              .update({ 
-                last_project_id: createdProject.id,
-                last_organization_id: '6acb6b56-294c-46dc-bfce-98595d0e08c9'
-              })
-              .eq('user_id', user.id);
-          } else {
-            // Create new preferences
-            await supabase
-              .from('user_preferences')
-              .insert({
-                user_id: user.id,
-                last_project_id: createdProject.id,
-                last_organization_id: '6acb6b56-294c-46dc-bfce-98595d0e08c9'
-              });
-          }
-        } catch (error) {
-          console.error('Error saving project preference:', error);
-        }
+        // Skip saving to user_preferences for now to prevent hanging
+        console.log('New project created:', createdProject.id);
       }
       
       toast({

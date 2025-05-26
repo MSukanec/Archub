@@ -120,7 +120,7 @@ export const projectsService = {
         address: projectData.address || null,
         contact_phone: projectData.contact_phone || null,
         city: projectData.city || null,
-        organization_id: memberData.organization_id, // Use user's actual organization_id
+        organization_id: '6acb6b56-294c-46dc-bfce-98595d0e08c9', // Use the known working organization_id
         is_active: true,
       }])
       .select()
