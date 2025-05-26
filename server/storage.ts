@@ -228,6 +228,45 @@ export class MemStorage implements IStorage {
     this.activities.set(id, activity);
     return activity;
   }
+
+  // Actions methods
+  async getAllActions(): Promise<Action[]> {
+    return Array.from(this.actions.values()).sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async createAction(actionData: InsertAction): Promise<Action> {
+    const id = this.currentActionId++;
+    const action: Action = {
+      ...actionData,
+      id,
+      createdAt: new Date()
+    };
+    this.actions.set(id, action);
+    return action;
+  }
+
+  async updateAction(id: number, actionData: Partial<InsertAction>): Promise<Action> {
+    const action = this.actions.get(id);
+    if (!action) {
+      throw new Error('Action not found');
+    }
+    
+    const updated: Action = {
+      ...action,
+      ...actionData
+    };
+    this.actions.set(id, updated);
+    return updated;
+  }
+
+  async deleteAction(id: number): Promise<void> {
+    if (!this.actions.has(id)) {
+      throw new Error('Action not found');
+    }
+    this.actions.delete(id);
+  }
 }
 
 export const storage = new MemStorage();
