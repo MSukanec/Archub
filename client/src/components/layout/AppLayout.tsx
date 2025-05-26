@@ -24,9 +24,11 @@ const viewComponents = {
   'projects-overview': ProjectsOverview,
   'projects-list': ProjectsList,
   'admin-organizations': AdminOrganizations,
+  'admin-users': AdminOrganizations, // Temporarily using organizations view
   'admin-units': AdminUnits,
   'admin-elements': AdminElements,
   'admin-actions': AdminActions,
+  'admin-permissions': AdminActions, // Temporarily using actions view
   'profile-info': ProfileInfo,
   'profile-subscription': Subscription,
   'profile-notifications': ProfileInfo,
