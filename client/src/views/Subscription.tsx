@@ -1,0 +1,191 @@
+import { Check, CreditCard, Calendar } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+const plans = [
+  {
+    name: 'Básico',
+    price: 'Gratis',
+    description: 'Perfecto para empezar',
+    features: [
+      'Hasta 5 proyectos',
+      'Gestión básica de presupuestos',
+      'Bitácora de obra básica',
+      'Soporte por email',
+    ],
+    current: true,
+  },
+  {
+    name: 'Profesional',
+    price: '$29/mes',
+    description: 'Para equipos en crecimiento',
+    features: [
+      'Proyectos ilimitados',
+      'Gestión avanzada de presupuestos',
+      'Bitácora de obra completa',
+      'Colaboración en equipo',
+      'Reportes y análisis',
+      'Soporte prioritario',
+    ],
+    current: false,
+  },
+  {
+    name: 'Empresarial',
+    price: '$99/mes',
+    description: 'Para organizaciones grandes',
+    features: [
+      'Todo de Profesional',
+      'API personalizada',
+      'Integraciones avanzadas',
+      'Gestión de múltiples organizaciones',
+      'Soporte dedicado 24/7',
+      'Entrenamiento personalizado',
+    ],
+    current: false,
+  },
+];
+
+export default function Subscription() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-foreground mb-2">
+          Suscripción
+        </h1>
+        <p className="text-muted-foreground">
+          Gestiona tu plan de suscripción y método de pago.
+        </p>
+      </div>
+
+      {/* Current Plan */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <CreditCard className="mr-2" size={20} />
+              Plan Actual
+            </CardTitle>
+            <Badge variant="default" className="bg-primary/10 text-primary">
+              Básico
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-semibold text-foreground">Plan Básico</h3>
+            <p className="text-sm text-muted-foreground">
+              Gratis para siempre • Hasta 5 proyectos
+            </p>
+          </div>
+
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Calendar size={16} className="mr-2" />
+            Sin fecha de renovación
+          </div>
+
+          <div className="pt-4">
+            <Button className="bg-primary hover:bg-primary/90">
+              Actualizar Plan
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Available Plans */}
+      <div>
+        <h2 className="text-xl font-semibold text-foreground mb-6">
+          Planes Disponibles
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {plans.map((plan) => (
+            <Card 
+              key={plan.name} 
+              className={plan.current ? 'border-primary' : 'hover:border-border/60 transition-colors'}
+            >
+              <CardHeader className="text-center">
+                <CardTitle className="flex items-center justify-center">
+                  {plan.name}
+                  {plan.current && (
+                    <Badge variant="default" className="ml-2 bg-primary/10 text-primary">
+                      Actual
+                    </Badge>
+                  )}
+                </CardTitle>
+                <div className="py-4">
+                  <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                </div>
+                <p className="text-sm text-muted-foreground">{plan.description}</p>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <ul className="space-y-2">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center text-sm">
+                      <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <Button 
+                  className={`w-full ${
+                    plan.current 
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                      : 'bg-primary hover:bg-primary/90'
+                  }`}
+                  disabled={plan.current}
+                >
+                  {plan.current ? 'Plan Actual' : 'Seleccionar Plan'}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Billing Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Información de Facturación</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <CreditCard className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-medium text-foreground">
+              Sin método de pago configurado
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Configura un método de pago para actualizar tu plan.
+            </p>
+            <Button className="mt-4 bg-primary hover:bg-primary/90">
+              Añadir Método de Pago
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Usage Statistics */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Uso Actual</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Proyectos</span>
+            <span className="text-sm font-medium text-foreground">0 / 5</span>
+          </div>
+          
+          <div className="w-full bg-muted rounded-full h-2">
+            <div className="bg-primary h-2 rounded-full" style={{ width: '0%' }}></div>
+          </div>
+          
+          <p className="text-xs text-muted-foreground">
+            Tienes 5 proyectos disponibles en tu plan actual.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

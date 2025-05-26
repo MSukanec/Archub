@@ -1,0 +1,72 @@
+import { useEffect } from 'react';
+import { useAuthStore } from '@/stores/authStore';
+import { authService } from '@/lib/supabase';
+import PrimarySidebar from './PrimarySidebar';
+import SecondarySidebar from './SecondarySidebar';
+import TopBar from './TopBar';
+import Dashboard from '@/views/Dashboard';
+import ProjectsOverview from '@/views/ProjectsOverview';
+import ProjectsList from '@/views/ProjectsList';
+import Organizations from '@/views/Organizations';
+import Users from '@/views/Users';
+import ProfileInfo from '@/views/ProfileInfo';
+import Subscription from '@/views/Subscription';
+import { useNavigationStore } from '@/stores/navigationStore';
+
+const viewComponents = {
+  'dashboard-main': Dashboard,
+  'dashboard-activity': Dashboard,
+  'projects-overview': ProjectsOverview,
+  'projects-list': ProjectsList,
+  'admin-organizations': Organizations,
+  'admin-users': Users,
+  'admin-permissions': Users,
+  'profile-info': ProfileInfo,
+  'profile-subscription': Subscription,
+  'profile-notifications': ProfileInfo,
+};
+
+export default function AppLayout() {
+  const { setUser, setLoading } = useAuthStore();
+  const { currentView } = useNavigationStore();
+
+  useEffect(() => {
+    // Check initial auth state
+    authService.getCurrentUser().then(({ user }) => {
+      if (user) {
+        setUser({
+          id: user.id,
+          email: user.email || '',
+          firstName: user.user_metadata?.first_name || '',
+          lastName: user.user_metadata?.last_name || '',
+        });
+      } else {
+        setUser(null);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = authService.onAuthStateChange((user) => {
+      setUser(user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [setUser, setLoading]);
+
+  const ViewComponent = viewComponents[currentView] || Dashboard;
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-background">
+      <PrimarySidebar />
+      <SecondarySidebar />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopBar />
+        
+        <main className="flex-1 overflow-auto p-6">
+          <ViewComponent />
+        </main>
+      </div>
+    </div>
+  );
+}
