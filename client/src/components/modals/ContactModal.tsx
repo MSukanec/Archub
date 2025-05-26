@@ -149,7 +149,16 @@ export default function ContactModal({ isOpen, onClose, contact, contactTypes }:
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form 
+            onSubmit={form.handleSubmit(onSubmit)} 
+            className="space-y-4"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.handleSubmit(onSubmit)();
+              }
+            }}
+          >
             <FormField
               control={form.control}
               name="name"

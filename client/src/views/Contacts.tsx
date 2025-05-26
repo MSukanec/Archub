@@ -32,6 +32,9 @@ export default function Contacts() {
   const { data: contacts = [], isLoading } = useQuery({
     queryKey: ['contacts'],
     queryFn: contactsService.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
+    refetchOnWindowFocus: false, // Evitar refetch constante
   });
 
   // Delete contact mutation

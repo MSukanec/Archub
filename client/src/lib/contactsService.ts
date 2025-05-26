@@ -26,17 +26,23 @@ export interface CreateContactData {
 
 export const contactsService = {
   async getAll(): Promise<Contact[]> {
-    const { data, error } = await supabase
-      .from('contacts')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Error fetching contacts:', error);
-      throw new Error('Error al obtener los contactos');
+    try {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100); // Limitar resultados para evitar sobrecarga
+      
+      if (error) {
+        console.error('Error fetching contacts:', error);
+        throw new Error('Error al obtener los contactos');
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error('Network error fetching contacts:', error);
+      return []; // Retornar array vacío en caso de error de red
     }
-    
-    return data || [];
   },
 
   async create(contactData: CreateContactData): Promise<Contact> {
