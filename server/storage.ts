@@ -239,8 +239,9 @@ export class MemStorage implements IStorage {
   async createAction(actionData: InsertAction): Promise<Action> {
     const id = this.currentActionId++;
     const action: Action = {
-      ...actionData,
       id,
+      name: actionData.name,
+      description: actionData.description || null,
       createdAt: new Date()
     };
     this.actions.set(id, action);

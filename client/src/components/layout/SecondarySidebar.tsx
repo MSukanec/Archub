@@ -74,7 +74,7 @@ export default function SecondarySidebar() {
 
   return (
     <div className={cn(
-      "fixed left-16 top-0 h-full bg-[#141414] border-r border-border flex flex-col z-50",
+      "fixed left-[45px] top-0 h-full bg-[#141414] border-r border-border flex flex-col z-50",
       isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
     )}>
       {/* Header */}
