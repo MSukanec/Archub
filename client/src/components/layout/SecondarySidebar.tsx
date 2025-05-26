@@ -21,8 +21,8 @@ import { cn } from '@/lib/utils';
 
 const sectionConfig = {
   dashboard: {
-    title: 'Dashboard',
-    description: 'Panel principal de control',
+    title: 'Organización',
+    description: 'Información de la organización',
     items: [
       { view: 'dashboard-main' as View, icon: BarChart3, label: 'Resumen General' },
       { view: 'dashboard-activity' as View, icon: Clock, label: 'Actividad Reciente' },

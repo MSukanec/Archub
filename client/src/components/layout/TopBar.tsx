@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
 const viewBreadcrumbs = {
-  'dashboard-main': 'Dashboard',
+  'dashboard-main': 'Organización',
   'dashboard-activity': 'Actividad Reciente',
   'projects-overview': 'Resumen de Proyectos',
   'projects-list': 'Lista de Proyectos',

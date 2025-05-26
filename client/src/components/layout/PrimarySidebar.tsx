@@ -3,9 +3,12 @@ import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
-const navigationItems = [
-  { section: 'dashboard' as Section, icon: ChartLine, label: 'Dashboard' },
+const topNavigationItems = [
+  { section: 'dashboard' as Section, icon: ChartLine, label: 'Organización' },
   { section: 'projects' as Section, icon: Building, label: 'Proyectos' },
+];
+
+const bottomNavigationItems = [
   { section: 'admin' as Section, icon: Shield, label: 'Administración' },
 ];
 
@@ -22,8 +25,28 @@ export default function PrimarySidebar() {
         </div>
       </div>
       
-      {/* Navigation Icons */}
-      {navigationItems.map(({ section, icon: Icon, label }) => {
+      {/* Top Navigation Icons */}
+      {topNavigationItems.map(({ section, icon: Icon, label }) => (
+        <button
+          key={section}
+          onClick={() => setSection(section)}
+          className={cn(
+            "w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200",
+            currentSection === section
+              ? "text-primary bg-primary/10"
+              : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
+          )}
+          title={label}
+        >
+          <Icon size={20} />
+        </button>
+      ))}
+      
+      {/* Separator */}
+      <div className="w-8 h-px bg-border my-4"></div>
+      
+      {/* Bottom Navigation Icons */}
+      {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
         // Hide admin section for non-admin users
         if (section === 'admin' && user?.role !== 'admin') {
           return null;
