@@ -46,11 +46,22 @@ export const contactsService = {
       throw new Error('Usuario no autenticado');
     }
 
+    // Get user's organization from organization_members table
+    const { data: memberData, error: memberError } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (memberError || !memberData) {
+      throw new Error('Usuario no pertenece a ninguna organización');
+    }
+
     const { data, error } = await supabase
       .from('contacts')
       .insert([{
         ...contactData,
-        organization_id: user.user_metadata?.organization_id || user.id
+        organization_id: memberData.organization_id
       }])
       .select()
       .single();
