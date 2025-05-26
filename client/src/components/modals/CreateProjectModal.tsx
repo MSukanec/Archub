@@ -97,11 +97,14 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         let organizationId = null;
 
         // First try to get the user's last organization ID from user_preferences
+        console.log('Looking for user preferences for user ID:', user.id);
         const { data: userPref, error: prefError } = await supabase
           .from('user_preferences')
           .select('last_organization_id')
           .eq('user_id', user.id)
           .maybeSingle();
+        
+        console.log('User preferences result:', userPref, prefError);
 
         if (userPref?.last_organization_id) {
           organizationId = userPref.last_organization_id;
