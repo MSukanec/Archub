@@ -31,8 +31,14 @@ export const taskCategoriesService = {
       throw new Error('Error al obtener las categorías');
     }
     
-    const treeData = this.buildTree(data || []);
-    console.log('Built tree structure:', treeData);
+    if (!data || data.length === 0) {
+      console.log('No data received from Supabase');
+      return [];
+    }
+    
+    console.log('Building tree with data...');
+    const treeData = this.buildTree(data);
+    console.log('Tree built successfully:', treeData);
     return treeData;
   },
 
