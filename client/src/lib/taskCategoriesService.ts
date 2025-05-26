@@ -17,17 +17,23 @@ export interface CreateTaskCategoryData {
 
 export const taskCategoriesService = {
   async getAll(): Promise<TaskCategory[]> {
+    console.log('Fetching task categories from Supabase...');
     const { data, error } = await supabase
       .from('task_categories')
       .select('*')
       .order('position', { ascending: true });
+    
+    console.log('Supabase response - data:', data);
+    console.log('Supabase response - error:', error);
     
     if (error) {
       console.error('Error fetching task categories:', error);
       throw new Error('Error al obtener las categorías');
     }
     
-    return this.buildTree(data || []);
+    const treeData = this.buildTree(data || []);
+    console.log('Built tree structure:', treeData);
+    return treeData;
   },
 
   async create(categoryData: CreateTaskCategoryData): Promise<TaskCategory> {
