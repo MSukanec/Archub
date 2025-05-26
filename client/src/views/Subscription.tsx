@@ -1,4 +1,4 @@
-import { Check, CreditCard, Calendar } from 'lucide-react';
+import { Check, CreditCard, Calendar, Zap, Crown, Rocket } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

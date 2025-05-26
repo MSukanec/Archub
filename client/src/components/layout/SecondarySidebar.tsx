@@ -102,33 +102,7 @@ export default function SecondarySidebar() {
         </div>
       </nav>
 
-      {/* User Info */}
-      <div className="p-4 border-t border-border">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-medium">
-              {user?.firstName?.[0]}{user?.lastName?.[0]}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">
-              {user?.firstName} {user?.lastName}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              Constructora ABC
-            </p>
-          </div>
-          <div className="relative">
-            <button 
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleLogout}
-              title="Cerrar sesión"
-            >
-              <MoreHorizontal size={16} />
-            </button>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 }

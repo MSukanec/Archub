@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Mail, Calendar, Save } from 'lucide-react';
+import { User, Mail, Calendar, Save, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/hooks/use-toast';
+import { authService } from '@/lib/supabase';
 
 const profileSchema = z.object({
   firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -20,9 +21,26 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfileInfo() {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await authService.signOut();
+      logout();
+      toast({
+        title: "Sesión cerrada",
+        description: "Has cerrado sesión exitosamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error al cerrar sesión.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -231,7 +249,25 @@ export default function ProfileInfo() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-foreground">Eliminar Cuenta</h4>
+              <h4 className="font-medium text-foreground">Cerrar Sesión</h4>
+              <p className="text-sm text-muted-foreground">
+                Cerrar sesión en este dispositivo
+              </p>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleLogout}
+              className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Cerrar Sesión
+            </Button>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
               <p className="text-sm text-muted-foreground">
                 Eliminar permanentemente tu cuenta y todos los datos asociados
               </p>
