@@ -44,7 +44,7 @@ export default function TopBar() {
 
   return (
     <>
-      <header className="h-14 bg-[#141414] border-b border-border flex items-center justify-between px-6">
+      <header className="h-[45px] bg-[#141414] border-b border-border flex items-center justify-between px-6">
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm">
           <span className="text-muted-foreground">{breadcrumbConfig[currentView]?.section || 'Metrik'}</span>

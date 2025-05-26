@@ -17,19 +17,16 @@ export default function PrimarySidebar() {
   const { user } = useAuthStore();
 
   return (
-    <div className="w-[45px] bg-surface border-r border-border flex flex-col items-center py-4">
-      {/* Logo */}
-      <div className="mb-4">
+    <div className="w-[45px] bg-surface border-r border-border flex flex-col">
+      {/* Header area - 45px alto para coincidir con TopBar */}
+      <div className="h-[45px] flex items-center justify-center border-b border-border">
         <div className="w-[30px] h-[30px] bg-primary rounded-lg flex items-center justify-center">
           <span className="text-white font-bold text-sm">M</span>
         </div>
       </div>
       
-      {/* Separator */}
-      <div className="w-8 h-px bg-border mb-4"></div>
-      
-      {/* Top Navigation Icons - sin separación */}
-      <div className="space-y-0">
+      {/* Top Navigation Icons */}
+      <div className="flex flex-col items-center pt-4 space-y-[5px]">
         {topNavigationItems.map(({ section, icon: Icon, label }) => (
           <button
             key={section}
@@ -49,11 +46,8 @@ export default function PrimarySidebar() {
       
       <div className="flex-1" />
       
-      {/* Separator */}
-      <div className="w-8 h-px bg-border mb-4"></div>
-      
-      {/* Bottom Navigation Icons - sin separación */}
-      <div className="space-y-0 flex flex-col items-center">
+      {/* Bottom Navigation Icons */}
+      <div className="flex flex-col items-center pb-4 space-y-[5px]">
         {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
           // Hide admin section for non-admin users
           if (section === 'admin' && user?.role !== 'admin') {
