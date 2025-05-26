@@ -29,6 +29,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { insertOrganizationSchema } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
+import { organizationsService } from '@/lib/organizationsService';
+import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Form, 
@@ -53,8 +55,9 @@ export default function AdminOrganizations() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: organizations, isLoading } = useQuery({
-    queryKey: ['/api/admin/organizations'],
+  const { data: organizations = [], isLoading } = useQuery({
+    queryKey: ['organizations'],
+    queryFn: organizationsService.getAll,
   });
 
   const form = useForm<OrganizationFormData>({
@@ -67,11 +70,13 @@ export default function AdminOrganizations() {
 
   const createMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
-      const response = await apiRequest('POST', '/api/admin/organizations', data);
-      return response.json();
+      return organizationsService.create({
+        ...data,
+        owner_id: 1, // TODO: Get actual user ID from auth
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
       toast({
         title: 'Organización creada',
         description: 'La organización ha sido creada exitosamente',
@@ -90,11 +95,10 @@ export default function AdminOrganizations() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
-      const response = await apiRequest('PUT', `/api/admin/organizations/${selectedOrganization.id}`, data);
-      return response.json();
+      return organizationsService.update(selectedOrganization.id, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
       toast({
         title: 'Organización actualizada',
         description: 'La organización ha sido actualizada exitosamente',
@@ -114,11 +118,10 @@ export default function AdminOrganizations() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/admin/organizations/${id}`);
-      return response.json();
+      return organizationsService.delete(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['organizations'] });
       toast({
         title: 'Organización eliminada',
         description: 'La organización ha sido eliminada exitosamente',
