@@ -27,6 +27,21 @@ export const authService = {
     return { data, error };
   },
 
+  async getUserFromDatabase(authUserId: string): Promise<{ role: string } | null> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('role')
+      .eq('auth_id', authUserId)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching user from database:', error);
+      return null;
+    }
+    
+    return data;
+  },
+
   async signUp(email: string, password: string, firstName: string, lastName: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
