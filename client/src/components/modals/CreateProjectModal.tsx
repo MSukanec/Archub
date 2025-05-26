@@ -205,6 +205,8 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   });
 
   const onSubmit = (data: CreateProjectFormData) => {
+    console.log('Form submission triggered with data:', data);
+    console.log('Form errors:', form.formState.errors);
     createProjectMutation.mutate(data);
   };
 
