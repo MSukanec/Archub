@@ -11,6 +11,7 @@ import ProjectsList from '@/views/ProjectsList';
 import Organizations from '@/views/Organizations';
 import AdminOrganizations from '@/views/AdminOrganizations';
 import AdminUnits from '@/views/AdminUnits';
+import AdminElements from '@/views/AdminElements';
 import Users from '@/views/Users';
 import ProfileInfo from '@/views/ProfileInfo';
 import Subscription from '@/views/Subscription';
@@ -24,6 +25,7 @@ const viewComponents = {
   'admin-organizations': AdminOrganizations,
   'admin-users': Users,
   'admin-units': AdminUnits,
+  'admin-elements': AdminElements,
   'admin-permissions': Users,
   'profile-info': ProfileInfo,
   'profile-subscription': Subscription,
