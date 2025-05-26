@@ -9,6 +9,7 @@ export type View =
   | 'admin-organizations'
   | 'admin-users'
   | 'admin-units'
+  | 'admin-elements'
   | 'admin-permissions'
   | 'profile-info'
   | 'profile-subscription'

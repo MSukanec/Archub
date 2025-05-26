@@ -6,12 +6,12 @@ import {
   Plus, 
   Building, 
   Users, 
-  Shield, 
   UserCog, 
   CreditCard, 
   Bell,
   MoreHorizontal,
-  Ruler
+  Ruler,
+  Blocks
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -44,7 +44,7 @@ const sectionConfig = {
       { view: 'admin-organizations' as View, icon: Building, label: 'Organizaciones' },
       { view: 'admin-users' as View, icon: Users, label: 'Usuarios' },
       { view: 'admin-units' as View, icon: Ruler, label: 'Unidades' },
-      { view: 'admin-permissions' as View, icon: Shield, label: 'Permisos' },
+      { view: 'admin-elements' as View, icon: Blocks, label: 'Elementos' },
     ],
   },
   profile: {

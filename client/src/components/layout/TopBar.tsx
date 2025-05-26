@@ -15,6 +15,7 @@ const viewBreadcrumbs = {
   'admin-organizations': 'Organizaciones',
   'admin-users': 'Usuarios',
   'admin-units': 'Unidades',
+  'admin-elements': 'Elementos',
   'admin-permissions': 'Permisos',
   'profile-info': 'Información del Perfil',
   'profile-subscription': 'Suscripción',
