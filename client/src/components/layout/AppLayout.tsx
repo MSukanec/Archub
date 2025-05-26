@@ -17,6 +17,7 @@ import AdminUsers from '@/views/AdminUsers';
 
 import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
+import SubscriptionTables from '@/views/SubscriptionTables';
 import { useNavigationStore } from '@/stores/navigationStore';
 
 const viewComponents = {
@@ -33,6 +34,7 @@ const viewComponents = {
   'profile-info': ProfileInfo,
   'profile-subscription': ProfileSubscription,
   'profile-notifications': ProfileInfo,
+  'subscription-tables': SubscriptionTables,
 };
 
 export default function AppLayout() {

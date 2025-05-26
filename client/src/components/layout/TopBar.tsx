@@ -23,6 +23,7 @@ const breadcrumbConfig = {
   'profile-info': { section: 'Perfil', view: 'Información' },
   'profile-subscription': { section: 'Perfil', view: 'Suscripción' },
   'profile-notifications': { section: 'Perfil', view: 'Notificaciones' },
+  'subscription-tables': { section: 'Planes', view: 'Suscripciones' },
 };
 
 export default function TopBar() {

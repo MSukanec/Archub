@@ -14,7 +14,8 @@ export type View =
   | 'admin-permissions'
   | 'profile-info'
   | 'profile-subscription'
-  | 'profile-notifications';
+  | 'profile-notifications'
+  | 'subscription-tables';
 
 interface NavigationState {
   currentSection: Section;
