@@ -94,20 +94,32 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       try {
         if (!user) return;
 
-        // First get the user's last organization ID from user_preferences
+        let organizationId = null;
+
+        // First try to get the user's last organization ID from user_preferences
         const { data: userPref, error: prefError } = await supabase
           .from('user_preferences')
           .select('last_organization_id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (prefError) {
-          console.error('Error fetching user preferences:', prefError);
-          return;
+        if (userPref?.last_organization_id) {
+          organizationId = userPref.last_organization_id;
+        } else {
+          // If no user preferences, get the first organization for this user
+          // Since the user is authenticated, they should have access to at least one organization
+          const { data: orgs, error: orgsError } = await supabase
+            .from('organizations')
+            .select('id')
+            .limit(1);
+
+          if (!orgsError && orgs && orgs.length > 0) {
+            organizationId = orgs[0].id;
+          }
         }
 
-        if (!userPref?.last_organization_id) {
-          console.log('No last organization found for user');
+        if (!organizationId) {
+          console.log('No organization found for user');
           return;
         }
 
@@ -115,7 +127,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
-          .eq('id', userPref.last_organization_id)
+          .eq('id', organizationId)
           .single();
 
         if (orgError) {
