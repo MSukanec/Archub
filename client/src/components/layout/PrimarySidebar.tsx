@@ -35,7 +35,7 @@ export default function PrimarySidebar() {
             key={section}
             onClick={() => setSection(section)}
             className={cn(
-              "w-11 h-11 rounded-lg flex items-center justify-center transition-all duration-200",
+              "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
               currentSection === section
                 ? "text-primary bg-primary/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
@@ -53,7 +53,7 @@ export default function PrimarySidebar() {
       <div className="w-8 h-px bg-border mb-4"></div>
       
       {/* Bottom Navigation Icons - sin separación */}
-      <div className="space-y-0">
+      <div className="space-y-0 flex flex-col items-center">
         {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
           // Hide admin section for non-admin users
           if (section === 'admin' && user?.role !== 'admin') {
@@ -65,7 +65,7 @@ export default function PrimarySidebar() {
               key={section}
               onClick={() => setSection(section)}
               className={cn(
-                "w-11 h-11 rounded-lg flex items-center justify-center transition-all duration-200",
+                "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
                 currentSection === section
                   ? "text-primary bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
@@ -80,7 +80,7 @@ export default function PrimarySidebar() {
         {/* Notifications */}
         <button
           onClick={() => setSection('profile')}
-          className="w-11 h-11 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60 relative"
+          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60 relative"
           title="Notificaciones"
         >
           <Bell size={20} />
@@ -91,7 +91,7 @@ export default function PrimarySidebar() {
         <button
           onClick={() => setSection('profile')}
           className={cn(
-            "w-[35px] h-[35px] rounded-full flex items-center justify-center transition-all duration-200 border-2",
+            "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2",
             currentSection === 'profile'
               ? "bg-primary border-primary text-white"
               : "bg-gray-600 border-gray-500 text-white hover:bg-gray-500 hover:border-gray-400"

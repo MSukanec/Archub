@@ -82,7 +82,7 @@ export default function AdminActions() {
       action.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (action.description && action.description.toLowerCase().includes(searchTerm.toLowerCase()))
     )
-    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   if (isLoading) {
     return <AdminActionsSkeleton />;

@@ -1,43 +1,72 @@
-import { apiRequest } from './queryClient';
+import { supabase } from './supabase';
 
 export interface Action {
   id: number;
   name: string;
-  description: string;
-  createdAt: string;
+  description?: string;
+  created_at: string;
 }
 
 export interface CreateActionData {
   name: string;
-  description: string;
+  description?: string;
 }
 
 export const actionsService = {
   async getAll(): Promise<Action[]> {
-    const response = await fetch('/api/actions');
-    if (!response.ok) {
+    const { data, error } = await supabase
+      .from('actions')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching actions:', error);
       throw new Error('Error al obtener las acciones');
     }
-    return response.json();
+    
+    return data || [];
   },
 
   async create(actionData: CreateActionData): Promise<Action> {
-    return apiRequest('/api/actions', {
-      method: 'POST',
-      body: JSON.stringify(actionData),
-    });
+    const { data, error } = await supabase
+      .from('actions')
+      .insert([actionData])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating action:', error);
+      throw new Error('Error al crear la acción');
+    }
+    
+    return data;
   },
 
   async update(id: number, actionData: Partial<CreateActionData>): Promise<Action> {
-    return apiRequest(`/api/actions/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(actionData),
-    });
+    const { data, error } = await supabase
+      .from('actions')
+      .update(actionData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating action:', error);
+      throw new Error('Error al actualizar la acción');
+    }
+    
+    return data;
   },
 
   async delete(id: number): Promise<void> {
-    return apiRequest(`/api/actions/${id}`, {
-      method: 'DELETE',
-    });
+    const { error } = await supabase
+      .from('actions')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting action:', error);
+      throw new Error('Error al eliminar la acción');
+    }
   },
 };

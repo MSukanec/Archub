@@ -7,20 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
-const viewBreadcrumbs = {
-  'dashboard-main': 'Organización',
-  'dashboard-activity': 'Actividad Reciente',
-  'projects-overview': 'Resumen de Proyectos',
-  'projects-list': 'Lista de Proyectos',
-  'admin-organizations': 'Organizaciones',
-  'admin-users': 'Usuarios',
-  'admin-units': 'Unidades',
-  'admin-elements': 'Elementos',
-  'admin-actions': 'Acciones',
-  'admin-permissions': 'Permisos',
-  'profile-info': 'Información del Perfil',
-  'profile-subscription': 'Suscripción',
-  'profile-notifications': 'Notificaciones',
+const breadcrumbConfig = {
+  'dashboard-main': { section: 'Organización', view: 'Principal' },
+  'dashboard-activity': { section: 'Organización', view: 'Actividad Reciente' },
+  'projects-overview': { section: 'Proyectos', view: 'Resumen' },
+  'projects-list': { section: 'Proyectos', view: 'Lista' },
+  'admin-organizations': { section: 'Administración', view: 'Organizaciones' },
+  'admin-users': { section: 'Administración', view: 'Usuarios' },
+  'admin-units': { section: 'Administración', view: 'Unidades' },
+  'admin-elements': { section: 'Administración', view: 'Elementos' },
+  'admin-actions': { section: 'Administración', view: 'Acciones' },
+  'admin-permissions': { section: 'Administración', view: 'Permisos' },
+  'profile-info': { section: 'Perfil', view: 'Información' },
+  'profile-subscription': { section: 'Perfil', view: 'Suscripción' },
+  'profile-notifications': { section: 'Perfil', view: 'Notificaciones' },
 };
 
 export default function TopBar() {
@@ -47,9 +47,9 @@ export default function TopBar() {
       <header className="h-14 bg-[#141414] border-b border-border flex items-center justify-between px-6">
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm">
-          <span className="text-muted-foreground">Metrik</span>
+          <span className="text-muted-foreground">{breadcrumbConfig[currentView]?.section || 'Metrik'}</span>
           <ChevronRight size={14} className="text-muted-foreground" />
-          <span className="text-foreground">{viewBreadcrumbs[currentView]}</span>
+          <span className="text-foreground">{breadcrumbConfig[currentView]?.view || 'Principal'}</span>
         </div>
 
         {/* Project Selector and Actions */}
