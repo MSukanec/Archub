@@ -49,10 +49,12 @@ export default function AdminOrganizations() {
   const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
 
   // Fetch organizations
-  const { data: organizations = [], isLoading } = useQuery({
+  const { data: organizations = [], isLoading, error } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: () => organizationsService.getAll(),
   });
+
+  console.log('Organizations query:', { organizations, isLoading, error });
 
   // Delete mutation
   const deleteMutation = useMutation({
