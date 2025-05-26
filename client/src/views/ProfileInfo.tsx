@@ -54,18 +54,30 @@ export default function ProfileInfo() {
 
   const handleConfirmLogout = async () => {
     try {
-      await authService.signOut();
+      console.log('Iniciando logout...');
+      const { error } = await authService.signOut();
+      console.log('Resultado signOut:', { error });
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('Llamando logout del store...');
       logout();
+      
+      console.log('Cerrando modal y redirigiendo...');
       setShowLogoutModal(false);
       setLocation('/'); // Redirigir a la página de landing
+      
       toast({
         title: "Sesión cerrada",
         description: "Has cerrado sesión exitosamente.",
       });
     } catch (error) {
+      console.error('Error en logout:', error);
       toast({
         title: "Error",
-        description: "Error al cerrar sesión.",
+        description: `Error al cerrar sesión: ${error.message}`,
         variant: "destructive",
       });
       setShowLogoutModal(false);
