@@ -89,7 +89,7 @@ interface CategoryItemProps {
 
 function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: CategoryItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const hasChildren = false; // No children for flat list display
+  const hasChildren = (category as any).children && (category as any).children.length > 0;
 
   const getIcon = () => {
     if (level === 0) return <FolderOpen className="w-4 h-4 text-blue-500" />;
@@ -123,8 +123,6 @@ function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: Categor
         )}
         
         {!hasChildren && <div className="w-4" />}
-        
-        {getIcon()}
         
         <Badge variant="secondary" className={getBadgeColor()}>
           {category.code}
@@ -162,7 +160,7 @@ function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: Categor
       
       {isExpanded && hasChildren && (
         <div>
-          {category.children!.map((child) => (
+          {((category as any).children || []).map((child: any) => (
             <CategoryItem
               key={child.id}
               category={child}
@@ -329,8 +327,7 @@ export default function AdminCategories() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FolderOpen className="w-5 h-5" />
+          <CardTitle>
             Estructura de Categorías
           </CardTitle>
         </CardHeader>
