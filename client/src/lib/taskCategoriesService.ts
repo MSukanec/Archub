@@ -130,6 +130,8 @@ export const taskCategoriesService = {
 
   // Helper function to build tree structure
   buildTree(categories: TaskCategory[]): TaskCategory[] {
+    console.log('Building tree with categories:', categories.length);
+    
     const categoryMap = new Map<number, TaskCategory>();
     const rootCategories: TaskCategory[] = [];
 
@@ -142,16 +144,36 @@ export const taskCategoriesService = {
     categories.forEach(category => {
       const categoryWithChildren = categoryMap.get(category.id)!;
       
-      if (category.parent_id === null) {
+      if (category.parent_id === null || category.parent_id === undefined) {
         rootCategories.push(categoryWithChildren);
       } else {
         const parent = categoryMap.get(category.parent_id);
         if (parent) {
-          parent.children!.push(categoryWithChildren);
+          if (!parent.children) parent.children = [];
+          parent.children.push(categoryWithChildren);
+        } else {
+          // If parent not found, treat as root category
+          rootCategories.push(categoryWithChildren);
         }
       }
     });
 
+    // Sort by position
+    const sortByPosition = (items: TaskCategory[]) => {
+      items.sort((a, b) => {
+        const posA = typeof a.position === 'string' ? parseInt(a.position, 10) : (a.position || 0);
+        const posB = typeof b.position === 'string' ? parseInt(b.position, 10) : (b.position || 0);
+        return posA - posB;
+      });
+      items.forEach(item => {
+        if (item.children && item.children.length > 0) {
+          sortByPosition(item.children);
+        }
+      });
+    };
+
+    sortByPosition(rootCategories);
+    console.log('Tree built successfully, root categories:', rootCategories.length);
     return rootCategories;
   }
 };
