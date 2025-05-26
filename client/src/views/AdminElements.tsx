@@ -37,7 +37,7 @@ export default function AdminElements() {
 
   // Fetch elements
   const { data: elements = [], isLoading, error } = useQuery({
-    queryKey: ['/api/elements'],
+    queryKey: ['elements'],
     queryFn: () => elementsService.getAll(),
   });
 
@@ -47,7 +47,7 @@ export default function AdminElements() {
       await elementsService.delete(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/elements'] });
+      queryClient.invalidateQueries({ queryKey: ['elements'] });
       toast({
         title: 'Elemento eliminado',
         description: 'El elemento se ha eliminado exitosamente.',

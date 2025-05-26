@@ -37,7 +37,7 @@ export default function AdminUnits() {
 
   // Fetch units
   const { data: units = [], isLoading, error } = useQuery({
-    queryKey: ['/api/units'],
+    queryKey: ['units'],
     queryFn: () => unitsService.getAll(),
   });
 
@@ -47,7 +47,7 @@ export default function AdminUnits() {
       await unitsService.delete(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/units'] });
+      queryClient.invalidateQueries({ queryKey: ['units'] });
       toast({
         title: 'Unidad eliminada',
         description: 'La unidad se ha eliminado exitosamente.',

@@ -37,7 +37,7 @@ export default function AdminActions() {
 
   // Fetch actions
   const { data: actions = [], isLoading, error } = useQuery({
-    queryKey: ['/api/actions'],
+    queryKey: ['actions'],
     queryFn: () => actionsService.getAll(),
   });
 
@@ -47,7 +47,7 @@ export default function AdminActions() {
       await actionsService.delete(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/actions'] });
+      queryClient.invalidateQueries({ queryKey: ['actions'] });
       toast({
         title: 'Acción eliminada',
         description: 'La acción se ha eliminado exitosamente.',
