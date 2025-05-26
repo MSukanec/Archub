@@ -1,11 +1,13 @@
-import { Bell, ChevronRight, Plus, ChevronDown } from 'lucide-react';
+import { Bell, ChevronRight, Plus, ChevronDown, Zap, Crown, Rocket } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useProjectStore } from '@/stores/projectStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
+import { usersService } from '@/lib/usersService';
 
 const breadcrumbConfig = {
   'dashboard-main': { section: 'Organización', view: 'Principal' },
@@ -24,9 +26,32 @@ const breadcrumbConfig = {
 };
 
 export default function TopBar() {
-  const { currentView } = useNavigationStore();
+  const { currentView, setView } = useNavigationStore();
   const { currentProject, setCurrentProject } = useProjectStore();
+  const { user } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  
+  // Get user's plan information
+  const { data: users = [] } = useQuery({
+    queryKey: ['/api/users'],
+    queryFn: () => usersService.getAll(),
+    enabled: !!user,
+  });
+  
+  const currentUserData = users.find(u => u.email === user?.email);
+  
+  const getPlanIcon = (planName: string | null | undefined) => {
+    switch (planName?.toLowerCase()) {
+      case 'free':
+        return <Zap className="h-4 w-4 text-green-500" />;
+      case 'pro':
+        return <Crown className="h-4 w-4 text-blue-500" />;
+      case 'enterprise':
+        return <Rocket className="h-4 w-4 text-purple-500" />;
+      default:
+        return <Zap className="h-4 w-4 text-gray-500" />;
+    }
+  };
 
   // Fetch projects for the selector
   const { data: projects = [] } = useQuery({
@@ -78,6 +103,19 @@ export default function TopBar() {
               </SelectContent>
             </Select>
           </div>
+          
+          {/* Plan Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setView('subscription-tables')}
+            className="flex items-center gap-2 bg-[#1e1e1e] border-border hover:bg-[#282828]"
+          >
+            {getPlanIcon(currentUserData?.plan_name)}
+            <span className="hidden sm:inline">
+              {currentUserData?.plan_name || 'Plan'}
+            </span>
+          </Button>
         </div>
       </header>
 

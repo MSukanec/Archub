@@ -16,7 +16,7 @@ import AdminActions from '@/views/AdminActions';
 import AdminUsers from '@/views/AdminUsers';
 
 import ProfileInfo from '@/views/ProfileInfo';
-import Subscription from '@/views/Subscription';
+import ProfileSubscription from '@/views/ProfileSubscription';
 import { useNavigationStore } from '@/stores/navigationStore';
 
 const viewComponents = {
@@ -31,7 +31,7 @@ const viewComponents = {
   'admin-actions': AdminActions,
   'admin-permissions': AdminActions, // Temporarily using actions view
   'profile-info': ProfileInfo,
-  'profile-subscription': Subscription,
+  'profile-subscription': ProfileSubscription,
   'profile-notifications': ProfileInfo,
 };
 
