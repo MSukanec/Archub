@@ -30,6 +30,7 @@ import { z } from 'zod';
 import { insertOrganizationSchema } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { organizationsService } from '@/lib/organizationsService';
+import { usersService } from '@/lib/usersService';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
@@ -55,11 +56,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const organizationFormSchema = insertOrganizationSchema.pick({
   name: true,
 }).extend({
   slug: z.string().optional(),
+  owner_id: z.number().optional(),
 });
 
 type OrganizationFormData = z.infer<typeof organizationFormSchema>;
@@ -79,31 +88,44 @@ export default function AdminOrganizations() {
     queryFn: organizationsService.getAll,
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: usersService.getAll,
+  });
+
   const form = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
       name: '',
       slug: '',
+      owner_id: undefined,
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
-      // Get current user's database record
-      const { user } = useAuthStore.getState();
-      if (!user) {
-        throw new Error('Usuario no autenticado');
-      }
+      // Use selected owner_id or fall back to current user
+      let ownerId = data.owner_id;
+      
+      if (!ownerId) {
+        // Get current user's database record
+        const { user } = useAuthStore.getState();
+        if (!user) {
+          throw new Error('Usuario no autenticado');
+        }
 
-      // Get the user's database ID from the users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
+        // Get the user's database ID from the users table
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
 
-      if (userError || !userData) {
-        throw new Error('No se pudo encontrar el usuario en la base de datos');
+        if (userError || !userData) {
+          throw new Error('No se pudo encontrar el usuario en la base de datos');
+        }
+
+        ownerId = userData.id;
       }
 
       // Generate unique slug from name if not provided
@@ -116,7 +138,7 @@ export default function AdminOrganizations() {
       return organizationsService.create({
         ...data,
         slug: slug,
-        owner_id: userData.id, // Using database user ID
+        owner_id: ownerId,
       });
     },
     onSuccess: () => {
@@ -334,6 +356,7 @@ export default function AdminOrganizations() {
                   <TableRow>
                     <TableHead>Organización</TableHead>
                     <TableHead>Slug</TableHead>
+                    <TableHead>Propietario</TableHead>
                     <TableHead>Estado</TableHead>
                     <TableHead>Fecha de Creación</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
@@ -352,6 +375,9 @@ export default function AdminOrganizations() {
                       </TableCell>
                       <TableCell>
                         <span className="text-muted-foreground">{org.slug || '-'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{org.owner_name || 'Sin asignar'}</span>
                       </TableCell>
                       <TableCell>
                         <Badge variant={org.is_active ? "default" : "secondary"}>
