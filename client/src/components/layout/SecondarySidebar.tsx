@@ -13,7 +13,8 @@ import {
   Ruler,
   Blocks,
   Zap,
-  Contact
+  Contact,
+  FolderTree
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -51,6 +52,7 @@ const sectionConfig = {
     items: [
       { view: 'admin-organizations' as View, icon: Building, label: 'Organizaciones' },
       { view: 'admin-users' as View, icon: Users, label: 'Usuarios' },
+      { view: 'admin-categories' as View, icon: FolderTree, label: 'Gestión de Categorías' },
       { view: 'admin-units' as View, icon: Ruler, label: 'Unidades' },
       { view: 'admin-elements' as View, icon: Blocks, label: 'Elementos' },
       { view: 'admin-actions' as View, icon: Zap, label: 'Acciones' },

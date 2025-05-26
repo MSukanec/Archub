@@ -83,6 +83,14 @@ export const contactTaskLinks = pgTable("contact_task_links", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const taskCategories = pgTable("task_categories", {
+  id: serial("id").primaryKey(),
+  code: text("code").notNull(),
+  name: text("name").notNull(),
+  position: integer("position").notNull(),
+  parent_id: integer("parent_id").references(() => taskCategories.id),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -119,6 +127,13 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
   contact_type: true,
 });
 
+export const insertTaskCategorySchema = createInsertSchema(taskCategories).pick({
+  code: true,
+  name: true,
+  position: true,
+  parent_id: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -140,3 +155,6 @@ export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 
 export type ContactTaskLink = typeof contactTaskLinks.$inferSelect;
+
+export type TaskCategory = typeof taskCategories.$inferSelect;
+export type InsertTaskCategory = z.infer<typeof insertTaskCategorySchema>;
