@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { authService } from '@/lib/supabase';
 import { organizationsService } from '@/lib/organizationsService';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 
 const profileSchema = z.object({
   firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -35,6 +36,7 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 export default function ProfileInfo() {
   const { user, logout } = useAuthStore();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -54,11 +56,12 @@ export default function ProfileInfo() {
     try {
       await authService.signOut();
       logout();
+      setShowLogoutModal(false);
+      setLocation('/'); // Redirigir a la página de landing
       toast({
         title: "Sesión cerrada",
         description: "Has cerrado sesión exitosamente.",
       });
-      setShowLogoutModal(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -95,6 +98,7 @@ export default function ProfileInfo() {
       setConfirmationText('');
       await authService.signOut();
       logout();
+      setLocation('/'); // Redirigir a la página de landing
     } catch (error) {
       toast({
         title: "Error",

@@ -7,6 +7,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAuthStore } from '@/stores/authStore';
 import AppLayout from '@/components/layout/AppLayout';
 import AuthPage from '@/pages/AuthPage';
+import LandingPage from '@/pages/LandingPage';
 import NotFound from '@/pages/not-found';
 
 function Router() {
@@ -28,7 +29,7 @@ function Router() {
         <Route path="*" component={AppLayout} />
       ) : (
         <>
-          <Route path="/" component={AuthPage} />
+          <Route path="/" component={LandingPage} />
           <Route path="/auth" component={AuthPage} />
           <Route component={NotFound} />
         </>
