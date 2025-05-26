@@ -10,6 +10,9 @@ export interface Project {
   created_at: string;
   updated_at: string | null;
   address: string | null;
+  contact_phone: string | null;
+  city: string | null;
+  organization_id: number;
 }
 
 export interface CreateProjectData {
@@ -18,6 +21,9 @@ export interface CreateProjectData {
   client_name?: string;
   status?: string;
   address?: string;
+  contact_phone?: string;
+  city?: string;
+  organization_id?: number;
 }
 
 export const projectsService = {
@@ -44,6 +50,9 @@ export const projectsService = {
         client_name: projectData.client_name || null,
         status: projectData.status || 'planning',
         address: projectData.address || null,
+        contact_phone: projectData.contact_phone || null,
+        city: projectData.city || null,
+        organization_id: projectData.organization_id || 1, // Default to organization 1 for now
         proj_id: `PROJ-${Date.now()}`, // Generate a unique project ID
       }])
       .select()

@@ -22,6 +22,13 @@ import {
   FormLabel, 
   FormMessage 
 } from '@/components/ui/form';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,6 +38,9 @@ const createProjectSchema = z.object({
   client_name: z.string().optional(),
   status: z.string().optional(),
   address: z.string().optional(),
+  contact_phone: z.string().optional(),
+  city: z.string().optional(),
+  organization_id: z.number().optional(),
 });
 
 type CreateProjectFormData = z.infer<typeof createProjectSchema>;
@@ -53,6 +63,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       client_name: '',
       status: 'planning',
       address: '',
+      contact_phone: '',
+      city: '',
+      organization_id: 1,
     },
   });
 
@@ -65,6 +78,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         client_name: project.client_name || '',
         status: project.status,
         address: project.address || '',
+        contact_phone: project.contact_phone || '',
+        city: project.city || '',
+        organization_id: project.organization_id,
       });
     } else {
       form.reset({
@@ -73,6 +89,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         client_name: '',
         status: 'planning',
         address: '',
+        contact_phone: '',
+        city: '',
+        organization_id: 1,
       });
     }
   }, [project, form]);
@@ -109,7 +128,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{project ? 'Editar Proyecto' : 'Nuevo Proyecto'}</DialogTitle>
           <DialogDescription>
@@ -163,6 +182,85 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     <Input 
                       placeholder="Dirección del proyecto"
                       {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ciudad</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Ciudad"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contact_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teléfono de Contacto</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Número de teléfono"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado del Proyecto</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="planning">Planificación</SelectItem>
+                      <SelectItem value="active">Activo</SelectItem>
+                      <SelectItem value="completed">Completado</SelectItem>
+                      <SelectItem value="on_hold">En Pausa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="organization_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Organización</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field}
+                      value={field.value?.toString() || '1'}
+                      disabled
+                      className="bg-muted text-muted-foreground"
                     />
                   </FormControl>
                   <FormMessage />
