@@ -104,14 +104,43 @@ export const usersService = {
   },
 
   async delete(id: number): Promise<void> {
-    const { error } = await supabase
+    // Primero obtenemos el auth_id del usuario
+    const { data: userData, error: fetchError } = await supabase
+      .from('users')
+      .select('auth_id')
+      .eq('id', id)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching user:', fetchError);
+      throw new Error('Error al obtener los datos del usuario');
+    }
+    
+    // Eliminamos de la tabla users
+    const { error: deleteError } = await supabase
       .from('users')
       .delete()
       .eq('id', id);
     
-    if (error) {
-      console.error('Error deleting user:', error);
-      throw new Error('Error al eliminar el usuario');
+    if (deleteError) {
+      console.error('Error deleting user from table:', deleteError);
+      throw new Error('Error al eliminar el usuario de la tabla');
+    }
+    
+    // Eliminamos del sistema de autenticación de Supabase usando la Admin API
+    if (userData.auth_id && !userData.auth_id.startsWith('temp_')) {
+      try {
+        const { error: authDeleteError } = await supabase.auth.admin.deleteUser(userData.auth_id);
+        
+        if (authDeleteError) {
+          console.error('Error deleting user from auth:', authDeleteError);
+          // No lanzamos error aquí porque el usuario ya fue eliminado de la tabla
+          // Solo registramos el error para debugging
+        }
+      } catch (authError) {
+        console.error('Error calling auth delete:', authError);
+        // Tampoco lanzamos error aquí
+      }
     }
   },
 
