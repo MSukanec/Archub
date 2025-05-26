@@ -182,7 +182,32 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       if (!project && user) {
         setCurrentProject(createdProject);
         try {
-          await userPreferencesService.updateLastProject(user.id, createdProject.id);
+          // First check if user preferences exist, if not create them
+          const { data: existingPref } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          if (existingPref) {
+            // Update existing preferences
+            await supabase
+              .from('user_preferences')
+              .update({ 
+                last_project_id: createdProject.id,
+                last_organization_id: '6acb6b56-294c-46dc-bfce-98595d0e08c9'
+              })
+              .eq('user_id', user.id);
+          } else {
+            // Create new preferences
+            await supabase
+              .from('user_preferences')
+              .insert({
+                user_id: user.id,
+                last_project_id: createdProject.id,
+                last_organization_id: '6acb6b56-294c-46dc-bfce-98595d0e08c9'
+              });
+          }
         } catch (error) {
           console.error('Error saving project preference:', error);
         }
@@ -263,21 +288,10 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     <FormItem>
                       <FormLabel>Cliente</FormLabel>
                       <FormControl>
-                        <div className="flex gap-2">
-                          <Input 
-                            placeholder="Nombre del cliente"
-                            {...field} 
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setIsContactDialogOpen(true)}
-                            className="shrink-0"
-                          >
-                            <Users className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Input 
+                          placeholder="Nombre del cliente"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
