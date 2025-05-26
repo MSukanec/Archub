@@ -31,19 +31,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Organizations routes
-  app.get("/api/organization", async (req, res) => {
+  app.get("/api/organizations", async (req, res) => {
     try {
-      // For now, return a mock organization
-      const organization = {
-        id: 1,
-        name: "Constructora ABC",
-        description: "Empresa dedicada a la construcción y gestión de proyectos inmobiliarios.",
-        ownerId: 1,
-        createdAt: new Date().toISOString(),
-      };
+      const organizations = await storage.getAllOrganizations();
+      res.json(organizations);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching organizations" });
+    }
+  });
+
+  app.post("/api/organizations", async (req, res) => {
+    try {
+      const orgData = insertOrganizationSchema.parse(req.body);
+      const organization = await storage.createOrganization({
+        ...orgData,
+        ownerId: 1, // For now using default owner
+      });
+      res.status(201).json(organization);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid organization data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Error creating organization" });
+      }
+    }
+  });
+
+  app.patch("/api/organizations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const orgData = insertOrganizationSchema.partial().parse(req.body);
+      const organization = await storage.updateOrganization(id, orgData);
       res.json(organization);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching organization" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid organization data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Error updating organization" });
+      }
+    }
+  });
+
+  app.delete("/api/organizations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteOrganization(id);
+      res.json({ message: "Organization deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting organization" });
     }
   });
 
