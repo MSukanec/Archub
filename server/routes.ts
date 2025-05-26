@@ -82,12 +82,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Projects routes
+  // Projects routes - now using Supabase directly
   app.get("/api/projects", async (req, res) => {
     try {
-      const projects = await storage.getAllProjects();
-      res.json(projects);
+      // Import Supabase client dynamically
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      const { data: projects, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(500).json({ message: "Error fetching projects from Supabase" });
+      }
+      
+      console.log('Projects from Supabase:', projects);
+      res.json(projects || []);
     } catch (error) {
+      console.error('Server error:', error);
       res.status(500).json({ message: "Error fetching projects" });
     }
   });
