@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, Edit, Trash2, Users, Calendar, ChevronDown } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { Calendar, Search, Plus, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle,
-  DialogFooter
-} from '@/components/ui/dialog';
-import { 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -24,582 +23,310 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { insertOrganizationSchema } from '@shared/schema';
-import { apiRequest } from '@/lib/queryClient';
-import { organizationsService } from '@/lib/organizationsService';
-import { usersService } from '@/lib/usersService';
-import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-const organizationFormSchema = insertOrganizationSchema.pick({
-  name: true,
-}).extend({
-  slug: z.string().optional(),
-  owner_id: z.number().optional(),
-});
-
-type OrganizationFormData = z.infer<typeof organizationFormSchema>;
+import { organizationsService } from '@/lib/organizationsService';
+import { cn } from '@/lib/utils';
+import AdminOrganizationsModal from '@/components/modals/AdminOrganizationsModal';
 
 export default function AdminOrganizations() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // State for search and filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  
+  // State for modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
-  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const { data: organizations = [], isLoading, error } = useQuery({
-    queryKey: ['organizations'],
-    queryFn: organizationsService.getAll,
+  // Fetch organizations
+  const { data: organizations = [], isLoading } = useQuery({
+    queryKey: ['/api/organizations'],
+    queryFn: () => organizationsService.getAll(),
   });
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: usersService.getAll,
-  });
-
-  const form = useForm<OrganizationFormData>({
-    resolver: zodResolver(organizationFormSchema),
-    defaultValues: {
-      name: '',
-      slug: '',
-      owner_id: undefined,
-    },
-  });
-
-  const createMutation = useMutation({
-    mutationFn: async (data: OrganizationFormData) => {
-      // Use selected owner_id or fall back to current user
-      let ownerId = data.owner_id;
-      
-      if (!ownerId) {
-        // Get current user's database record
-        const { user } = useAuthStore.getState();
-        if (!user) {
-          throw new Error('Usuario no autenticado');
-        }
-
-        // Get the user's database ID from the users table
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .single();
-
-        if (userError || !userData) {
-          throw new Error('No se pudo encontrar el usuario en la base de datos');
-        }
-
-        ownerId = userData.id;
-      }
-
-      // Generate unique slug from name if not provided
-      const slug = data.slug?.trim() || 
-        data.name.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '') + 
-        '-' + Math.random().toString(36).substr(2, 6);
-      
-      return organizationsService.create({
-        ...data,
-        slug: slug,
-        owner_id: ownerId,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations'] });
-      toast({
-        title: 'Organización creada',
-        description: 'La organización ha sido creada exitosamente',
-      });
-      setIsCreateModalOpen(false);
-      form.reset();
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (data: OrganizationFormData) => {
-      return organizationsService.update(selectedOrganization.id, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations'] });
-      toast({
-        title: 'Organización actualizada',
-        description: 'La organización ha sido actualizada exitosamente',
-      });
-      setIsEditModalOpen(false);
-      setSelectedOrganization(null);
-      form.reset();
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return organizationsService.delete(id);
+      await organizationsService.delete(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/organizations'] });
       toast({
         title: 'Organización eliminada',
-        description: 'La organización ha sido eliminada exitosamente',
+        description: 'La organización se ha eliminado exitosamente.',
       });
       setIsDeleteDialogOpen(false);
       setSelectedOrganization(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Error deleting organization:', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'No se pudo eliminar la organización. Intenta nuevamente.',
         variant: 'destructive',
       });
     },
   });
 
+  // Handle edit
   const handleEdit = (organization: any) => {
     setSelectedOrganization(organization);
-    form.reset({
-      name: organization.name,
-      slug: organization.slug || '',
-      owner_id: organization.owner_id,
-    });
     setIsEditModalOpen(true);
   };
 
+  // Handle delete
   const handleDelete = (organization: any) => {
     setSelectedOrganization(organization);
     setIsDeleteDialogOpen(true);
   };
 
-  const onSubmit = (data: OrganizationFormData) => {
-    if (isEditModalOpen) {
-      updateMutation.mutate(data);
-    } else {
-      createMutation.mutate(data);
-    }
-  };
+  // Filter organizations based on search and date
+  const filteredOrganizations = organizations.filter((org: any) => {
+    const matchesSearch = org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (org.slug && org.slug.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesDate = !dateFilter || 
+                       format(new Date(org.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    
+    return matchesSearch && matchesDate;
+  });
 
   if (isLoading) {
     return <AdminOrganizationsSkeleton />;
   }
 
-  if (error) {
-    return (
-      <div className="p-8 text-center">
-        <h3 className="text-lg font-medium text-foreground">Error al cargar organizaciones</h3>
-        <p className="mt-2 text-sm text-destructive">{error.message}</p>
-      </div>
-    );
-  }
-
-  const filteredOrganizations = (organizations || []).filter((org: any) => {
-    // Text filter
-    const matchesSearch = org.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (org.slug && org.slug.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    // Date filter
-    if (dateFilter === 'all') return matchesSearch;
-    
-    const orgDate = new Date(org.created_at);
-    const now = new Date();
-    
-    switch (dateFilter) {
-      case 'today':
-        return matchesSearch && orgDate.toDateString() === now.toDateString();
-      case 'week':
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return matchesSearch && orgDate >= weekAgo;
-      case 'month':
-        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        return matchesSearch && orgDate >= monthAgo;
-      default:
-        return matchesSearch;
-    }
-  });
-
   return (
-    <>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Gestión de Organizaciones
-            </h1>
-            <p className="text-muted-foreground">
-              Administra todas las organizaciones del sistema.
-            </p>
-          </div>
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Plus size={16} className="mr-2" />
-            Nueva Organización
-          </Button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Gestión de Organizaciones</h1>
+          <p className="text-gray-400 mt-1">
+            Administra todas las organizaciones del sistema.
+          </p>
         </div>
-
-        {/* Search - Full width with inline filter */}
-        <div className="flex items-center space-x-4">
-          <div className="relative flex-1">
-            <Input
-              placeholder="Buscar organizaciones..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="whitespace-nowrap">
-                {dateFilter === 'all' ? 'Filtro por fecha' : 
-                 dateFilter === 'today' ? 'Hoy' :
-                 dateFilter === 'week' ? 'Esta semana' :
-                 dateFilter === 'month' ? 'Este mes' : 'Filtro por fecha'}
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setDateFilter('all')}>
-                Todas las fechas
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDateFilter('today')}>
-                Hoy
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDateFilter('week')}>
-                Esta semana
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDateFilter('month')}>
-                Este mes
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {/* Organizations Grid */}
-        {filteredOrganizations.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Building className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-medium text-foreground">
-                {searchQuery ? 'No se encontraron organizaciones' : 'No hay organizaciones'}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {searchQuery 
-                  ? 'Intenta con un término de búsqueda diferente.'
-                  : 'Comienza creando la primera organización del sistema.'
-                }
-              </p>
-              {!searchQuery && (
-                <Button 
-                  className="mt-4 bg-primary hover:bg-primary/90"
-                  onClick={() => setIsCreateModalOpen(true)}
-                >
-                  <Plus size={16} className="mr-2" />
-                  Crear Organización
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Organización</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Propietario</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Fecha de Creación</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredOrganizations
-                    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                    .map((org: any) => (
-                    <TableRow key={org.id}>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <Building className="mr-2 text-primary" size={16} />
-                          <span className="font-medium">{org.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-muted-foreground">{org.slug || '-'}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm">{org.owner_name || 'Sin asignar'}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={org.is_active ? "default" : "secondary"}>
-                          {org.is_active ? 'Activa' : 'Inactiva'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(org.created_at).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end space-x-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(org)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Edit size={14} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(org)}
-                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 size={14} />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
+        <Button 
+          onClick={() => setIsCreateModalOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Nueva Organización
+        </Button>
       </div>
 
-      {/* Create/Edit Modal */}
-      <Dialog open={isCreateModalOpen || isEditModalOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsCreateModalOpen(false);
+      {/* Search and Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Buscar organizaciones..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-gray-800 border-gray-700 text-white"
+          />
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[200px] justify-start text-left font-normal bg-gray-800 border-gray-700 text-white hover:bg-gray-700",
+                !dateFilter && "text-gray-400"
+              )}
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700">
+            <CalendarComponent
+              mode="single"
+              selected={dateFilter}
+              onSelect={setDateFilter}
+              initialFocus
+              className="bg-gray-800 text-white"
+            />
+            {dateFilter && (
+              <div className="p-3 border-t border-gray-700">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setDateFilter(undefined)}
+                  className="w-full bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Limpiar filtro
+                </Button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      {/* Organizations Table */}
+      <div className="bg-gray-800 rounded-lg border border-gray-700">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-gray-700">
+              <TableHead className="text-gray-300">Organización</TableHead>
+              <TableHead className="text-gray-300">Propietario</TableHead>
+              <TableHead className="text-gray-300">Fecha de creación</TableHead>
+              <TableHead className="text-gray-300">Estado</TableHead>
+              <TableHead className="text-gray-300 text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredOrganizations.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-gray-400 py-8">
+                  {searchTerm || dateFilter 
+                    ? 'No se encontraron organizaciones que coincidan con los filtros.'
+                    : 'No hay organizaciones registradas.'
+                  }
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredOrganizations.map((organization: any) => (
+                <TableRow key={organization.id} className="border-gray-700">
+                  <TableCell>
+                    <div>
+                      <div className="font-medium text-white">{organization.name}</div>
+                      {organization.slug && (
+                        <div className="text-sm text-gray-400">/{organization.slug}</div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-gray-300">
+                    {organization.owner_name || 'Sin asignar'}
+                  </TableCell>
+                  <TableCell className="text-gray-300">
+                    {format(new Date(organization.created_at), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={organization.is_active ? "default" : "secondary"}
+                      className={organization.is_active 
+                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                        : "bg-gray-600 hover:bg-gray-700 text-white"
+                      }
+                    >
+                      {organization.is_active ? 'Activa' : 'Inactiva'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(organization)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-700"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(organization)}
+                        className="text-red-400 hover:text-red-300 hover:bg-gray-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Create Modal */}
+      <AdminOrganizationsModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Modal */}
+      <AdminOrganizationsModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
           setIsEditModalOpen(false);
           setSelectedOrganization(null);
-          form.reset({
-            name: '',
-            slug: '',
-          });
-        }
-      }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {isEditModalOpen ? 'Editar Organización' : 'Nueva Organización'}
-            </DialogTitle>
-            <DialogDescription>
-              {isEditModalOpen 
-                ? 'Modifica la información de la organización'
-                : 'Crea una nueva organización en el sistema'
-              }
-            </DialogDescription>
-          </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre de la Organización</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Ej. Constructora del Norte"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug (URL amigable)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="nombre-organización"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="owner_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Propietario</FormLabel>
-                    <FormControl>
-                      <Select 
-                        onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                        value={field.value?.toString()}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar propietario" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {users.map((user: any) => (
-                            <SelectItem key={user.id} value={user.id.toString()}>
-                              {user.full_name || user.email} ({user.role})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <DialogFooter className="gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsCreateModalOpen(false);
-                    setIsEditModalOpen(false);
-                    setSelectedOrganization(null);
-                    form.reset();
-                  }}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-primary hover:bg-primary/90"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {(createMutation.isPending || updateMutation.isPending) ? (
-                    'Guardando...'
-                  ) : (
-                    isEditModalOpen ? 'Actualizar' : 'Crear'
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+        }}
+        organization={selectedOrganization}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-gray-800 border-gray-700">
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar organización?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente la organización
-              "{selectedOrganization?.name}" y todos sus datos asociados.
+            <AlertDialogTitle className="text-white">¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300">
+              Esta acción no se puede deshacer. Esto eliminará permanentemente la organización
+              <span className="font-semibold"> "{selectedOrganization?.name}"</span> y 
+              todos sus datos asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel 
+              className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+            >
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteMutation.mutate(selectedOrganization.id)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => selectedOrganization && deleteMutation.mutate(selectedOrganization.id)}
               disabled={deleteMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
               {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
 
 function AdminOrganizationsSkeleton() {
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-5 w-96" />
+          <div className="h-8 w-64 bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-4 w-48 bg-gray-700 rounded animate-pulse mt-2"></div>
         </div>
-        <Skeleton className="h-9 w-36" />
+        <div className="h-10 w-40 bg-gray-700 rounded animate-pulse"></div>
       </div>
-
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-9 w-64" />
+      
+      <div className="flex gap-4">
+        <div className="h-10 flex-1 bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-10 w-48 bg-gray-700 rounded animate-pulse"></div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-3">
-              <Skeleton className="h-6 w-48" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <div className="flex justify-between">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-6 w-24" />
+      
+      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <div className="space-y-2">
+                <div className="h-4 w-48 bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-3 w-32 bg-gray-700 rounded animate-pulse"></div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <div className="flex gap-2">
+                <div className="h-8 w-8 bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-8 w-8 bg-gray-700 rounded animate-pulse"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
