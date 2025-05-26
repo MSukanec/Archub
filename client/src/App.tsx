@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import AppLayout from '@/components/layout/AppLayout';
 import AuthPage from '@/pages/AuthPage';
 import LandingPage from '@/pages/LandingPage';
+import WelcomePage from '@/pages/WelcomePage';
 import NotFound from '@/pages/not-found';
 
 function Router() {
