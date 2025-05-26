@@ -20,17 +20,42 @@ export interface CreateOrganizationData {
 
 export const organizationsService = {
   async getCurrentUserOrganization(): Promise<Organization | null> {
-    // For now, return a default organization since we need to simplify this
-    // TODO: Implement proper organization relationship
-    return {
-      id: 1,
-      name: "Metrik Organization",
-      slug: "metrik-org",
-      logo_url: null,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      owner_id: 1
-    };
+    try {
+      // Get current user
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      if (authError || !authUser) {
+        console.error('Error getting current user:', authError);
+        return null;
+      }
+
+      // Get user's organization membership
+      const { data: memberData, error: memberError } = await supabase
+        .from('organization_members')
+        .select(`
+          organization_id,
+          organizations:organization_id (
+            id,
+            name,
+            slug,
+            logo_url,
+            is_active,
+            created_at,
+            owner_id
+          )
+        `)
+        .eq('user_id', authUser.id)
+        .single();
+      
+      if (memberError || !memberData?.organizations) {
+        console.log('User is not part of any organization:', memberError);
+        return null;
+      }
+
+      return memberData.organizations as Organization;
+    } catch (error) {
+      console.error('Error fetching user organization:', error);
+      return null;
+    }
   },
 
   async getAll(): Promise<Organization[]> {
