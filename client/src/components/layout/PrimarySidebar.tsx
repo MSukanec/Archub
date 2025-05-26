@@ -25,7 +25,7 @@ export default function PrimarySidebar() {
       {/* Navigation Icons */}
       {navigationItems.map(({ section, icon: Icon, label }) => {
         // Hide admin section for non-admin users
-        if (section === 'admin' && user?.email !== 'admin@example.com') {
+        if (section === 'admin' && user?.role !== 'admin') {
           return null;
         }
         

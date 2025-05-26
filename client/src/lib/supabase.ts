@@ -10,6 +10,7 @@ export type AuthUser = {
   email: string;
   firstName: string;
   lastName: string;
+  role: string;
 };
 
 export const authService = {

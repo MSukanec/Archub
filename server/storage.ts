@@ -59,6 +59,22 @@ export class MemStorage implements IStorage {
     this.currentOrgId = 1;
     this.currentProjectId = 1;
     this.currentActivityId = 1;
+    
+    // Create initial admin user
+    this.initializeAdminUser();
+  }
+
+  private initializeAdminUser() {
+    const adminUser: User = {
+      id: this.currentUserId++,
+      email: 'admin@example.com',
+      password: 'admin123',
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'admin',
+      createdAt: new Date()
+    };
+    this.users.set(adminUser.id, adminUser);
   }
 
   // Users
@@ -73,8 +89,12 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const user: User = { 
-      ...insertUser, 
       id,
+      email: insertUser.email,
+      password: insertUser.password,
+      firstName: insertUser.firstName,
+      lastName: insertUser.lastName,
+      role: 'user',
       createdAt: new Date()
     };
     this.users.set(id, user);
