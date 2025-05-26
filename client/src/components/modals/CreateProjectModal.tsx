@@ -94,10 +94,10 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       try {
         if (!user) return;
 
-        // First get the user's active organization ID from user_preferences
+        // First get the user's last organization ID from user_preferences
         const { data: userPref, error: prefError } = await supabase
           .from('user_preferences')
-          .select('active_organization_id')
+          .select('last_organization_id')
           .eq('user_id', user.id)
           .single();
 
@@ -106,8 +106,8 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
           return;
         }
 
-        if (!userPref?.active_organization_id) {
-          console.log('No active organization found for user');
+        if (!userPref?.last_organization_id) {
+          console.log('No last organization found for user');
           return;
         }
 
@@ -115,7 +115,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
-          .eq('id', userPref.active_organization_id)
+          .eq('id', userPref.last_organization_id)
           .single();
 
         if (orgError) {
