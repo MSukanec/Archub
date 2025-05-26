@@ -2,7 +2,6 @@ import { supabase } from './supabase';
 
 export interface Project {
   id: string;
-  proj_id: string;
   name: string;
   description: string | null;
   client_name: string | null;
@@ -68,7 +67,6 @@ export const projectsService = {
         contact_phone: projectData.contact_phone || null,
         city: projectData.city || null,
         organization_id: userData.id, // Use user's ID as organization_id
-        proj_id: `PROJ-${Date.now()}`, // Generate a unique project ID
       }])
       .select()
       .single();

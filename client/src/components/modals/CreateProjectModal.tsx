@@ -149,6 +149,19 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {currentOrganization && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Organización
+                </label>
+                <Input 
+                  value={currentOrganization.name}
+                  disabled
+                  className="bg-muted text-muted-foreground"
+                />
+              </div>
+            )}
+
             <FormField
               control={form.control}
               name="name"
@@ -259,19 +272,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                 </FormItem>
               )}
             />
-
-            {currentOrganization && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Organización
-                </label>
-                <Input 
-                  value={currentOrganization.name}
-                  disabled
-                  className="bg-muted text-muted-foreground"
-                />
-              </div>
-            )}
 
             <FormField
               control={form.control}

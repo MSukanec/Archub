@@ -176,7 +176,7 @@ export default function ProjectsList() {
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-2">
-                          ID: {project.proj_id} • Creado: {new Date(project.created_at).toLocaleDateString('es-ES')}
+                          Creado: {new Date(project.created_at).toLocaleDateString('es-ES')}
                         </p>
                       </div>
                     </div>
