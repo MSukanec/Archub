@@ -51,7 +51,7 @@ export const authService = {
           first_name: firstName,
           last_name: lastName,
           role: 'admin', // Por defecto asignar rol de admin para pruebas
-          organization_name: organizationName,
+          organization: organizationName,
         },
       },
     });
