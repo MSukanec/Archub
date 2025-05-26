@@ -49,12 +49,10 @@ export default function AdminOrganizations() {
   const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
 
   // Fetch organizations
-  const { data: organizations = [], isLoading, error } = useQuery({
+  const { data: organizations = [], isLoading } = useQuery({
     queryKey: ['/api/organizations'],
     queryFn: () => organizationsService.getAll(),
   });
-
-  console.log('Organizations query:', { organizations, isLoading, error });
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -119,7 +117,7 @@ export default function AdminOrganizations() {
         </div>
         <Button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-[#4f9eff] hover:bg-[#3a8bef]"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva Organización
@@ -134,7 +132,7 @@ export default function AdminOrganizations() {
             placeholder="Buscar organizaciones..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-gray-800 border-gray-700 text-white"
+            className="pl-10 bg-[#282828] border-gray-600 text-white"
           />
         </div>
         <Popover>
@@ -142,7 +140,7 @@ export default function AdminOrganizations() {
             <Button
               variant="outline"
               className={cn(
-                "w-[200px] justify-start text-left font-normal bg-gray-800 border-gray-700 text-white hover:bg-gray-700",
+                "w-[200px] justify-start text-left font-normal bg-[#282828] border-gray-600 text-white hover:bg-gray-700",
                 !dateFilter && "text-gray-400"
               )}
             >
@@ -150,21 +148,21 @@ export default function AdminOrganizations() {
               {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700">
+          <PopoverContent className="w-auto p-0 bg-[#282828] border-gray-600">
             <CalendarComponent
               mode="single"
               selected={dateFilter}
               onSelect={setDateFilter}
               initialFocus
-              className="bg-gray-800 text-white"
+              className="bg-[#282828] text-white"
             />
             {dateFilter && (
-              <div className="p-3 border-t border-gray-700">
+              <div className="p-3 border-t border-gray-600">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => setDateFilter(undefined)}
-                  className="w-full bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                  className="w-full bg-[#282828] border-gray-600 text-white hover:bg-gray-700"
                 >
                   Limpiar filtro
                 </Button>
@@ -175,21 +173,21 @@ export default function AdminOrganizations() {
       </div>
 
       {/* Organizations Table */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
+      <div className="bg-[#282828] rounded-lg border border-gray-600">
         <Table>
           <TableHeader>
-            <TableRow className="border-gray-700">
-              <TableHead className="text-gray-300">Organización</TableHead>
-              <TableHead className="text-gray-300">Propietario</TableHead>
-              <TableHead className="text-gray-300">Fecha de creación</TableHead>
-              <TableHead className="text-gray-300">Estado</TableHead>
-              <TableHead className="text-gray-300 text-right">Acciones</TableHead>
+            <TableRow className="border-gray-600">
+              <TableHead className="text-gray-300 h-10">Organización</TableHead>
+              <TableHead className="text-gray-300 h-10">Propietario</TableHead>
+              <TableHead className="text-gray-300 h-10">Fecha de creación</TableHead>
+              <TableHead className="text-gray-300 h-10">Estado</TableHead>
+              <TableHead className="text-gray-300 text-right h-10">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredOrganizations.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-gray-400 py-8">
+                <TableCell colSpan={5} className="text-center text-gray-400 py-6 h-12">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron organizaciones que coincidan con los filtros.'
                     : 'No hay organizaciones registradas.'
@@ -198,22 +196,22 @@ export default function AdminOrganizations() {
               </TableRow>
             ) : (
               filteredOrganizations.map((organization: any) => (
-                <TableRow key={organization.id} className="border-gray-700">
-                  <TableCell>
+                <TableRow key={organization.id} className="border-gray-600 h-12">
+                  <TableCell className="py-2">
                     <div>
-                      <div className="font-medium text-white">{organization.name}</div>
+                      <div className="font-medium text-white">{organization.name || 'Sin nombre'}</div>
                       {organization.slug && (
                         <div className="text-sm text-gray-400">/{organization.slug}</div>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-300">
+                  <TableCell className="text-gray-300 py-2">
                     {organization.owner_name || 'Sin asignar'}
                   </TableCell>
-                  <TableCell className="text-gray-300">
+                  <TableCell className="text-gray-300 py-2">
                     {format(new Date(organization.created_at), 'dd/MM/yyyy')}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-2">
                     <Badge 
                       variant={organization.is_active ? "default" : "secondary"}
                       className={organization.is_active 
@@ -224,13 +222,13 @@ export default function AdminOrganizations() {
                       {organization.is_active ? 'Activa' : 'Inactiva'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right py-2">
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(organization)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-gray-700"
+                        className="text-[#4f9eff] hover:text-[#3a8bef] hover:bg-gray-700 h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -238,7 +236,7 @@ export default function AdminOrganizations() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(organization)}
-                        className="text-red-400 hover:text-red-300 hover:bg-gray-700"
+                        className="text-red-400 hover:text-red-300 hover:bg-gray-700 h-8 w-8 p-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -303,28 +301,28 @@ function AdminOrganizationsSkeleton() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <div className="h-8 w-64 bg-gray-700 rounded animate-pulse"></div>
-          <div className="h-4 w-48 bg-gray-700 rounded animate-pulse mt-2"></div>
+          <div className="h-8 w-64 bg-gray-600 rounded animate-pulse"></div>
+          <div className="h-4 w-48 bg-gray-600 rounded animate-pulse mt-2"></div>
         </div>
-        <div className="h-10 w-40 bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-10 w-40 bg-gray-600 rounded animate-pulse"></div>
       </div>
       
       <div className="flex gap-4">
-        <div className="h-10 flex-1 bg-gray-700 rounded animate-pulse"></div>
-        <div className="h-10 w-48 bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-10 flex-1 bg-gray-600 rounded animate-pulse"></div>
+        <div className="h-10 w-48 bg-gray-600 rounded animate-pulse"></div>
       </div>
       
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <div className="space-y-4">
+      <div className="bg-[#282828] rounded-lg border border-gray-600 p-6">
+        <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between">
+            <div key={i} className="flex items-center justify-between h-10">
               <div className="space-y-2">
-                <div className="h-4 w-48 bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-3 w-32 bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-48 bg-gray-600 rounded animate-pulse"></div>
+                <div className="h-3 w-32 bg-gray-600 rounded animate-pulse"></div>
               </div>
               <div className="flex gap-2">
-                <div className="h-8 w-8 bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-8 w-8 bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-6 w-6 bg-gray-600 rounded animate-pulse"></div>
+                <div className="h-6 w-6 bg-gray-600 rounded animate-pulse"></div>
               </div>
             </div>
           ))}
