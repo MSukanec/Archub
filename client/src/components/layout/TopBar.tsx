@@ -121,11 +121,11 @@ export default function TopBar() {
           {/* Project Selector */}
           <div className="min-w-[200px]">
             <Select 
-              value={currentProject?.id?.toString() || 'create-new'} 
+              value={currentProject?.id?.toString() || ""} 
               onValueChange={handleProjectChange}
             >
               <SelectTrigger className="bg-[#1e1e1e] border-border">
-                <SelectValue placeholder="Seleccionar proyecto" />
+                <SelectValue placeholder="Crear nuevo proyecto" />
               </SelectTrigger>
               <SelectContent>
                 {projects.length > 0 && projects.map((project: any) => (
