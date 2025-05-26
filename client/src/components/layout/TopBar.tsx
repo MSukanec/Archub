@@ -1,5 +1,5 @@
 import { Bell, ChevronRight, Plus, ChevronDown, Zap, Crown, Rocket } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { usersService } from '@/lib/usersService';
 import { projectsService } from '@/lib/projectsService';
+import { userPreferencesService } from '@/lib/userPreferencesService';
 
 const breadcrumbConfig = {
   'dashboard-main': { section: 'Organización', view: 'Principal' },
@@ -28,7 +29,7 @@ const breadcrumbConfig = {
 };
 
 export default function TopBar() {
-  const { currentView, setView } = useNavigationStore();
+  const { currentView, setView, setSection } = useNavigationStore();
   const { currentProject, setCurrentProject } = useProjectStore();
   const { user } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -61,12 +62,45 @@ export default function TopBar() {
     queryFn: () => projectsService.getAll(),
   });
 
-  const handleProjectChange = (projectId: string) => {
+  // Load last active project when user logs in
+  useEffect(() => {
+    if (user && projects.length > 0 && !currentProject) {
+      const loadLastProject = async () => {
+        try {
+          const lastProjectId = await userPreferencesService.getLastProjectId(user.id);
+          if (lastProjectId) {
+            const lastProject = projects.find((p: any) => p.id === lastProjectId);
+            if (lastProject) {
+              setCurrentProject(lastProject);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading last project:', error);
+        }
+      };
+      loadLastProject();
+    }
+  }, [user, projects, currentProject, setCurrentProject]);
+
+  const handleProjectChange = async (projectId: string) => {
     if (projectId === 'create-new') {
       setIsCreateModalOpen(true);
+      // Navigate to projects list
+      setSection('projects');
+      setView('projects-list');
     } else {
-      const project = projects.find((p: any) => p.id.toString() === projectId);
-      setCurrentProject(project || null);
+      const project = projects.find((p: any) => p.id === projectId);
+      if (project) {
+        setCurrentProject(project);
+        // Save last project to preferences
+        if (user) {
+          try {
+            await userPreferencesService.updateLastProject(user.id, projectId);
+          } catch (error) {
+            console.error('Error saving last project:', error);
+          }
+        }
+      }
     }
   };
 

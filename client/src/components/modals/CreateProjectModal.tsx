@@ -32,6 +32,9 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { userPreferencesService } from '@/lib/userPreferencesService';
+import { useAuthStore } from '@/stores/authStore';
+import { useProjectStore } from '@/stores/projectStore';
 
 const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
