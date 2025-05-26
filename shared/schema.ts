@@ -38,6 +38,7 @@ export const projects = pgTable("projects", {
   progress: integer("progress").default(0), // 0-100
   organizationId: integer("organization_id").references(() => organizations.id).notNull(),
   createdBy: integer("created_by").references(() => users.id).notNull(),
+  contactId: integer("contact_id").references(() => contacts.id), // Link to contacts table
   startDate: timestamp("start_date"),
   endDate: timestamp("end_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

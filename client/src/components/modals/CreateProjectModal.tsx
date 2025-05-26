@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { projectsService, Project, CreateProjectData } from '@/lib/projectsService';
 import { organizationsService, Organization } from '@/lib/organizationsService';
+import { contactsService, Contact } from '@/lib/contactsService';
 import { 
   Dialog, 
   DialogContent, 
@@ -30,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { userPreferencesService } from '@/lib/userPreferencesService';
 import { useAuthStore } from '@/stores/authStore';
@@ -40,6 +41,7 @@ const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   description: z.string().optional(),
   client_name: z.string().optional(),
+  contact_id: z.number().optional(),
   status: z.string().optional(),
   address: z.string().optional(),
   contact_phone: z.string().optional(),
@@ -60,6 +62,8 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const { user } = useAuthStore();
   const { setCurrentProject } = useProjectStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -67,11 +71,20 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       name: '',
       description: '',
       client_name: '',
+      contact_id: undefined,
       status: 'planning',
       address: '',
       contact_phone: '',
       city: '',
     },
+  });
+
+  // Fetch contacts for selection
+  const { data: contacts = [] } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: contactsService.getAll,
+    enabled: isContactDialogOpen,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Get current user's organization
@@ -94,6 +107,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: project.name,
         description: project.description || '',
         client_name: project.client_name || '',
+        contact_id: project.contact_id || undefined,
         status: project.status,
         address: project.address || '',
         contact_phone: project.contact_phone || '',
@@ -104,6 +118,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: '',
         description: '',
         client_name: '',
+        contact_id: undefined,
         status: 'planning',
         address: '',
         contact_phone: '',
@@ -111,6 +126,14 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       });
     }
   }, [project, form]);
+
+  // Handle contact selection
+  const handleContactSelect = (contact: Contact) => {
+    setSelectedContact(contact);
+    form.setValue('client_name', contact.name);
+    form.setValue('contact_id', contact.id);
+    setIsContactDialogOpen(false);
+  };
 
   const createProjectMutation = useMutation({
     mutationFn: async (data: CreateProjectFormData) => {
@@ -155,7 +178,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{project ? 'Editar Proyecto' : 'Nuevo Proyecto'}</DialogTitle>
           <DialogDescription>
