@@ -10,7 +10,7 @@ export interface Organization {
 
 export interface CreateOrganizationData {
   name: string;
-  description?: string;
+  description?: string | null;
   owner_id: number;
 }
 

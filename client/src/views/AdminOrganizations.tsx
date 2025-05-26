@@ -165,8 +165,8 @@ export default function AdminOrganizations() {
   }
 
   const filteredOrganizations = (organizations || []).filter((org: any) =>
-    org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    org.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    org.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (org.description && org.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
