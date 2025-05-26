@@ -151,7 +151,7 @@ export default function AdminActions() {
                     {action.description || '-'}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {new Date(action.createdAt).toLocaleDateString('es-ES')}
+                    {new Date(action.created_at).toLocaleDateString('es-ES')}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
