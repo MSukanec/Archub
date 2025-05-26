@@ -60,7 +60,7 @@ export const authService = {
           email: session.user.email || '',
           firstName: session.user.user_metadata?.first_name || '',
           lastName: session.user.user_metadata?.last_name || '',
-          role: session.user.user_metadata?.role || 'user',
+          role: session.user.user_metadata?.role || 'admin', // Por defecto admin
         };
         callback(authUser);
       } else {
