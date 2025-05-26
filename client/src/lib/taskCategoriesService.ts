@@ -53,10 +53,9 @@ export const taskCategoriesService = {
       return sortedData;
       
     } catch (err) {
-      console.error('Detailed error:', err);
-      console.error('Error type:', typeof err);
-      console.error('Error message:', err instanceof Error ? err.message : 'Unknown error');
-      throw err; // Re-throw the original error to see what's happening
+      console.error('Connection error:', err);
+      // Return empty array instead of throwing to prevent app crash
+      return [];
     }
   },
 
