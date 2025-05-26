@@ -1,5 +1,6 @@
 import { ChartLine, Building, Settings, User, Shield } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
+import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
 const navigationItems = [
@@ -10,6 +11,7 @@ const navigationItems = [
 
 export default function PrimarySidebar() {
   const { currentSection, setSection } = useNavigationStore();
+  const { user } = useAuthStore();
 
   return (
     <div className="w-16 bg-surface border-r border-border flex flex-col items-center py-4 space-y-2">

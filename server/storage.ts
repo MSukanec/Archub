@@ -22,7 +22,10 @@ export interface IStorage {
   
   // Organizations
   getOrganization(id: number): Promise<Organization | undefined>;
+  getAllOrganizations(): Promise<Organization[]>;
   createOrganization(org: InsertOrganization & { ownerId: number }): Promise<Organization>;
+  updateOrganization(id: number, org: Partial<InsertOrganization>): Promise<Organization>;
+  deleteOrganization(id: number): Promise<void>;
   
   // Projects
   getProject(id: number): Promise<Project | undefined>;
@@ -87,15 +90,43 @@ export class MemStorage implements IStorage {
     return this.organizations.get(id);
   }
 
+  async getAllOrganizations(): Promise<Organization[]> {
+    return Array.from(this.organizations.values());
+  }
+
   async createOrganization(orgData: InsertOrganization & { ownerId: number }): Promise<Organization> {
     const id = this.currentOrgId++;
     const organization: Organization = {
-      ...orgData,
       id,
-      createdAt: new Date()
+      name: orgData.name,
+      description: orgData.description || null,
+      ownerId: orgData.ownerId,
+      createdAt: new Date(),
     };
     this.organizations.set(id, organization);
     return organization;
+  }
+
+  async updateOrganization(id: number, orgData: Partial<InsertOrganization>): Promise<Organization> {
+    const existing = this.organizations.get(id);
+    if (!existing) {
+      throw new Error('Organization not found');
+    }
+    
+    const updated: Organization = {
+      ...existing,
+      ...orgData,
+      description: orgData.description !== undefined ? orgData.description || null : existing.description,
+    };
+    this.organizations.set(id, updated);
+    return updated;
+  }
+
+  async deleteOrganization(id: number): Promise<void> {
+    if (!this.organizations.has(id)) {
+      throw new Error('Organization not found');
+    }
+    this.organizations.delete(id);
   }
 
   // Projects
@@ -117,8 +148,15 @@ export class MemStorage implements IStorage {
     const id = this.currentProjectId++;
     const now = new Date();
     const project: Project = {
-      ...projectData,
       id,
+      name: projectData.name,
+      description: projectData.description || null,
+      location: projectData.location || null,
+      budget: projectData.budget || null,
+      startDate: projectData.startDate || null,
+      endDate: projectData.endDate || null,
+      organizationId: projectData.organizationId,
+      createdBy: projectData.createdBy,
       status: 'planning',
       progress: 0,
       createdAt: now,

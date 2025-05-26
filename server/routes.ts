@@ -91,6 +91,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Organizations Routes
+  app.get('/api/admin/organizations', async (req, res) => {
+    try {
+      const organizations = await storage.getAllOrganizations();
+      
+      // Enrich with additional data
+      const enrichedOrgs = await Promise.all(
+        organizations.map(async (org) => {
+          const projects = await storage.getProjectsByOrganization(org.id);
+          const users = await storage.getAllUsers();
+          const owner = users.find(u => u.id === org.ownerId);
+          const members = users.filter(u => u.organizationId === org.id);
+          
+          return {
+            ...org,
+            projectCount: projects.length,
+            memberCount: members.length,
+            ownerName: owner ? `${owner.firstName} ${owner.lastName}` : null
+          };
+        })
+      );
+      
+      res.json(enrichedOrgs);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/admin/organizations', async (req, res) => {
+    try {
+      const data = insertOrganizationSchema.parse(req.body);
+      // For now, assign to first user as owner (should be current user in real app)
+      const users = await storage.getAllUsers();
+      const ownerId = users[0]?.id || 1;
+      
+      const organization = await storage.createOrganization({ ...data, ownerId });
+      res.json(organization);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Invalid organization data', details: error.errors });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
+  app.put('/api/admin/organizations/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const data = insertOrganizationSchema.partial().parse(req.body);
+      
+      const organization = await storage.updateOrganization(id, data);
+      res.json(organization);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ error: 'Invalid organization data', details: error.errors });
+      } else if (error.message === 'Organization not found') {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
+  app.delete('/api/admin/organizations/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteOrganization(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      if (error.message === 'Organization not found') {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
   // Stats routes
   app.get("/api/stats", async (req, res) => {
     try {
