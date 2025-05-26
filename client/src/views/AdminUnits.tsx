@@ -56,7 +56,7 @@ export default function AdminUnits() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: number) => {
       await unitsService.delete(id);
     },
     onSuccess: () => {

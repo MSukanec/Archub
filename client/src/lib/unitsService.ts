@@ -1,19 +1,14 @@
 import { supabase } from './supabase';
 
 export interface Unit {
-  id: string;
+  id: number;
   name: string;
-  symbol: string;
-  type: string;
-  is_active: boolean;
-  created_at: string;
+  description: string;
 }
 
 export interface CreateUnitData {
   name: string;
-  symbol: string;
-  type: string;
-  is_active?: boolean;
+  description: string;
 }
 
 export const unitsService = {
@@ -21,7 +16,7 @@ export const unitsService = {
     const { data, error } = await supabase
       .from('units')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('id', { ascending: false });
     
     if (error) {
       console.error('Error fetching units:', error);
@@ -36,9 +31,7 @@ export const unitsService = {
       .from('units')
       .insert([{
         name: unitData.name,
-        symbol: unitData.symbol,
-        type: unitData.type,
-        is_active: unitData.is_active ?? true,
+        description: unitData.description,
       }])
       .select()
       .single();
@@ -51,7 +44,7 @@ export const unitsService = {
     return data;
   },
 
-  async update(id: string, unitData: Partial<CreateUnitData>): Promise<Unit> {
+  async update(id: number, unitData: Partial<CreateUnitData>): Promise<Unit> {
     const { data, error } = await supabase
       .from('units')
       .update(unitData)
@@ -67,7 +60,7 @@ export const unitsService = {
     return data;
   },
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     const { error } = await supabase
       .from('units')
       .delete()
