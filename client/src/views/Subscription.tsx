@@ -8,6 +8,9 @@ const plans = [
     name: 'Básico',
     price: 'Gratis',
     description: 'Perfecto para empezar',
+    icon: Zap,
+    color: 'from-green-500 to-emerald-600',
+    borderColor: 'border-green-500',
     features: [
       'Hasta 5 proyectos',
       'Gestión básica de presupuestos',
@@ -20,6 +23,9 @@ const plans = [
     name: 'Profesional',
     price: '$29/mes',
     description: 'Para equipos en crecimiento',
+    icon: Crown,
+    color: 'from-blue-500 to-indigo-600',
+    borderColor: 'border-blue-500',
     features: [
       'Proyectos ilimitados',
       'Gestión avanzada de presupuestos',
@@ -34,6 +40,9 @@ const plans = [
     name: 'Empresarial',
     price: '$99/mes',
     description: 'Para organizaciones grandes',
+    icon: Rocket,
+    color: 'from-purple-500 to-pink-600',
+    borderColor: 'border-purple-500',
     features: [
       'Todo de Profesional',
       'API personalizada',
@@ -99,49 +108,57 @@ export default function Subscription() {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.name} 
-              className={plan.current ? 'border-primary' : 'hover:border-border/60 transition-colors'}
-            >
-              <CardHeader className="text-center">
-                <CardTitle className="flex items-center justify-center">
-                  {plan.name}
-                  {plan.current && (
-                    <Badge variant="default" className="ml-2 bg-primary/10 text-primary">
-                      Actual
-                    </Badge>
-                  )}
-                </CardTitle>
-                <div className="py-4">
-                  <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                </div>
-                <p className="text-sm text-muted-foreground">{plan.description}</p>
-              </CardHeader>
+          {plans.map((plan) => {
+            const IconComponent = plan.icon;
+            return (
+              <Card 
+                key={plan.name} 
+                className={plan.current ? `${plan.borderColor} border-2` : 'hover:border-border/60 transition-colors'}
+              >
+                <CardHeader className="text-center">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${plan.color} flex items-center justify-center`}>
+                      <IconComponent className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <CardTitle className="flex items-center justify-center">
+                    {plan.name}
+                    {plan.current && (
+                      <Badge variant="default" className="ml-2 bg-primary/10 text-primary">
+                        Actual
+                      </Badge>
+                    )}
+                  </CardTitle>
+                  <div className="py-4">
+                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                </CardHeader>
               
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm">
-                      <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button 
-                  className={`w-full ${
-                    plan.current 
-                      ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                      : 'bg-primary hover:bg-primary/90'
-                  }`}
-                  disabled={plan.current}
-                >
-                  {plan.current ? 'Plan Actual' : 'Seleccionar Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent className="space-y-4">
+                  <ul className="space-y-2">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center text-sm">
+                        <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
+                        <span className="text-muted-foreground">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <Button 
+                    className={`w-full ${
+                      plan.current 
+                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                        : 'bg-primary hover:bg-primary/90'
+                    }`}
+                    disabled={plan.current}
+                  >
+                    {plan.current ? 'Plan Actual' : 'Seleccionar Plan'}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
