@@ -46,22 +46,22 @@ export const contactsService = {
       throw new Error('Usuario no autenticado');
     }
 
-    // Get user's organization from organization_members table
-    const { data: memberData, error: memberError } = await supabase
-      .from('organization_members')
+    // Get organization from existing projects (since projects are working)
+    const { data: projectData, error: projectError } = await supabase
+      .from('projects')
       .select('organization_id')
-      .eq('user_id', user.id)
+      .limit(1)
       .single();
 
-    if (memberError || !memberData) {
-      throw new Error('Usuario no pertenece a ninguna organización');
+    if (projectError || !projectData) {
+      throw new Error('No se pudo obtener la organización. Contacta al administrador.');
     }
 
     const { data, error } = await supabase
       .from('contacts')
       .insert([{
         ...contactData,
-        organization_id: memberData.organization_id
+        organization_id: projectData.organization_id
       }])
       .select()
       .single();
