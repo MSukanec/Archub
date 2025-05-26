@@ -74,9 +74,17 @@ export default function AdminOrganizations() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: organizations = [], isLoading } = useQuery({
+  const { data: organizations = [], isLoading, error } = useQuery({
     queryKey: ['organizations'],
-    queryFn: () => fetch('/api/organizations').then(res => res.json()),
+    queryFn: async () => {
+      const response = await fetch('/api/organizations');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('Organizations data:', data);
+      return data;
+    },
   });
 
   const form = useForm<OrganizationFormData>({
@@ -216,6 +224,15 @@ export default function AdminOrganizations() {
 
   if (isLoading) {
     return <AdminOrganizationsSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="p-8 text-center">
+        <h3 className="text-lg font-medium text-foreground">Error al cargar organizaciones</h3>
+        <p className="mt-2 text-sm text-destructive">{error.message}</p>
+      </div>
+    );
   }
 
   const filteredOrganizations = (organizations || []).filter((org: any) => {
