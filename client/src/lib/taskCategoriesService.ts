@@ -19,23 +19,39 @@ export const taskCategoriesService = {
   async getAll(): Promise<TaskCategory[]> {
     console.log('Fetching task categories...');
     
-    const { data, error } = await supabase
-      .from('task_categories')
-      .select('id, code, name, position, parent_id')
-      .order('position', { ascending: true });
-    
-    if (error) {
-      console.error('Error fetching categories:', error);
-      return [];
+    try {
+      // Try different query approaches to bypass 406 error
+      let { data, error } = await supabase
+        .from('task_categories')
+        .select('*');
+      
+      if (error) {
+        console.error('Error with full select, trying basic select:', error);
+        // Try more basic query
+        const result = await supabase
+          .from('task_categories')
+          .select('id, code, name, position, parent_id');
+        data = result.data;
+        error = result.error;
+      }
+      
+      if (error) {
+        console.error('Error fetching categories:', error);
+        throw new Error(`Error al cargar categorías: ${error.message}`);
+      }
+      
+      if (!data || data.length === 0) {
+        console.log('No categories found');
+        return [];
+      }
+      
+      console.log(`Found ${data.length} categories`);
+      return this.buildTree(data);
+      
+    } catch (err) {
+      console.error('Connection error:', err);
+      throw new Error('Error de conexión. Por favor verifica la configuración de Supabase.');
     }
-    
-    if (!data) {
-      console.log('No data returned');
-      return [];
-    }
-    
-    console.log(`Found ${data.length} categories`);
-    return this.buildTree(data);
   },
 
   async create(categoryData: CreateTaskCategoryData): Promise<TaskCategory> {
