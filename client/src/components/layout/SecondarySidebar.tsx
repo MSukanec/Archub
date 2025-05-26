@@ -69,7 +69,10 @@ export default function SecondarySidebar() {
   };
 
   return (
-    <div className="w-60 bg-surface border-r border-border flex flex-col">
+    <div className={cn(
+      "bg-surface border-r border-border flex flex-col transition-all duration-300 ease-in-out",
+      isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
+    )}>
       {/* Header */}
       <div className="p-4 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">{config.title}</h2>
