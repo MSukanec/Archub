@@ -89,7 +89,7 @@ interface CategoryItemProps {
 
 function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: CategoryItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const hasChildren = (category as any).children && (category as any).children.length > 0;
+  const hasChildren = false; // Simplified for flat list display
 
   const getIcon = () => {
     if (level === 0) return <FolderOpen className="w-4 h-4 text-blue-500" />;

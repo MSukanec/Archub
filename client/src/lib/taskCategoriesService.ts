@@ -47,15 +47,16 @@ export const taskCategoriesService = {
       
       console.log(`Found ${data.length} categories`);
       
-      // Build hierarchical tree structure
-      const treeData = this.buildTree(data);
-      console.log('Returning tree data:', treeData.length, 'root categories');
-      return treeData;
+      // First return sorted flat list to ensure it works
+      const sortedData = data.sort((a, b) => a.position - b.position);
+      console.log('Returning sorted data:', sortedData.length, 'categories');
+      return sortedData;
       
     } catch (err) {
       console.error('Connection error:', err);
-      // Return empty array instead of throwing to prevent app crash
-      return [];
+      // Log the actual error to understand what's happening
+      console.error('Full error details:', JSON.stringify(err, null, 2));
+      throw err; // Let the error bubble up to see what's causing it
     }
   },
 
