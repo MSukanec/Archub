@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { usersService, CreateUserData, User } from '@/lib/usersService';
+import { plansService, Plan } from '@/lib/plansService';
 
 const userFormSchema = z.object({
   email: z.string().email('Email inválido').min(1, 'El email es requerido'),
@@ -33,6 +34,13 @@ export default function AdminUsersModal({
 }: AdminUsersModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Fetch plans for the select
+  const { data: plans = [] } = useQuery({
+    queryKey: ['/api/plans'],
+    queryFn: () => plansService.getAll(),
+    enabled: isOpen, // Only fetch when modal is open
+  });
   
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
@@ -196,9 +204,11 @@ export default function AdminUsersModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="basic">Básico</SelectItem>
-                      <SelectItem value="professional">Profesional</SelectItem>
-                      <SelectItem value="enterprise">Empresarial</SelectItem>
+                      {plans.map((plan) => (
+                        <SelectItem key={plan.id} value={plan.id}>
+                          {plan.name} - ${plan.price}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

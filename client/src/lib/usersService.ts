@@ -6,6 +6,7 @@ export interface User {
   full_name: string | null;
   role: string;
   plan_id: string | null;
+  plan_name?: string; // Para mostrar el nombre del plan
   created_at: string;
   auth_id: string;
 }
@@ -21,7 +22,12 @@ export const usersService = {
   async getAll(): Promise<User[]> {
     const { data, error } = await supabase
       .from('users')
-      .select('*')
+      .select(`
+        *,
+        plans:plan_id (
+          name
+        )
+      `)
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -29,7 +35,13 @@ export const usersService = {
       throw new Error('Error al obtener los usuarios');
     }
     
-    return data || [];
+    // Transform data to include plan name
+    const usersWithPlanNames = (data || []).map(user => ({
+      ...user,
+      plan_name: user.plans?.name || null
+    }));
+    
+    return usersWithPlanNames;
   },
 
   async create(userData: CreateUserData): Promise<User> {
