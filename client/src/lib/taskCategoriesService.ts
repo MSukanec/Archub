@@ -47,10 +47,10 @@ export const taskCategoriesService = {
       
       console.log(`Found ${data.length} categories`);
       
-      // Return data directly for now - the buildTree function is causing issues
-      const sortedData = data.sort((a, b) => a.position - b.position);
-      console.log('Returning sorted data:', sortedData.length);
-      return sortedData;
+      // Build hierarchical tree structure
+      const treeData = this.buildTree(data);
+      console.log('Returning tree data:', treeData.length, 'root categories');
+      return treeData;
       
     } catch (err) {
       console.error('Connection error:', err);
@@ -154,12 +154,47 @@ export const taskCategoriesService = {
   buildTree(categories: TaskCategory[]): TaskCategory[] {
     console.log('Building tree with categories:', categories.length);
     
-    // Return sorted flat list for now to get it working immediately
-    const sorted = categories
-      .sort((a, b) => a.position - b.position)
-      .slice(0, 20); // Limit to first 20 for performance
+    // Create a map for quick lookup
+    const categoryMap = new Map<number, TaskCategory & { children: TaskCategory[] }>();
     
-    console.log('Tree built successfully, returning:', sorted.length, 'categories');
-    return sorted;
+    // Initialize all categories with empty children array
+    categories.forEach(category => {
+      categoryMap.set(category.id, { ...category, children: [] });
+    });
+
+    const rootCategories: TaskCategory[] = [];
+
+    // Build the tree structure
+    categories.forEach(category => {
+      const categoryWithChildren = categoryMap.get(category.id)!;
+      
+      if (category.parent_id === null || category.parent_id === undefined) {
+        // This is a root category
+        rootCategories.push(categoryWithChildren);
+      } else {
+        // This is a child category
+        const parent = categoryMap.get(category.parent_id);
+        if (parent) {
+          parent.children.push(categoryWithChildren);
+        } else {
+          // Parent not found, treat as root
+          rootCategories.push(categoryWithChildren);
+        }
+      }
+    });
+
+    // Sort by position at each level
+    const sortByPosition = (items: TaskCategory[]) => {
+      items.sort((a, b) => a.position - b.position);
+      items.forEach(item => {
+        if ('children' in item && item.children && item.children.length > 0) {
+          sortByPosition(item.children);
+        }
+      });
+    };
+
+    sortByPosition(rootCategories);
+    console.log('Tree built successfully, returning:', rootCategories.length, 'root categories');
+    return rootCategories;
   }
 };
