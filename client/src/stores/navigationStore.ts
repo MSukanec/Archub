@@ -8,6 +8,7 @@ export type View =
   | 'projects-list'
   | 'admin-organizations'
   | 'admin-users'
+  | 'admin-units'
   | 'admin-permissions'
   | 'profile-info'
   | 'profile-subscription'
