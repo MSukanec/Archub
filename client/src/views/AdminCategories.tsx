@@ -192,6 +192,10 @@ export default function AdminCategories() {
     queryFn: taskCategoriesService.getAll,
   });
 
+  console.log('AdminCategories - categories:', categories);
+  console.log('AdminCategories - isLoading:', isLoading);
+  console.log('AdminCategories - categories length:', categories.length);
+
   const createMutation = useMutation({
     mutationFn: taskCategoriesService.create,
     onSuccess: () => {
