@@ -3,14 +3,18 @@ import { supabase } from './supabase';
 export interface Organization {
   id: number;
   name: string;
-  description: string | null;
+  slug: string | null;
+  logo_url: string | null;
+  is_active: boolean;
   created_at: string;
   owner_id: number;
 }
 
 export interface CreateOrganizationData {
   name: string;
-  description?: string | null;
+  slug?: string | null;
+  logo_url?: string | null;
+  is_active?: boolean;
   owner_id: number;
 }
 

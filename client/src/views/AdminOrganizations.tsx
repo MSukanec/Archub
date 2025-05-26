@@ -42,7 +42,11 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 
-const organizationFormSchema = insertOrganizationSchema.extend({});
+const organizationFormSchema = insertOrganizationSchema.pick({
+  name: true,
+}).extend({
+  slug: z.string().optional(),
+});
 
 type OrganizationFormData = z.infer<typeof organizationFormSchema>;
 
@@ -64,7 +68,7 @@ export default function AdminOrganizations() {
     resolver: zodResolver(organizationFormSchema),
     defaultValues: {
       name: '',
-      description: '',
+      slug: '',
     },
   });
 
@@ -142,7 +146,7 @@ export default function AdminOrganizations() {
     setSelectedOrganization(organization);
     form.reset({
       name: organization.name,
-      description: organization.description || '',
+      slug: organization.slug || '',
     });
     setIsEditModalOpen(true);
   };
@@ -166,7 +170,7 @@ export default function AdminOrganizations() {
 
   const filteredOrganizations = (organizations || []).filter((org: any) =>
     org.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (org.description && org.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    (org.slug && org.slug.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -332,14 +336,13 @@ export default function AdminOrganizations() {
 
               <FormField
                 control={form.control}
-                name="description"
+                name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descripción</FormLabel>
+                    <FormLabel>Slug (URL amigable)</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Describe la organización..."
-                        rows={3}
+                      <Input 
+                        placeholder="nombre-organización"
                         {...field}
                         value={field.value || ''}
                       />
