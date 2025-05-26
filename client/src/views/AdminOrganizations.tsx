@@ -92,7 +92,7 @@ export default function AdminOrganizations() {
 
   // Filter organizations based on search and date
   const filteredOrganizations = organizations.filter((org: any) => {
-    const matchesSearch = org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = (org.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (org.slug && org.slug.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesDate = !dateFilter || 
