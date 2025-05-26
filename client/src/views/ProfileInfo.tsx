@@ -2,9 +2,19 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Mail, Calendar, Save, LogOut } from 'lucide-react';
+import { User, Mail, Calendar, Save, LogOut, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -24,8 +34,14 @@ export default function ProfileInfo() {
   const { user, logout } = useAuthStore();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = async () => {
     try {
       await authService.signOut();
       logout();
@@ -33,12 +49,39 @@ export default function ProfileInfo() {
         title: "Sesión cerrada",
         description: "Has cerrado sesión exitosamente.",
       });
+      setShowLogoutModal(false);
     } catch (error) {
       toast({
         title: "Error",
         description: "Error al cerrar sesión.",
         variant: "destructive",
       });
+      setShowLogoutModal(false);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      // TODO: Implement account deletion logic
+      toast({
+        title: "Cuenta eliminada",
+        description: "Tu cuenta ha sido eliminada permanentemente.",
+        variant: "destructive",
+      });
+      setShowDeleteModal(false);
+      await authService.signOut();
+      logout();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error al eliminar la cuenta.",
+        variant: "destructive",
+      });
+      setShowDeleteModal(false);
     }
   };
 
@@ -257,7 +300,7 @@ export default function ProfileInfo() {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={handleLogout}
+              onClick={handleLogoutClick}
               className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -272,12 +315,79 @@ export default function ProfileInfo() {
                 Eliminar permanentemente tu cuenta y todos los datos asociados
               </p>
             </div>
-            <Button variant="destructive" size="sm">
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={handleDeleteClick}
+            >
               Eliminar
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de confirmación para cerrar sesión */}
+      <AlertDialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <LogOut className="h-5 w-5 text-yellow-500" />
+              Cerrar Sesión
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Estás seguro de que quieres cerrar sesión? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmLogout}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Cerrar Sesión
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal de confirmación para eliminar cuenta */}
+      <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-6 w-6" />
+              ⚠️ PELIGRO: Eliminar Cuenta
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p className="font-semibold text-red-700 dark:text-red-400">
+                Esta acción NO se puede deshacer.
+              </p>
+              <p>
+                Al eliminar tu cuenta se borrarán <strong>permanentemente</strong>:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>Todos tus proyectos y presupuestos</li>
+                <li>Toda la información de tu organización</li>
+                <li>Todos los archivos y documentos</li>
+                <li>Todo el historial de actividades</li>
+                <li>Tu perfil y configuraciones</li>
+              </ul>
+              <p className="font-medium text-red-700 dark:text-red-400">
+                Esta acción es IRREVERSIBLE. ¿Estás completamente seguro?
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, mantener mi cuenta</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Sí, eliminar permanentemente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
