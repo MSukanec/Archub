@@ -491,23 +491,23 @@ export default function AdminOrganizations() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Propietario</FormLabel>
-                    <Select 
-                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                      value={field.value?.toString()}
-                    >
-                      <FormControl>
+                    <FormControl>
+                      <Select 
+                        onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                        value={field.value?.toString()}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Seleccionar propietario" />
                         </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {users.map((user: any) => (
-                          <SelectItem key={user.id} value={user.id.toString()}>
-                            {user.full_name || user.email} ({user.role})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                        <SelectContent>
+                          {users.map((user: any) => (
+                            <SelectItem key={user.id} value={user.id.toString()}>
+                              {user.full_name || user.email} ({user.role})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
