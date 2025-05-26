@@ -42,7 +42,7 @@ export const authService = {
     return data;
   },
 
-  async signUp(email: string, password: string, firstName: string, lastName: string) {
+  async signUp(email: string, password: string, firstName: string, lastName: string, organizationName?: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -51,6 +51,7 @@ export const authService = {
           first_name: firstName,
           last_name: lastName,
           role: 'admin', // Por defecto asignar rol de admin para pruebas
+          organization_name: organizationName,
         },
       },
     });

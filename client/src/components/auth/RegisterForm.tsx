@@ -12,6 +12,7 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const registerSchema = z.object({
+  organizationName: z.string().min(2, 'El nombre de la organización debe tener al menos 2 caracteres'),
   firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   lastName: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
   email: z.string().email('Email inválido'),
@@ -36,6 +37,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      organizationName: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -51,7 +53,8 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         data.email,
         data.password,
         data.firstName,
-        data.lastName
+        data.lastName,
+        data.organizationName
       );
       
       if (error) {
@@ -97,6 +100,20 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="organizationName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre de la Organización</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ej. Constructora ABC" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
