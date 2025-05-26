@@ -76,12 +76,14 @@ export default function AdminUnits() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Filter units based on search
-  const filteredUnits = units.filter((unit: any) => {
-    const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (unit.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
+  // Filter and sort units based on search (newest first)
+  const filteredUnits = units
+    .filter((unit: any) => {
+      const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (unit.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    })
+    .sort((a: any, b: any) => b.id - a.id); // Sort by ID descending (newest first)
 
   if (isLoading) {
     return <AdminUnitsSkeleton />;
@@ -116,10 +118,10 @@ export default function AdminUnits() {
 
       {/* Search */}
       <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Buscar unidades..."
+            placeholder="Buscar por nombre o descripción..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-[#282828] border-gray-600 text-white placeholder:text-gray-500"
