@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { usersService } from '@/lib/usersService';
+import { projectsService } from '@/lib/projectsService';
 
 const breadcrumbConfig = {
   'dashboard-main': { section: 'Organización', view: 'Principal' },
@@ -56,7 +57,8 @@ export default function TopBar() {
 
   // Fetch projects for the selector
   const { data: projects = [] } = useQuery({
-    queryKey: ['/api/projects'],
+    queryKey: ['user-projects'],
+    queryFn: () => projectsService.getAll(),
   });
 
   const handleProjectChange = (projectId: string) => {

@@ -20,14 +20,14 @@ export default function ProjectsList() {
   const queryClient = useQueryClient();
 
   const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['/api/projects'],
+    queryKey: ['user-projects'],
     queryFn: () => projectsService.getAll(),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => projectsService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto ha sido eliminado exitosamente.",

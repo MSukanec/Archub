@@ -116,7 +116,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
       toast({
         title: project ? 'Proyecto actualizado' : 'Proyecto creado',
         description: project ? 'El proyecto ha sido actualizado exitosamente' : 'El proyecto ha sido creado exitosamente',
