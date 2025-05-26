@@ -54,8 +54,9 @@ export const projectsService = {
       .single();
     
     if (memberError || !memberData?.organization_id) {
-      console.error('Error getting user organization membership:', memberError);
-      throw new Error('No se pudo obtener la organización del usuario');
+      console.log('User is not part of any organization yet:', memberError);
+      // Si el usuario no tiene organización, devolver lista vacía en lugar de mostrar proyectos de otros
+      return [];
     }
 
     console.log('User organization_id:', memberData.organization_id);
