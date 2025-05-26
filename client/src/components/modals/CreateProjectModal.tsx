@@ -111,9 +111,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nuevo Proyecto</DialogTitle>
+          <DialogTitle>{project ? 'Editar Proyecto' : 'Nuevo Proyecto'}</DialogTitle>
           <DialogDescription>
-            Crea un nuevo proyecto de construcción
+            {project ? 'Actualiza la información del proyecto' : 'Crea un nuevo proyecto de construcción'}
           </DialogDescription>
         </DialogHeader>
 
@@ -138,13 +138,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
             <FormField
               control={form.control}
-              name="location"
+              name="client_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ubicación</FormLabel>
+                  <FormLabel>Cliente</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="Dirección o zona"
+                      placeholder="Nombre del cliente"
                       {...field} 
                     />
                   </FormControl>
@@ -155,14 +155,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
             <FormField
               control={form.control}
-              name="budget"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Presupuesto Inicial</FormLabel>
+                  <FormLabel>Dirección</FormLabel>
                   <FormControl>
                     <Input 
-                      type="number"
-                      placeholder="0"
+                      placeholder="Dirección del proyecto"
                       {...field} 
                     />
                   </FormControl>
@@ -206,7 +205,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                 {createProjectMutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Crear Proyecto
+{project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
               </Button>
             </div>
           </form>
