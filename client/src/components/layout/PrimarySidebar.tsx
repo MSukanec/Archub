@@ -23,21 +23,28 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Navigation Icons */}
-      {navigationItems.map(({ section, icon: Icon, label }) => (
-        <button
-          key={section}
-          onClick={() => setSection(section)}
-          className={cn(
-            "w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200",
-            currentSection === section
-              ? "text-primary bg-primary/10"
-              : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
-          )}
-          title={label}
-        >
-          <Icon size={20} />
-        </button>
-      ))}
+      {navigationItems.map(({ section, icon: Icon, label }) => {
+        // Hide admin section for non-admin users
+        if (section === 'admin' && user?.email !== 'admin@example.com') {
+          return null;
+        }
+        
+        return (
+          <button
+            key={section}
+            onClick={() => setSection(section)}
+            className={cn(
+              "w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200",
+              currentSection === section
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
+            )}
+            title={label}
+          >
+            <Icon size={20} />
+          </button>
+        );
+      })}
       
       <div className="flex-1" />
       
