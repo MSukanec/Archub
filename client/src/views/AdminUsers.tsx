@@ -99,17 +99,8 @@ export default function AdminUsers() {
     }
   };
 
-  const getPlanDisplay = (planId: string | null) => {
-    switch (planId) {
-      case 'basic':
-        return 'Básico';
-      case 'professional':
-        return 'Profesional';
-      case 'enterprise':
-        return 'Empresarial';
-      default:
-        return 'Sin plan';
-    }
+  const getPlanDisplay = (user: User) => {
+    return user.plan_name || 'Sin plan';
   };
 
   if (isLoading) {
@@ -178,7 +169,7 @@ export default function AdminUsers() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                      {getPlanDisplay(user.plan_id)}
+                      {getPlanDisplay(user)}
                     </Badge>
                   </TableCell>
                   <TableCell>

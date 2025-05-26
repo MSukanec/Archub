@@ -54,7 +54,12 @@ export const usersService = {
         plan_id: userData.plan_id,
         auth_id: `temp_${Date.now()}` // Temporal auth_id
       }])
-      .select()
+      .select(`
+        *,
+        plans:plan_id (
+          name
+        )
+      `)
       .single();
     
     if (error) {
@@ -62,7 +67,13 @@ export const usersService = {
       throw new Error('Error al crear el usuario');
     }
     
-    return data;
+    // Transform data to include plan name
+    const userWithPlanName = {
+      ...data,
+      plan_name: data.plans?.name || null
+    };
+    
+    return userWithPlanName;
   },
 
   async update(id: number, userData: Partial<CreateUserData>): Promise<User> {
@@ -70,7 +81,12 @@ export const usersService = {
       .from('users')
       .update(userData)
       .eq('id', id)
-      .select()
+      .select(`
+        *,
+        plans:plan_id (
+          name
+        )
+      `)
       .single();
     
     if (error) {
@@ -78,7 +94,13 @@ export const usersService = {
       throw new Error('Error al actualizar el usuario');
     }
     
-    return data;
+    // Transform data to include plan name
+    const userWithPlanName = {
+      ...data,
+      plan_name: data.plans?.name || null
+    };
+    
+    return userWithPlanName;
   },
 
   async delete(id: number): Promise<void> {
