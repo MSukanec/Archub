@@ -190,11 +190,11 @@ export default function AdminCategories() {
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['task-categories'],
     queryFn: taskCategoriesService.getAll,
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  console.log('AdminCategories - categories:', categories);
-  console.log('AdminCategories - isLoading:', isLoading);
-  console.log('AdminCategories - categories length:', categories.length);
+  console.log('Categories state:', { categories: categories.length, isLoading });
 
   const createMutation = useMutation({
     mutationFn: taskCategoriesService.create,
