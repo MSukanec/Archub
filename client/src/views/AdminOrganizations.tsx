@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, Edit, Trash2, Users, Calendar } from 'lucide-react';
+import { Plus, Search, Building, Edit, Trash2, Users, Calendar, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +49,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const organizationFormSchema = insertOrganizationSchema.pick({
   name: true,
@@ -64,6 +70,7 @@ export default function AdminOrganizations() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -86,8 +93,16 @@ export default function AdminOrganizations() {
       const { data: users } = await supabase.from('users').select('id').limit(1);
       const ownerId = users?.[0]?.id || 1;
       
+      // Generate unique slug from name if not provided
+      const slug = data.slug?.trim() || 
+        data.name.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '') + 
+        '-' + Math.random().toString(36).substr(2, 6);
+      
       return organizationsService.create({
         ...data,
+        slug: slug,
         owner_id: ownerId,
       });
     },
@@ -180,10 +195,30 @@ export default function AdminOrganizations() {
     return <AdminOrganizationsSkeleton />;
   }
 
-  const filteredOrganizations = (organizations || []).filter((org: any) =>
-    org.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (org.slug && org.slug.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredOrganizations = (organizations || []).filter((org: any) => {
+    // Text filter
+    const matchesSearch = org.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (org.slug && org.slug.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Date filter
+    if (dateFilter === 'all') return matchesSearch;
+    
+    const orgDate = new Date(org.created_at);
+    const now = new Date();
+    
+    switch (dateFilter) {
+      case 'today':
+        return matchesSearch && orgDate.toDateString() === now.toDateString();
+      case 'week':
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return matchesSearch && orgDate >= weekAgo;
+      case 'month':
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return matchesSearch && orgDate >= monthAgo;
+      default:
+        return matchesSearch;
+    }
+  });
 
   return (
     <>
@@ -217,9 +252,31 @@ export default function AdminOrganizations() {
             />
             <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
           </div>
-          <Button variant="outline" className="whitespace-nowrap">
-            Filtro por fecha
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="whitespace-nowrap">
+                {dateFilter === 'all' ? 'Filtro por fecha' : 
+                 dateFilter === 'today' ? 'Hoy' :
+                 dateFilter === 'week' ? 'Esta semana' :
+                 dateFilter === 'month' ? 'Este mes' : 'Filtro por fecha'}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setDateFilter('all')}>
+                Todas las fechas
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDateFilter('today')}>
+                Hoy
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDateFilter('week')}>
+                Esta semana
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDateFilter('month')}>
+                Este mes
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Organizations Grid */}
