@@ -28,11 +28,44 @@ export interface CreateProjectData {
 
 export const projectsService = {
   async getAll(): Promise<Project[]> {
-    console.log('Fetching all projects...');
+    console.log('Fetching projects for current user organization...');
+    
+    // Get current user and their organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Usuario no autenticado');
+
+    // Get user's organization from the users table
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', user.id)
+      .single();
+    
+    if (userError || !userData) {
+      console.error('Error getting user data:', userError);
+      throw new Error('No se pudo obtener los datos del usuario');
+    }
+
+    // Get user's organization through organization_members table
+    const { data: memberData, error: memberError } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', userData.id)
+      .single();
+    
+    if (memberError || !memberData?.organization_id) {
+      console.error('Error getting user organization membership:', memberError);
+      throw new Error('No se pudo obtener la organización del usuario');
+    }
+
+    console.log('User organization_id:', memberData.organization_id);
+
+    // Fetch projects only for user's organization
     const { data, error } = await supabase
       .from('projects')
       .select('*')
       .eq('is_active', true)
+      .eq('organization_id', memberData.organization_id)
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -40,7 +73,7 @@ export const projectsService = {
       throw new Error('Error al obtener los proyectos');
     }
     
-    console.log('Projects fetched:', data);
+    console.log('Projects fetched for organization:', data);
     return data || [];
   },
 

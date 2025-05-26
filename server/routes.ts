@@ -82,7 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Projects routes - now using Supabase directly
+  // Projects routes - now using Supabase directly with organization filtering
   app.get("/api/projects", async (req, res) => {
     try {
       // Import Supabase client dynamically
@@ -91,6 +91,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
       const supabase = createClient(supabaseUrl, supabaseKey);
       
+      // For server routes, we'll return all projects since we don't have user context
+      // The client-side service will handle the organization filtering
       const { data: projects, error } = await supabase
         .from('projects')
         .select('*')
