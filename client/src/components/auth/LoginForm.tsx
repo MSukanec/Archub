@@ -50,14 +50,18 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       }
 
       if (authData.user) {
-        // Immediately set the user state after successful login
+        // Get user data from database table
+        const dbUser = await authService.getUserFromDatabase(authData.user.id);
+        
         const authUser = {
           id: authData.user.id,
           email: authData.user.email || '',
           firstName: authData.user.user_metadata?.first_name || '',
           lastName: authData.user.user_metadata?.last_name || '',
-          role: authData.user.user_metadata?.role || 'user',
+          role: dbUser?.role || 'user', // Use role from database table
         };
+        
+        console.log('User from database:', dbUser);
         setUser(authUser);
         
         toast({

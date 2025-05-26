@@ -35,16 +35,20 @@ export default function AppLayout() {
 
   useEffect(() => {
     // Check initial auth state
-    authService.getCurrentUser().then(({ user }) => {
+    authService.getCurrentUser().then(async ({ user }) => {
       console.log('Initial auth check:', user);
       if (user) {
+        // Get user data from database table
+        const dbUser = await authService.getUserFromDatabase(user.id);
+        
         const authUser = {
           id: user.id,
           email: user.email || '',
           firstName: user.user_metadata?.first_name || '',
           lastName: user.user_metadata?.last_name || '',
-          role: user.user_metadata?.role || 'user',
+          role: dbUser?.role || 'user', // Use role from database table
         };
+        console.log('User from database on init:', dbUser);
         console.log('Setting user:', authUser);
         setUser(authUser);
       } else {

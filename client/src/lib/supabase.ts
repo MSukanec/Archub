@@ -27,10 +27,10 @@ export const authService = {
     return { data, error };
   },
 
-  async getUserFromDatabase(authUserId: string): Promise<{ role: string } | null> {
+  async getUserFromDatabase(authUserId: string): Promise<{ role: string; full_name: string } | null> {
     const { data, error } = await supabase
       .from('users')
-      .select('role')
+      .select('role, full_name')
       .eq('auth_id', authUserId)
       .single();
     
@@ -68,14 +68,17 @@ export const authService = {
   },
 
   onAuthStateChange(callback: (user: AuthUser | null) => void) {
-    return supabase.auth.onAuthStateChange((event, session) => {
+    return supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
+        // Get user data from database table
+        const dbUser = await this.getUserFromDatabase(session.user.id);
+        
         const authUser: AuthUser = {
           id: session.user.id,
           email: session.user.email || '',
           firstName: session.user.user_metadata?.first_name || '',
           lastName: session.user.user_metadata?.last_name || '',
-          role: session.user.user_metadata?.role || 'user',
+          role: dbUser?.role || 'user', // Use role from database table
         };
         callback(authUser);
       } else {
