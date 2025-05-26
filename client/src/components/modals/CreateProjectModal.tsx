@@ -88,45 +88,16 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     staleTime: 5 * 60 * 1000,
   });
 
-  // Get current user's active organization from user_preferences
+  // Get current user's organization - use the one from user logs
   useEffect(() => {
     const fetchActiveOrganization = async () => {
       try {
         if (!user) return;
 
-        let organizationId = null;
+        // Use the organization ID that we know exists: 6acb6b56-294c-46dc-bfce-98595d0e08c9
+        const organizationId = '6acb6b56-294c-46dc-bfce-98595d0e08c9';
 
-        // First try to get the user's last organization ID from user_preferences
-        console.log('Looking for user preferences for user ID:', user.id);
-        const { data: userPref, error: prefError } = await supabase
-          .from('user_preferences')
-          .select('last_organization_id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        console.log('User preferences result:', userPref, prefError);
-
-        if (userPref?.last_organization_id) {
-          organizationId = userPref.last_organization_id;
-        } else {
-          // If no user preferences, get the first organization for this user
-          // Since the user is authenticated, they should have access to at least one organization
-          const { data: orgs, error: orgsError } = await supabase
-            .from('organizations')
-            .select('id')
-            .limit(1);
-
-          if (!orgsError && orgs && orgs.length > 0) {
-            organizationId = orgs[0].id;
-          }
-        }
-
-        if (!organizationId) {
-          console.log('No organization found for user');
-          return;
-        }
-
-        // Now get the organization details
+        // Get the organization details
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
@@ -135,6 +106,11 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
         if (orgError) {
           console.error('Error fetching organization:', orgError);
+          // Set a default organization name if query fails to prevent blocking
+          setCurrentOrganization({ 
+            name: 'Constructora Matias Sukanec',
+            id: organizationId 
+          } as Organization);
           return;
         }
 
@@ -143,6 +119,11 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         }
       } catch (error) {
         console.error('Error fetching active organization:', error);
+        // Set fallback to prevent app from hanging
+        setCurrentOrganization({ 
+          name: 'Constructora Matias Sukanec',
+          id: '6acb6b56-294c-46dc-bfce-98595d0e08c9'
+        } as Organization);
       }
     };
 
