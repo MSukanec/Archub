@@ -31,7 +31,6 @@ import { insertOrganizationSchema } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { organizationsService } from '@/lib/organizationsService';
 import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Form, 
@@ -89,6 +88,12 @@ export default function AdminOrganizations() {
 
   const createMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
+      // Get current user
+      const { user } = useAuthStore.getState();
+      if (!user) {
+        throw new Error('Usuario no autenticado');
+      }
+
       // Generate unique slug from name if not provided
       const slug = data.slug?.trim() || 
         data.name.toLowerCase()
@@ -99,7 +104,7 @@ export default function AdminOrganizations() {
       return organizationsService.create({
         ...data,
         slug: slug,
-        owner_id: 1, // Using default owner for now
+        owner_id: user.id, // Using authenticated user's ID
       });
     },
     onSuccess: () => {
