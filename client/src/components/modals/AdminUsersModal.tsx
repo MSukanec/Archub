@@ -183,6 +183,29 @@ export default function AdminUsersModal({
               )}
             />
             
+            <FormField
+              control={form.control}
+              name="plan_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plan</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar plan" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="basic">Básico</SelectItem>
+                      <SelectItem value="professional">Profesional</SelectItem>
+                      <SelectItem value="enterprise">Empresarial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancelar
