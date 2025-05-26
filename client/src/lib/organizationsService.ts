@@ -19,6 +19,36 @@ export interface CreateOrganizationData {
 }
 
 export const organizationsService = {
+  async getCurrentUserOrganization(): Promise<Organization | null> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('users')
+      .select(`
+        organization_members!inner(
+          organizations!inner(
+            id,
+            name,
+            slug,
+            logo_url,
+            is_active,
+            created_at,
+            owner_id
+          )
+        )
+      `)
+      .eq('auth_id', user.id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching user organization:', error);
+      return null;
+    }
+
+    return data?.organization_members?.organizations || null;
+  },
+
   async getAll(): Promise<Organization[]> {
     const { data, error } = await supabase
       .from('organizations')

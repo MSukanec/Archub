@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsService, Project, CreateProjectData } from '@/lib/projectsService';
+import { organizationsService, Organization } from '@/lib/organizationsService';
 import { 
   Dialog, 
   DialogContent, 
@@ -40,7 +41,6 @@ const createProjectSchema = z.object({
   address: z.string().optional(),
   contact_phone: z.string().optional(),
   city: z.string().optional(),
-  organization_id: z.number().optional(),
 });
 
 type CreateProjectFormData = z.infer<typeof createProjectSchema>;
@@ -54,6 +54,7 @@ interface CreateProjectModalProps {
 export default function CreateProjectModal({ isOpen, onClose, project }: CreateProjectModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -65,9 +66,21 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       address: '',
       contact_phone: '',
       city: '',
-      organization_id: 1,
     },
   });
+
+  // Get current user's organization
+  useEffect(() => {
+    const fetchOrganization = async () => {
+      try {
+        const org = await organizationsService.getCurrentUserOrganization();
+        setCurrentOrganization(org);
+      } catch (error) {
+        console.error('Error fetching organization:', error);
+      }
+    };
+    fetchOrganization();
+  }, []);
 
   // Reset form when project changes (for editing)
   useEffect(() => {
@@ -80,7 +93,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         address: project.address || '',
         contact_phone: project.contact_phone || '',
         city: project.city || '',
-        organization_id: project.organization_id,
       });
     } else {
       form.reset({
@@ -91,7 +103,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         address: '',
         contact_phone: '',
         city: '',
-        organization_id: 1,
       });
     }
   }, [project, form]);
@@ -249,24 +260,18 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="organization_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organización</FormLabel>
-                  <FormControl>
-                    <Input 
-                      {...field}
-                      value={field.value?.toString() || '1'}
-                      disabled
-                      className="bg-muted text-muted-foreground"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {currentOrganization && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Organización
+                </label>
+                <Input 
+                  value={currentOrganization.name}
+                  disabled
+                  className="bg-muted text-muted-foreground"
+                />
+              </div>
+            )}
 
             <FormField
               control={form.control}

@@ -42,6 +42,21 @@ export const projectsService = {
   },
 
   async create(projectData: CreateProjectData): Promise<Project> {
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Usuario no autenticado');
+
+    // Get user's organization_id from users table
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (userError || !userData) {
+      throw new Error('No se pudo obtener la información del usuario');
+    }
+
     const { data, error } = await supabase
       .from('projects')
       .insert([{
@@ -52,7 +67,7 @@ export const projectsService = {
         address: projectData.address || null,
         contact_phone: projectData.contact_phone || null,
         city: projectData.city || null,
-        organization_id: projectData.organization_id || 1, // Default to organization 1 for now
+        organization_id: userData.id, // Use user's ID as organization_id
         proj_id: `PROJ-${Date.now()}`, // Generate a unique project ID
       }])
       .select()
