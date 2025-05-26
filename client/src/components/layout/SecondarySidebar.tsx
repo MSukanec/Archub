@@ -38,7 +38,7 @@ const sectionConfig = {
   },
   admin: {
     title: 'Administración',
-    description: 'Configuración y usuarios',
+    description: 'Gestión de organizaciones y usuarios',
     items: [
       { view: 'admin-organizations' as View, icon: Building, label: 'Organizaciones' },
       { view: 'admin-users' as View, icon: Users, label: 'Usuarios' },

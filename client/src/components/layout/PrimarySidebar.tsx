@@ -1,11 +1,11 @@
-import { ChartLine, Building, Settings, User } from 'lucide-react';
+import { ChartLine, Building, Settings, User, Shield } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { cn } from '@/lib/utils';
 
 const navigationItems = [
   { section: 'dashboard' as Section, icon: ChartLine, label: 'Dashboard' },
   { section: 'projects' as Section, icon: Building, label: 'Proyectos' },
-  { section: 'admin' as Section, icon: Settings, label: 'Administración' },
+  { section: 'admin' as Section, icon: Shield, label: 'Administración' },
 ];
 
 export default function PrimarySidebar() {

@@ -9,6 +9,7 @@ import Dashboard from '@/views/Dashboard';
 import ProjectsOverview from '@/views/ProjectsOverview';
 import ProjectsList from '@/views/ProjectsList';
 import Organizations from '@/views/Organizations';
+import AdminOrganizations from '@/views/AdminOrganizations';
 import Users from '@/views/Users';
 import ProfileInfo from '@/views/ProfileInfo';
 import Subscription from '@/views/Subscription';
@@ -19,7 +20,7 @@ const viewComponents = {
   'dashboard-activity': Dashboard,
   'projects-overview': ProjectsOverview,
   'projects-list': ProjectsList,
-  'admin-organizations': Organizations,
+  'admin-organizations': AdminOrganizations,
   'admin-users': Users,
   'admin-permissions': Users,
   'profile-info': ProfileInfo,
