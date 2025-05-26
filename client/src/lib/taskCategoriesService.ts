@@ -46,7 +46,11 @@ export const taskCategoriesService = {
       }
       
       console.log(`Found ${data.length} categories`);
-      return this.buildTree(data);
+      
+      // Return data directly for now - the buildTree function is causing issues
+      const sortedData = data.sort((a, b) => a.position - b.position);
+      console.log('Returning sorted data:', sortedData.length);
+      return sortedData;
       
     } catch (err) {
       console.error('Connection error:', err);
