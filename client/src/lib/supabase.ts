@@ -30,6 +30,7 @@ export const authService = {
         data: {
           first_name: firstName,
           last_name: lastName,
+          role: 'admin', // Por defecto asignar rol de admin para pruebas
         },
       },
     });
@@ -54,6 +55,7 @@ export const authService = {
           email: session.user.email || '',
           firstName: session.user.user_metadata?.first_name || '',
           lastName: session.user.user_metadata?.last_name || '',
+          role: session.user.user_metadata?.role || 'user',
         };
         callback(authUser);
       } else {

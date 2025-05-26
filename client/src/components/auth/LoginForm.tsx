@@ -38,28 +38,21 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const { data: authData, error } = await authService.signIn(data.email, data.password);
+      
+      if (error) {
+        toast({
+          title: 'Error de autenticación',
+          description: error.message,
+          variant: 'destructive',
+        });
+        return;
+      }
 
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        
+      if (authData.user) {
         toast({
           title: 'Bienvenido',
           description: 'Has iniciado sesión correctamente',
-        });
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: 'Error de autenticación',
-          description: errorData.error || 'Credenciales inválidas',
-          variant: 'destructive',
         });
       }
     } catch (error: any) {

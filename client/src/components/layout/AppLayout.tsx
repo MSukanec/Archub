@@ -34,42 +34,28 @@ export default function AppLayout() {
   const { setSecondarySidebarVisible } = useSidebarStore();
 
   useEffect(() => {
-    // Check if user is stored in localStorage first
-    const storedUser = localStorage.getItem('auth_user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        setLoading(false);
-        return;
-      } catch (error) {
-        localStorage.removeItem('auth_user');
-      }
-    }
-
-    // If no stored user, check auth state
-    setLoading(true);
-    const loadUser = async () => {
-      try {
-        const response = await fetch('/api/auth/me');
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-          localStorage.setItem('auth_user', JSON.stringify(userData));
-        } else {
-          setUser(null);
-          localStorage.removeItem('auth_user');
-        }
-      } catch (error) {
-        console.error('Error loading user:', error);
+    // Check initial auth state
+    authService.getCurrentUser().then(({ user }) => {
+      if (user) {
+        setUser({
+          id: user.id,
+          email: user.email || '',
+          firstName: user.user_metadata?.first_name || '',
+          lastName: user.user_metadata?.last_name || '',
+          role: user.user_metadata?.role || 'user',
+        });
+      } else {
         setUser(null);
-        localStorage.removeItem('auth_user');
-      } finally {
-        setLoading(false);
       }
-    };
+      setLoading(false);
+    });
 
-    loadUser();
+    // Listen for auth changes
+    const { data: { subscription } } = authService.onAuthStateChange((user) => {
+      setUser(user);
+    });
+
+    return () => subscription.unsubscribe();
   }, [setUser, setLoading]);
 
   const ViewComponent = viewComponents[currentView] || Dashboard;
