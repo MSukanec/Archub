@@ -15,7 +15,7 @@ export interface CreateOrganizationData {
   slug?: string | null;
   logo_url?: string | null;
   is_active?: boolean;
-  owner_id: number;
+  owner_id: string;
 }
 
 export const organizationsService = {

@@ -35,7 +35,7 @@ import { usersService } from '@/lib/usersService';
 const organizationFormSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   slug: z.string().optional(),
-  owner_id: z.number().min(1, 'Debe seleccionar un propietario'),
+  owner_id: z.string().min(1, 'Debe seleccionar un propietario'),
 });
 
 type OrganizationFormData = z.infer<typeof organizationFormSchema>;
@@ -60,7 +60,7 @@ export default function AdminOrganizationsModal({
     defaultValues: {
       name: '',
       slug: '',
-      owner_id: undefined,
+      owner_id: '',
     },
   });
 
@@ -141,15 +141,13 @@ export default function AdminOrganizationsModal({
       form.reset({
         name: organization.name || '',
         slug: organization.slug || '',
-        owner_id: typeof organization.owner_id === 'string' 
-          ? parseInt(organization.owner_id) 
-          : organization.owner_id,
+        owner_id: organization.owner_id || '',
       });
     } else {
       form.reset({
         name: '',
         slug: '',
-        owner_id: undefined,
+        owner_id: '',
       });
     }
   }, [organization, form]);
@@ -211,8 +209,8 @@ export default function AdminOrganizationsModal({
                   <FormLabel>Propietario</FormLabel>
                   <FormControl>
                     <Select 
-                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                      value={field.value?.toString()}
+                      onValueChange={field.onChange}
+                      value={field.value}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar propietario" />
