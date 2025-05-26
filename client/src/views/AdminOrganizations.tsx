@@ -76,7 +76,7 @@ export default function AdminOrganizations() {
 
   const { data: organizations = [], isLoading } = useQuery({
     queryKey: ['organizations'],
-    queryFn: organizationsService.getAll,
+    queryFn: () => fetch('/api/organizations').then(res => res.json()),
   });
 
   const form = useForm<OrganizationFormData>({
@@ -89,10 +89,6 @@ export default function AdminOrganizations() {
 
   const createMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
-      // Get the first user ID from the users table for owner_id
-      const { data: users } = await supabase.from('users').select('id').limit(1);
-      const ownerId = users?.[0]?.id || 1;
-      
       // Generate unique slug from name if not provided
       const slug = data.slug?.trim() || 
         data.name.toLowerCase()
@@ -100,11 +96,20 @@ export default function AdminOrganizations() {
           .replace(/^-+|-+$/g, '') + 
         '-' + Math.random().toString(36).substr(2, 6);
       
-      return organizationsService.create({
-        ...data,
-        slug: slug,
-        owner_id: ownerId,
+      const response = await fetch('/api/organizations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          slug: slug,
+        }),
       });
+      
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
@@ -126,7 +131,17 @@ export default function AdminOrganizations() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
-      return organizationsService.update(selectedOrganization.id, data);
+      const response = await fetch(`/api/organizations/${selectedOrganization.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
@@ -149,7 +164,15 @@ export default function AdminOrganizations() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return organizationsService.delete(id);
+      const response = await fetch(`/api/organizations/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
