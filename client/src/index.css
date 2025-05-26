@@ -25,7 +25,7 @@
   --radius: 0.5rem;
   
   /* Surface variations for better hierarchy */
-  --surface: 0 0% 20%; /* #333333 */
+  --surface: 0 0% 8%; /* #141414 */
   --surface-light: 0 0% 30%; /* #4d4d4d */
 }
 

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
@@ -29,6 +30,7 @@ const viewComponents = {
 export default function AppLayout() {
   const { setUser, setLoading } = useAuthStore();
   const { currentView } = useNavigationStore();
+  const { setSecondarySidebarVisible } = useSidebarStore();
 
   useEffect(() => {
     // Check initial auth state
@@ -57,8 +59,14 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <PrimarySidebar />
-      <SecondarySidebar />
+      <div 
+        className="flex"
+        onMouseEnter={() => setSecondarySidebarVisible(true)}
+        onMouseLeave={() => setSecondarySidebarVisible(false)}
+      >
+        <PrimarySidebar />
+        <SecondarySidebar />
+      </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar />
