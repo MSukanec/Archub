@@ -43,7 +43,7 @@ export default function AppLayout() {
           email: user.email || '',
           firstName: user.user_metadata?.first_name || '',
           lastName: user.user_metadata?.last_name || '',
-          role: user.user_metadata?.role || 'admin', // Por defecto admin para usuarios existentes
+          role: user.user_metadata?.role || 'user',
         };
         console.log('Setting user:', authUser);
         setUser(authUser);
