@@ -12,7 +12,8 @@ import {
   MoreHorizontal,
   Ruler,
   Blocks,
-  Zap
+  Zap,
+  Contact
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -35,6 +36,13 @@ const sectionConfig = {
     items: [
       { view: 'projects-overview' as View, icon: ChartBar, label: 'Resumen' },
       { view: 'projects-list' as View, icon: List, label: 'Lista de Proyectos' },
+    ],
+  },
+  contacts: {
+    title: 'Agenda',
+    description: 'Gestión de contactos y proveedores',
+    items: [
+      { view: 'contacts' as View, icon: Contact, label: 'Contactos' },
     ],
   },
   admin: {

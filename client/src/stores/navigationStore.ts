@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 
-export type Section = 'dashboard' | 'projects' | 'admin' | 'profile';
+export type Section = 'dashboard' | 'projects' | 'contacts' | 'admin' | 'profile';
 export type View = 
   | 'dashboard-main'
   | 'dashboard-activity'
   | 'projects-overview'
   | 'projects-list'
+  | 'contacts'
   | 'admin-organizations'
   | 'admin-users'
   | 'admin-units'
@@ -27,6 +28,7 @@ interface NavigationState {
 const sectionViewMap: Record<Section, View> = {
   dashboard: 'dashboard-main',
   projects: 'projects-overview',
+  contacts: 'contacts',
   admin: 'admin-organizations',
   profile: 'profile-info',
 };
