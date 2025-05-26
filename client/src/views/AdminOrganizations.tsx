@@ -31,6 +31,7 @@ import { insertOrganizationSchema } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { organizationsService } from '@/lib/organizationsService';
 import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Form, 
@@ -40,7 +41,14 @@ import {
   FormLabel, 
   FormMessage 
 } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const organizationFormSchema = insertOrganizationSchema.pick({
   name: true,
@@ -74,9 +82,13 @@ export default function AdminOrganizations() {
 
   const createMutation = useMutation({
     mutationFn: async (data: OrganizationFormData) => {
+      // Get the first user ID from the users table for owner_id
+      const { data: users } = await supabase.from('users').select('id').limit(1);
+      const ownerId = users?.[0]?.id || 1;
+      
       return organizationsService.create({
         ...data,
-        owner_id: 1, // TODO: Get actual user ID from auth
+        owner_id: ownerId,
       });
     },
     onSuccess: () => {
@@ -194,9 +206,9 @@ export default function AdminOrganizations() {
           </Button>
         </div>
 
-        {/* Search */}
+        {/* Search - Full width with inline filter */}
         <div className="flex items-center space-x-4">
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1">
             <Input
               placeholder="Buscar organizaciones..."
               value={searchQuery}
@@ -205,6 +217,9 @@ export default function AdminOrganizations() {
             />
             <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
           </div>
+          <Button variant="outline" className="whitespace-nowrap">
+            Filtro por fecha
+          </Button>
         </div>
 
         {/* Organizations Grid */}
@@ -233,63 +248,72 @@ export default function AdminOrganizations() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredOrganizations.map((org: any) => (
-              <Card key={org.id} className="hover:border-border/60 transition-colors">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center text-lg">
-                      <Building className="mr-2 text-primary" size={20} />
-                      {org.name}
-                    </CardTitle>
-                    <div className="flex space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(org)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit size={14} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(org)}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {org.description || 'Sin descripción'}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center text-muted-foreground">
-                      <Users size={14} className="mr-1" />
-                      {org.memberCount || 0} miembros
-                    </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <Calendar size={14} className="mr-1" />
-                      {new Date(org.createdAt).toLocaleDateString('es-ES')}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary">
-                      {org.projectCount || 0} proyectos
-                    </Badge>
-                    <Badge variant={org.ownerId ? "default" : "secondary"}>
-                      {org.ownerName || 'Sin propietario'}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Organización</TableHead>
+                    <TableHead>Slug</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Fecha de Creación</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredOrganizations
+                    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                    .map((org: any) => (
+                    <TableRow key={org.id}>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Building className="mr-2 text-primary" size={16} />
+                          <span className="font-medium">{org.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-muted-foreground">{org.slug || '-'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={org.is_active ? "default" : "secondary"}>
+                          {org.is_active ? 'Activa' : 'Inactiva'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(org.created_at).toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end space-x-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(org)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit size={14} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(org)}
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         )}
       </div>
 
@@ -299,7 +323,10 @@ export default function AdminOrganizations() {
           setIsCreateModalOpen(false);
           setIsEditModalOpen(false);
           setSelectedOrganization(null);
-          form.reset();
+          form.reset({
+            name: '',
+            slug: '',
+          });
         }
       }}>
         <DialogContent className="sm:max-w-md">
