@@ -75,6 +75,7 @@ export default function AdminElementsModal({
 
   const updateMutation = useMutation({
     mutationFn: async (data: ElementFormData) => {
+      if (!element?.id) throw new Error('ID de elemento no válido');
       return elementsService.update(element.id, data);
     },
     onSuccess: () => {
@@ -95,7 +96,11 @@ export default function AdminElementsModal({
   });
 
   const onSubmit = (data: ElementFormData) => {
-    if (isEditing) {
+    console.log('Form submitted with data:', data);
+    console.log('isEditing:', isEditing);
+    console.log('element:', element);
+    
+    if (isEditing && element?.id) {
       updateMutation.mutate(data);
     } else {
       createMutation.mutate(data);
