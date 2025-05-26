@@ -1,4 +1,4 @@
-import { ChartLine, Building, Settings, User, Shield } from 'lucide-react';
+import { ChartLine, Building, Settings, User, Shield, Bell } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
@@ -70,6 +70,16 @@ export default function PrimarySidebar() {
           </button>
         );
       })}
+      
+      {/* Notifications */}
+      <button
+        onClick={() => setSection('profile')}
+        className="w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200 mb-2 text-muted-foreground hover:text-foreground hover:bg-surface/60 relative"
+        title="Notificaciones"
+      >
+        <Bell size={20} />
+        <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+      </button>
       
       {/* Profile Avatar */}
       <button

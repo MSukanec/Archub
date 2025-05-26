@@ -77,12 +77,6 @@ export default function TopBar() {
               </SelectContent>
             </Select>
           </div>
-
-          {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative">
-            <Bell size={18} />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
-          </Button>
         </div>
       </header>
 

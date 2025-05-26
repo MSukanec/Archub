@@ -55,6 +55,13 @@ export const activities = pgTable("activities", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const actions = pgTable("actions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -77,6 +84,11 @@ export const insertProjectSchema = createInsertSchema(projects).pick({
   endDate: true,
 });
 
+export const insertActionSchema = createInsertSchema(actions).pick({
+  name: true,
+  description: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -90,3 +102,6 @@ export type Project = typeof projects.$inferSelect;
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 
 export type Activity = typeof activities.$inferSelect;
+
+export type Action = typeof actions.$inferSelect;
+export type InsertAction = z.infer<typeof insertActionSchema>;
