@@ -1,4 +1,4 @@
-import { ChartLine, Building, Settings, User, Shield, Bell } from 'lucide-react';
+import { ChartLine, Building, Settings, User, Shield, Bell, Contact } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 const topNavigationItems = [
   { section: 'dashboard' as Section, icon: ChartLine, label: 'Organización' },
   { section: 'projects' as Section, icon: Building, label: 'Proyectos' },
+  { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
 ];
 
 const bottomNavigationItems = [
