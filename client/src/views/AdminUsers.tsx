@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { usersService, User } from '@/lib/usersService';
-// import AdminUsersModal from '@/components/modals/AdminUsersModal';
+import AdminUsersModal from '@/components/modals/AdminUsersModal';
 
 export default function AdminUsers() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -99,6 +99,19 @@ export default function AdminUsers() {
     }
   };
 
+  const getPlanDisplay = (planId: string | null) => {
+    switch (planId) {
+      case 'basic':
+        return 'Básico';
+      case 'professional':
+        return 'Profesional';
+      case 'enterprise':
+        return 'Empresarial';
+      default:
+        return 'Sin plan';
+    }
+  };
+
   if (isLoading) {
     return <AdminUsersSkeleton />;
   }
@@ -140,6 +153,7 @@ export default function AdminUsers() {
               <TableHead>Email</TableHead>
               <TableHead>Nombre</TableHead>
               <TableHead>Rol</TableHead>
+              <TableHead>Plan</TableHead>
               <TableHead>Fecha de registro</TableHead>
               <TableHead className="w-24">Acciones</TableHead>
             </TableRow>
@@ -147,7 +161,7 @@ export default function AdminUsers() {
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   {searchTerm ? 'No se encontraron usuarios que coincidan con tu búsqueda.' : 'No hay usuarios registrados aún.'}
                 </TableCell>
               </TableRow>
@@ -160,6 +174,11 @@ export default function AdminUsers() {
                     <Badge variant={getRoleBadgeVariant(user.role)} className="flex items-center gap-1 w-fit">
                       {getRoleIcon(user.role)}
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                      {getPlanDisplay(user.plan_id)}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -199,14 +218,14 @@ export default function AdminUsers() {
       </div>
 
       {/* Modals */}
-      {/* <AdminUsersModal
+      <AdminUsersModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setSelectedUser(null);
         }}
         user={selectedUser}
-      /> */}
+      />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>

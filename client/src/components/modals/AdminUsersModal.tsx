@@ -15,6 +15,7 @@ const userFormSchema = z.object({
   email: z.string().email('Email inválido').min(1, 'El email es requerido'),
   full_name: z.string().min(1, 'El nombre es requerido'),
   role: z.string().min(1, 'El rol es requerido'),
+  plan_id: z.string().min(1, 'El plan es requerido'),
 });
 
 type UserFormData = z.infer<typeof userFormSchema>;
@@ -39,6 +40,7 @@ export default function AdminUsersModal({
       email: user?.email || '',
       full_name: user?.full_name || '',
       role: user?.role || 'user',
+      plan_id: user?.plan_id || 'basic',
     },
   });
 
@@ -49,12 +51,14 @@ export default function AdminUsersModal({
         email: user.email,
         full_name: user.full_name || '',
         role: user.role,
+        plan_id: user.plan_id || 'basic',
       });
     } else {
       form.reset({
         email: '',
         full_name: '',
         role: 'user',
+        plan_id: 'basic',
       });
     }
   }, [user, form]);

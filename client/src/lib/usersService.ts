@@ -5,6 +5,7 @@ export interface User {
   email: string;
   full_name: string | null;
   role: string;
+  plan_id: string | null;
   created_at: string;
   auth_id: string;
 }
@@ -13,6 +14,7 @@ export interface CreateUserData {
   email: string;
   full_name: string;
   role: string;
+  plan_id: string;
 }
 
 export const usersService = {
@@ -37,6 +39,7 @@ export const usersService = {
         email: userData.email,
         full_name: userData.full_name,
         role: userData.role,
+        plan_id: userData.plan_id,
         auth_id: `temp_${Date.now()}` // Temporal auth_id
       }])
       .select()
