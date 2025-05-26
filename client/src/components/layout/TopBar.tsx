@@ -83,7 +83,9 @@ export default function TopBar() {
   }, [user, projects, currentProject, setCurrentProject]);
 
   const handleProjectChange = async (projectId: string) => {
+    console.log('Project change triggered:', projectId);
     if (projectId === 'create-new') {
+      console.log('Opening create project modal');
       setIsCreateModalOpen(true);
       // Navigate to projects list
       setSection('projects');
