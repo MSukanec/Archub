@@ -34,20 +34,36 @@ export default function AppLayout() {
   const { setSecondarySidebarVisible } = useSidebarStore();
 
   useEffect(() => {
-    // Load user from backend
+    // Check if user is stored in localStorage first
+    const storedUser = localStorage.getItem('auth_user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        setLoading(false);
+        return;
+      } catch (error) {
+        localStorage.removeItem('auth_user');
+      }
+    }
+
+    // If no stored user, check auth state
+    setLoading(true);
     const loadUser = async () => {
       try {
-        setLoading(true);
         const response = await fetch('/api/auth/me');
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
+          localStorage.setItem('auth_user', JSON.stringify(userData));
         } else {
           setUser(null);
+          localStorage.removeItem('auth_user');
         }
       } catch (error) {
         console.error('Error loading user:', error);
         setUser(null);
+        localStorage.removeItem('auth_user');
       } finally {
         setLoading(false);
       }

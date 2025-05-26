@@ -5,8 +5,28 @@ import { insertProjectSchema, insertUserSchema, insertOrganizationSchema } from 
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Users routes
-  // Get current user (for auth state)
+  // Auth routes
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await storage.getUserByEmail(email);
+      
+      if (user && user.password === password) {
+        res.json({
+          id: user.id.toString(),
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role
+        });
+      } else {
+        res.status(401).json({ error: 'Invalid credentials' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.get('/api/auth/me', async (req, res) => {
     try {
       // For demo purposes, return the admin user
@@ -26,6 +46,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: error.message });
     }
   });
+
+  // Users routes
 
   app.get("/api/users", async (req, res) => {
     try {

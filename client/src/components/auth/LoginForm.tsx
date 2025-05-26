@@ -38,34 +38,34 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const { data: authData, error } = await authService.signIn(data.email, data.password);
-      
-      if (error) {
-        toast({
-          title: 'Error de autenticación',
-          description: error.message,
-          variant: 'destructive',
-        });
-        return;
-      }
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-      if (authData.user) {
-        setUser({
-          id: authData.user.id,
-          email: authData.user.email || '',
-          firstName: authData.user.user_metadata?.first_name || '',
-          lastName: authData.user.user_metadata?.last_name || '',
-        });
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
         
         toast({
           title: 'Bienvenido',
           description: 'Has iniciado sesión correctamente',
         });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: 'Error de autenticación',
+          description: errorData.error || 'Credenciales inválidas',
+          variant: 'destructive',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'Ocurrió un error inesperado',
+        description: error.message || 'Ocurrió un error inesperado',
         variant: 'destructive',
       });
     } finally {
