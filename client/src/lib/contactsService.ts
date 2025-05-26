@@ -27,9 +27,21 @@ export interface CreateContactData {
 export const contactsService = {
   async getAll(): Promise<Contact[]> {
     try {
+      // Get organization from existing projects (same strategy as create)
+      const { data: projectData } = await supabase
+        .from('projects')
+        .select('organization_id')
+        .limit(1)
+        .single();
+
+      if (!projectData) {
+        return []; // Return empty if no organization found
+      }
+
       const { data, error } = await supabase
         .from('contacts')
         .select('*')
+        .eq('organization_id', projectData.organization_id) // Filter by organization
         .order('created_at', { ascending: false })
         .limit(100); // Limitar resultados para evitar sobrecarga
       
