@@ -77,13 +77,26 @@ export default function AdminOrganizations() {
   const { data: organizations = [], isLoading, error } = useQuery({
     queryKey: ['organizations'],
     queryFn: async () => {
-      const response = await fetch('/api/organizations');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      try {
+        const response = await fetch('/api/organizations');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        console.log('Raw response:', text);
+        
+        try {
+          const data = JSON.parse(text);
+          console.log('Organizations data:', data);
+          return data;
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          throw new Error('Invalid JSON response from server');
+        }
+      } catch (fetchError) {
+        console.error('Fetch error:', fetchError);
+        throw fetchError;
       }
-      const data = await response.json();
-      console.log('Organizations data:', data);
-      return data;
     },
   });
 
