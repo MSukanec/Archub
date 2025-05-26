@@ -233,14 +233,9 @@ function AdminActionsSkeleton() {
         <div className="h-10 w-32 bg-muted rounded animate-pulse" />
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="h-6 w-32 bg-muted rounded animate-pulse" />
-            <div className="h-10 w-80 bg-muted rounded animate-pulse" />
-          </div>
-        </CardHeader>
-        <CardContent>
+      <div className="space-y-4">
+        <div className="h-10 w-80 bg-muted rounded animate-pulse" />
+        <div className="border rounded-md p-4">
           <div className="space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center space-x-4">
@@ -251,8 +246,8 @@ function AdminActionsSkeleton() {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
