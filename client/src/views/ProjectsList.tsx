@@ -1,30 +1,87 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, DollarSign } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus, Search, Building, MapPin, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { projectsService, Project } from '@/lib/projectsService';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
 export default function ProjectsList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects = [], isLoading } = useQuery({
     queryKey: ['/api/projects'],
+    queryFn: () => projectsService.getAll(),
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => projectsService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      toast({
+        title: "Proyecto eliminado",
+        description: "El proyecto ha sido eliminado exitosamente.",
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedProject(null);
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo eliminar el proyecto.",
+      });
+    }
+  });
+
+  const handleEdit = (project: Project) => {
+    setSelectedProject(project);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleDelete = (project: Project) => {
+    setSelectedProject(project);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedProject) {
+      deleteMutation.mutate(selectedProject.id);
+    }
+  };
+
+  const getStatusVariant = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'default';
+      case 'planning':
+        return 'secondary';
+      case 'completed':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
 
   if (isLoading) {
     return <ProjectsListSkeleton />;
   }
 
-  const filteredProjects = projects?.filter((project: any) =>
+  const filteredProjects = projects.filter((project: Project) =>
     project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.location?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+    project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.address?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -87,7 +144,7 @@ export default function ProjectsList() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {filteredProjects.map((project: any) => (
+            {filteredProjects.map((project: Project) => (
               <Card key={project.id} className="hover:border-border/60 transition-colors">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -95,36 +152,52 @@ export default function ProjectsList() {
                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                         <Building className="text-primary" size={20} />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground">{project.name}</h3>
-                        {project.location && (
-                          <div className="flex items-center mt-1 text-sm text-muted-foreground">
-                            <MapPin size={14} className="mr-1" />
-                            {project.location}
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-4 mt-2">
-                          <Badge variant="secondary">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-foreground">{project.name}</h3>
+                          <Badge variant={getStatusVariant(project.status)} className="text-xs">
                             {project.status}
                           </Badge>
-                          {project.budget && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <DollarSign size={14} className="mr-1" />
-                              ${parseFloat(project.budget).toLocaleString()}
-                            </div>
-                          )}
                         </div>
+                        {project.client_name && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Cliente: {project.client_name}
+                          </p>
+                        )}
+                        {project.address && (
+                          <div className="flex items-center mt-1 text-sm text-muted-foreground">
+                            <MapPin size={14} className="mr-1" />
+                            {project.address}
+                          </div>
+                        )}
+                        {project.description && (
+                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                            {project.description}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          ID: {project.proj_id} • Creado: {new Date(project.created_at).toLocaleDateString('es-ES')}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Progress value={project.progress || 0} className="w-24" />
-                        <span className="text-sm text-muted-foreground w-12">
-                          {project.progress || 0}%
-                        </span>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Ver Detalles
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(project)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Editar proyecto</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(project)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Eliminar proyecto</span>
                       </Button>
                     </div>
                   </div>
@@ -137,8 +210,34 @@ export default function ProjectsList() {
 
       <CreateProjectModal 
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setSelectedProject(null);
+        }}
+        project={selectedProject}
       />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar proyecto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el proyecto
+              <strong> {selectedProject?.name}</strong> y todos sus datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

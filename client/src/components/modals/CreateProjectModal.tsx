@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { insertProjectSchema } from '@shared/schema';
+import { projectsService, Project, CreateProjectData } from '@/lib/projectsService';
 import { 
   Dialog, 
   DialogContent, 
@@ -26,8 +25,12 @@ import {
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const createProjectSchema = insertProjectSchema.extend({
-  budget: z.string().optional(),
+const createProjectSchema = z.object({
+  name: z.string().min(1, 'El nombre es requerido'),
+  description: z.string().optional(),
+  client_name: z.string().optional(),
+  status: z.string().optional(),
+  address: z.string().optional(),
 });
 
 type CreateProjectFormData = z.infer<typeof createProjectSchema>;
@@ -35,9 +38,10 @@ type CreateProjectFormData = z.infer<typeof createProjectSchema>;
 interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
+  project?: Project | null;
 }
 
-export default function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps) {
+export default function CreateProjectModal({ isOpen, onClose, project }: CreateProjectModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -46,24 +50,46 @@ export default function CreateProjectModal({ isOpen, onClose }: CreateProjectMod
     defaultValues: {
       name: '',
       description: '',
-      location: '',
-      budget: '',
+      client_name: '',
+      status: 'planning',
+      address: '',
     },
   });
 
+  // Reset form when project changes (for editing)
+  useEffect(() => {
+    if (project) {
+      form.reset({
+        name: project.name,
+        description: project.description || '',
+        client_name: project.client_name || '',
+        status: project.status,
+        address: project.address || '',
+      });
+    } else {
+      form.reset({
+        name: '',
+        description: '',
+        client_name: '',
+        status: 'planning',
+        address: '',
+      });
+    }
+  }, [project, form]);
+
   const createProjectMutation = useMutation({
     mutationFn: async (data: CreateProjectFormData) => {
-      const response = await apiRequest('POST', '/api/projects', {
-        ...data,
-        budget: data.budget ? parseFloat(data.budget) : undefined,
-      });
-      return response.json();
+      if (project) {
+        return projectsService.update(project.id, data);
+      } else {
+        return projectsService.create(data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
       toast({
-        title: 'Proyecto creado',
-        description: 'El proyecto ha sido creado exitosamente',
+        title: project ? 'Proyecto actualizado' : 'Proyecto creado',
+        description: project ? 'El proyecto ha sido actualizado exitosamente' : 'El proyecto ha sido creado exitosamente',
       });
       form.reset();
       onClose();
