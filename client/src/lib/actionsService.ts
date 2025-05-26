@@ -4,7 +4,6 @@ export interface Action {
   id: number;
   name: string;
   description?: string;
-  created_at: string;
 }
 
 export interface CreateActionData {
@@ -17,7 +16,7 @@ export const actionsService = {
     const { data, error } = await supabase
       .from('actions')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('id', { ascending: false });
     
     if (error) {
       console.error('Error fetching actions:', error);

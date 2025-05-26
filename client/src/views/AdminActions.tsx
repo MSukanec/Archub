@@ -76,13 +76,13 @@ export default function AdminActions() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Filter actions based on search (newest first)
+  // Filter actions based on search (newest first by ID)
   const filteredActions = actions
     .filter((action: any) =>
       action.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (action.description && action.description.toLowerCase().includes(searchTerm.toLowerCase()))
     )
-    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    .sort((a: any, b: any) => b.id - a.id);
 
   if (isLoading) {
     return <AdminActionsSkeleton />;
@@ -132,14 +132,13 @@ export default function AdminActions() {
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Descripción</TableHead>
-              <TableHead>Fecha de Creación</TableHead>
               <TableHead className="w-24">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredActions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={3} className="h-24 text-center">
                   {searchTerm ? 'No se encontraron acciones que coincidan con tu búsqueda.' : 'No hay acciones creadas aún.'}
                 </TableCell>
               </TableRow>
@@ -149,9 +148,6 @@ export default function AdminActions() {
                   <TableCell className="font-medium">{action.name}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {action.description || '-'}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(action.created_at).toLocaleDateString('es-ES')}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
