@@ -6,6 +6,27 @@ import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Users routes
+  // Get current user (for auth state)
+  app.get('/api/auth/me', async (req, res) => {
+    try {
+      // For demo purposes, return the admin user
+      const adminUser = await storage.getUserByEmail('admin@example.com');
+      if (adminUser) {
+        res.json({
+          id: adminUser.id.toString(),
+          email: adminUser.email,
+          firstName: adminUser.firstName,
+          lastName: adminUser.lastName,
+          role: adminUser.role
+        });
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.get("/api/users", async (req, res) => {
     try {
       const users = await storage.getAllUsers();

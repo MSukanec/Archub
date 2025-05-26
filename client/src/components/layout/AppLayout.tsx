@@ -34,26 +34,26 @@ export default function AppLayout() {
   const { setSecondarySidebarVisible } = useSidebarStore();
 
   useEffect(() => {
-    // Check initial auth state
-    authService.getCurrentUser().then(({ user }) => {
-      if (user) {
-        setUser({
-          id: user.id,
-          email: user.email || '',
-          firstName: user.user_metadata?.first_name || '',
-          lastName: user.user_metadata?.last_name || '',
-        });
-      } else {
+    // Load user from backend
+    const loadUser = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
 
-    // Listen for auth changes
-    const { data: { subscription } } = authService.onAuthStateChange((user) => {
-      setUser(user);
-    });
-
-    return () => subscription.unsubscribe();
+    loadUser();
   }, [setUser, setLoading]);
 
   const ViewComponent = viewComponents[currentView] || Dashboard;
