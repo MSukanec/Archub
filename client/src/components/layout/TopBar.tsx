@@ -19,6 +19,7 @@ const breadcrumbConfig = {
   'contacts': { section: 'Agenda', view: 'Contactos' },
   'admin-organizations': { section: 'Administración', view: 'Organizaciones' },
   'admin-users': { section: 'Administración', view: 'Usuarios' },
+  'admin-categories': { section: 'Administración', view: 'Gestión de Categorías' },
   'admin-units': { section: 'Administración', view: 'Unidades' },
   'admin-elements': { section: 'Administración', view: 'Elementos' },
   'admin-actions': { section: 'Administración', view: 'Acciones' },

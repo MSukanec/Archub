@@ -9,6 +9,7 @@ export type View =
   | 'contacts'
   | 'admin-organizations'
   | 'admin-users'
+  | 'admin-categories'
   | 'admin-units'
   | 'admin-elements'
   | 'admin-actions'
