@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,19 @@ export default function AdminActionsModal({
       name: action?.name || '',
     },
   });
+
+  // Reset form when action changes (for editing)
+  useEffect(() => {
+    if (action) {
+      form.reset({
+        name: action.name,
+      });
+    } else {
+      form.reset({
+        name: '',
+      });
+    }
+  }, [action, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ActionFormData) => {
