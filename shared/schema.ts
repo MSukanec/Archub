@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, uuid, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -60,6 +60,28 @@ export const actions = pgTable("actions", {
   name: text("name").notNull(),
 });
 
+export const contacts = pgTable("contacts", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 50 }),
+  company_name: varchar("company_name", { length: 255 }),
+  location: varchar("location", { length: 255 }),
+  notes: text("notes"),
+  contact_type: varchar("contact_type", { length: 100 }).notNull(), // proveedor, contratista, técnico, etc.
+  organization_id: uuid("organization_id").notNull().references(() => organizations.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const contactTaskLinks = pgTable("contact_task_links", {
+  id: serial("id").primaryKey(),
+  contact_id: integer("contact_id").notNull().references(() => contacts.id),
+  project_id: uuid("project_id").references(() => projects.id),
+  task_description: text("task_description"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -84,7 +106,16 @@ export const insertProjectSchema = createInsertSchema(projects).pick({
 
 export const insertActionSchema = createInsertSchema(actions).pick({
   name: true,
-  description: true,
+});
+
+export const insertContactSchema = createInsertSchema(contacts).pick({
+  name: true,
+  email: true,
+  phone: true,
+  company_name: true,
+  location: true,
+  notes: true,
+  contact_type: true,
 });
 
 // Types
@@ -103,3 +134,8 @@ export type Activity = typeof activities.$inferSelect;
 
 export type Action = typeof actions.$inferSelect;
 export type InsertAction = z.infer<typeof insertActionSchema>;
+
+export type Contact = typeof contacts.$inferSelect;
+export type InsertContact = z.infer<typeof insertContactSchema>;
+
+export type ContactTaskLink = typeof contactTaskLinks.$inferSelect;
