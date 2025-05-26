@@ -88,13 +88,40 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     staleTime: 5 * 60 * 1000,
   });
 
-  // Get current user's organization
+  // Get current user's organization from Supabase organizations table
   useEffect(() => {
+    const fetchOrganization = async () => {
+      try {
+        // Get the user's organization from the organizations table
+        const { data: orgData, error } = await supabase
+          .from('organizations')
+          .select('*')
+          .limit(1)
+          .single();
+
+        if (error) {
+          console.error('Error fetching organization:', error);
+          return;
+        }
+
+        if (orgData) {
+          setCurrentOrganization({
+            id: orgData.id,
+            name: orgData.name,
+            slug: orgData.slug,
+            logo_url: orgData.logo_url,
+            is_active: orgData.is_active,
+            created_at: orgData.created_at,
+            owner_id: orgData.owner_id
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching organization:', error);
+      }
+    };
+
     if (user) {
-      // Use a meaningful organization name
-      setCurrentOrganization({ 
-        name: "Constructora Matias Sukanec" 
-      } as Organization);
+      fetchOrganization();
     }
   }, [user]);
 
