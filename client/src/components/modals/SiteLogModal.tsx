@@ -85,13 +85,13 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         throw new Error('No se pudo encontrar el usuario interno');
       }
       
-      // Create the site log data with required fields
+      // Create the site log data with required fields (using correct column names)
       const siteLogData = {
         project_id: projectId,
-        date: data.date,
+        log_date: data.date,
         weather: data.weather || '',
-        comments: data.comments || '',
-        created_by: internalUser.id,
+        description: data.comments || '',
+        author_id: internalUser.id,
       };
 
       let createdSiteLog: SiteLog;

@@ -50,7 +50,7 @@ export default function SiteLogs() {
           .from('site_logs')
           .select('*')
           .eq('project_id', projectId)
-          .order('date', { ascending: false });
+          .order('log_date', { ascending: false });
         
         if (error) throw error;
         return data || [];
@@ -151,7 +151,7 @@ export default function SiteLogs() {
                 
                 <div className="space-y-6">
                   {siteLogs.map((siteLog, index) => {
-                    const logDate = new Date(siteLog.date);
+                    const logDate = new Date(siteLog.log_date);
                     const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
                     
                     return (
