@@ -46,10 +46,11 @@ export default function SiteLogs() {
     queryFn: async () => {
       if (!projectId) return [];
       try {
+        console.log('Fetching site logs for project:', projectId);
         const { data, error } = await supabase
           .from('site_logs')
           .select('*')
-          .eq('project_id', projectId)
+          .eq('project_id', String(projectId))
           .order('log_date', { ascending: false });
         
         if (error) throw error;
