@@ -239,7 +239,15 @@ export default function Budgets() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Select value={activeBudgetId?.toString() || ""} onValueChange={(value) => setActiveBudgetId(Number(value))}>
+              <Select 
+                value={activeBudgetId?.toString() || ""} 
+                onValueChange={(value) => {
+                  console.log('Budget selected:', value);
+                  const budgetId = Number(value);
+                  console.log('Setting activeBudgetId to:', budgetId);
+                  setActiveBudgetId(budgetId);
+                }}
+              >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Seleccionar presupuesto" />
                 </SelectTrigger>
