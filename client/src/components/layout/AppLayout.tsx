@@ -110,9 +110,18 @@ export default function AppLayout() {
       setIsCreateModalOpen(true);
     };
 
+    const handleNavigateToSubscriptionTables = () => {
+      // Use navigation store to change view
+      const { setView } = useNavigationStore.getState();
+      setView('subscription-tables');
+    };
+
     window.addEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
+    window.addEventListener('navigate-to-subscription-tables', handleNavigateToSubscriptionTables);
+    
     return () => {
       window.removeEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
+      window.removeEventListener('navigate-to-subscription-tables', handleNavigateToSubscriptionTables);
     };
   }, []);
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,19 @@ export default function AdminUsers() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateUserModal = () => {
+      setSelectedUser(null);
+      setIsModalOpen(true);
+    };
+
+    window.addEventListener('openCreateUserModal', handleOpenCreateUserModal);
+    return () => {
+      window.removeEventListener('openCreateUserModal', handleOpenCreateUserModal);
+    };
+  }, []);
 
   // Fetch users
   const { data: users = [], isLoading } = useQuery({
@@ -117,10 +130,6 @@ export default function AdminUsers() {
             Administra los usuarios del sistema
           </p>
         </div>
-        <Button onClick={handleCreate} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Nuevo Usuario
-        </Button>
       </div>
 
       {/* Search */}

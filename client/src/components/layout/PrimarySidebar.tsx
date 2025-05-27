@@ -57,8 +57,8 @@ export default function PrimarySidebar() {
         <button
           onClick={() => {
             setSection('profile');
-            // Navigate to subscription tables
-            window.location.hash = '#/subscription-tables';
+            // Use the navigation store to change view
+            window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
           }}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
           title="Plan"
