@@ -200,7 +200,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         related_contact_id: data.related_contact_id && data.related_contact_id !== 'none' ? data.related_contact_id : null,
         related_task_id: data.related_task_id && data.related_task_id !== 'none' ? data.related_task_id : null,
         file_url: fileUrl,
-        updated_at: new Date().toISOString(),
       };
 
       if (isEditing && movement?.id) {
@@ -216,14 +215,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         return updatedMovement;
       } else {
         // Create new movement
-        const createData = {
-          ...movementData,
-          created_at: new Date().toISOString(),
-        };
-
         const { data: newMovement, error } = await supabase
           .from('site_movements')
-          .insert(createData)
+          .insert(movementData)
           .select()
           .single();
 
