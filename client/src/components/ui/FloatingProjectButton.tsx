@@ -66,7 +66,7 @@ export default function FloatingProjectButton() {
 
   return (
     <div 
-      className="fixed top-6 right-24 z-50"
+      className="fixed top-6 right-6 z-50"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -28,7 +28,7 @@ import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
 import SubscriptionTables from '@/views/SubscriptionTables';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
-import FloatingOrganizationButton from '@/components/ui/FloatingOrganizationButton';
+
 import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -132,7 +132,6 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-6 relative">
           <ViewComponent />
-          <FloatingOrganizationButton />
           <FloatingProjectButton />
           <FloatingActionButton />
         </main>
