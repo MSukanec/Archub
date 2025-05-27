@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { siteLogsService } from '@/lib/siteLogsService';
 import { tasksService } from '@/lib/tasksService';
 import { contactsService } from '@/lib/contactsService';
+import { useAuthStore } from '@/stores/authStore';
 import type { SiteLog, Task, Contact, InsertSiteLogTask, InsertSiteLogAttendee } from '@shared/schema';
 
 const siteLogSchema = z.object({
@@ -40,6 +41,7 @@ interface SiteLogModalProps {
 export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: SiteLogModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
   
   const [selectedTasks, setSelectedTasks] = useState<Array<{ task: Task; quantity: string; notes: string }>>([]);
   const [selectedAttendees, setSelectedAttendees] = useState<Array<{ contact: Contact; role: string }>>([]);
@@ -69,11 +71,13 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const createMutation = useMutation({
     mutationFn: async (data: SiteLogForm) => {
       if (!projectId) throw new Error('No hay proyecto seleccionado');
+      if (!user?.id) throw new Error('Usuario no encontrado');
       
       const siteLogData = {
         project_id: projectId,
         date: data.date,
         weather: data.weather || '',
+        created_by: user?.id,
       };
 
       let createdSiteLog: SiteLog;
