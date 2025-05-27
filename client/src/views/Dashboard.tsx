@@ -43,7 +43,10 @@ export default function Dashboard() {
       }
       
       return data;
-    }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutos de cache
+    refetchOnWindowFocus: false,
+    retry: 1
   });
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -155,7 +158,12 @@ export default function Dashboard() {
 
       return Object.values(eventsByDate);
     },
-    enabled: !!projectId
+    enabled: !!projectId,
+    staleTime: 2 * 60 * 1000, // 2 minutos de cache
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
+    retryDelay: 3000
   });
 
   const handleDayClick = (date: string, dayData: any) => {

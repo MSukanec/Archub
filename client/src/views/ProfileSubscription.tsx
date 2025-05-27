@@ -65,10 +65,10 @@ export default function Subscription() {
   const { data: availablePlans = [], isLoading: plansLoading } = useQuery({
     queryKey: ['/api/plans'],
     queryFn: () => plansService.getAll(),
+    staleTime: 10 * 60 * 1000, // 10 minutos de cache
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
-
-  // Log para debugging
-  console.log('Available plans:', availablePlans);
 
   const getPlanIcon = (planName: string) => {
     switch (planName?.toLowerCase()) {
