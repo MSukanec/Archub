@@ -27,6 +27,7 @@ export default function Dashboard() {
   // Obtener datos del proyecto activo
   const { data: activeProject } = useQuery({
     queryKey: ['/api/projects', projectId],
+    enabled: !!projectId,
     queryFn: async () => {
       if (!projectId) return null;
       
@@ -42,8 +43,7 @@ export default function Dashboard() {
       }
       
       return data;
-    },
-    enabled: !!projectId
+    }
   });
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());

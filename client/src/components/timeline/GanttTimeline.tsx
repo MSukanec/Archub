@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, subDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GanttItem {
