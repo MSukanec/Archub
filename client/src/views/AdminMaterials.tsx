@@ -18,10 +18,42 @@ export default function AdminMaterials() {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
   // Fetch materials
-  const { data: materials = [], isLoading } = useQuery({
+  const { data: materials = [], isLoading, error } = useQuery({
     queryKey: ['/api/materials'],
     queryFn: () => materialsService.getAll(),
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
+
+  // Handle errors - Show user-friendly message instead of freezing
+  if (error) {
+    console.error('Error loading materials:', error);
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            Gestión de Materiales
+          </h1>
+          <p className="text-muted-foreground">
+            Administra los materiales del sistema.
+          </p>
+        </div>
+        
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Tabla no disponible
+            </h3>
+            <p className="text-muted-foreground max-w-md">
+              La tabla de materiales no está configurada en la base de datos. 
+              Esta funcionalidad estará disponible cuando se complete la configuración.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Delete mutation
   const deleteMutation = useMutation({

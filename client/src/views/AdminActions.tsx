@@ -44,9 +44,33 @@ export default function AdminActions() {
     refetchOnWindowFocus: false,
   });
 
-  // Handle errors
+  // Handle errors - Show user-friendly message instead of freezing
   if (error) {
     console.error('Error loading actions:', error);
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            Gestión de Acciones
+          </h1>
+          <p className="text-muted-foreground">
+            Administra las acciones del sistema.
+          </p>
+        </div>
+        
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Tabla no disponible
+            </h3>
+            <p className="text-muted-foreground max-w-md">
+              La tabla de acciones no está configurada en la base de datos. 
+              Esta funcionalidad estará disponible cuando se complete la configuración.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Delete mutation
