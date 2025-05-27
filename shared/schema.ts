@@ -61,6 +61,12 @@ export const actions = pgTable("actions", {
   name: text("name").notNull(),
 });
 
+export const units = pgTable("units", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+});
+
 export const contacts = pgTable("contacts", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -89,6 +95,13 @@ export const taskCategories = pgTable("task_categories", {
   name: text("name").notNull(),
   position: integer("position").notNull(),
   parent_id: integer("parent_id").references(() => taskCategories.id),
+});
+
+export const materials = pgTable("materials", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  unit_id: integer("unit_id").notNull().references(() => units.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Insert schemas
@@ -134,6 +147,11 @@ export const insertTaskCategorySchema = createInsertSchema(taskCategories).pick(
   parent_id: true,
 });
 
+export const insertMaterialSchema = createInsertSchema(materials).pick({
+  name: true,
+  unit_id: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -158,3 +176,9 @@ export type ContactTaskLink = typeof contactTaskLinks.$inferSelect;
 
 export type TaskCategory = typeof taskCategories.$inferSelect;
 export type InsertTaskCategory = z.infer<typeof insertTaskCategorySchema>;
+
+export type Unit = typeof units.$inferSelect;
+export type InsertUnit = z.infer<typeof insertActionSchema>; // We'll use existing schema for now
+
+export type Material = typeof materials.$inferSelect;
+export type InsertMaterial = z.infer<typeof insertMaterialSchema>;
