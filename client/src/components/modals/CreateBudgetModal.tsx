@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
+import { useQuery } from '@tanstack/react-query';
 
 const budgetSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -46,6 +47,23 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Get internal user ID from the users table
+  const { data: internalUser } = useQuery({
+    queryKey: ['/api/internal-user', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   const form = useForm<BudgetForm>({
     resolver: zodResolver(budgetSchema),
     defaultValues: {
@@ -59,14 +77,14 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
     mutationFn: async (data: BudgetForm) => {
       if (!projectId) throw new Error('No hay proyecto seleccionado');
       if (!organizationId) throw new Error('No hay organización seleccionada');
-      if (!user?.id) throw new Error('Usuario no encontrado');
+      if (!internalUser?.id) throw new Error('Usuario interno no encontrado');
       
       const budgetData = {
         name: data.name,
         description: data.description || null,
         project_id: projectId,
         organization_id: organizationId,
-        created_by: user.id,
+        created_by: internalUser.id,
         status: data.status,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

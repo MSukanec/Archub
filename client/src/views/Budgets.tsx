@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, Calculator, Package, MapPin } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus, Calculator, Package, MapPin, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { projectsService } from '@/lib/projectsService';
@@ -17,6 +24,8 @@ export default function Budgets() {
   const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
   const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Get projects to find current project name
   const { data: projects = [] } = useQuery({
@@ -25,6 +34,33 @@ export default function Budgets() {
   });
 
   const currentProject = projects.find((p: any) => p.id === projectId);
+
+  // Delete budget mutation
+  const deleteBudgetMutation = useMutation({
+    mutationFn: async (budgetId: string) => {
+      const { error } = await supabase
+        .from('budgets')
+        .delete()
+        .eq('id', budgetId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/budgets', projectId] });
+      toast({
+        title: "Presupuesto eliminado",
+        description: "El presupuesto se ha eliminado correctamente.",
+      });
+    },
+    onError: (error) => {
+      console.error('Error al eliminar presupuesto:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el presupuesto. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Fetch budgets for the current project
   const { data: budgets = [] } = useQuery({
@@ -127,21 +163,52 @@ export default function Budgets() {
             ) : (
               /* Budget list */
               budgets.map((budget: any) => (
-                <Card key={budget.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setActiveBudgetId(budget.id)}>
+                <Card key={budget.id} className="cursor-pointer hover:bg-muted/50">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{budget.name}</CardTitle>
-                      <Badge variant={budget.status === 'approved' ? 'default' : 'secondary'}>
-                        {budget.status === 'draft' ? 'Borrador' : 
-                         budget.status === 'approved' ? 'Aprobado' : 
-                         budget.status === 'rejected' ? 'Rechazado' : budget.status}
-                      </Badge>
+                      <div className="flex-1" onClick={() => setActiveBudgetId(budget.id)}>
+                        <CardTitle className="text-lg">{budget.name}</CardTitle>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={budget.status === 'approved' ? 'default' : 'secondary'}>
+                          {budget.status === 'draft' ? 'Borrador' : 
+                           budget.status === 'approved' ? 'Aprobado' : 
+                           budget.status === 'rejected' ? 'Rechazado' : budget.status}
+                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => console.log('Edit budget:', budget.id)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => deleteBudgetMutation.mutate(budget.id)}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                     {budget.description && (
-                      <CardDescription>{budget.description}</CardDescription>
+                      <CardDescription onClick={() => setActiveBudgetId(budget.id)}>
+                        {budget.description}
+                      </CardDescription>
                     )}
                   </CardHeader>
-                  <CardContent>
+                  <CardContent onClick={() => setActiveBudgetId(budget.id)}>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span>Creado: {new Date(budget.created_at).toLocaleDateString()}</span>
                       {activeBudgetId === budget.id && (
