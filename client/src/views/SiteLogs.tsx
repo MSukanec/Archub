@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { siteLogsService } from '@/lib/siteLogsService';
+import { projectsService } from '@/lib/projectsService';
 import { useUserContextStore } from '@/stores/userContextStore';
 import SiteLogModal from '@/components/modals/SiteLogModal';
 import type { SiteLog } from '@shared/schema';
@@ -17,6 +18,14 @@ export default function SiteLogs() {
   const { projectId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<SiteLog | null>(null);
+
+  // Get projects to find current project name
+  const { data: projects = [] } = useQuery({
+    queryKey: ['/api/projects'],
+    queryFn: () => projectsService.getAll(),
+  });
+
+  const currentProject = projects.find((p: any) => p.id === projectId);
 
   const { data: siteLogs = [], isLoading } = useQuery({
     queryKey: ['/api/site-logs', projectId],
@@ -43,7 +52,7 @@ export default function SiteLogs() {
     return '🌤️';
   };
 
-  if (!currentProject) {
+  if (!projectId) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
