@@ -6,6 +6,7 @@ import TimelineWorkspace from '@/components/timeline/TimelineWorkspace';
 import DayDetailModal from '@/components/timeline/DayDetailModal';
 import GanttTimeline from '@/components/timeline/GanttTimeline';
 import SiteLogModal from '@/components/modals/SiteLogModal';
+import MovementModal from '@/components/modals/MovementModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
@@ -207,17 +208,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex-1 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Línea de Tiempo</h1>
-          <p className="text-muted-foreground">
-            Visualiza todos los eventos diarios de tu proyecto
-          </p>
-        </div>
-        
 
-      </div>
 
       {/* Vista Gantt */}
       <GanttTimeline 

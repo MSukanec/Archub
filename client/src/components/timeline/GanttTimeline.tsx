@@ -314,7 +314,23 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
 
         {/* Header con días */}
         <div className="grid grid-cols-[200px_1fr] gap-4 relative">
-          <div className="font-medium text-sm text-muted-foreground">Tipo / Fecha</div>
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => navigateWeek('prev')}
+                className="p-1 text-gray-400 hover:text-white transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-sm font-medium text-white">Hoy</span>
+              <button 
+                onClick={() => navigateWeek('next')}
+                className="p-1 text-gray-400 hover:text-white transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
           <div 
             className="relative overflow-hidden"
             onMouseEnter={() => {
@@ -368,7 +384,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       </div>
 
       {/* Filas por tipo */}
-      <div className="space-y-6">
+      <div className="space-y-3">
         {Object.entries(typeLabels).map(([type, label]) => {
           const Icon = typeIcons[type as keyof typeof typeIcons];
           const typeItems = itemsByType[type] || [];

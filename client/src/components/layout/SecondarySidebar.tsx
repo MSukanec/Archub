@@ -19,7 +19,8 @@ import {
   FolderTree,
   ChevronDown,
   CheckSquare,
-  Package
+  Package,
+  DollarSign
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -75,7 +76,7 @@ const sectionConfig = {
     title: 'Movimientos de Obra',
     description: 'Registro de ingresos y egresos',
     items: [
-      { view: 'movements-main' as View, icon: MoreHorizontal, label: 'Movimientos Financieros' },
+      { view: 'movements-main' as View, icon: DollarSign, label: 'Movimientos Financieros' },
     ],
   },
   contacts: {
