@@ -20,6 +20,7 @@ interface GanttTimelineProps {
   endDate?: Date;
   timelineEvents?: any[];
   weekDays?: Date[];
+  onItemClick?: (item: GanttItem) => void;
 }
 
 // Colores para cada tipo de elemento
@@ -47,7 +48,7 @@ const typeLabels = {
   asistentes: 'Asistentes'
 };
 
-export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays }: GanttTimelineProps) {
+export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays, onItemClick }: GanttTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const timelineContentRef = useRef<HTMLDivElement>(null);
   const [showLeftNav, setShowLeftNav] = useState(false);
@@ -367,7 +368,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       </div>
 
       {/* Filas por tipo */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {Object.entries(typeLabels).map(([type, label]) => {
           const Icon = typeIcons[type as keyof typeof typeIcons];
           const typeItems = itemsByType[type] || [];
@@ -414,12 +415,13 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                       <div
                         key={item.id}
                         className={cn(
-                          "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md",
+                          "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
                           item.color,
                           "flex items-center justify-center text-white text-xs font-medium"
                         )}
                         style={position}
                         title={`${item.title} (${format(item.startDate, 'dd/MM')} - ${format(item.endDate, 'dd/MM')})`}
+                        onClick={() => onItemClick?.(item)}
                       >
                         <span className="truncate px-2">{item.title}</span>
                       </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import TimelineWorkspace from '@/components/timeline/TimelineWorkspace';
@@ -23,6 +23,7 @@ interface DayEvent {
 
 export default function Dashboard() {
   const { projectId } = useUserContextStore();
+  const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<DayEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,6 +132,15 @@ export default function Dashboard() {
     setIsModalOpen(true);
   };
 
+  const handleItemClick = (item: any) => {
+    console.log('Item clicked:', item);
+    if (item.type === 'bitacora') {
+      setSelectedSiteLog(item.data);
+      setIsSiteLogModalOpen(true);
+    }
+    // Aquí agregaremos más tipos cuando implementemos los otros modales
+  };
+
   const navigatePeriod = (direction: 'prev' | 'next') => {
     setViewStartDate(prev => 
       direction === 'prev' ? subDays(prev, 7) : addDays(prev, 7)
@@ -227,7 +237,13 @@ export default function Dashboard() {
       {/* Site Log Modal */}
       <SiteLogModal
         isOpen={isSiteLogModalOpen}
-        onClose={() => setIsSiteLogModalOpen(false)}
+        onClose={() => {
+          setIsSiteLogModalOpen(false);
+          // Invalidar cache para actualizar el timeline
+          queryClient.invalidateQueries({
+            queryKey: ['/api/timeline-events']
+          });
+        }}
         siteLog={selectedSiteLog}
         projectId={projectId}
       />
