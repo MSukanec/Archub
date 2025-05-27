@@ -151,7 +151,9 @@ export default function AdminUsers() {
           <TableHeader>
             <TableRow>
               <TableHead>Email</TableHead>
+              <TableHead>Nombre completo</TableHead>
               <TableHead>Nombre</TableHead>
+              <TableHead>Apellido</TableHead>
               <TableHead>Rol</TableHead>
               <TableHead>Plan</TableHead>
               <TableHead>Fecha de registro</TableHead>
@@ -161,7 +163,7 @@ export default function AdminUsers() {
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-24 text-center">
                   {searchTerm ? 'No se encontraron usuarios que coincidan con tu búsqueda.' : 'No hay usuarios registrados aún.'}
                 </TableCell>
               </TableRow>
@@ -170,6 +172,8 @@ export default function AdminUsers() {
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>{user.full_name || '-'}</TableCell>
+                  <TableCell>{user.first_name || '-'}</TableCell>
+                  <TableCell>{user.last_name || '-'}</TableCell>
                   <TableCell>
                     <Badge variant={getRoleBadgeVariant(user.role)} className="flex items-center gap-1 w-fit">
                       {getRoleIcon(user.role)}

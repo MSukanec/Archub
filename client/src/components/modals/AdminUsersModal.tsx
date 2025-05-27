@@ -174,7 +174,7 @@ export default function AdminUsersModal({
                   <FormLabel>Nombre completo</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="Nombre del usuario"
+                      placeholder="Nombre completo del usuario"
                       {...field}
                     />
                   </FormControl>
@@ -182,6 +182,42 @@ export default function AdminUsersModal({
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Nombre"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="last_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellido</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Apellido"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             
             <FormField
               control={form.control}
