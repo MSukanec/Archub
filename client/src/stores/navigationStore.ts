@@ -14,6 +14,7 @@ export type View =
   | 'admin-units'
   | 'admin-elements'
   | 'admin-actions'
+  | 'admin-tasks'
   | 'admin-permissions'
   | 'profile-info'
   | 'profile-subscription'

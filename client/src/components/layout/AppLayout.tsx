@@ -18,6 +18,7 @@ import AdminActions from '@/views/AdminActions';
 import AdminUsers from '@/views/AdminUsers';
 import AdminCategories from '@/views/AdminCategories';
 import AdminMaterials from '@/views/AdminMaterials';
+import AdminTasks from '@/views/AdminTasks';
 
 import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
@@ -37,6 +38,7 @@ const viewComponents = {
   'admin-units': AdminUnits,
   'admin-elements': AdminElements,
   'admin-actions': AdminActions,
+  'admin-tasks': AdminTasks,
   'admin-permissions': AdminActions, // Temporarily using actions view
   'profile-info': ProfileInfo,
   'profile-subscription': ProfileSubscription,
