@@ -39,7 +39,15 @@ export default function AdminActions() {
   const { data: actions = [], isLoading, error } = useQuery({
     queryKey: ['actions'],
     queryFn: () => actionsService.getAll(),
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutos de cache
+    refetchOnWindowFocus: false,
   });
+
+  // Handle errors
+  if (error) {
+    console.error('Error loading actions:', error);
+  }
 
   // Delete mutation
   const deleteMutation = useMutation({

@@ -39,7 +39,20 @@ export default function AdminElements() {
   const { data: elements = [], isLoading, error } = useQuery({
     queryKey: ['elements'],
     queryFn: () => elementsService.getAll(),
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutos de cache
+    refetchOnWindowFocus: false,
   });
+
+  // Handle errors
+  if (error) {
+    console.error('Error loading elements:', error);
+    toast({
+      title: 'Error',
+      description: 'No se pudieron cargar los elementos. Verifica que la tabla exista.',
+      variant: 'destructive',
+    });
+  }
 
   // Delete mutation
   const deleteMutation = useMutation({
