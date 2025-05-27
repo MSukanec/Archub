@@ -111,6 +111,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
     console.log('Starting user context initialization...');
     
     try {
+      // Step 1: Get auth.uid()
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.log('No authenticated user found');
@@ -118,25 +119,42 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         return;
       }
 
-      console.log('Authenticated user:', user.id);
+      const authUid = user.id;
+      console.log('Auth UID:', authUid);
 
-      // Get user preferences - this is the ONLY source of truth for organization
-      const { data: prefData, error: prefError } = await supabase
-        .from('user_preferences')
-        .select('last_organization_id')
-        .eq('user_id', user.id)
+      // Step 2: Find internal user by auth_id
+      const { data: dbUser, error: dbUserError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_id', authUid)
         .single();
 
-      console.log('User preferences data:', prefData, 'Error:', prefError);
+      if (dbUserError || !dbUser) {
+        console.error('No se pudo obtener el usuario interno:', dbUserError);
+        set({ isLoading: false, isInitialized: true });
+        return;
+      }
 
-      let organizationId = prefData?.last_organization_id || null;
+      console.log('Usuario interno encontrado:', dbUser);
 
-      console.log('Organization from user_preferences:', organizationId);
+      // Step 3: Get user preferences using internal user.id
+      const { data: prefs, error: prefsError } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('user_id', dbUser.id)
+        .single();
 
-      console.log('Setting organization:', organizationId);
+      if (prefsError || !prefs) {
+        console.log('Preferencias no encontradas para usuario:', dbUser.id);
+        set({ isLoading: false, isInitialized: true });
+        return;
+      }
+
+      console.log('Preferencias encontradas:', prefs);
+      console.log('Organización activa:', prefs.last_organization_id);
 
       set({
-        organizationId,
+        organizationId: prefs.last_organization_id,
         projectId: null,
         budgetId: null,
         planId: null,
