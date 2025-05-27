@@ -81,7 +81,7 @@ const sectionConfig = {
 };
 
 export default function SecondarySidebar() {
-  const { currentSection, currentView, setView, hoveredSection } = useNavigationStore();
+  const { currentSection, currentView, setView, hoveredSection, setHoveredSection } = useNavigationStore();
   const { user, logout } = useAuthStore();
   const { isSecondarySidebarVisible } = useSidebarStore();
   const { organizationId, setUserContext } = useUserContextStore();
