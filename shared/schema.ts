@@ -115,6 +115,47 @@ export const tasks = pgTable("tasks", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Site logs tables
+export const siteLogs = pgTable("site_logs", {
+  id: serial("id").primaryKey(),
+  project_id: integer("project_id").references(() => projects.id).notNull(),
+  date: timestamp("date").notNull(),
+  comments: text("comments"),
+  weather: text("weather"),
+  created_by: integer("created_by").references(() => users.id).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const siteLogTasks = pgTable("site_log_tasks", {
+  id: serial("id").primaryKey(),
+  site_log_id: integer("site_log_id").references(() => siteLogs.id).notNull(),
+  task_id: integer("task_id").references(() => tasks.id).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }),
+  notes: text("notes"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const siteLogAttendees = pgTable("site_log_attendees", {
+  id: serial("id").primaryKey(),
+  site_log_id: integer("site_log_id").references(() => siteLogs.id).notNull(),
+  contact_id: integer("contact_id").references(() => contacts.id).notNull(),
+  role: text("role"), // supervisor, worker, inspector, etc.
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const siteLogFiles = pgTable("site_log_files", {
+  id: serial("id").primaryKey(),
+  site_log_id: integer("site_log_id").references(() => siteLogs.id).notNull(),
+  file_name: text("file_name").notNull(),
+  file_url: text("file_url").notNull(),
+  file_type: text("file_type").notNull(), // image, video, document
+  file_size: integer("file_size"),
+  description: text("description"),
+  uploaded_by: integer("uploaded_by").references(() => users.id).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -172,6 +213,35 @@ export const insertTaskSchema = createInsertSchema(tasks).pick({
   element_category_id: true,
 });
 
+export const insertSiteLogSchema = createInsertSchema(siteLogs).pick({
+  project_id: true,
+  date: true,
+  comments: true,
+  weather: true,
+});
+
+export const insertSiteLogTaskSchema = createInsertSchema(siteLogTasks).pick({
+  site_log_id: true,
+  task_id: true,
+  quantity: true,
+  notes: true,
+});
+
+export const insertSiteLogAttendeeSchema = createInsertSchema(siteLogAttendees).pick({
+  site_log_id: true,
+  contact_id: true,
+  role: true,
+});
+
+export const insertSiteLogFileSchema = createInsertSchema(siteLogFiles).pick({
+  site_log_id: true,
+  file_name: true,
+  file_url: true,
+  file_type: true,
+  file_size: true,
+  description: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -205,3 +275,15 @@ export type InsertMaterial = z.infer<typeof insertMaterialSchema>;
 
 export type Task = typeof tasks.$inferSelect;
 export type InsertTask = z.infer<typeof insertTaskSchema>;
+
+export type SiteLog = typeof siteLogs.$inferSelect;
+export type InsertSiteLog = z.infer<typeof insertSiteLogSchema>;
+
+export type SiteLogTask = typeof siteLogTasks.$inferSelect;
+export type InsertSiteLogTask = z.infer<typeof insertSiteLogTaskSchema>;
+
+export type SiteLogAttendee = typeof siteLogAttendees.$inferSelect;
+export type InsertSiteLogAttendee = z.infer<typeof insertSiteLogAttendeeSchema>;
+
+export type SiteLogFile = typeof siteLogFiles.$inferSelect;
+export type InsertSiteLogFile = z.infer<typeof insertSiteLogFileSchema>;
