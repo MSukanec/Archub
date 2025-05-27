@@ -20,6 +20,7 @@ const breadcrumbConfig = {
   'admin-organizations': { section: 'Administración', view: 'Organizaciones' },
   'admin-users': { section: 'Administración', view: 'Usuarios' },
   'admin-categories': { section: 'Administración', view: 'Categorías' },
+  'admin-materials': { section: 'Administración', view: 'Gestión de Materiales' },
   'admin-units': { section: 'Administración', view: 'Unidades' },
   'admin-elements': { section: 'Administración', view: 'Elementos' },
   'admin-actions': { section: 'Administración', view: 'Acciones' },
