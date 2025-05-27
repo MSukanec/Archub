@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DayCard from './DayCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -27,6 +27,9 @@ export default function TimelineWorkspace({
   onDayClick 
 }: TimelineWorkspaceProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isLeftHovered, setIsLeftHovered] = useState(false);
+  const [isRightHovered, setIsRightHovered] = useState(false);
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Centrar automáticamente el día actual cuando se carga
   useEffect(() => {
@@ -62,6 +65,29 @@ export default function TimelineWorkspace({
       });
     }
   };
+
+  const startAutoScroll = (direction: 'left' | 'right') => {
+    if (scrollIntervalRef.current) return;
+    
+    scrollIntervalRef.current = setInterval(() => {
+      if (scrollContainerRef.current) {
+        const scrollAmount = 2;
+        const currentScroll = scrollContainerRef.current.scrollLeft;
+        const newScroll = direction === 'left' 
+          ? currentScroll - scrollAmount 
+          : currentScroll + scrollAmount;
+        
+        scrollContainerRef.current.scrollLeft = newScroll;
+      }
+    }, 16);
+  };
+
+  const stopAutoScroll = () => {
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+  };
   
   if (isLoading) {
     return (
@@ -91,6 +117,14 @@ export default function TimelineWorkspace({
         {/* Left Navigation Button */}
         <button
           onClick={() => scrollTimeline('left')}
+          onMouseEnter={() => {
+            setIsLeftHovered(true);
+            startAutoScroll('left');
+          }}
+          onMouseLeave={() => {
+            setIsLeftHovered(false);
+            stopAutoScroll();
+          }}
           className="absolute left-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-r from-[#1e1e1e] to-transparent flex items-center justify-center hover:from-[#282828] transition-colors"
         >
           <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,6 +135,14 @@ export default function TimelineWorkspace({
         {/* Right Navigation Button */}
         <button
           onClick={() => scrollTimeline('right')}
+          onMouseEnter={() => {
+            setIsRightHovered(true);
+            startAutoScroll('right');
+          }}
+          onMouseLeave={() => {
+            setIsRightHovered(false);
+            stopAutoScroll();
+          }}
           className="absolute right-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-l from-[#1e1e1e] to-transparent flex items-center justify-center hover:from-[#282828] transition-colors"
         >
           <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -126,18 +126,18 @@ export default function FloatingActionButton() {
         onClick={handleClick}
         className={cn(
           "bg-primary hover:bg-primary/90 text-primary-foreground",
-          "rounded-full shadow-lg hover:shadow-xl",
+          "shadow-lg hover:shadow-xl",
           "flex flex-col items-center justify-center",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
           actionConfig.isMultiple && isHovered 
-            ? "h-auto py-3 px-4 min-w-48" 
+            ? "h-auto py-3 px-4 min-w-48 rounded-xl" 
             : actionConfig.isMultiple 
-              ? "h-14 w-14" 
+              ? "h-14 w-14 rounded-full" 
               : isHovered 
-                ? "h-14 justify-start pl-4 pr-6" 
-                : "h-14 w-14 justify-center"
+                ? "h-14 justify-start pl-4 pr-6 rounded-full" 
+                : "h-14 w-14 justify-center rounded-full"
         )}
         style={{
           width: actionConfig.isMultiple 
