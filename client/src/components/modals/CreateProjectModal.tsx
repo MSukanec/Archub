@@ -36,7 +36,7 @@ import { Loader2, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { userPreferencesService } from '@/lib/userPreferencesService';
 import { useAuthStore } from '@/stores/authStore';
-import { useProjectStore } from '@/stores/projectStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 
 const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -61,7 +61,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { setCurrentProject } = useProjectStore();
+  const { setUserContext } = useUserContextStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -180,7 +180,8 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       
       // If creating a new project, set it as current
       if (!project && user) {
-        setCurrentProject(createdProject);
+        // Set as current project in user context
+        setUserContext({ projectId: createdProject.id });
         // Skip saving to user_preferences for now to prevent hanging
         console.log('New project created:', createdProject.id);
       }
