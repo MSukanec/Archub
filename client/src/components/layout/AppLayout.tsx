@@ -27,6 +27,7 @@ import AdminTasks from '@/views/AdminTasks';
 import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
 import SubscriptionTables from '@/views/SubscriptionTables';
+import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import { useNavigationStore } from '@/stores/navigationStore';
 
 const viewComponents = {
@@ -114,8 +115,9 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar />
         
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 relative">
           <ViewComponent />
+          <FloatingActionButton />
         </main>
       </div>
     </div>

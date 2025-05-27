@@ -1,4 +1,4 @@
-import { Plus, Zap, Crown, Rocket } from 'lucide-react';
+import { Plus, Zap, Crown, Rocket, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -92,15 +92,20 @@ export default function TopBar() {
             </div>
           </div>
           
-          {/* Project Selector */}
-          <div className="min-w-[200px]">
-            <div className="text-sm text-muted-foreground mb-1">Proyecto</div>
+          {/* Project Selector - Minimalista */}
+          <div className="min-w-[180px]">
+            <div className="text-sm text-muted-foreground">Proyecto</div>
             <Select 
               value={currentProject?.id?.toString() || ""} 
               onValueChange={handleProjectChange}
             >
-              <SelectTrigger className="bg-[#1e1e1e] border-border h-8">
-                <SelectValue placeholder="Crear nuevo proyecto" />
+              <SelectTrigger className="bg-transparent border-none p-0 h-auto focus:ring-0 shadow-none">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-foreground">
+                    {currentProject?.name || 'Crear nuevo proyecto'}
+                  </span>
+                  <ChevronDown size={14} className="text-muted-foreground" />
+                </div>
               </SelectTrigger>
               <SelectContent>
                 {projects.length > 0 && projects.map((project: any) => (
