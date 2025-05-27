@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
+import QuickNavigationButtons from '@/components/ui/QuickNavigationButtons';
 import { usersService } from '@/lib/usersService';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
@@ -138,8 +139,9 @@ export default function TopBar() {
           </div>
         </div>
 
-        {/* Right side - Empty for now */}
+        {/* Right side - Quick Navigation Buttons */}
         <div className="flex items-center">
+          <QuickNavigationButtons />
         </div>
       </header>
 
