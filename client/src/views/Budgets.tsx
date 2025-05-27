@@ -20,7 +20,6 @@ import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
 import EditBudgetModal from '@/components/modals/EditBudgetModal';
 import TaskModal from '@/components/modals/TaskModal';
-import { QuickHelp, QuickTip, FeatureHighlight } from '@/components/ui/help-tooltip';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();
@@ -103,9 +102,7 @@ export default function Budgets() {
     <div className="flex-1 space-y-4 p-4 md:p-6 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <QuickHelp content="Los presupuestos te ayudan a planificar y controlar los costos de tu proyecto de construcción. Puedes crear múltiples presupuestos, agregar tareas con cantidades y precios, y hacer seguimiento de materiales.">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Presupuestos</h2>
-          </QuickHelp>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Presupuestos</h2>
           <p className="text-muted-foreground">
             Gestión de presupuestos para el proyecto: <span className="font-medium">{currentProject?.name}</span>
           </p>
@@ -116,21 +113,15 @@ export default function Budgets() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="budgets" className="flex items-center gap-2">
             <Calculator className="h-4 w-4" />
-            <QuickHelp content="Aquí puedes ver todos los presupuestos de tu proyecto, crear nuevos y editar los existentes. Cada presupuesto puede tener diferentes estados: borrador, aprobado o rechazado.">
-              <span>Lista de Presupuestos</span>
-            </QuickHelp>
+            Lista de Presupuestos
           </TabsTrigger>
           <TabsTrigger value="tasks" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            <FeatureHighlight content="¡Nueva funcionalidad! Selecciona un presupuesto y agrega tareas con cantidades específicas. Perfecto para crear tablas de cómputo detalladas.">
-              <span>Lista de Tareas</span>
-            </FeatureHighlight>
+            Lista de Tareas
           </TabsTrigger>
           <TabsTrigger value="materials" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            <QuickTip content="Próximamente: gestión de materiales y inventario para tus proyectos de construcción.">
-              <span>Lista de Materiales</span>
-            </QuickTip>
+            Lista de Materiales
           </TabsTrigger>
         </TabsList>
 
@@ -248,38 +239,34 @@ export default function Budgets() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <QuickHelp content="Selecciona un presupuesto para poder agregar tareas. Cada tarea incluye cantidad, precio unitario y notas adicionales.">
-                <Select 
-                  value={activeBudgetId?.toString() || ""} 
-                  onValueChange={(value) => {
-                    console.log('Budget selected:', value);
-                    const budgetId = Number(value);
-                    console.log('Setting activeBudgetId to:', budgetId);
-                    setActiveBudgetId(budgetId);
-                  }}
-                >
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Seleccionar presupuesto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {budgets?.map((budget: any) => (
-                      <SelectItem key={budget.id} value={budget.id.toString()}>
-                        {budget.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </QuickHelp>
-              <QuickTip content="Una vez que selecciones un presupuesto, podrás agregar tareas específicas con cantidades y costos. ¡Perfecto para hacer cómputos detallados!">
-                <Button 
-                  className="flex items-center gap-2"
-                  onClick={() => setIsTaskModalOpen(true)}
-                  disabled={!activeBudgetId}
-                >
-                  <Plus className="h-4 w-4" />
-                  Agregar Tarea
-                </Button>
-              </QuickTip>
+              <Select 
+                value={activeBudgetId?.toString() || ""} 
+                onValueChange={(value) => {
+                  console.log('Budget selected:', value);
+                  const budgetId = Number(value);
+                  console.log('Setting activeBudgetId to:', budgetId);
+                  setActiveBudgetId(budgetId);
+                }}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Seleccionar presupuesto" />
+                </SelectTrigger>
+                <SelectContent>
+                  {budgets?.map((budget: any) => (
+                    <SelectItem key={budget.id} value={budget.id.toString()}>
+                      {budget.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button 
+                className="flex items-center gap-2"
+                onClick={() => setIsTaskModalOpen(true)}
+                disabled={!activeBudgetId}
+              >
+                <Plus className="h-4 w-4" />
+                Agregar Tarea
+              </Button>
             </div>
           </div>
 
