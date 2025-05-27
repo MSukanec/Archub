@@ -17,12 +17,15 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
+import EditBudgetModal from '@/components/modals/EditBudgetModal';
 import AddTaskToBudgetModal from '@/components/modals/AddTaskToBudgetModal';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();
   const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
   const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
+  const [isEditBudgetModalOpen, setIsEditBudgetModalOpen] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<any>(null);
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -187,7 +190,10 @@ export default function Budgets() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => console.log('Edit budget:', budget.id)}>
+                            <DropdownMenuItem onClick={() => {
+                              setEditingBudget(budget);
+                              setIsEditBudgetModalOpen(true);
+                            }}>
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
                             </DropdownMenuItem>
@@ -306,6 +312,15 @@ export default function Budgets() {
       <CreateBudgetModal
         isOpen={isCreateBudgetModalOpen}
         onClose={() => setIsCreateBudgetModalOpen(false)}
+      />
+
+      <EditBudgetModal
+        budget={editingBudget}
+        isOpen={isEditBudgetModalOpen}
+        onClose={() => {
+          setIsEditBudgetModalOpen(false);
+          setEditingBudget(null);
+        }}
       />
       
       <AddTaskToBudgetModal

@@ -31,7 +31,7 @@ export default function PrimarySidebar() {
         {topNavigationItems.map(({ section, icon: Icon, label }) => (
           <button
             key={section}
-            onMouseEnter={() => setSection(section)}
+            onClick={() => setSection(section)}
             className={cn(
               "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
               currentSection === section
@@ -58,7 +58,7 @@ export default function PrimarySidebar() {
           return (
             <button
               key={section}
-              onMouseEnter={() => setSection(section)}
+              onClick={() => setSection(section)}
               className={cn(
                 "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
                 currentSection === section
