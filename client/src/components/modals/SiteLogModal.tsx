@@ -443,7 +443,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
             <CardContent className="space-y-4">
               {/* File upload */}
               <div>
-                <Label htmlFor="files">Subir archivos</Label>
+                <Label htmlFor="files">Subir archivos <span className="text-gray-400">(opcional)</span></Label>
                 <Input
                   id="files"
                   type="file"
