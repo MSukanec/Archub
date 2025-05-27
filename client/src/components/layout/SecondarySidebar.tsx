@@ -1,6 +1,7 @@
 import { 
+  Home,
   BarChart3, 
-  Clock, 
+  Activity, 
   ChartBar, 
   List, 
   Plus, 
@@ -17,7 +18,8 @@ import {
   Contact,
   FolderTree,
   ChevronDown,
-  CheckSquare
+  CheckSquare,
+  Package
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';

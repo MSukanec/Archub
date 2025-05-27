@@ -1,11 +1,15 @@
-import { ChartLine, Building, Settings, User, Shield, Bell, Contact } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, TrendingUp, Users, Settings, User, Shield, Bell, Contact } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
 const topNavigationItems = [
-  { section: 'dashboard' as Section, icon: ChartLine, label: 'Organización' },
-  { section: 'projects' as Section, icon: Building, label: 'Proyectos' },
+  { section: 'dashboard' as Section, icon: Home, label: 'Dashboard' },
+  { section: 'organization' as Section, icon: Building2, label: 'Organización' },
+  { section: 'projects' as Section, icon: FolderKanban, label: 'Proyectos' },
+  { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
+  { section: 'sitelog' as Section, icon: ClipboardList, label: 'Bitácora' },
+  { section: 'movements' as Section, icon: TrendingUp, label: 'Movimientos de Obra' },
   { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
 ];
 

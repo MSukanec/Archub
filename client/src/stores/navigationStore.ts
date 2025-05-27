@@ -1,14 +1,17 @@
 import { create } from 'zustand';
 
-export type Section = 'dashboard' | 'projects' | 'contacts' | 'admin' | 'profile';
+export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'admin' | 'profile';
 export type View = 
   | 'dashboard-main'
-  | 'dashboard-activity'
+  | 'organization-overview'
+  | 'organization-activity'
   | 'projects-overview'
   | 'projects-list'
-  | 'projects-sitelog'
-  | 'projects-budgets'
-  | 'projects-movements'
+  | 'budgets-list'
+  | 'budgets-tasks'
+  | 'budgets-materials'
+  | 'sitelog-main'
+  | 'movements-main'
   | 'contacts'
   | 'admin-organizations'
   | 'admin-users'
@@ -35,7 +38,11 @@ interface NavigationState {
 
 const sectionViewMap: Record<Section, View> = {
   dashboard: 'dashboard-main',
+  organization: 'organization-overview',
   projects: 'projects-overview',
+  budgets: 'budgets-list',
+  sitelog: 'sitelog-main',
+  movements: 'movements-main',
   contacts: 'contacts',
   admin: 'admin-organizations',
   profile: 'profile-info',
