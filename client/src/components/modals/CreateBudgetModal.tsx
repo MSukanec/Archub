@@ -31,7 +31,7 @@ import { useQuery } from '@tanstack/react-query';
 const budgetSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   description: z.string().optional(),
-  status: z.string().default('draft'),
+  status: z.enum(['draft', 'approved', 'rejected']).default('draft'),
 });
 
 type BudgetForm = z.infer<typeof budgetSchema>;
@@ -39,9 +39,10 @@ type BudgetForm = z.infer<typeof budgetSchema>;
 interface CreateBudgetModalProps {
   isOpen: boolean;
   onClose: () => void;
+  budget?: any; // Para edición
 }
 
-export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModalProps) {
+export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBudgetModalProps) {
   const { projectId, organizationId } = useUserContextStore();
   const { user } = useAuthStore();
   const { toast } = useToast();
@@ -84,59 +85,78 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
   const form = useForm<BudgetForm>({
     resolver: zodResolver(budgetSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      status: 'draft',
+      name: budget?.name || '',
+      description: budget?.description || '',
+      status: budget?.status || 'draft',
     },
   });
 
-  const createBudgetMutation = useMutation({
+  const budgetMutation = useMutation({
     mutationFn: async (data: BudgetForm) => {
       if (!projectId) throw new Error('No hay proyecto seleccionado');
-      if (!organizationId) throw new Error('No hay organización seleccionada');
-      if (!user?.id) throw new Error('Usuario no autenticado');
       
-      // Intentar obtener el usuario interno
-      let userId = internalUser?.id;
-      if (!userId) {
-        // Si no existe el usuario interno, intentar obtenerlo de la base de datos
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
+      if (budget?.id) {
+        // Editar presupuesto existente
+        const { data: updatedBudget, error } = await supabase
+          .from('budgets')
+          .update({
+            name: data.name,
+            description: data.description || null,
+            status: data.status,
+          })
+          .eq('id', budget.id)
+          .select()
           .single();
+
+        if (error) throw error;
+        return updatedBudget;
+      } else {
+        // Crear nuevo presupuesto
+        if (!organizationId) throw new Error('No hay organización seleccionada');
+        if (!user?.id) throw new Error('Usuario no autenticado');
         
-        if (userError || !userData) {
-          throw new Error('No se pudo encontrar el usuario en la base de datos. Por favor, contacta al administrador.');
+        // Intentar obtener el usuario interno
+        let userId = internalUser?.id;
+        if (!userId) {
+          // Si no existe el usuario interno, intentar obtenerlo de la base de datos
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', user.id)
+            .single();
+          
+          if (userError || !userData) {
+            throw new Error('No se pudo encontrar el usuario en la base de datos. Por favor, contacta al administrador.');
+          }
+          
+          userId = userData.id;
         }
         
-        userId = userData.id;
+        // Crear objeto simplificado con solo los campos esenciales
+        const budgetData = {
+          name: data.name,
+          description: data.description || null,
+          project_id: projectId, // Mantener como UUID string
+          organization_id: organizationId,
+          created_by: userId,
+          status: data.status || 'draft'
+        };
+
+        console.log('Creating budget with data:', budgetData);
+
+        const { data: newBudget, error } = await supabase
+          .from('budgets')
+          .insert([budgetData])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Supabase error creating budget:', error);
+          throw error;
+        }
+
+        return newBudget;
       }
-      
-      // Crear objeto simplificado con solo los campos esenciales
-      const budgetData = {
-        name: data.name,
-        description: data.description || null,
-        project_id: projectId, // Mantener como UUID string
-        organization_id: organizationId,
-        created_by: userId,
-        status: data.status || 'draft'
-      };
-
-      console.log('Creating budget with data:', budgetData);
-
-      const { data: budget, error } = await supabase
-        .from('budgets')
-        .insert([budgetData])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Supabase error creating budget:', error);
-        throw error;
-      }
-
-      return budget;
     },
     onSuccess: () => {
       // Invalidar todas las queries relacionadas con presupuestos
@@ -148,26 +168,25 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
       }
       
       toast({
-        title: 'Presupuesto creado',
-        description: 'El presupuesto se ha creado exitosamente.',
+        description: budget?.id ? "Presupuesto actualizado correctamente" : "Presupuesto creado correctamente",
         duration: 2000,
       });
       form.reset();
       onClose();
     },
     onError: (error: any) => {
-      console.error('Error al crear presupuesto:', error);
+      console.error('Error with budget:', error);
       toast({
-        title: 'Error',
-        description: 'No se pudo crear el presupuesto. Intenta nuevamente.',
         variant: 'destructive',
+        description: budget?.id ? "Error al actualizar el presupuesto" : "Error al crear el presupuesto",
+        duration: 2000,
       });
     },
   });
 
   const onSubmit = (data: BudgetForm) => {
     console.log('Form data being submitted:', data);
-    createBudgetMutation.mutate(data);
+    budgetMutation.mutate(data);
   };
 
   const handleClose = () => {
