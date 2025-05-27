@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
 const topNavigationItems = [
-  { section: 'dashboard' as Section, icon: Home, label: 'Dashboard' },
+  { section: 'dashboard' as Section, icon: Home, label: 'Línea de Tiempo' },
   { section: 'organization' as Section, icon: Building2, label: 'Organización' },
   { section: 'projects' as Section, icon: FolderKanban, label: 'Proyectos' },
   { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
