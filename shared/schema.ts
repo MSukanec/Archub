@@ -317,3 +317,6 @@ export type InsertSiteLogAttendee = z.infer<typeof insertSiteLogAttendeeSchema>;
 
 export type SiteLogFile = typeof siteLogFiles.$inferSelect;
 export type InsertSiteLogFile = z.infer<typeof insertSiteLogFileSchema>;
+
+export type SiteMovement = typeof siteMovements.$inferSelect;
+export type InsertSiteMovement = z.infer<typeof insertSiteMovementSchema>;
