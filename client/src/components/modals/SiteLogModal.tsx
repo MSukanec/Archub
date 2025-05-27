@@ -77,7 +77,6 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         project_id: projectId,
         date: data.date,
         weather: data.weather || '',
-        created_by: user?.id,
       };
 
       let createdSiteLog: SiteLog;
