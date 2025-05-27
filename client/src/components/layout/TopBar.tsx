@@ -1,5 +1,5 @@
 import { Plus, Zap, Crown, Rocket, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -15,6 +15,18 @@ export default function TopBar() {
   const { organizationId, projectId, setUserContext } = useUserContextStore();
   const { user } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateProjectModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
+    return () => {
+      window.removeEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
+    };
+  }, []);
   
   // Get user's plan information
   const { data: users = [] } = useQuery({
