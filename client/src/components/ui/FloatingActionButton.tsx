@@ -124,7 +124,7 @@ export default function FloatingActionButton() {
           width: isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px'
         }}
       >
-        <Plus size={20} className="flex-shrink-0" />
+        <Plus size={20} className={cn("flex-shrink-0", isHovered ? "" : "absolute inset-0 m-auto")} />
         <span 
           className={cn(
             "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
