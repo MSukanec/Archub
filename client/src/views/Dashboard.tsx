@@ -24,24 +24,22 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<DayEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    return addDays(today, mondayOffset);
+  const [viewStartDate, setViewStartDate] = useState(() => {
+    // Mostrar 15 días antes de hoy y 15 días después (30 días total)
+    return subDays(new Date(), 15);
   });
 
-  // Generar array de días para la semana actual
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
+  // Generar array de días para el período visible (30 días)
+  const visibleDays = Array.from({ length: 30 }, (_, i) => addDays(viewStartDate, i));
 
-  // Fetch todos los eventos para la semana actual
-  const { data: weekEvents = [], isLoading } = useQuery({
-    queryKey: ['/api/timeline-events', projectId, format(currentWeekStart, 'yyyy-MM-dd')],
+  // Fetch todos los eventos para el período visible
+  const { data: timelineEvents = [], isLoading } = useQuery({
+    queryKey: ['/api/timeline-events', projectId, format(viewStartDate, 'yyyy-MM-dd')],
     queryFn: async () => {
       if (!projectId) return [];
       
-      const weekStart = startOfDay(currentWeekStart);
-      const weekEnd = endOfDay(addDays(currentWeekStart, 6));
+      const periodStart = startOfDay(viewStartDate);
+      const periodEnd = endOfDay(addDays(viewStartDate, 29)); // 30 días
       
       // Fetch site logs
       const { data: siteLogs } = await supabase
@@ -53,22 +51,22 @@ export default function Dashboard() {
           site_log_files(*)
         `)
         .eq('project_id', projectId)
-        .gte('date', format(weekStart, 'yyyy-MM-dd'))
-        .lte('date', format(weekEnd, 'yyyy-MM-dd'));
+        .gte('date', format(periodStart, 'yyyy-MM-dd'))
+        .lte('date', format(periodEnd, 'yyyy-MM-dd'));
 
       // Fetch site movements
       const { data: movements } = await supabase
         .from('site_movements')
         .select('*')
         .eq('project_id', projectId)
-        .gte('date', format(weekStart, 'yyyy-MM-dd'))
-        .lte('date', format(weekEnd, 'yyyy-MM-dd'));
+        .gte('date', format(periodStart, 'yyyy-MM-dd'))
+        .lte('date', format(periodEnd, 'yyyy-MM-dd'));
 
       // Agrupar eventos por fecha
       const eventsByDate: Record<string, DayEvent> = {};
       
-      // Inicializar todos los días de la semana
-      weekDays.forEach(day => {
+      // Inicializar todos los días del período
+      visibleDays.forEach(day => {
         const dateKey = format(day, 'yyyy-MM-dd');
         eventsByDate[dateKey] = {
           date: dateKey,
@@ -107,17 +105,14 @@ export default function Dashboard() {
     setIsModalOpen(true);
   };
 
-  const navigateWeek = (direction: 'prev' | 'next') => {
-    setCurrentWeekStart(prev => 
+  const navigatePeriod = (direction: 'prev' | 'next') => {
+    setViewStartDate(prev => 
       direction === 'prev' ? subDays(prev, 7) : addDays(prev, 7)
     );
   };
 
   const goToToday = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    setCurrentWeekStart(addDays(today, mondayOffset));
+    setViewStartDate(subDays(new Date(), 15)); // Centrar el día actual
   };
 
   // Listen for floating action button events

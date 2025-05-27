@@ -138,15 +138,8 @@ export default function TopBar() {
           </div>
         </div>
 
-        {/* Right side - Plan button only */}
+        {/* Right side - Empty for now */}
         <div className="flex items-center">
-          <button
-            onClick={() => setView('subscription-tables')}
-            className="w-8 h-8 rounded-full bg-[#1e1e1e] border border-border hover:bg-[#282828] flex items-center justify-center transition-colors"
-            title={`Plan: ${currentUserData?.plan_name || 'No asignado'}`}
-          >
-            {getPlanIcon(currentUserData?.plan_name)}
-          </button>
         </div>
       </header>
 

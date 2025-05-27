@@ -67,8 +67,19 @@ export default function FloatingActionButton() {
   const modalActions = useModalActions();
 
   // Configuración de acciones por vista
-  const viewActions: Record<View, { label: string; action: () => void } | null> = {
-    'dashboard-main': null,
+  const viewActions: Record<View, { label: string; action: () => void; isMultiple?: boolean; options?: any[] } | null> = {
+    'dashboard-main': { 
+      label: 'Crear', 
+      action: () => {}, 
+      isMultiple: true,
+      options: [
+        { label: 'Nueva Bitácora', action: modalActions.openCreateSiteLogModal },
+        { label: 'Nuevo Movimiento', action: modalActions.openCreateMovementModal },
+        { label: 'Crear Presupuesto', action: modalActions.openCreateBudgetModal },
+        { label: 'Nueva Tarea', action: modalActions.openCreateTaskModal },
+        { label: 'Nuevo Contacto', action: modalActions.openCreateContactModal }
+      ]
+    },
     'organization-overview': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
     'organization-activity': null,
     'projects-overview': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
@@ -100,7 +111,9 @@ export default function FloatingActionButton() {
   if (!actionConfig) return null;
   
   const handleClick = () => {
-    actionConfig.action();
+    if (!actionConfig.isMultiple) {
+      actionConfig.action();
+    }
   };
   
   return (
@@ -109,6 +122,21 @@ export default function FloatingActionButton() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Options Menu for Multiple Actions */}
+      {actionConfig.isMultiple && isHovered && (
+        <div className="absolute bottom-16 right-0 mb-2 bg-[#1e1e1e] border border-border rounded-lg shadow-xl p-2 min-w-48">
+          {actionConfig.options?.map((option, index) => (
+            <button
+              key={index}
+              onClick={option.action}
+              className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-primary/10 rounded transition-colors"
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+      
       <button
         onClick={handleClick}
         className={cn(
@@ -118,23 +146,25 @@ export default function FloatingActionButton() {
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
-          isHovered ? "justify-start pl-4 pr-6" : "justify-center w-14"
+          !actionConfig.isMultiple && isHovered ? "justify-start pl-4 pr-6" : "justify-center w-14"
         )}
         style={{
-          width: isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px'
+          width: !actionConfig.isMultiple && isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px'
         }}
       >
-        <Plus size={20} className={cn("flex-shrink-0", isHovered ? "" : "absolute inset-0 m-auto")} />
-        <span 
-          className={cn(
-            "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
-            isHovered 
-              ? "opacity-100 translate-x-0" 
-              : "opacity-0 translate-x-4"
-          )}
-        >
-          {isHovered ? actionConfig.label : ''}
-        </span>
+        <Plus size={20} className={cn("flex-shrink-0", !actionConfig.isMultiple && isHovered ? "" : "absolute inset-0 m-auto")} />
+        {!actionConfig.isMultiple && (
+          <span 
+            className={cn(
+              "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
+              isHovered 
+                ? "opacity-100 translate-x-0" 
+                : "opacity-0 translate-x-4"
+            )}
+          >
+            {isHovered ? actionConfig.label : ''}
+          </span>
+        )}
       </button>
     </div>
   );
