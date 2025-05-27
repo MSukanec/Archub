@@ -241,6 +241,10 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     setCurrentWeekStart(addDays(currentWeekStart, days));
   };
 
+  const goToToday = () => {
+    setCurrentWeekStart(startOfDay(new Date()));
+  };
+
   const scrollTimeline = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = 200;
