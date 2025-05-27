@@ -30,6 +30,8 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSiteLogModalOpen, setIsSiteLogModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<any | null>(null);
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const [selectedMovement, setSelectedMovement] = useState<any | null>(null);
   const [viewStartDate, setViewStartDate] = useState(() => {
     // Mostrar 15 días antes de hoy y 15 días después (30 días total)
     return subDays(new Date(), 15);
@@ -138,6 +140,9 @@ export default function Dashboard() {
     if (item.type === 'bitacora') {
       setSelectedSiteLog(item.data);
       setIsSiteLogModalOpen(true);
+    } else if (item.type === 'movimientos') {
+      setSelectedMovement(item.data);
+      setIsMovementModalOpen(true);
     }
     // Aquí agregaremos más tipos cuando implementemos los otros modales
   };
@@ -159,11 +164,13 @@ export default function Dashboard() {
     };
 
     const handleOpenCreateSiteLogModal = () => {
-      window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'));
+      setSelectedSiteLog(null);
+      setIsSiteLogModalOpen(true);
     };
 
     const handleOpenCreateMovementModal = () => {
-      window.dispatchEvent(new CustomEvent('openCreateMovementModal'));
+      setSelectedMovement(null);
+      setIsMovementModalOpen(true);
     };
 
     const handleOpenCreateTaskModal = () => {
@@ -237,6 +244,20 @@ export default function Dashboard() {
           });
         }}
         siteLog={selectedSiteLog}
+        projectId={projectId}
+      />
+
+      {/* Movement Modal */}
+      <MovementModal
+        isOpen={isMovementModalOpen}
+        onClose={() => {
+          setIsMovementModalOpen(false);
+          // Invalidar cache para actualizar el timeline
+          queryClient.invalidateQueries({
+            queryKey: ['/api/timeline-events']
+          });
+        }}
+        movement={selectedMovement}
         projectId={projectId}
       />
     </div>
