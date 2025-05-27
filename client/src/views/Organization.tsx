@@ -27,30 +27,46 @@ export default function Organization() {
     queryFn: async () => {
       if (!organizationId) return { totalProjects: 0, totalBudget: 0, monthlyActivity: 0, activeDays: 0 };
       
+      console.log('Fetching stats for organization:', organizationId);
+      
       // Get total projects count
-      const { count: projectsCount } = await supabase
+      const { count: projectsCount, error: countError } = await supabase
         .from('projects')
         .select('*', { count: 'exact', head: true })
         .eq('organization_id', organizationId);
 
+      console.log('Projects count:', projectsCount, 'Error:', countError);
+
       // Get total budget from all projects
-      const { data: projects } = await supabase
+      const { data: projects, error: projectsError } = await supabase
         .from('projects')
         .select('budget')
         .eq('organization_id', organizationId);
 
+      console.log('Projects data:', projects, 'Error:', projectsError);
+
       const totalBudget = projects?.reduce((sum, project) => {
-        return sum + (parseFloat(project.budget) || 0);
+        const budgetValue = parseFloat(project.budget) || 0;
+        console.log('Project budget:', project.budget, 'Parsed:', budgetValue);
+        return sum + budgetValue;
       }, 0) || 0;
 
-      // Get monthly activity (site logs from this month)
+      // Get monthly activity (site logs from this month for projects in this organization)
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
+      const { data: orgProjects } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('organization_id', organizationId);
+
+      const projectIds = orgProjects?.map(p => p.id) || [];
+
       const { count: monthlyActivity } = await supabase
         .from('site_logs')
         .select('*', { count: 'exact', head: true })
+        .in('project_id', projectIds)
         .gte('created_at', startOfMonth.toISOString());
 
       // Get active days (days with activity in the last 30 days)
@@ -60,6 +76,7 @@ export default function Organization() {
       const { data: activeDaysData } = await supabase
         .from('site_logs')
         .select('log_date')
+        .in('project_id', projectIds)
         .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
 
       const uniqueDays = new Set(activeDaysData?.map(log => log.log_date));
