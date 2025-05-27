@@ -437,7 +437,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                         <div
                           key={`${type}-${dayKey}`}
                           className={cn(
-                            "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
+                            "h-8 mt-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
                             firstItem.color,
                             "flex items-center justify-center text-white text-xs font-medium"
                           )}
