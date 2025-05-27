@@ -153,7 +153,7 @@ export default function PrimarySidebar() {
         
         {/* Profile Avatar */}
         <button
-          onMouseEnter={() => setSection('profile')}
+          onClick={() => setSection('profile')}
           className={cn(
             "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2",
             currentSection === 'profile'

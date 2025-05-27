@@ -104,13 +104,10 @@ export default function Dashboard() {
         console.log('Site logs fetched:', siteLogs);
       }
 
-      // Fetch site movements con información del autor
+      // Fetch site movements (sin relación por ahora hasta que se cree la tabla)
       const { data: movements, error: movementsError } = await supabase
         .from('site_movements')
-        .select(`
-          *,
-          author:users(first_name, last_name)
-        `)
+        .select('*')
         .eq('project_id', projectId)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));

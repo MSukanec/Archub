@@ -48,6 +48,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const [selectedTasks, setSelectedTasks] = useState<Array<{ task: Task; quantity: string; notes: string }>>([]);
   const [selectedAttendees, setSelectedAttendees] = useState<Array<{ contact: Contact; role: string }>>([]);
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ file: File; description: string }>>([]);
+  const [taskSelectValue, setTaskSelectValue] = useState<string>("");
+  const [attendeeSelectValue, setAttendeeSelectValue] = useState<string>("");
 
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
@@ -352,10 +354,16 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
               {/* Add task */}
               <div className="space-y-2">
                 <Label>Agregar tarea <span className="text-gray-400">(opcional)</span></Label>
-                <Select onValueChange={(value) => {
-                  const task = tasks.find(t => t.id === parseInt(value));
-                  if (task) addTask(task);
-                }}>
+                <Select 
+                  value={taskSelectValue} 
+                  onValueChange={(value) => {
+                    const task = tasks.find(t => t.id === parseInt(value));
+                    if (task) {
+                      addTask(task);
+                      setTaskSelectValue(""); // Limpiar el select después de agregar
+                    }
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar tarea" />
                   </SelectTrigger>
@@ -422,10 +430,16 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
               {/* Add attendee */}
               <div className="space-y-2">
                 <Label>Agregar asistente <span className="text-gray-400">(opcional)</span></Label>
-                <Select onValueChange={(value) => {
-                  const contact = contacts.find(c => c.id === parseInt(value));
-                  if (contact) addAttendee(contact);
-                }}>
+                <Select 
+                  value={attendeeSelectValue}
+                  onValueChange={(value) => {
+                    const contact = contacts.find(c => c.id === parseInt(value));
+                    if (contact) {
+                      addAttendee(contact);
+                      setAttendeeSelectValue(""); // Limpiar el select después de agregar
+                    }
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar contacto" />
                   </SelectTrigger>
