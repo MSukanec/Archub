@@ -39,8 +39,10 @@ export default function Dashboard() {
     queryFn: async () => {
       if (!projectId) return [];
       
-      const periodStart = startOfDay(viewStartDate);
-      const periodEnd = endOfDay(addDays(viewStartDate, 29)); // 30 días
+      // Usar el mismo rango que el GanttTimeline (60 días centrados en hoy)
+      const today = new Date();
+      const periodStart = startOfDay(addDays(today, -30));
+      const periodEnd = endOfDay(addDays(today, 30));
       
       // Fetch site logs
       const { data: siteLogs } = await supabase
@@ -61,8 +63,9 @@ export default function Dashboard() {
       // Agrupar eventos por fecha
       const eventsByDate: Record<string, DayEvent> = {};
       
-      // Inicializar todos los días del período
-      visibleDays.forEach(day => {
+      // Inicializar todos los días del período (60 días centrados en hoy)
+      for (let i = -30; i <= 30; i++) {
+        const day = addDays(today, i);
         const dateKey = format(day, 'yyyy-MM-dd');
         eventsByDate[dateKey] = {
           date: dateKey,
@@ -72,7 +75,7 @@ export default function Dashboard() {
           attendees: [],
           files: []
         };
-      });
+      }
 
       // Agregar site logs
       siteLogs?.forEach(log => {
