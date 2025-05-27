@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useEffect, useRef } from 'react';
 import DayCard from './DayCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -25,6 +26,42 @@ export default function TimelineWorkspace({
   isLoading, 
   onDayClick 
 }: TimelineWorkspaceProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Centrar automáticamente el día actual cuando se carga
+  useEffect(() => {
+    if (!isLoading && scrollContainerRef.current) {
+      const todayIndex = weekDays.findIndex(day => 
+        format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+      );
+      
+      if (todayIndex !== -1) {
+        const cardWidth = 192; // w-48 = 192px
+        const gap = 16; // gap-4 = 16px
+        const scrollPosition = todayIndex * (cardWidth + gap) - (scrollContainerRef.current.clientWidth / 2) + (cardWidth / 2);
+        
+        scrollContainerRef.current.scrollTo({
+          left: Math.max(0, scrollPosition),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [weekDays, isLoading]);
+
+  const scrollTimeline = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 400;
+      const currentScroll = scrollContainerRef.current.scrollLeft;
+      const newScroll = direction === 'left' 
+        ? currentScroll - scrollAmount 
+        : currentScroll + scrollAmount;
+      
+      scrollContainerRef.current.scrollTo({
+        left: newScroll,
+        behavior: 'smooth'
+      });
+    }
+  };
   
   if (isLoading) {
     return (
@@ -48,11 +85,32 @@ export default function TimelineWorkspace({
   }, {} as Record<string, DayEvent>);
 
   return (
-    <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
+    <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
       {/* Horizontal Scrollable Timeline */}
-      <div className="overflow-x-auto">
-        <div className="flex gap-4 min-w-max pb-4">
-          {weekDays.map((day, index) => {
+      <div className="relative">
+        {/* Left Navigation Button */}
+        <button
+          onClick={() => scrollTimeline('left')}
+          className="absolute left-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-r from-[#1e1e1e] to-transparent flex items-center justify-center hover:from-[#282828] transition-colors"
+        >
+          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Right Navigation Button */}
+        <button
+          onClick={() => scrollTimeline('right')}
+          className="absolute right-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-l from-[#1e1e1e] to-transparent flex items-center justify-center hover:from-[#282828] transition-colors"
+        >
+          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <div ref={scrollContainerRef} className="overflow-x-auto px-6 py-6 scrollbar-hide">
+          <div className="flex gap-4 min-w-max">
+            {weekDays.map((day, index) => {
             const dateKey = format(day, 'yyyy-MM-dd');
             const dayEvent = eventsByDate[dateKey] || {
               date: dateKey,
@@ -87,31 +145,34 @@ export default function TimelineWorkspace({
               </div>
             );
           })}
+          </div>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-border">
-        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span>Bitácora</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span>Movimientos</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-            <span>Tareas</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-            <span>Archivos</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span>Asistentes</span>
+      <div className="px-6 pb-6">
+        <div className="pt-4 border-t border-border">
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span>Bitácora</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span>Movimientos</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+              <span>Tareas</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <span>Archivos</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <span>Asistentes</span>
+            </div>
           </div>
         </div>
       </div>
