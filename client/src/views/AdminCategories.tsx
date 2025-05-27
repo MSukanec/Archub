@@ -7,6 +7,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { taskCategoriesService, TaskCategory, CreateTaskCategoryData } from '@/lib/taskCategoriesService';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -89,7 +108,20 @@ interface CategoryItemProps {
 
 function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: CategoryItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const hasChildren = false; // Simplified for flat list display
+  const hasChildren = (category as any).children && (category as any).children.length > 0;
+  
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const getIcon = () => {
     if (level === 0) return <FolderOpen className="w-4 h-4 text-blue-500" />;
