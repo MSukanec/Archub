@@ -81,12 +81,14 @@ const sectionConfig = {
 };
 
 export default function SecondarySidebar() {
-  const { currentSection, currentView, setView } = useNavigationStore();
+  const { currentSection, currentView, setView, hoveredSection } = useNavigationStore();
   const { user, logout } = useAuthStore();
   const { isSecondarySidebarVisible } = useSidebarStore();
   const { organizationId, setUserContext } = useUserContextStore();
 
-  const config = sectionConfig[currentSection];
+  // Use hovered section if available, otherwise current section
+  const displaySection = hoveredSection || currentSection;
+  const config = sectionConfig[displaySection];
 
   // Fetch current organization details only
   const { data: currentOrganization } = useQuery({

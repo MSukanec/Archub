@@ -18,7 +18,7 @@ import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
 import EditBudgetModal from '@/components/modals/EditBudgetModal';
-import AddTaskToBudgetModal from '@/components/modals/AddTaskToBudgetModal';
+import TaskModal from '@/components/modals/TaskModal';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();

@@ -26,8 +26,10 @@ export type View =
 interface NavigationState {
   currentSection: Section;
   currentView: View;
+  hoveredSection: Section | null;
   setSection: (section: Section) => void;
   setView: (view: View) => void;
+  setHoveredSection: (section: Section | null) => void;
 }
 
 const sectionViewMap: Record<Section, View> = {
@@ -41,10 +43,12 @@ const sectionViewMap: Record<Section, View> = {
 export const useNavigationStore = create<NavigationState>((set) => ({
   currentSection: 'dashboard',
   currentView: 'dashboard-main',
+  hoveredSection: null,
   setSection: (section) =>
     set({
       currentSection: section,
       currentView: sectionViewMap[section],
     }),
   setView: (view) => set({ currentView: view }),
+  setHoveredSection: (section) => set({ hoveredSection: section }),
 }));

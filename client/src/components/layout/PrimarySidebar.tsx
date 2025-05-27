@@ -14,7 +14,7 @@ const bottomNavigationItems = [
 ];
 
 export default function PrimarySidebar() {
-  const { currentSection, setSection } = useNavigationStore();
+  const { currentSection, setSection, setHoveredSection } = useNavigationStore();
   const { user } = useAuthStore();
 
   return (
@@ -32,6 +32,8 @@ export default function PrimarySidebar() {
           <button
             key={section}
             onClick={() => setSection(section)}
+            onMouseEnter={() => setHoveredSection(section)}
+            onMouseLeave={() => setHoveredSection(null)}
             className={cn(
               "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
               currentSection === section
@@ -59,6 +61,8 @@ export default function PrimarySidebar() {
             <button
               key={section}
               onClick={() => setSection(section)}
+              onMouseEnter={() => setHoveredSection(section)}
+              onMouseLeave={() => setHoveredSection(null)}
               className={cn(
                 "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
                 currentSection === section
