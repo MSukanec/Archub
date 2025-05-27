@@ -21,6 +21,60 @@ export default function Organization() {
     enabled: !!organizationId,
   });
 
+  // Fetch organization statistics
+  const { data: stats } = useQuery({
+    queryKey: ['/api/organization-stats', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return { totalProjects: 0, totalBudget: 0, monthlyActivity: 0, activeDays: 0 };
+      
+      // Get total projects count
+      const { count: projectsCount } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId);
+
+      // Get total budget from all projects
+      const { data: projects } = await supabase
+        .from('projects')
+        .select('budget')
+        .eq('organization_id', organizationId);
+
+      const totalBudget = projects?.reduce((sum, project) => {
+        return sum + (parseFloat(project.budget) || 0);
+      }, 0) || 0;
+
+      // Get monthly activity (site logs from this month)
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { count: monthlyActivity } = await supabase
+        .from('site_logs')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', startOfMonth.toISOString());
+
+      // Get active days (days with activity in the last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const { data: activeDaysData } = await supabase
+        .from('site_logs')
+        .select('log_date')
+        .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      const uniqueDays = new Set(activeDaysData?.map(log => log.log_date));
+      const activeDays = uniqueDays.size;
+
+      return {
+        totalProjects: projectsCount || 0,
+        totalBudget,
+        monthlyActivity: monthlyActivity || 0,
+        activeDays
+      };
+    },
+    enabled: !!organizationId,
+  });
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -36,7 +90,7 @@ export default function Organization() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Proyectos Totales</p>
-              <p className="text-2xl font-bold text-foreground">8</p>
+              <p className="text-2xl font-bold text-foreground">{stats?.totalProjects || 0}</p>
             </div>
             <BarChart3 className="h-8 w-8 text-primary" />
           </div>
@@ -46,7 +100,9 @@ export default function Organization() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Presupuesto Total</p>
-              <p className="text-2xl font-bold text-foreground">$1.2M</p>
+              <p className="text-2xl font-bold text-foreground">
+                ${stats?.totalBudget ? (stats.totalBudget / 1000000).toFixed(1) + 'M' : '0'}
+              </p>
             </div>
             <TrendingUp className="h-8 w-8 text-primary" />
           </div>
@@ -56,7 +112,7 @@ export default function Organization() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Actividad Mensual</p>
-              <p className="text-2xl font-bold text-foreground">156</p>
+              <p className="text-2xl font-bold text-foreground">{stats?.monthlyActivity || 0}</p>
             </div>
             <Activity className="h-8 w-8 text-primary" />
           </div>
@@ -66,7 +122,7 @@ export default function Organization() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Días Activos</p>
-              <p className="text-2xl font-bold text-foreground">23</p>
+              <p className="text-2xl font-bold text-foreground">{stats?.activeDays || 0}</p>
             </div>
             <Calendar className="h-8 w-8 text-primary" />
           </div>

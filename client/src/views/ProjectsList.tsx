@@ -89,22 +89,13 @@ export default function ProjectsList() {
   return (
     <>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Lista de Proyectos
-            </h1>
-            <p className="text-muted-foreground">
-              Gestiona todos tus proyectos de construcción desde aquí.
-            </p>
-          </div>
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Plus size={16} className="mr-2" />
-            Nuevo Proyecto
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            Lista de Proyectos
+          </h1>
+          <p className="text-muted-foreground">
+            Gestiona todos tus proyectos de construcción desde aquí.
+          </p>
         </div>
 
         {/* Search and Filters */}

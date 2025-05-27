@@ -74,7 +74,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       description: '',
       client_name: '',
       contact_id: undefined,
-      status: 'planning',
+      status: 'Planificación',
       address: '',
       contact_phone: '',
       city: '',
@@ -139,7 +139,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         description: '',
         client_name: '',
         contact_id: undefined,
-        status: 'planning',
+        status: 'Planificación',
         address: '',
         contact_phone: '',
         city: '',
@@ -313,10 +313,10 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="planning">Planificación</SelectItem>
-                            <SelectItem value="active">Activo</SelectItem>
-                            <SelectItem value="completed">Completado</SelectItem>
-                            <SelectItem value="on_hold">En Pausa</SelectItem>
+                            <SelectItem value="Planificación">Planificación</SelectItem>
+                            <SelectItem value="Activo">Activo</SelectItem>
+                            <SelectItem value="Completado">Completado</SelectItem>
+                            <SelectItem value="En Pausa">En Pausa</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
