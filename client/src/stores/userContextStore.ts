@@ -120,9 +120,34 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
       console.log('Authenticated user:', user.id);
 
-      // For now, set a hardcoded organization ID that we know exists
-      // This will bypass the membership lookup issue temporarily
-      const organizationId = '6acb6b56-294c-46dc-bfce-98595d0e08c9'; // From the logs we saw earlier
+      // Get user preferences to find their active organization
+      const { data: prefData } = await supabase
+        .from('user_preferences')
+        .select('last_organization_id')
+        .single();
+
+      let organizationId = prefData?.last_organization_id;
+
+      // If no organization in preferences, find the first one they belong to
+      if (!organizationId) {
+        const { data: orgMembership } = await supabase
+          .from('organization_members')
+          .select('organization_id')
+          .limit(1)
+          .maybeSingle();
+        
+        organizationId = orgMembership?.organization_id || null;
+        
+        // Save this as their preference
+        if (organizationId) {
+          await supabase
+            .from('user_preferences')
+            .upsert({
+              user_id: user.id,
+              last_organization_id: organizationId,
+            });
+        }
+      }
 
       console.log('Setting organization:', organizationId);
 

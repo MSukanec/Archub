@@ -2,12 +2,22 @@ import { Building, DollarSign, CheckSquare, Clock, Plus, Camera, UserPlus } from
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { useQuery } from '@tanstack/react-query';
+import { projectsService } from '@/lib/projectsService';
 
 export default function Dashboard() {
   const { user } = useAuthStore();
+  const { organizationId } = useUserContextStore();
 
-  // Simplified dashboard with static values to prevent freezing
-  const totalProjects = 2;
+  // Fetch real projects data for the user's organization
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ['/api/projects', organizationId],
+    queryFn: () => projectsService.getAll(),
+    enabled: !!organizationId,
+  });
+
+  const totalProjects = projects.length;
 
   const statsData = [
     {
