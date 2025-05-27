@@ -2,6 +2,9 @@ import { Check, CreditCard, Calendar, Zap, Crown, Rocket } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useFeatures } from '@/hooks/useFeatures';
+import { useQuery } from '@tanstack/react-query';
+import { plansService } from '@/lib/plansService';
 
 const plans = [
   {
@@ -56,6 +59,34 @@ const plans = [
 ];
 
 export default function Subscription() {
+  const { getCurrentPlan, userPlan, isLoading } = useFeatures();
+  
+  // Fetch all available plans
+  const { data: availablePlans = [] } = useQuery({
+    queryKey: ['/api/plans'],
+    queryFn: () => plansService.getAll(),
+  });
+
+  const getPlanIcon = (planName: string) => {
+    switch (planName?.toLowerCase()) {
+      case 'free':
+        return Zap;
+      case 'pro':
+        return Crown;
+      case 'enterprise':
+        return Rocket;
+      default:
+        return Zap;
+    }
+  };
+
+  const currentPlanName = getCurrentPlan() || 'FREE';
+  const currentPlan = userPlan || { name: 'FREE', price: '0' };
+
+  if (isLoading) {
+    return <div className="p-4">Cargando información del plan...</div>;
+  }
+
   return (
     <div className="space-y-8">
       <div>
