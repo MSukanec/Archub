@@ -74,104 +74,103 @@ export default function AdminTasks() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Gestión de Tareas</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
+          <p className="text-sm text-muted-foreground">
             Administra las tareas de construcción del sistema
           </p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Tarea
+        <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center space-x-2">
+          <Plus className="h-4 w-4" />
+          <span>Nueva Tarea</span>
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Tareas</CardTitle>
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Buscar tareas..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+      {/* Search */}
+      <div className="flex items-center space-x-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar tareas..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="border rounded-lg bg-card">
+        {isLoading ? (
+          <div className="p-6 space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center space-x-4">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-4 w-[80px]" />
+              </div>
+            ))}
           </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4">
-                  <Skeleton className="h-4 w-[250px]" />
-                  <Skeleton className="h-4 w-[100px]" />
-                  <Skeleton className="h-4 w-[100px]" />
-                  <Skeleton className="h-4 w-[80px]" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Precio Mano de Obra</TableHead>
+                <TableHead>Precio Material</TableHead>
+                <TableHead>Categoría</TableHead>
+                <TableHead>Subcategoría</TableHead>
+                <TableHead>Elemento</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredTasks.length === 0 ? (
                 <TableRow>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Precio Mano de Obra</TableHead>
-                  <TableHead>Precio Material</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Subcategoría</TableHead>
-                  <TableHead>Elemento</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="text-muted-foreground">
+                      {searchQuery ? 'No se encontraron tareas que coincidan con la búsqueda.' : 'No hay tareas registradas.'}
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTasks.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <div className="text-muted-foreground">
-                        {searchQuery ? 'No se encontraron tareas que coincidan con la búsqueda.' : 'No hay tareas registradas.'}
+              ) : (
+                filteredTasks.map((task) => (
+                  <TableRow key={task.id}>
+                    <TableCell className="font-medium">{task.name}</TableCell>
+                    <TableCell>{formatPrice(task.unit_labor_price)}</TableCell>
+                    <TableCell>{formatPrice(task.unit_material_price)}</TableCell>
+                    <TableCell>{(task as any).category?.name || '-'}</TableCell>
+                    <TableCell>{(task as any).subcategory?.name || '-'}</TableCell>
+                    <TableCell>{(task as any).element_category?.name || '-'}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(task)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(task)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredTasks.map((task) => (
-                    <TableRow key={task.id}>
-                      <TableCell className="font-medium">{task.name}</TableCell>
-                      <TableCell>{formatPrice(task.unit_labor_price)}</TableCell>
-                      <TableCell>{formatPrice(task.unit_material_price)}</TableCell>
-                      <TableCell>{(task as any).category?.name || '-'}</TableCell>
-                      <TableCell>{(task as any).subcategory?.name || '-'}</TableCell>
-                      <TableCell>{(task as any).element_category?.name || '-'}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(task)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(task)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </div>
 
       <AdminTasksModal
         isOpen={isCreateModalOpen}
