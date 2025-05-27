@@ -4,6 +4,7 @@ export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 's
 export type View = 
   | 'dashboard-main'
   | 'organization-overview'
+  | 'organization-team'
   | 'organization-activity'
   | 'projects-overview'
   | 'projects-list'

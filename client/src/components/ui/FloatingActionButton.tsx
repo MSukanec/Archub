@@ -28,6 +28,10 @@ const useModalActions = () => {
     window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'));
   };
 
+  const openInviteTeamMemberModal = () => {
+    window.dispatchEvent(new CustomEvent('openInviteTeamMemberModal'));
+  };
+
   const openCreateOrganizationModal = () => {
     window.dispatchEvent(new CustomEvent('openCreateOrganizationModal'));
   };

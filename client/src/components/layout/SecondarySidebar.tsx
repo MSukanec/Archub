@@ -46,6 +46,7 @@ const sectionConfig = {
     description: 'Vista general y actividad de la organización',
     items: [
       { view: 'organization-overview' as View, icon: ChartBar, label: 'Resumen General' },
+      { view: 'organization-team' as View, icon: Users, label: 'Equipo' },
       { view: 'organization-activity' as View, icon: Activity, label: 'Actividad Reciente' },
     ],
   },
