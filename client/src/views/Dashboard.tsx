@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import TimelineWorkspace from '@/components/timeline/TimelineWorkspace';
 import DayDetailModal from '@/components/timeline/DayDetailModal';
 import GanttTimeline from '@/components/timeline/GanttTimeline';
+import SiteLogModal from '@/components/modals/SiteLogModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
@@ -25,6 +26,8 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<DayEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSiteLogModalOpen, setIsSiteLogModalOpen] = useState(false);
+  const [selectedSiteLog, setSelectedSiteLog] = useState<any | null>(null);
   const [viewStartDate, setViewStartDate] = useState(() => {
     // Mostrar 15 días antes de hoy y 15 días después (30 días total)
     return subDays(new Date(), 15);
@@ -32,6 +35,19 @@ export default function Dashboard() {
 
   // Generar array de días para el período visible (30 días)
   const visibleDays = Array.from({ length: 30 }, (_, i) => addDays(viewStartDate, i));
+
+  // Listen for timeline action events
+  useEffect(() => {
+    const handleOpenCreateSiteLogModal = () => {
+      setSelectedSiteLog(null);
+      setIsSiteLogModalOpen(true);
+    };
+
+    window.addEventListener('openCreateSiteLogModal', handleOpenCreateSiteLogModal);
+    return () => {
+      window.removeEventListener('openCreateSiteLogModal', handleOpenCreateSiteLogModal);
+    };
+  }, []);
 
   // Fetch todos los eventos para el período visible
   const { data: timelineEvents = [], isLoading } = useQuery({
@@ -206,6 +222,14 @@ export default function Dashboard() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         dayEvent={selectedDay}
+      />
+
+      {/* Site Log Modal */}
+      <SiteLogModal
+        isOpen={isSiteLogModalOpen}
+        onClose={() => setIsSiteLogModalOpen(false)}
+        siteLog={selectedSiteLog}
+        projectId={projectId}
       />
     </div>
   );
