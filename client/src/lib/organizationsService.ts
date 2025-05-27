@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { useUserContextStore } from '@/stores/userContextStore';
 
 export interface Organization {
   id: number;
@@ -21,37 +22,32 @@ export interface CreateOrganizationData {
 export const organizationsService = {
   async getCurrentUserOrganization(): Promise<Organization | null> {
     try {
-      // Get current user
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-      if (authError || !authUser) {
-        console.error('Error getting current user:', authError);
+      // Use centralized context instead of making redundant queries
+      const { organization, organizationId } = useUserContextStore.getState();
+      
+      // If we have cached organization data, return it
+      if (organization && organizationId) {
+        return organization;
+      }
+      
+      // If no organization context, return null
+      if (!organizationId) {
         return null;
       }
 
-      // Get user's organization membership
-      const { data: memberData, error: memberError } = await supabase
-        .from('organization_members')
-        .select(`
-          organization_id,
-          organizations:organization_id (
-            id,
-            name,
-            slug,
-            logo_url,
-            is_active,
-            created_at,
-            owner_id
-          )
-        `)
-        .eq('user_id', authUser.id)
+      // Fetch organization data if we have ID but no cached data
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('*')
+        .eq('id', organizationId)
         .single();
       
-      if (memberError || !memberData?.organizations) {
-        console.log('User is not part of any organization:', memberError);
+      if (error || !data) {
+        console.log('Error fetching organization:', error);
         return null;
       }
 
-      return memberData.organizations as Organization;
+      return data;
     } catch (error) {
       console.error('Error fetching user organization:', error);
       return null;
