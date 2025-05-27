@@ -182,8 +182,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         description: data.description,
         amount: data.amount,
         currency: data.currency,
-        related_contact_id: data.related_contact_id || null,
-        related_task_id: data.related_task_id || null,
+        related_contact_id: data.related_contact_id && data.related_contact_id !== 'none' ? data.related_contact_id : null,
+        related_task_id: data.related_task_id && data.related_task_id !== 'none' ? data.related_task_id : null,
         file_url: fileUrl,
         updated_at: new Date().toISOString(),
       };
@@ -403,7 +403,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Sin contacto</SelectItem>
+                        <SelectItem value="none">Sin contacto</SelectItem>
                         {contacts.map((contact: any) => (
                           <SelectItem key={contact.id} value={contact.id}>
                             {contact.company_name || contact.name}
@@ -429,7 +429,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Sin tarea</SelectItem>
+                        <SelectItem value="none">Sin tarea</SelectItem>
                         {tasks.map((task: any) => (
                           <SelectItem key={task.id} value={task.id}>
                             {task.name}
