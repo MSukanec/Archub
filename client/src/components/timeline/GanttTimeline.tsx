@@ -441,9 +441,9 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                         <div
                           key={`${type}-${dayKey}`}
                           className={cn(
-                            "h-8 mt-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
+                            "h-8 mt-2 rounded-lg shadow-sm cursor-pointer transition-all hover:shadow-lg hover:scale-105",
                             firstItem.color,
-                            "flex items-center justify-center text-white text-xs font-medium"
+                            "flex items-center gap-2 px-3 text-foreground text-xs font-medium backdrop-blur-sm"
                           )}
                           style={position}
                           title={hasMultipleItems 
@@ -457,12 +457,27 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                             }
                           }}
                         >
-                          <span className="truncate px-2">
-                            {hasMultipleItems 
-                              ? `(${dayItems.length})`
-                              : firstItem.title
-                            }
-                          </span>
+                          {/* Avatar del usuario */}
+                          <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <User size={10} className="text-primary" />
+                          </div>
+                          
+                          {/* Contenido del elemento */}
+                          <div className="flex items-center gap-1 flex-1 min-w-0">
+                            <span className="truncate">
+                              {hasMultipleItems 
+                                ? `${dayItems.length} eventos`
+                                : firstItem.title
+                              }
+                            </span>
+                          </div>
+                          
+                          {/* Indicador de cantidad si hay múltiples */}
+                          {hasMultipleItems && (
+                            <div className="w-5 h-5 bg-primary/30 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span className="text-xs font-bold text-primary">{dayItems.length}</span>
+                            </div>
+                          )}
                         </div>
                       );
                     });
