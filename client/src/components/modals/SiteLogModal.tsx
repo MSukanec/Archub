@@ -88,10 +88,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       // Create the site log data with required fields (using correct column names)
       const siteLogData = {
         project_id: projectId,
-        log_date: data.date,
+        date: data.date,
         weather: data.weather || '',
-        description: data.comments || '',
-        author_id: internalUser.id,
+        comments: data.comments || '',
+        created_by: internalUser.id,
       };
 
       let createdSiteLog: SiteLog;

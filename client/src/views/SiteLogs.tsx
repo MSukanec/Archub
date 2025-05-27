@@ -15,12 +15,15 @@ import { siteLogsService } from '@/lib/siteLogsService';
 import { projectsService } from '@/lib/projectsService';
 import { useUserContextStore } from '@/stores/userContextStore';
 import SiteLogModal from '@/components/modals/SiteLogModal';
+import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 import type { SiteLog } from '@shared/schema';
 
 export default function SiteLogs() {
   const { projectId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<SiteLog | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [siteLogToDelete, setSiteLogToDelete] = useState<SiteLog | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -97,10 +100,22 @@ export default function SiteLogs() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteSiteLog = (siteLogId: number) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este registro? Esta acción no se puede deshacer.')) {
-      deleteMutation.mutate(siteLogId);
+  const handleDeleteSiteLog = (siteLog: SiteLog) => {
+    setSiteLogToDelete(siteLog);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (siteLogToDelete) {
+      deleteMutation.mutate(siteLogToDelete.id);
+      setIsDeleteModalOpen(false);
+      setSiteLogToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setSiteLogToDelete(null);
   };
 
   const getWeatherIcon = (weather?: string) => {
@@ -286,7 +301,7 @@ export default function SiteLogs() {
                               Editar registro
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              onClick={() => handleDeleteSiteLog(siteLog.id)}
+                              onClick={() => handleDeleteSiteLog(siteLog)}
                               className="text-destructive"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
@@ -346,12 +361,25 @@ export default function SiteLogs() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <SiteLogModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         siteLog={selectedSiteLog}
         projectId={projectId}
+      />
+      
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="¿Eliminar registro de bitácora?"
+        description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.date).toLocaleDateString('es-ES', { 
+          day: 'numeric', 
+          month: 'long', 
+          year: 'numeric' 
+        }) : ''}? Esta acción no se puede deshacer.`}
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );
