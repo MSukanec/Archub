@@ -6,6 +6,7 @@ export type View =
   | 'dashboard-activity'
   | 'projects-overview'
   | 'projects-list'
+  | 'projects-sitelog'
   | 'contacts'
   | 'admin-organizations'
   | 'admin-users'

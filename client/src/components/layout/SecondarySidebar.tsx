@@ -44,6 +44,7 @@ const sectionConfig = {
     items: [
       { view: 'projects-overview' as View, icon: ChartBar, label: 'Resumen' },
       { view: 'projects-list' as View, icon: List, label: 'Lista de Proyectos' },
+      { view: 'projects-sitelog' as View, icon: CheckSquare, label: 'Bitácora' },
     ],
   },
   contacts: {

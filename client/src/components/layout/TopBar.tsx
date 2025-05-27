@@ -16,6 +16,7 @@ const breadcrumbConfig = {
   'dashboard-activity': { section: 'Organización', view: 'Actividad Reciente' },
   'projects-overview': { section: 'Proyectos', view: 'Resumen' },
   'projects-list': { section: 'Proyectos', view: 'Lista' },
+  'projects-sitelog': { section: 'Proyectos', view: 'Bitácora' },
   'contacts': { section: 'Agenda', view: 'Contactos' },
   'admin-organizations': { section: 'Administración', view: 'Organizaciones' },
   'admin-users': { section: 'Administración', view: 'Usuarios' },

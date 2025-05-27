@@ -9,12 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { siteLogsService } from '@/lib/siteLogsService';
-import { useUserContext } from '@/stores/userContextStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 import SiteLogModal from '@/components/modals/SiteLogModal';
 import type { SiteLog } from '@shared/schema';
 
 export default function SiteLogs() {
-  const { currentProject } = useUserContext();
+  const { currentProject } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<SiteLog | null>(null);
 

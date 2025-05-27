@@ -9,6 +9,7 @@ import TopBar from './TopBar';
 import Dashboard from '@/views/Dashboard';
 import ProjectsOverview from '@/views/ProjectsOverview';
 import ProjectsList from '@/views/ProjectsList';
+import SiteLogs from '@/views/SiteLogs';
 import Contacts from '@/views/Contacts';
 import Organizations from '@/views/Organizations';
 import AdminOrganizations from '@/views/AdminOrganizations';
@@ -30,6 +31,7 @@ const viewComponents = {
   'dashboard-activity': Dashboard,
   'projects-overview': ProjectsOverview,
   'projects-list': ProjectsList,
+  'projects-sitelog': SiteLogs,
   'contacts': Contacts,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
