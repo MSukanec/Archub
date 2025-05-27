@@ -14,27 +14,31 @@ export default function SubscriptionTables() {
   const getPlanIcon = (planName: string) => {
     switch (planName.toLowerCase()) {
       case 'free':
-        return <Zap className="h-8 w-8 text-green-500" />;
+        return <Zap className="h-8 w-8 text-muted-foreground" />;
       case 'pro':
-        return <Crown className="h-8 w-8 text-blue-500" />;
+        return <Crown className="h-8 w-8 text-primary" />;
       case 'enterprise':
-        return <Rocket className="h-8 w-8 text-purple-500" />;
+        return <Rocket className="h-8 w-8 text-muted-foreground" />;
       default:
-        return <Zap className="h-8 w-8 text-gray-500" />;
+        return <Zap className="h-8 w-8 text-muted-foreground" />;
     }
   };
 
   const getPlanColor = (planName: string) => {
     switch (planName.toLowerCase()) {
       case 'free':
-        return 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800';
+        return 'border-muted hover:border-muted-foreground/20';
       case 'pro':
-        return 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800';
+        return 'border-primary bg-primary/5 shadow-lg shadow-primary/10';
       case 'enterprise':
-        return 'bg-purple-50 border-purple-200 dark:bg-purple-950 dark:border-purple-800';
+        return 'border-muted hover:border-muted-foreground/20';
       default:
-        return 'bg-gray-50 border-gray-200 dark:bg-gray-950 dark:border-gray-800';
+        return 'border-muted hover:border-muted-foreground/20';
     }
+  };
+
+  const isPopular = (planName: string) => {
+    return planName.toLowerCase() === 'pro';
   };
 
   const faqs = [
@@ -89,9 +93,9 @@ export default function SubscriptionTables() {
       {/* Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {plans.map((plan) => (
-          <Card key={plan.id} className={`relative ${getPlanColor(plan.name)}`}>
-            {plan.name.toLowerCase() === 'pro' && (
-              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
+          <Card key={plan.id} className={`relative transition-all duration-300 ${getPlanColor(plan.name)} ${isPopular(plan.name) ? 'scale-105' : 'hover:scale-105'}`}>
+            {isPopular(plan.name) && (
+              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
                 Más Popular
               </Badge>
             )}
@@ -102,7 +106,7 @@ export default function SubscriptionTables() {
               <div>
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
                 <CardDescription className="text-lg">
-                  <span className="text-3xl font-bold">${plan.price}</span>
+                  <span className="text-3xl font-bold text-foreground">${plan.price}</span>
                   {plan.price > 0 && <span className="text-muted-foreground">/mes</span>}
                 </CardDescription>
               </div>
@@ -110,25 +114,25 @@ export default function SubscriptionTables() {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                   <span>Proyectos {plan.name.toLowerCase() === 'free' ? 'básicos' : 'ilimitados'}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                   <span>Gestión de presupuestos</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                   <span>Bitácora de obra</span>
                 </div>
                 {plan.name.toLowerCase() !== 'free' && (
                   <>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-primary" />
                       <span>Reportes avanzados</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-primary" />
                       <span>Colaboración en equipo</span>
                     </div>
                   </>
@@ -136,11 +140,11 @@ export default function SubscriptionTables() {
                 {plan.name.toLowerCase() === 'enterprise' && (
                   <>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-primary" />
                       <span>Soporte prioritario</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-primary" />
                       <span>Integración personalizada</span>
                     </div>
                   </>

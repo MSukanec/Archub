@@ -14,18 +14,18 @@ import { Link } from 'wouter';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10">
       {/* Header */}
       <header className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-white" />
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">Metrik</span>
+            <span className="text-2xl font-bold text-foreground">Metrik</span>
           </div>
           <Link href="/auth">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-primary hover:bg-primary/90">
               Iniciar Sesión
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -36,17 +36,17 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-16 text-center">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
             Gestión de Proyectos de
-            <span className="text-blue-600 block">Construcción</span>
+            <span className="text-primary block">Construcción</span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             La plataforma profesional que necesitas para administrar presupuestos, proyectos y 
             equipos de construcción de manera eficiente y organizada.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8">
                 Comenzar Ahora
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -61,43 +61,43 @@ export default function LandingPage() {
       {/* Features Section */}
       <section className="container mx-auto px-6 py-16">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Todo lo que necesitas en un solo lugar
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Herramientas potentes diseñadas específicamente para la industria de la construcción
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card className="p-6 hover:shadow-lg transition-shadow">
+          <Card className="p-6 hover:shadow-lg transition-shadow border-muted">
             <CardContent className="p-0">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
-                <Calculator className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Calculator className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Presupuestos Inteligentes</h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Presupuestos Inteligentes</h3>
+              <p className="text-muted-foreground">
                 Crea y gestiona presupuestos detallados con elementos, unidades y costos actualizados en tiempo real.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow">
+          <Card className="p-6 hover:shadow-lg transition-shadow border-muted">
             <CardContent className="p-0">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <Building2 className="h-6 w-6 text-green-600" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Building2 className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Gestión de Proyectos</h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Gestión de Proyectos</h3>
+              <p className="text-muted-foreground">
                 Organiza todos tus proyectos de construcción con información de clientes, ubicaciones y estados.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow">
+          <Card className="p-6 hover:shadow-lg transition-shadow border-muted">
             <CardContent className="p-0">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
-                <FileText className="h-6 w-6 text-purple-600" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <FileText className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Bitácora de Obra</h3>
               <p className="text-gray-600 dark:text-gray-300">

@@ -55,7 +55,11 @@ export default function PrimarySidebar() {
       <div className="flex flex-col items-center pb-4 space-y-[5px]">
         {/* Plan button */}
         <button
-          onClick={() => setSection('profile')}
+          onClick={() => {
+            setSection('profile');
+            // Navigate to subscription tables
+            window.location.hash = '#/subscription-tables';
+          }}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
           title="Plan"
         >
