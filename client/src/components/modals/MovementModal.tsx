@@ -182,6 +182,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   const saveMovementMutation = useMutation({
     mutationFn: async (data: MovementForm) => {
+      console.log('Saving movement with data:', data);
+      console.log('Project ID:', projectId);
+      
       let fileUrl = movement?.file_url || null;
       
       // Upload file if selected
@@ -195,15 +198,18 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         date: data.date,
         category: data.category,
         description: data.description,
-        amount: data.amount,
+        amount: Number(data.amount),
         currency: data.currency,
-        related_contact_id: data.related_contact_id && data.related_contact_id !== 'none' ? data.related_contact_id : null,
-        related_task_id: data.related_task_id && data.related_task_id !== 'none' ? data.related_task_id : null,
+        related_contact_id: data.related_contact_id && data.related_contact_id !== 'none' && data.related_contact_id !== '' ? data.related_contact_id : null,
+        related_task_id: data.related_task_id && data.related_task_id !== 'none' && data.related_task_id !== '' ? parseInt(data.related_task_id) : null,
         file_url: fileUrl,
       };
 
+      console.log('Movement data to insert:', movementData);
+
       if (isEditing && movement?.id) {
         // Update existing movement
+        console.log('Updating movement with ID:', movement.id);
         const { data: updatedMovement, error } = await supabase
           .from('site_movements')
           .update(movementData)
@@ -211,17 +217,26 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
         return updatedMovement;
       } else {
         // Create new movement
+        console.log('Creating new movement...');
         const { data: newMovement, error } = await supabase
           .from('site_movements')
           .insert(movementData)
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          throw error;
+        }
+        console.log('Movement created successfully:', newMovement);
         return newMovement;
       }
     },

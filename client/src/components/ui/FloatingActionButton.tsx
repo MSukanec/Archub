@@ -126,18 +126,18 @@ export default function FloatingActionButton() {
         onClick={handleClick}
         className={cn(
           "bg-primary hover:bg-primary/90 text-primary-foreground",
-          "shadow-lg hover:shadow-xl",
-          "flex flex-col items-center justify-center",
+          "shadow-lg hover:shadow-xl rounded-xl",
+          "flex items-center justify-center",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
           actionConfig.isMultiple && isHovered 
-            ? "h-auto py-3 px-4 min-w-48 rounded-xl" 
+            ? "h-auto py-3 px-4 min-w-48 flex-col" 
             : actionConfig.isMultiple 
-              ? "h-14 w-14 rounded-full" 
+              ? "h-14 w-14" 
               : isHovered 
-                ? "h-14 justify-start pl-4 pr-6 rounded-full" 
-                : "h-14 w-14 justify-center rounded-full"
+                ? "h-14 justify-start pl-4 pr-6" 
+                : "h-14 w-14"
         )}
         style={{
           width: actionConfig.isMultiple 
@@ -170,7 +170,7 @@ export default function FloatingActionButton() {
         ) : (
           // Botón simple para otras vistas
           <>
-            <Plus size={20} className={cn("flex-shrink-0", isHovered ? "" : "absolute inset-0 m-auto")} />
+            <Plus size={20} className="flex-shrink-0" />
             <span 
               className={cn(
                 "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
