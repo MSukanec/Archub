@@ -106,6 +106,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const convertTimelineToGantt = useMemo(() => {
     const ganttItems: GanttItem[] = [];
     
+    console.log('Timeline events received:', timelineEvents);
+    
     timelineEvents.forEach(dayEvent => {
       const eventDate = new Date(dayEvent.date);
       
