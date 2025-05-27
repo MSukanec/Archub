@@ -222,7 +222,7 @@ export default function SiteLogs() {
             </div>
           ) : (
             siteLogs.map((siteLog) => {
-              const logDate = new Date(siteLog.date);
+              const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
               const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               
               return (
