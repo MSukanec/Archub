@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -92,11 +92,22 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
   const form = useForm<BudgetForm>({
     resolver: zodResolver(budgetSchema),
     defaultValues: {
-      name: budget?.name || '',
-      description: budget?.description || '',
-      status: budget?.status || 'draft',
+      name: '',
+      description: '',
+      status: 'draft',
     },
   });
+
+  // Resetear el formulario cuando cambia el presupuesto o se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        name: budget?.name || '',
+        description: budget?.description || '',
+        status: budget?.status || 'draft',
+      });
+    }
+  }, [budget, isOpen, form]);
 
   const budgetMutation = useMutation({
     mutationFn: async (data: BudgetForm) => {
