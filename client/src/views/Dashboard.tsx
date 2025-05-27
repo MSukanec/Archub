@@ -225,6 +225,7 @@ export default function Dashboard() {
         weekDays={visibleDays.slice(15 - 3, 15 + 4)} // 7 días centrados en hoy
         startDate={subDays(new Date(), 3)}
         endDate={addDays(new Date(), 3)}
+        onItemClick={handleItemClick}
       />
 
       {/* Detail Modal */}
