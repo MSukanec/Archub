@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, subDays } from 'date-fns';
+import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, subDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -116,8 +116,9 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       // Agregar site logs como bitácora
       if (dayEvent.siteLogs && dayEvent.siteLogs.length > 0) {
         dayEvent.siteLogs.forEach((log: any) => {
-          // Usar la fecha real del log
-          const logDate = new Date(log.log_date || log.date);
+          // Usar parseISO para manejar fechas correctamente sin desfase de zona horaria
+          const logDateString = log.log_date || log.date;
+          const logDate = parseISO(logDateString + 'T12:00:00'); // Agregar hora al mediodía para evitar desfases
           ganttItems.push({
             id: `log-${log.id}`,
             title: log.comments || log.description || 'Entrada de bitácora',
@@ -133,8 +134,9 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       // Agregar movimientos
       if (dayEvent.movements && dayEvent.movements.length > 0) {
         dayEvent.movements.forEach((movement: any) => {
-          // Usar la fecha real del movimiento, no la fecha del evento
-          const movementDate = new Date(movement.date);
+          // Usar parseISO para manejar fechas correctamente sin desfase de zona horaria
+          const movementDateString = movement.date;
+          const movementDate = parseISO(movementDateString + 'T12:00:00'); // Agregar hora al mediodía para evitar desfases
           ganttItems.push({
             id: `movement-${movement.id}`,
             title: `${movement.description || 'Movimiento'} - $${movement.amount}`,
