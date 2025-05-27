@@ -120,34 +120,18 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
       console.log('Authenticated user:', user.id);
 
-      // Get user preferences to find their active organization
-      const { data: prefData } = await supabase
+      // Get user preferences - this is the ONLY source of truth for organization
+      const { data: prefData, error: prefError } = await supabase
         .from('user_preferences')
         .select('last_organization_id')
+        .eq('user_id', user.id)
         .single();
 
-      let organizationId = prefData?.last_organization_id;
+      console.log('User preferences data:', prefData, 'Error:', prefError);
 
-      // If no organization in preferences, find the first one they belong to
-      if (!organizationId) {
-        const { data: orgMembership } = await supabase
-          .from('organization_members')
-          .select('organization_id')
-          .limit(1)
-          .maybeSingle();
-        
-        organizationId = orgMembership?.organization_id || null;
-        
-        // Save this as their preference
-        if (organizationId) {
-          await supabase
-            .from('user_preferences')
-            .upsert({
-              user_id: user.id,
-              last_organization_id: organizationId,
-            });
-        }
-      }
+      let organizationId = prefData?.last_organization_id || null;
+
+      console.log('Organization from user_preferences:', organizationId);
 
       console.log('Setting organization:', organizationId);
 
