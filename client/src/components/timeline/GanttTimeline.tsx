@@ -237,7 +237,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
-    const days = direction === 'prev' ? -1 : 1;
+    const days = direction === 'prev' ? -7 : 7;
     setCurrentWeekStart(addDays(currentWeekStart, days));
   };
 
@@ -301,6 +301,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               <button 
                 onClick={() => navigateWeek('prev')}
                 className="p-1 text-gray-400 hover:text-white transition-colors"
+                title="7 días anteriores"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -316,6 +317,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               <button 
                 onClick={() => navigateWeek('next')}
                 className="p-1 text-gray-400 hover:text-white transition-colors"
+                title="7 días siguientes"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
