@@ -34,12 +34,12 @@ export default function Dashboard() {
   const [isDayDetailModalOpen, setIsDayDetailModalOpen] = useState(false);
   const [selectedDayData, setSelectedDayData] = useState<any | null>(null);
   const [viewStartDate, setViewStartDate] = useState(() => {
-    // Mostrar 15 días antes de hoy y 15 días después (30 días total)
-    return subDays(new Date(), 15);
+    // Mostrar 3 días antes de hoy y 3 después (7 días total)
+    return subDays(new Date(), 3);
   });
 
-  // Generar array de días para el período visible (30 días)
-  const visibleDays = Array.from({ length: 30 }, (_, i) => addDays(viewStartDate, i));
+  // Generar array de días para el período visible (7 días)
+  const visibleDays = Array.from({ length: 7 }, (_, i) => addDays(viewStartDate, i));
 
   // Listen for timeline action events
   useEffect(() => {
@@ -240,7 +240,7 @@ export default function Dashboard() {
       {/* Vista Gantt */}
       <GanttTimeline 
         timelineEvents={timelineEvents}
-        weekDays={visibleDays.slice(15 - 3, 15 + 4)} // 7 días centrados en hoy
+        weekDays={visibleDays} // 7 días centrados en hoy
         startDate={subDays(new Date(), 3)}
         endDate={addDays(new Date(), 3)}
         onItemClick={handleItemClick}

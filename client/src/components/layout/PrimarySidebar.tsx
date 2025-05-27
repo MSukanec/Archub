@@ -1,4 +1,4 @@
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, TrendingUp, Users, Settings, User, Shield, Bell, Contact } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
@@ -9,7 +9,7 @@ const topNavigationItems = [
   { section: 'projects' as Section, icon: FolderKanban, label: 'Proyectos' },
   { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
   { section: 'sitelog' as Section, icon: ClipboardList, label: 'Bitácora' },
-  { section: 'movements' as Section, icon: TrendingUp, label: 'Movimientos de Obra' },
+  { section: 'movements' as Section, icon: DollarSign, label: 'Movimientos de Obra' },
   { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
 ];
 

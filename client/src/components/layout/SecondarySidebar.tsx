@@ -77,7 +77,7 @@ const sectionConfig = {
     title: 'Movimientos de Obra',
     description: 'Registro de ingresos y egresos',
     items: [
-      { view: 'movements-main' as View, icon: TrendingUp, label: 'Movimientos Financieros' },
+      { view: 'movements-main' as View, icon: DollarSign, label: 'Movimientos Financieros' },
     ],
   },
   contacts: {

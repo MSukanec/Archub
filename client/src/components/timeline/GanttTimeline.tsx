@@ -443,10 +443,9 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                             : `${firstItem.title} (${format(firstItem.startDate, 'dd/MM')})`
                           }
                           onClick={() => {
-                            if (hasMultipleItems && onDayClick && dayEvent) {
+                            // Siempre abrir el modal de lista del día, sin importar si hay 1 o varios items
+                            if (onDayClick && dayEvent) {
                               onDayClick(dayKey, dayEvent);
-                            } else {
-                              onItemClick?.(firstItem);
                             }
                           }}
                         >
