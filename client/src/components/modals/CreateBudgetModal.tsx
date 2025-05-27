@@ -139,11 +139,18 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
       return budget;
     },
     onSuccess: () => {
+      // Invalidar todas las queries relacionadas con presupuestos
+      queryClient.invalidateQueries({ queryKey: ['/api/budgets'] });
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: ['/api/budgets', projectId] });
+        queryClient.invalidateQueries({ queryKey: ['budgets', projectId] });
+      }
+      
       toast({
         title: 'Presupuesto creado',
         description: 'El presupuesto se ha creado exitosamente.',
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/budgets'] });
       form.reset();
       onClose();
     },
