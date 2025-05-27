@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
-import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay } from 'date-fns';
+import { useState, useMemo, useRef } from 'react';
+import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GanttItem {
@@ -48,14 +48,19 @@ const typeLabels = {
 };
 
 export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays }: GanttTimelineProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftNav, setShowLeftNav] = useState(false);
+  const [showRightNav, setShowRightNav] = useState(false);
+  
+  // Centrar el día actual - mostrar 3 días antes y 3 después (7 días total)
   const [currentWeekStart, setCurrentWeekStart] = useState(
-    startDate || startOfWeek(new Date(), { weekStartsOn: 1 })
+    startDate || subDays(new Date(), 3)
   );
 
-  // Usar los días proporcionados desde el Dashboard o generar los propios
-  const weekDays = propWeekDays || useMemo(() => {
+  // Usar los días proporcionados desde el Dashboard o generar 7 días centrados en hoy
+  const weekDays = propWeekDays ? propWeekDays.slice(0, 7) : useMemo(() => {
     const days = [];
-    for (let i = 0; i < 14; i++) { // Mostrar 2 semanas
+    for (let i = 0; i < 7; i++) {
       days.push(addDays(currentWeekStart, i));
     }
     return days;
@@ -179,8 +184,38 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
-    const days = direction === 'prev' ? -7 : 7;
+    const days = direction === 'prev' ? -1 : 1;
     setCurrentWeekStart(addDays(currentWeekStart, days));
+  };
+
+  const scrollTimeline = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 200;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowLeftNav(scrollLeft > 0);
+      setShowRightNav(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const handleCreateAction = (type: keyof typeof typeLabels) => {
+    const eventMap = {
+      bitacora: 'openCreateSiteLogModal',
+      movimientos: 'openCreateMovementModal',
+      tareas: 'openCreateTaskModal',
+      archivos: 'openCreateFileModal',
+      asistentes: 'openCreateAttendeeModal'
+    };
+    
+    window.dispatchEvent(new CustomEvent(eventMap[type]));
   };
 
   return (
@@ -198,7 +233,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
             <div className="flex items-center gap-2 px-3 py-1 bg-accent rounded-lg">
               <Calendar size={16} />
               <span className="text-sm font-medium">
-                {format(currentWeekStart, 'MMM yyyy', { locale: es })}
+                {format(weekDays[Math.floor(weekDays.length / 2)], 'MMM yyyy', { locale: es })}
               </span>
             </div>
             <button
@@ -211,22 +246,56 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
         </div>
 
         {/* Header con días */}
-        <div className="grid grid-cols-[200px_1fr] gap-4">
+        <div className="grid grid-cols-[200px_1fr] gap-4 relative">
           <div className="font-medium text-sm text-muted-foreground">Tipo / Fecha</div>
-          <div className="flex">
-            {weekDays.map((day, index) => (
-              <div key={index} className="flex-1 text-center border-l border-muted first:border-l-0">
-                <div className="text-xs text-muted-foreground py-1">
-                  {format(day, 'EEE', { locale: es })}
+          <div 
+            className="relative overflow-hidden"
+            onMouseEnter={() => {
+              setShowLeftNav(true);
+              setShowRightNav(true);
+            }}
+            onMouseLeave={() => {
+              setShowLeftNav(false);
+              setShowRightNav(false);
+            }}
+          >
+            <div 
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto scrollbar-hide"
+              onScroll={handleScroll}
+            >
+              {weekDays.map((day, index) => (
+                <div key={index} className="flex-shrink-0 w-24 text-center border-l border-muted first:border-l-0">
+                  <div className="text-xs text-muted-foreground py-1">
+                    {format(day, 'EEE', { locale: es })}
+                  </div>
+                  <div className={cn(
+                    "text-sm font-medium pb-2",
+                    isSameDay(day, new Date()) ? "text-primary font-bold" : "text-foreground"
+                  )}>
+                    {format(day, 'd')}
+                  </div>
                 </div>
-                <div className={cn(
-                  "text-sm font-medium pb-2",
-                  isSameDay(day, new Date()) ? "text-primary" : "text-foreground"
-                )}>
-                  {format(day, 'd')}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            
+            {/* Navigation buttons */}
+            {showLeftNav && (
+              <button
+                onClick={() => scrollTimeline('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border rounded-full p-1 shadow-sm hover:bg-accent transition-colors z-10"
+              >
+                <ChevronLeft size={16} />
+              </button>
+            )}
+            {showRightNav && (
+              <button
+                onClick={() => scrollTimeline('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm border rounded-full p-1 shadow-sm hover:bg-accent transition-colors z-10"
+              >
+                <ChevronRight size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -240,12 +309,21 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
           return (
             <div key={type} className="grid grid-cols-[200px_1fr] gap-4 items-center min-h-[60px]">
               {/* Etiqueta del tipo */}
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <Icon size={16} className="text-muted-foreground" />
-                <span className="font-medium text-sm">{label}</span>
-                <span className="text-xs text-muted-foreground">
-                  ({typeItems.length})
-                </span>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Icon size={16} className="text-muted-foreground" />
+                  <span className="font-medium text-sm">{label}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({typeItems.length})
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCreateAction(type as keyof typeof typeLabels)}
+                  className="p-1 hover:bg-accent rounded-md transition-colors"
+                  title={`Crear ${label}`}
+                >
+                  <Plus size={14} className="text-muted-foreground hover:text-foreground" />
+                </button>
               </div>
 
               {/* Línea de tiempo para este tipo */}
@@ -275,18 +353,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
         })}
       </div>
 
-      {/* Leyenda */}
-      <div className="mt-6 pt-4 border-t">
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <span>Leyenda:</span>
-          {Object.entries(typeLabels).map(([type, label]) => (
-            <div key={type} className="flex items-center gap-2">
-              <div className={cn("w-3 h-3 rounded", typeColors[type as keyof typeof typeColors])} />
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+
     </div>
   );
 }

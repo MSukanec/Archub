@@ -208,9 +208,9 @@ export default function Dashboard() {
       {/* Nueva Vista Gantt */}
       <GanttTimeline 
         timelineEvents={timelineEvents}
-        weekDays={visibleDays}
-        startDate={viewStartDate}
-        endDate={addDays(viewStartDate, 29)}
+        weekDays={visibleDays.slice(15 - 3, 15 + 4)} // 7 días centrados en hoy
+        startDate={subDays(new Date(), 3)}
+        endDate={addDays(new Date(), 3)}
       />
 
       {/* Detail Modal */}
