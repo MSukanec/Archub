@@ -361,26 +361,32 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               </div>
 
               {/* Línea de tiempo para este tipo */}
-              <div className="relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted">
-                {typeItems.map((item) => {
-                  const position = getItemPosition(item);
-                  if (!position) return null;
+              <div className="relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-hidden">
+                <div 
+                  className="relative h-full"
+                  style={{ width: `${allDays.length * 96}px` }}
+                  ref={timelineContentRef}
+                >
+                  {typeItems.map((item) => {
+                    const position = getItemPosition(item);
+                    if (!position) return null;
 
-                  return (
-                    <div
-                      key={item.id}
-                      className={cn(
-                        "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md",
-                        item.color,
-                        "flex items-center justify-center text-white text-xs font-medium"
-                      )}
-                      style={position}
-                      title={`${item.title} (${format(item.startDate, 'dd/MM')} - ${format(item.endDate, 'dd/MM')})`}
-                    >
-                      <span className="truncate px-2">{item.title}</span>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={item.id}
+                        className={cn(
+                          "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md",
+                          item.color,
+                          "flex items-center justify-center text-white text-xs font-medium"
+                        )}
+                        style={position}
+                        title={`${item.title} (${format(item.startDate, 'dd/MM')} - ${format(item.endDate, 'dd/MM')})`}
+                      >
+                        <span className="truncate px-2">{item.title}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
