@@ -193,7 +193,7 @@ export default function SiteLogs() {
                 
                 <div className="space-y-6">
                   {siteLogs.map((siteLog, index) => {
-                    const logDate = siteLog.date ? new Date(siteLog.date) : new Date();
+                    const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
                     const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
                     
                     return (
@@ -264,7 +264,7 @@ export default function SiteLogs() {
             </div>
           ) : (
             siteLogs.map((siteLog) => {
-              const logDate = siteLog.date ? new Date(siteLog.date) : new Date();
+              const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
               const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               
               return (
@@ -315,14 +315,14 @@ export default function SiteLogs() {
                   
                   <CardContent className="space-y-4">
                     {/* Comments */}
-                    {siteLog.comments && (
+                    {siteLog.description && (
                       <div>
                         <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                           <FileText className="h-4 w-4" />
                           Comentarios
                         </h4>
                         <p className="text-sm text-muted-foreground line-clamp-3">
-                          {siteLog.comments}
+                          {siteLog.description}
                         </p>
                       </div>
                     )}
@@ -374,7 +374,7 @@ export default function SiteLogs() {
         onClose={cancelDelete}
         onConfirm={confirmDelete}
         title="¿Eliminar registro de bitácora?"
-        description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.date).toLocaleDateString('es-ES', { 
+        description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.log_date + 'T00:00:00').toLocaleDateString('es-ES', { 
           day: 'numeric', 
           month: 'long', 
           year: 'numeric' 
