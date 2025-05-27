@@ -63,6 +63,7 @@ const useModalActions = () => {
     openCreateCategoryModal,
     openCreateMaterialModal,
     openCreateTaskModal,
+    openInviteTeamMemberModal,
   };
 };
 
@@ -86,6 +87,7 @@ export default function FloatingActionButton() {
       ]
     },
     'organization-overview': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
+    'organization-team': { label: 'Agregar Compañero', action: modalActions.openInviteTeamMemberModal },
     'organization-activity': null,
     'projects-overview': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
     'projects-list': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
