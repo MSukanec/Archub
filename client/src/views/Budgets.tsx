@@ -26,7 +26,8 @@ export default function Budgets() {
   const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
   const [isEditBudgetModalOpen, setIsEditBudgetModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
-  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -237,12 +238,21 @@ export default function Budgets() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                Seleccionar Presupuesto
-              </Button>
+              <Select value={activeBudgetId?.toString() || ""} onValueChange={(value) => setActiveBudgetId(Number(value))}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Seleccionar presupuesto" />
+                </SelectTrigger>
+                <SelectContent>
+                  {budgets?.map((budget: any) => (
+                    <SelectItem key={budget.id} value={budget.id.toString()}>
+                      {budget.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Button 
                 className="flex items-center gap-2"
-                onClick={() => setIsAddTaskModalOpen(true)}
+                onClick={() => setIsTaskModalOpen(true)}
                 disabled={!activeBudgetId}
               >
                 <Plus className="h-4 w-4" />
@@ -323,10 +333,14 @@ export default function Budgets() {
         }}
       />
       
-      <AddTaskToBudgetModal
-        isOpen={isAddTaskModalOpen}
-        onClose={() => setIsAddTaskModalOpen(false)}
+      <TaskModal
         budgetId={activeBudgetId}
+        task={editingTask}
+        isOpen={isTaskModalOpen}
+        onClose={() => {
+          setIsTaskModalOpen(false);
+          setEditingTask(null);
+        }}
       />
     </div>
   );
