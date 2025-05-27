@@ -182,30 +182,30 @@ export default function Dashboard() {
         
         {/* Navigation Controls */}
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigateWeek('prev')}>
+          <Button variant="outline" size="sm" onClick={() => navigatePeriod('prev')}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={goToToday}>
             <Calendar className="h-4 w-4 mr-2" />
             Hoy
           </Button>
-          <Button variant="outline" size="sm" onClick={() => navigateWeek('next')}>
+          <Button variant="outline" size="sm" onClick={() => navigatePeriod('next')}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* Week Display */}
+      {/* Period Display */}
       <div className="text-center">
         <h2 className="text-xl font-semibold text-foreground">
-          {format(currentWeekStart, 'dd', { locale: es })} - {format(addDays(currentWeekStart, 6), 'dd MMMM yyyy', { locale: es })}
+          {format(viewStartDate, 'dd', { locale: es })} - {format(addDays(viewStartDate, 29), 'dd MMMM yyyy', { locale: es })}
         </h2>
       </div>
 
       {/* Timeline */}
       <TimelineWorkspace 
-        weekEvents={weekEvents}
-        weekDays={weekDays}
+        weekEvents={timelineEvents}
+        weekDays={visibleDays}
         isLoading={isLoading}
         onDayClick={handleDayClick}
       />
