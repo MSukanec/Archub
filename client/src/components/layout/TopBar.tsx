@@ -99,13 +99,15 @@ export default function TopBar() {
               value={currentProject?.id?.toString() || ""} 
               onValueChange={handleProjectChange}
             >
-              <SelectTrigger className="bg-transparent border-none p-0 h-auto focus:ring-0 shadow-none">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-foreground">
-                    {currentProject?.name || 'Crear nuevo proyecto'}
-                  </span>
-                  <ChevronDown size={14} className="text-muted-foreground" />
-                </div>
+              <SelectTrigger className="bg-transparent border-none p-0 h-auto focus:ring-0 focus:ring-offset-0 shadow-none hover:bg-transparent data-[state=open]:bg-transparent outline-none">
+                <SelectValue asChild>
+                  <div className="flex items-center space-x-2 cursor-pointer">
+                    <span className="text-sm font-medium text-foreground">
+                      {currentProject?.name || 'Crear nuevo proyecto'}
+                    </span>
+                    <ChevronDown size={14} className="text-muted-foreground" />
+                  </div>
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {projects.length > 0 && projects.map((project: any) => (

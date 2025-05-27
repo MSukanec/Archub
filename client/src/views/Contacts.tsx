@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, Edit, Trash2, Mail, Phone, Building2, MapPin, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,19 @@ export default function Contacts() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateContactModal = () => {
+      setSelectedContact(null);
+      setIsModalOpen(true);
+    };
+
+    window.addEventListener('openCreateContactModal', handleOpenCreateContactModal);
+    return () => {
+      window.removeEventListener('openCreateContactModal', handleOpenCreateContactModal);
+    };
+  }, []);
 
   // Fetch contacts
   const { data: contacts = [], isLoading } = useQuery({

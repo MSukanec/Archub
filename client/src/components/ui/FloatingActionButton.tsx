@@ -3,37 +3,71 @@ import { Plus } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { cn } from '@/lib/utils';
 
-// Configuración de acciones por vista
-const viewActions: Record<View, { label: string; action: () => void } | null> = {
-  'dashboard-main': { label: 'Crear Dashboard', action: () => console.log('Crear dashboard') },
-  'organization-overview': { label: 'Crear Organización', action: () => console.log('Crear organización') },
-  'organization-activity': { label: 'Crear Actividad', action: () => console.log('Crear actividad') },
-  'projects-overview': { label: 'Crear Proyecto', action: () => console.log('Crear proyecto') },
-  'projects-list': { label: 'Crear Proyecto', action: () => console.log('Crear proyecto') },
-  'budgets-list': { label: 'Crear Presupuesto', action: () => console.log('Crear presupuesto') },
-  'budgets-tasks': { label: 'Crear Tarea', action: () => console.log('Crear tarea') },
-  'budgets-materials': { label: 'Crear Material', action: () => console.log('Crear material') },
-  'sitelog-main': { label: 'Crear Entrada', action: () => console.log('Crear entrada bitácora') },
-  'movements-main': { label: 'Crear Movimiento', action: () => console.log('Crear movimiento') },
-  'contacts': { label: 'Crear Contacto', action: () => console.log('Crear contacto') },
-  'admin-organizations': { label: 'Crear Organización', action: () => console.log('Crear organización') },
-  'admin-users': { label: 'Crear Usuario', action: () => console.log('Crear usuario') },
-  'admin-categories': { label: 'Crear Categoría', action: () => console.log('Crear categoría') },
-  'admin-materials': { label: 'Crear Material', action: () => console.log('Crear material') },
-  'admin-units': { label: 'Crear Unidad', action: () => console.log('Crear unidad') },
-  'admin-elements': { label: 'Crear Elemento', action: () => console.log('Crear elemento') },
-  'admin-actions': { label: 'Crear Acción', action: () => console.log('Crear acción') },
-  'admin-tasks': { label: 'Crear Tarea', action: () => console.log('Crear tarea') },
-  'admin-permissions': { label: 'Crear Permiso', action: () => console.log('Crear permiso') },
-  'profile-info': null, // No mostrar botón en perfil
-  'profile-subscription': null,
-  'profile-notifications': null,
-  'subscription-tables': null,
+// Hook personalizado para manejar modales
+const useModalActions = () => {
+  // Aquí podríamos usar un contexto global para manejar modales
+  // Por ahora, usamos eventos personalizados para comunicarnos con los componentes
+  const openCreateProjectModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateProjectModal'));
+  };
+  
+  const openCreateMovementModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateMovementModal'));
+  };
+  
+  const openCreateContactModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateContactModal'));
+  };
+
+  const openCreateBudgetModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateBudgetModal'));
+  };
+
+  const openCreateSiteLogModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'));
+  };
+
+  return {
+    openCreateProjectModal,
+    openCreateMovementModal,
+    openCreateContactModal,
+    openCreateBudgetModal,
+    openCreateSiteLogModal,
+  };
 };
 
 export default function FloatingActionButton() {
   const { currentView } = useNavigationStore();
   const [isHovered, setIsHovered] = useState(false);
+  const modalActions = useModalActions();
+
+  // Configuración de acciones por vista
+  const viewActions: Record<View, { label: string; action: () => void } | null> = {
+    'dashboard-main': null,
+    'organization-overview': null,
+    'organization-activity': null,
+    'projects-overview': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
+    'projects-list': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
+    'budgets-list': { label: 'Crear Presupuesto', action: modalActions.openCreateBudgetModal },
+    'budgets-tasks': null,
+    'budgets-materials': null,
+    'sitelog-main': { label: 'Crear Entrada', action: modalActions.openCreateSiteLogModal },
+    'movements-main': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
+    'contacts': { label: 'Crear Contacto', action: modalActions.openCreateContactModal },
+    'admin-organizations': null,
+    'admin-users': null,
+    'admin-categories': null,
+    'admin-materials': null,
+    'admin-units': null,
+    'admin-elements': null,
+    'admin-actions': null,
+    'admin-tasks': null,
+    'admin-permissions': null,
+    'profile-info': null,
+    'profile-subscription': null,
+    'profile-notifications': null,
+    'subscription-tables': null,
+  };
   
   const actionConfig = viewActions[currentView];
   
@@ -55,28 +89,27 @@ export default function FloatingActionButton() {
         className={cn(
           "h-14 bg-primary hover:bg-primary/90 text-primary-foreground",
           "rounded-full shadow-lg hover:shadow-xl",
-          "flex items-center justify-center",
+          "flex items-center",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
-          isHovered ? "px-4" : "w-14"
+          isHovered ? "justify-start pl-4 pr-6" : "justify-center w-14"
         )}
         style={{
           width: isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px'
         }}
       >
-        <Plus size={20} className="flex-shrink-0 z-10" />
-        <div 
+        <Plus size={20} className="flex-shrink-0" />
+        <span 
           className={cn(
-            "absolute left-12 top-1/2 -translate-y-1/2",
-            "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out",
+            "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
             isHovered 
               ? "opacity-100 translate-x-0" 
               : "opacity-0 translate-x-4"
           )}
         >
-          {actionConfig.label}
-        </div>
+          {isHovered ? actionConfig.label : ''}
+        </span>
       </button>
     </div>
   );
