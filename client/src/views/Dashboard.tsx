@@ -8,7 +8,7 @@ import SiteLogModal from '@/components/modals/SiteLogModal';
 import MovementModal from '@/components/modals/MovementModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, FolderKanban, Plus } from 'lucide-react';
 import { format, addDays, subDays, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -234,7 +234,9 @@ export default function Dashboard() {
     <div className="flex-1 p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">
+          Dashboard {activeProject?.name ? ` / ${activeProject.name}` : ''}
+        </h1>
       </div>
 
       {/* Vista Gantt */}

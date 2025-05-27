@@ -334,7 +334,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               className="flex overflow-x-auto scrollbar-hide"
               onScroll={handleScroll}
             >
-              {allDays.map((day, index) => (
+              {weekDays.map((day, index) => (
                 <div key={index} className="flex-shrink-0 w-24 text-center border-l border-muted first:border-l-0">
                   <div className="text-xs text-muted-foreground py-1">
                     {format(day, 'EEE', { locale: es })}
@@ -406,7 +406,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               >
                 <div 
                   className="relative h-full"
-                  style={{ width: `${allDays.length * 96}px` }}
+                  style={{ width: `${weekDays.length * 96}px` }}
                 >
                   {/* Agrupar items por día para mostrar contadores */}
                   {(() => {
