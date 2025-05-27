@@ -150,7 +150,7 @@ export default function ProfileInfo() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-2xl font-bold text-foreground mb-2">
           Información del Perfil
@@ -160,206 +160,160 @@ export default function ProfileInfo() {
         </p>
       </div>
 
-      {/* Profile Header */}
+      {/* Perfil y configuraciones en una sola card */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center space-x-4">
-            <Avatar className="w-20 h-20">
-              <AvatarFallback className="text-xl">
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">
-                {user?.firstName} {user?.lastName}
-              </h2>
-              <p className="text-muted-foreground">{user?.email}</p>
+          {/* Header del perfil */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <Avatar className="w-16 h-16">
+                <AvatarFallback className="text-lg">
+                  {user?.firstName?.[0]}{user?.lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  {user?.firstName} {user?.lastName}
+                </h2>
+                <p className="text-muted-foreground text-sm">{user?.email}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {isEditing && (
+                <Button 
+                  onClick={form.handleSubmit(onSubmit)}
+                  className="bg-primary hover:bg-primary/90"
+                  size="sm"
+                >
+                  <Save size={16} className="mr-2" />
+                  Guardar
+                </Button>
+              )}
               <Button 
                 variant="outline" 
-                size="sm" 
-                className="mt-2"
+                size="sm"
                 onClick={() => setIsEditing(!isEditing)}
               >
-                {isEditing ? 'Cancelar' : 'Editar Perfil'}
+                {isEditing ? 'Cancelar' : 'Editar'}
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Personal Information */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center">
-              <User className="mr-2" size={20} />
-              Información Personal
-            </CardTitle>
-            {isEditing && (
-              <Button 
-                onClick={form.handleSubmit(onSubmit)}
-                className="bg-primary hover:bg-primary/90"
-                size="sm"
-              >
-                <Save size={16} className="mr-2" />
-                Guardar
-              </Button>
+          {/* Información personal */}
+          <div className="border-t pt-6">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center">
+              <User className="mr-2" size={16} />
+              INFORMACIÓN PERSONAL
+            </h3>
+            
+            {isEditing ? (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apellido</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">NOMBRE</label>
+                  <p className="text-foreground">{user?.firstName}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">APELLIDO</label>
+                  <p className="text-foreground">{user?.lastName}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">EMAIL</label>
+                  <p className="text-foreground">{user?.email}</p>
+                </div>
+              </div>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          {isEditing ? (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apellido</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-          ) : (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Nombre</label>
-                  <p className="text-foreground font-medium">{user?.firstName}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Apellido</label>
-                  <p className="text-foreground font-medium">{user?.lastName}</p>
-                </div>
-              </div>
+          {/* Configuraciones rápidas */}
+          <div className="border-t pt-6 mt-6">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4">CONFIGURACIONES</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <Button variant="outline" size="sm" className="justify-start h-10">
+                <Mail className="h-4 w-4 mr-2" />
+                Cambiar Contraseña
+              </Button>
+              <Button variant="outline" size="sm" className="justify-start h-10">
+                <User className="h-4 w-4 mr-2" />
+                Autenticación 2FA
+              </Button>
+              <Button variant="outline" size="sm" className="justify-start h-10">
+                <Calendar className="h-4 w-4 mr-2" />
+                Sesiones Activas
+              </Button>
+            </div>
+          </div>
+
+          {/* Acciones de cuenta */}
+          <div className="border-t pt-6 mt-6">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4">ACCIONES DE CUENTA</h3>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleLogoutClick}
+                className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Cerrar Sesión
+              </Button>
               
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Email</label>
-                <p className="text-foreground font-medium">{user?.email}</p>
-              </div>
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={handleDeleteClick}
+              >
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Eliminar Cuenta
+              </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Account Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Configuraciones de Cuenta</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-foreground">Cambiar Contraseña</h4>
-              <p className="text-sm text-muted-foreground">
-                Actualiza tu contraseña para mantener tu cuenta segura
-              </p>
-            </div>
-            <Button variant="outline" size="sm">
-              Cambiar
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-foreground">Autenticación de Dos Factores</h4>
-              <p className="text-sm text-muted-foreground">
-                Añade una capa extra de seguridad a tu cuenta
-              </p>
-            </div>
-            <Button variant="outline" size="sm">
-              Configurar
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-foreground">Sesiones Activas</h4>
-              <p className="text-sm text-muted-foreground">
-                Gestionar dispositivos donde has iniciado sesión
-              </p>
-            </div>
-            <Button variant="outline" size="sm">
-              Ver Sesiones
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Danger Zone */}
-      <Card className="border-destructive/20">
-        <CardHeader>
-          <CardTitle className="text-destructive">Zona de Peligro</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-foreground">Cerrar Sesión</h4>
-              <p className="text-sm text-muted-foreground">
-                Cerrar sesión en este dispositivo
-              </p>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleLogoutClick}
-              className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar Sesión
-            </Button>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-destructive">Eliminar Cuenta</h4>
-              <p className="text-sm text-muted-foreground">
-                Eliminar permanentemente tu cuenta y todos los datos asociados
-              </p>
-            </div>
-            <Button 
-              variant="destructive" 
-              size="sm"
-              onClick={handleDeleteClick}
-            >
-              Eliminar
-            </Button>
           </div>
         </CardContent>
       </Card>
