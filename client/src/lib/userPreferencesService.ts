@@ -79,8 +79,8 @@ export const userPreferencesService = {
     }
   },
 
-  async getLastProjectId(userId: string): Promise<string | null> {
-    const preferences = await this.getUserPreferences(userId);
+  async getLastProjectId(authUserId: string): Promise<string | null> {
+    const preferences = await this.getUserPreferences(authUserId);
     return preferences?.last_project_id || null;
   }
 };
