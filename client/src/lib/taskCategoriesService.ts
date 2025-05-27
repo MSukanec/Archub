@@ -47,10 +47,10 @@ export const taskCategoriesService = {
       
       console.log(`Found ${data.length} categories`);
       
-      // Build hierarchical tree structure
-      const treeData = this.buildTree(data);
-      console.log('Returning tree data:', treeData.length, 'root categories');
-      return treeData;
+      // Return sorted flat list for now to ensure it works
+      const sortedData = data.sort((a, b) => a.position - b.position);
+      console.log('Returning sorted data:', sortedData.length, 'categories');
+      return sortedData;
       
     } catch (err) {
       console.error('Connection error:', err);
