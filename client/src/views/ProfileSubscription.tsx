@@ -107,21 +107,25 @@ export default function Subscription() {
               Plan Actual
             </CardTitle>
             <Badge variant="default" className="bg-primary/10 text-primary">
-              Básico
+              {currentPlan.name}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">Plan Básico</h3>
+            <h3 className="font-semibold text-foreground">Plan {currentPlan.name}</h3>
             <p className="text-sm text-muted-foreground">
-              Gratis para siempre • Hasta 5 proyectos
+              {currentPlan.price === '0' || currentPlan.price === 0 
+                ? 'Gratis para siempre • Hasta 5 proyectos'
+                : `$${currentPlan.price}/mes • Proyectos ilimitados`}
             </p>
           </div>
 
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar size={16} className="mr-2" />
-            Sin fecha de renovación
+            {currentPlan.price === '0' || currentPlan.price === 0 
+              ? 'Sin fecha de renovación'
+              : 'Próxima renovación: Mensual'}
           </div>
 
           <div className="pt-4">
@@ -139,36 +143,47 @@ export default function Subscription() {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan) => {
-            const IconComponent = plan.icon;
+          {availablePlans.map((plan) => {
+            const IconComponent = getPlanIcon(plan.name);
+            const isCurrentPlan = plan.name === currentPlan.name;
+            
             return (
               <Card 
-                key={plan.name} 
-                className={plan.current ? `${plan.borderColor} border-2` : 'hover:border-border/60 transition-colors'}
+                key={plan.id} 
+                className={isCurrentPlan ? 'border-primary border-2' : 'hover:border-border/60 transition-colors'}
               >
                 <CardHeader className="text-center">
                   <div className="flex items-center justify-center mb-4">
-                    <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${plan.color} flex items-center justify-center`}>
-                      <IconComponent className="h-8 w-8 text-white" />
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <IconComponent className="h-8 w-8 text-primary" />
                     </div>
                   </div>
                   <CardTitle className="flex items-center justify-center">
                     {plan.name}
-                    {plan.current && (
+                    {isCurrentPlan && (
                       <Badge variant="default" className="ml-2 bg-primary/10 text-primary">
                         Actual
                       </Badge>
                     )}
                   </CardTitle>
                   <div className="py-4">
-                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                    <span className="text-3xl font-bold text-foreground">
+                      {plan.price === '0' || plan.price === 0 ? 'Gratis' : `$${plan.price}`}
+                    </span>
+                    {(plan.price !== '0' && plan.price !== 0) && (
+                      <span className="text-muted-foreground">/mes</span>
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {plan.name === 'FREE' ? 'Perfecto para empezar' : 
+                     plan.name === 'PRO' ? 'Para equipos en crecimiento' :
+                     'Para empresas grandes'}
+                  </p>
                 </CardHeader>
               
                 <CardContent className="space-y-4">
                   <ul className="space-y-2">
-                    {plan.features.map((feature, index) => (
+                    {plan.features && plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center text-sm">
                         <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
                         <span className="text-muted-foreground">{feature}</span>
@@ -178,13 +193,13 @@ export default function Subscription() {
                   
                   <Button 
                     className={`w-full ${
-                      plan.current 
+                      isCurrentPlan 
                         ? 'bg-muted text-muted-foreground cursor-not-allowed' 
                         : 'bg-primary hover:bg-primary/90'
                     }`}
-                    disabled={plan.current}
+                    disabled={isCurrentPlan}
                   >
-                    {plan.current ? 'Plan Actual' : 'Seleccionar Plan'}
+                    {isCurrentPlan ? 'Plan Actual' : 'Seleccionar Plan'}
                   </Button>
                 </CardContent>
               </Card>
