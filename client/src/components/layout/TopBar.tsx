@@ -1,42 +1,17 @@
-import { Bell, ChevronRight, Plus, ChevronDown, Zap, Crown, Rocket } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Plus, Zap, Crown, Rocket } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { usersService } from '@/lib/usersService';
 import { projectsService } from '@/lib/projectsService';
-import { userPreferencesService } from '@/lib/userPreferencesService';
-
-const breadcrumbConfig = {
-  'dashboard-main': { section: 'Organización', view: 'Principal' },
-  'dashboard-activity': { section: 'Organización', view: 'Actividad Reciente' },
-  'projects-overview': { section: 'Proyectos', view: 'Resumen' },
-  'projects-list': { section: 'Proyectos', view: 'Lista' },
-  'projects-sitelog': { section: 'Proyectos', view: 'Bitácora' },
-  'projects-budgets': { section: 'Proyectos', view: 'Presupuestos' },
-  'projects-movements': { section: 'Proyectos', view: 'Movimientos de Obra' },
-  'contacts': { section: 'Agenda', view: 'Contactos' },
-  'admin-organizations': { section: 'Administración', view: 'Organizaciones' },
-  'admin-users': { section: 'Administración', view: 'Usuarios' },
-  'admin-categories': { section: 'Administración', view: 'Categorías' },
-  'admin-materials': { section: 'Administración', view: 'Materiales' },
-  'admin-units': { section: 'Administración', view: 'Unidades' },
-  'admin-elements': { section: 'Administración', view: 'Elementos' },
-  'admin-actions': { section: 'Administración', view: 'Acciones' },
-  'admin-tasks': { section: 'Administración', view: 'Gestión de Tareas' },
-  'admin-permissions': { section: 'Administración', view: 'Permisos' },
-  'profile-info': { section: 'Perfil', view: 'Información' },
-  'profile-subscription': { section: 'Perfil', view: 'Suscripción' },
-  'profile-notifications': { section: 'Perfil', view: 'Notificaciones' },
-  'subscription-tables': { section: 'Planes', view: 'Suscripciones' },
-};
+import { supabase } from '@/lib/supabase';
 
 export default function TopBar() {
-  const { currentView, setView, setSection } = useNavigationStore();
+  const { setView, setSection } = useNavigationStore();
   const { organizationId, projectId, setUserContext } = useUserContextStore();
   const { user } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -89,25 +64,42 @@ export default function TopBar() {
     }
   };
 
+  // Fetch current organization details
+  const { data: currentOrganization } = useQuery({
+    queryKey: ['/api/organization', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return null;
+      const { data } = await supabase
+        .from('organizations')
+        .select('id, name')
+        .eq('id', organizationId)
+        .single();
+      return data;
+    },
+    enabled: !!organizationId,
+  });
+
   return (
     <>
       <header className="h-[45px] bg-[#282828] border-b border-border flex items-center justify-between px-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm">
-          <span className="text-muted-foreground">{breadcrumbConfig[currentView]?.section || 'Metrik'}</span>
-          <ChevronRight size={14} className="text-muted-foreground" />
-          <span className="text-foreground">{breadcrumbConfig[currentView]?.view || 'Principal'}</span>
-        </div>
-
-        {/* Project Selector and Actions */}
+        {/* Left side - Organization and Project selectors */}
         <div className="flex items-center space-x-4">
+          {/* Organization Display */}
+          <div className="min-w-[180px]">
+            <div className="text-sm text-muted-foreground">Organización</div>
+            <div className="text-sm font-medium text-foreground">
+              {currentOrganization?.name || 'Cargando...'}
+            </div>
+          </div>
+          
           {/* Project Selector */}
           <div className="min-w-[200px]">
+            <div className="text-sm text-muted-foreground mb-1">Proyecto</div>
             <Select 
               value={currentProject?.id?.toString() || ""} 
               onValueChange={handleProjectChange}
             >
-              <SelectTrigger className="bg-[#1e1e1e] border-border">
+              <SelectTrigger className="bg-[#1e1e1e] border-border h-8">
                 <SelectValue placeholder="Crear nuevo proyecto" />
               </SelectTrigger>
               <SelectContent>
@@ -125,8 +117,10 @@ export default function TopBar() {
               </SelectContent>
             </Select>
           </div>
-          
-          {/* Plan Button */}
+        </div>
+
+        {/* Right side - Plan button only */}
+        <div className="flex items-center">
           <button
             onClick={() => setView('subscription-tables')}
             className="w-8 h-8 rounded-full bg-[#1e1e1e] border border-border hover:bg-[#282828] flex items-center justify-center transition-colors"

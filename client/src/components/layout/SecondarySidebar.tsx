@@ -33,11 +33,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const sectionConfig = {
   dashboard: {
-    title: 'Organización',
-    description: 'Información de la organización',
+    title: 'Dashboard',
+    description: 'Vista principal del sistema',
     items: [
-      { view: 'dashboard-main' as View, icon: BarChart3, label: 'Resumen General' },
-      { view: 'dashboard-activity' as View, icon: Clock, label: 'Actividad Reciente' },
+      { view: 'dashboard-main' as View, icon: Home, label: 'Principal' },
+    ],
+  },
+  organization: {
+    title: 'Organización',
+    description: 'Vista general y actividad de la organización',
+    items: [
+      { view: 'organization-overview' as View, icon: ChartBar, label: 'Resumen General' },
+      { view: 'organization-activity' as View, icon: Activity, label: 'Actividad Reciente' },
     ],
   },
   projects: {
@@ -46,9 +53,29 @@ const sectionConfig = {
     items: [
       { view: 'projects-overview' as View, icon: ChartBar, label: 'Resumen' },
       { view: 'projects-list' as View, icon: List, label: 'Lista de Proyectos' },
-      { view: 'projects-sitelog' as View, icon: CheckSquare, label: 'Bitácora' },
-      { view: 'projects-budgets' as View, icon: CreditCard, label: 'Presupuestos' },
-      { view: 'projects-movements' as View, icon: MoreHorizontal, label: 'Movimientos de Obra' },
+    ],
+  },
+  budgets: {
+    title: 'Presupuestos',
+    description: 'Gestión de presupuestos y costos',
+    items: [
+      { view: 'budgets-list' as View, icon: CreditCard, label: 'Lista de Presupuestos' },
+      { view: 'budgets-tasks' as View, icon: CheckSquare, label: 'Lista de Tareas' },
+      { view: 'budgets-materials' as View, icon: Package, label: 'Lista de Materiales' },
+    ],
+  },
+  sitelog: {
+    title: 'Bitácora',
+    description: 'Registro diario de actividades en obra',
+    items: [
+      { view: 'sitelog-main' as View, icon: CheckSquare, label: 'Bitácora de Obra' },
+    ],
+  },
+  movements: {
+    title: 'Movimientos de Obra',
+    description: 'Registro de ingresos y egresos',
+    items: [
+      { view: 'movements-main' as View, icon: MoreHorizontal, label: 'Movimientos Financieros' },
     ],
   },
   contacts: {

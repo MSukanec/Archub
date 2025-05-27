@@ -7,6 +7,7 @@ import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import TopBar from './TopBar';
 import Dashboard from '@/views/Dashboard';
+import Organization from '@/views/Organization';
 import ProjectsOverview from '@/views/ProjectsOverview';
 import ProjectsList from '@/views/ProjectsList';
 import SiteLogs from '@/views/SiteLogs';
