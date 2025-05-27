@@ -75,18 +75,17 @@ export default function Dashboard() {
 
       // Agregar site logs
       siteLogs?.forEach(log => {
-        if (eventsByDate[log.date]) {
-          eventsByDate[log.date].siteLogs.push(log);
-          eventsByDate[log.date].tasks.push(...(log.site_log_tasks || []));
-          eventsByDate[log.date].attendees.push(...(log.site_log_attendees || []));
-          eventsByDate[log.date].files.push(...(log.site_log_files || []));
+        const logDate = format(new Date(log.date), 'yyyy-MM-dd');
+        if (eventsByDate[logDate]) {
+          eventsByDate[logDate].siteLogs.push(log);
         }
       });
 
       // Agregar movements
       movements?.forEach(movement => {
-        if (eventsByDate[movement.date]) {
-          eventsByDate[movement.date].movements.push(movement);
+        const movementDate = format(new Date(movement.date), 'yyyy-MM-dd');
+        if (eventsByDate[movementDate]) {
+          eventsByDate[movementDate].movements.push(movement);
         }
       });
 
