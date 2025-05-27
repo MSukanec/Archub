@@ -111,40 +111,40 @@ export default function TimelineWorkspace({
         <div ref={scrollContainerRef} className="overflow-x-auto px-6 py-6 scrollbar-hide">
           <div className="flex gap-4 min-w-max">
             {weekDays.map((day, index) => {
-            const dateKey = format(day, 'yyyy-MM-dd');
-            const dayEvent = eventsByDate[dateKey] || {
-              date: dateKey,
-              siteLogs: [],
-              movements: [],
-              tasks: [],
-              attendees: [],
-              files: []
-            };
+              const dateKey = format(day, 'yyyy-MM-dd');
+              const dayEvent = eventsByDate[dateKey] || {
+                date: dateKey,
+                siteLogs: [],
+                movements: [],
+                tasks: [],
+                attendees: [],
+                files: []
+              };
 
-            return (
-              <div key={dateKey} className="flex-shrink-0 w-48">
-                {/* Day Header */}
-                <div className="text-center mb-4">
-                  <div className="text-sm font-medium text-muted-foreground uppercase">
-                    {format(day, 'EEE', { locale: es })}
+              return (
+                <div key={dateKey} className="flex-shrink-0 w-48">
+                  {/* Day Header */}
+                  <div className="text-center mb-4">
+                    <div className="text-sm font-medium text-muted-foreground uppercase">
+                      {format(day, 'EEE', { locale: es })}
+                    </div>
+                    <div className="text-2xl font-bold text-foreground mt-1">
+                      {format(day, 'dd')}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {format(day, 'MMM', { locale: es })}
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-foreground mt-1">
-                    {format(day, 'dd')}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {format(day, 'MMM', { locale: es })}
-                  </div>
+
+                  {/* Day Card */}
+                  <DayCard
+                    dayEvent={dayEvent}
+                    isToday={format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')}
+                    onClick={() => onDayClick(dayEvent)}
+                  />
                 </div>
-
-                {/* Day Card */}
-                <DayCard
-                  dayEvent={dayEvent}
-                  isToday={format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')}
-                  onClick={() => onDayClick(dayEvent)}
-                />
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
         </div>
       </div>

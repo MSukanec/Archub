@@ -122,48 +122,66 @@ export default function FloatingActionButton() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Options Menu for Multiple Actions */}
-      {actionConfig.isMultiple && isHovered && (
-        <div className="absolute bottom-16 right-0 mb-2 bg-[#1e1e1e] border border-border rounded-lg shadow-xl p-2 min-w-48">
-          {actionConfig.options?.map((option, index) => (
-            <button
-              key={index}
-              onClick={option.action}
-              className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-primary/10 rounded transition-colors"
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
-      
       <button
         onClick={handleClick}
         className={cn(
-          "h-14 bg-primary hover:bg-primary/90 text-primary-foreground",
+          "bg-primary hover:bg-primary/90 text-primary-foreground",
           "rounded-full shadow-lg hover:shadow-xl",
-          "flex items-center",
+          "flex flex-col items-center justify-center",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
-          !actionConfig.isMultiple && isHovered ? "justify-start pl-4 pr-6" : "justify-center w-14"
+          actionConfig.isMultiple && isHovered 
+            ? "h-auto py-3 px-4 min-w-48" 
+            : actionConfig.isMultiple 
+              ? "h-14 w-14" 
+              : isHovered 
+                ? "h-14 justify-start pl-4 pr-6" 
+                : "h-14 w-14 justify-center"
         )}
         style={{
-          width: !actionConfig.isMultiple && isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px'
+          width: actionConfig.isMultiple 
+            ? (isHovered ? '192px' : '56px')
+            : (isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px')
         }}
       >
-        <Plus size={20} className={cn("flex-shrink-0", !actionConfig.isMultiple && isHovered ? "" : "absolute inset-0 m-auto")} />
-        {!actionConfig.isMultiple && (
-          <span 
-            className={cn(
-              "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
-              isHovered 
-                ? "opacity-100 translate-x-0" 
-                : "opacity-0 translate-x-4"
-            )}
-          >
-            {isHovered ? actionConfig.label : ''}
-          </span>
+        {actionConfig.isMultiple ? (
+          isHovered ? (
+            // Mostrar opciones verticalmente dentro del botón
+            <div className="space-y-2">
+              {actionConfig.options?.map((option, index) => (
+                <div
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    option.action();
+                  }}
+                  className="flex items-center text-sm hover:bg-primary-foreground/10 rounded px-2 py-1 cursor-pointer transition-colors"
+                >
+                  <Plus size={14} className="mr-2 flex-shrink-0" />
+                  <span className="whitespace-nowrap">{option.label}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            // Mostrar solo el ícono +
+            <Plus size={20} className="flex-shrink-0" />
+          )
+        ) : (
+          // Botón simple para otras vistas
+          <>
+            <Plus size={20} className={cn("flex-shrink-0", isHovered ? "" : "absolute inset-0 m-auto")} />
+            <span 
+              className={cn(
+                "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
+                isHovered 
+                  ? "opacity-100 translate-x-0" 
+                  : "opacity-0 translate-x-4"
+              )}
+            >
+              {isHovered ? actionConfig.label : ''}
+            </span>
+          </>
         )}
       </button>
     </div>
