@@ -73,25 +73,35 @@ export const projectsService = {
       throw new Error('No se pudo obtener la organización del usuario');
     }
 
+    console.log('Creating project with data:', projectData);
+    console.log('Organization ID:', organizationId);
+
+    const insertData = {
+      name: projectData.name,
+      description: projectData.description || null,
+      client_name: projectData.client_name || null,
+      status: projectData.status || 'planning',
+      address: projectData.address || null,
+      contact_phone: projectData.contact_phone || null,
+      city: projectData.city || null,
+      organization_id: organizationId,
+      is_active: true,
+    };
+
+    console.log('Insert data:', insertData);
+
     const { data, error } = await supabase
       .from('projects')
-      .insert([{
-        name: projectData.name,
-        description: projectData.description || null,
-        client_name: projectData.client_name || null,
-        status: projectData.status || 'planning',
-        address: projectData.address || null,
-        contact_phone: projectData.contact_phone || null,
-        city: projectData.city || null,
-        organization_id: organizationId,
-        is_active: true,
-      }])
+      .insert([insertData])
       .select()
       .single();
     
     if (error) {
-      console.error('Error creating project:', error);
-      throw new Error('Error al crear el proyecto');
+      console.error('Supabase error creating project:', error);
+      console.error('Error details:', error.details);
+      console.error('Error hint:', error.hint);
+      console.error('Error message:', error.message);
+      throw new Error(`Error al crear el proyecto: ${error.message}`);
     }
     
     // Refresh the cached data after creating
