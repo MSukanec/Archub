@@ -60,15 +60,19 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     },
   });
 
-  // Fetch tasks and contacts
-  const { data: tasks = [] } = useQuery({
+  // Fetch tasks and contacts with error handling
+  const { data: tasks = [], error: tasksError, isLoading: tasksLoading } = useQuery({
     queryKey: ['/api/tasks'],
     queryFn: () => tasksService.getAll(),
+    enabled: isOpen,
+    retry: false,
   });
 
-  const { data: contacts = [] } = useQuery({
+  const { data: contacts = [], error: contactsError, isLoading: contactsLoading } = useQuery({
     queryKey: ['/api/contacts'],
     queryFn: () => contactsService.getAll(),
+    enabled: isOpen,
+    retry: false,
   });
 
   // Create/Update mutation
@@ -249,6 +253,49 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       setUploadedFiles([]);
     }
   }, [isOpen, siteLog, form]);
+
+  // Show error state if data loading fails
+  if (tasksError || contactsError) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Información</DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-8">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">Servicio temporalmente no disponible</h3>
+            <p className="text-muted-foreground mb-4">
+              Los servicios de tareas y contactos no están disponibles en este momento. 
+              Por favor, inténtalo de nuevo más tarde.
+            </p>
+            <Button onClick={onClose} variant="outline">
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Show loading state
+  if (tasksLoading || contactsLoading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Cargando...</DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              Cargando información necesaria para el registro de obra...
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
