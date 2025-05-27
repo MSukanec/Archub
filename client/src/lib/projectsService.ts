@@ -32,7 +32,9 @@ export const projectsService = {
     console.log('Fetching projects for current user organization...');
     
     // Use centralized context instead of multiple queries
-    const { organizationId, currentProjects } = useUserContextStore.getState();
+    const { organizationId, currentProjects, isInitialized } = useUserContextStore.getState();
+    
+    console.log('Current context state:', { organizationId, hasProjects: !!currentProjects, isInitialized });
     
     // If we have cached projects and a valid organization, return cached data
     if (organizationId && currentProjects) {
