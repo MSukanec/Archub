@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -63,17 +63,17 @@ export default function AdminUsersModal({
         email: user.email,
         full_name: user.full_name || '',
         role: user.role,
-        plan_id: user.plan_id || 'basic',
+        plan_id: user.plan_id || defaultPlanId,
       });
     } else {
       form.reset({
         email: '',
         full_name: '',
         role: 'user',
-        plan_id: 'basic',
+        plan_id: defaultPlanId,
       });
     }
-  }, [user, form]);
+  }, [user, form, defaultPlanId]);
 
   const createMutation = useMutation({
     mutationFn: async (data: UserFormData) => {
@@ -133,6 +133,9 @@ export default function AdminUsersModal({
           <DialogTitle>
             {user ? 'Editar Usuario' : 'Nuevo Usuario'}
           </DialogTitle>
+          <DialogDescription>
+            {user ? 'Modifica los datos del usuario existente.' : 'Crea un nuevo usuario en el sistema.'}
+          </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>

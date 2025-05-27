@@ -47,7 +47,7 @@ export default function PrimarySidebar() {
         return null;
       }
       
-      return data?.plans || { name: 'Free', price: 0 };
+      return data?.plans || null;
     },
     enabled: !!user?.id,
   });
@@ -92,7 +92,7 @@ export default function PrimarySidebar() {
             window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
           }}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
-          title={userPlan?.name ? `Plan: ${userPlan.name}` : "Plan"}
+          title={userPlan ? `Plan: ${userPlan.name}` : "Plan"}
         >
           <Crown size={20} />
         </button>
