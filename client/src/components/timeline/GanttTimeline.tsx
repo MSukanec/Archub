@@ -126,7 +126,6 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
 
       // Agregar movimientos
       if (dayEvent.movements && dayEvent.movements.length > 0) {
-        console.log('Found movements:', dayEvent.movements);
         dayEvent.movements.forEach((movement: any) => {
           // Usar la fecha real del movimiento, no la fecha del evento
           const movementDate = new Date(movement.date);
@@ -182,7 +181,6 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       });
     });
 
-    console.log('Final gantt items:', ganttItems);
     return ganttItems;
   }, [timelineEvents]);
 
@@ -212,15 +210,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const timelineStart = startOfDay(allDays[0]);
     const timelineEnd = startOfDay(allDays[allDays.length - 1]);
 
-    console.log('Position calc for item:', item.id, {
-      startDay: format(startDay, 'yyyy-MM-dd'),
-      timelineStart: format(timelineStart, 'yyyy-MM-dd'),
-      timelineEnd: format(timelineEnd, 'yyyy-MM-dd')
-    });
-
     // Check if item is visible in current timeline
     if (endDay < timelineStart || startDay > timelineEnd) {
-      console.log('Item outside timeline range');
       return null;
     }
 
@@ -228,13 +219,10 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const duration = differenceInDays(endDay, startDay) + 1;
     const dayWidth = 96; // w-24 = 96px
 
-    const position = {
+    return {
       left: `${startOffset * dayWidth}px`,
       width: `${duration * dayWidth}px`
     };
-
-    console.log('Calculated position:', position, 'startOffset:', startOffset);
-    return position;
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
@@ -269,7 +257,6 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       asistentes: 'openCreateAttendeeModal'
     };
     
-    console.log('Creating action for type:', type, 'event:', eventMap[type]);
     window.dispatchEvent(new CustomEvent(eventMap[type]));
   };
 
@@ -396,9 +383,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                 >
                   {typeItems.map((item) => {
                     const position = getItemPosition(item);
-                    console.log(`Item ${item.id} position:`, position, 'date:', item.startDate);
                     if (!position) {
-                      console.log(`Item ${item.id} filtered out - no position`);
                       return null;
                     }
 
