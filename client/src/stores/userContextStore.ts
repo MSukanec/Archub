@@ -46,14 +46,36 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        await supabase
+        // Get internal user ID first
+        const { data: internalUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (!internalUser) return;
+
+        // Try to update existing record first
+        const { error: updateError } = await supabase
           .from('user_preferences')
-          .upsert({
-            user_id: user.id,
+          .update({
             last_organization_id: context.organizationId || get().organizationId,
             last_project_id: context.projectId || get().projectId,
             last_budget_id: context.budgetId || get().budgetId,
-          });
+          })
+          .eq('user_id', internalUser.id);
+
+        // If update failed, try upsert
+        if (updateError) {
+          await supabase
+            .from('user_preferences')
+            .upsert({
+              user_id: internalUser.id,
+              last_organization_id: context.organizationId || get().organizationId,
+              last_project_id: context.projectId || get().projectId,
+              last_budget_id: context.budgetId || get().budgetId,
+            });
+        }
       } catch (error) {
         console.error('Error updating user preferences:', error);
       }
