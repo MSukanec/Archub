@@ -214,25 +214,22 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   // Calcular posición y ancho de un elemento en la línea de tiempo
   const getItemPosition = (item: GanttItem) => {
     const startDay = startOfDay(item.startDate);
-    const timelineStart = startOfDay(weekDays[0]);
-    const timelineEnd = startOfDay(weekDays[weekDays.length - 1]);
+    const endDay = startOfDay(item.endDate);
+    const timelineStart = startOfDay(allDays[0]);
+    const timelineEnd = startOfDay(allDays[allDays.length - 1]);
 
-    // Check if item is visible in current 7-day timeline
-    if (startDay < timelineStart || startDay > timelineEnd) {
+    // Check if item is visible in current timeline
+    if (endDay < timelineStart || startDay > timelineEnd) {
       return null;
     }
 
-    const dayIndex = weekDays.findIndex(day => 
-      format(day, 'yyyy-MM-dd') === format(startDay, 'yyyy-MM-dd')
-    );
-    
-    if (dayIndex === -1) return null;
+    const startOffset = Math.max(0, differenceInDays(startDay, timelineStart));
+    const duration = differenceInDays(endDay, startDay) + 1;
+    const dayWidth = 128; // w-32 = 128px
 
     return {
-      gridColumn: `${dayIndex + 1}`,
-      width: `calc(100% - 8px)`,
-      marginLeft: '4px',
-      marginRight: '4px'
+      left: `${startOffset * dayWidth}px`,
+      width: `${duration * dayWidth - 8}px` // Restamos 8px para margen
     };
   };
 
@@ -337,8 +334,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               className="flex overflow-x-auto scrollbar-hide"
               onScroll={handleScroll}
             >
-              {weekDays.map((day, index) => (
-                <div key={index} className="flex-1 text-center border-l border-muted first:border-l-0" style={{ minWidth: `${100/7}%` }}>
+              {allDays.map((day, index) => (
+                <div key={index} className="flex-shrink-0 w-32 text-center border-l border-muted first:border-l-0">
                   <div className="text-xs text-muted-foreground py-1">
                     {format(day, 'EEE', { locale: es })}
                   </div>
@@ -380,7 +377,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
           const typeItems = itemsByType[type] || [];
 
           return (
-            <div key={type} className="grid grid-cols-[200px_1fr] gap-4 items-center min-h-[60px]">
+            <div key={type} className="grid grid-cols-[200px_1fr] gap-4 items-center min-h-[30px]">
               {/* Etiqueta del tipo */}
               <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
@@ -408,7 +405,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                 }}
               >
                 <div 
-                  className="relative h-full w-full grid grid-cols-7"
+                  className="relative h-full"
+                  style={{ width: `${allDays.length * 128}px` }}
                 >
                   {/* Agrupar items por día para mostrar contadores */}
                   {(() => {
@@ -437,7 +435,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                         <div
                           key={`${type}-${dayKey}`}
                           className={cn(
-                            "h-8 mt-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
+                            "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
                             firstItem.color,
                             "flex items-center justify-center text-white text-xs font-medium"
                           )}
