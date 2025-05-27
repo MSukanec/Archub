@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { z } from 'zod';
-import { CalendarIcon, Plus, X, Upload, FileText, Image, Video, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow } from 'lucide-react';
+import { CalendarIcon, Plus, X, Upload, FileText, Image, Video, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow, ChevronUp, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<Array<{ task: Task; quantity: string; notes: string }>>([]);
   const [selectedAttendees, setSelectedAttendees] = useState<Array<{ contact: Contact; role: string }>>([]);
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ file: File; description: string }>>([]);
@@ -314,8 +315,33 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
             />
           </div>
 
-          {/* Tasks */}
-          <Card>
+          {/* More Details Button */}
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowMoreDetails(!showMoreDetails)}
+              className="gap-2"
+            >
+              {showMoreDetails ? (
+                <>
+                  <ChevronUp className="h-4 w-4" />
+                  Menos Detalles
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-4 w-4" />
+                  Más Detalles
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Additional Details - Only show when expanded */}
+          {showMoreDetails && (
+            <>
+              {/* Tasks */}
+              <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckSquare className="h-5 w-5" />
