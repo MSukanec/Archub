@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Calculator, Package, MapPin, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,25 @@ export default function Budgets() {
   const [isEditBudgetModalOpen, setIsEditBudgetModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateBudgetModal = () => {
+      setIsCreateBudgetModalOpen(true);
+    };
+
+    const handleOpenCreateTaskModal = () => {
+      setIsTaskModalOpen(true);
+    };
+
+    window.addEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
+    window.addEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
+    
+    return () => {
+      window.removeEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
+      window.removeEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
+    };
+  }, []);
   const [editingTask, setEditingTask] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();

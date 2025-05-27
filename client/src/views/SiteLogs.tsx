@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -18,6 +18,19 @@ export default function SiteLogs() {
   const { projectId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<SiteLog | null>(null);
+
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateSiteLogModal = () => {
+      setSelectedSiteLog(null);
+      setIsModalOpen(true);
+    };
+
+    window.addEventListener('openCreateSiteLogModal', handleOpenCreateSiteLogModal);
+    return () => {
+      window.removeEventListener('openCreateSiteLogModal', handleOpenCreateSiteLogModal);
+    };
+  }, []);
 
   // Get projects to find current project name
   const { data: projects = [] } = useQuery({

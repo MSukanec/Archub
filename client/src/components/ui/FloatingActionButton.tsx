@@ -27,12 +27,37 @@ const useModalActions = () => {
     window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'));
   };
 
+  const openCreateOrganizationModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateOrganizationModal'));
+  };
+
+  const openCreateUserModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateUserModal'));
+  };
+
+  const openCreateCategoryModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateCategoryModal'));
+  };
+
+  const openCreateMaterialModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateMaterialModal'));
+  };
+
+  const openCreateTaskModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateTaskModal'));
+  };
+
   return {
     openCreateProjectModal,
     openCreateMovementModal,
     openCreateContactModal,
     openCreateBudgetModal,
     openCreateSiteLogModal,
+    openCreateOrganizationModal,
+    openCreateUserModal,
+    openCreateCategoryModal,
+    openCreateMaterialModal,
+    openCreateTaskModal,
   };
 };
 
@@ -44,24 +69,24 @@ export default function FloatingActionButton() {
   // Configuración de acciones por vista
   const viewActions: Record<View, { label: string; action: () => void } | null> = {
     'dashboard-main': null,
-    'organization-overview': null,
+    'organization-overview': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
     'organization-activity': null,
     'projects-overview': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
     'projects-list': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
     'budgets-list': { label: 'Crear Presupuesto', action: modalActions.openCreateBudgetModal },
-    'budgets-tasks': null,
-    'budgets-materials': null,
+    'budgets-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
+    'budgets-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
     'sitelog-main': { label: 'Crear Entrada', action: modalActions.openCreateSiteLogModal },
     'movements-main': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
     'contacts': { label: 'Crear Contacto', action: modalActions.openCreateContactModal },
-    'admin-organizations': null,
-    'admin-users': null,
-    'admin-categories': null,
-    'admin-materials': null,
+    'admin-organizations': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
+    'admin-users': { label: 'Crear Usuario', action: modalActions.openCreateUserModal },
+    'admin-categories': { label: 'Crear Categoría', action: modalActions.openCreateCategoryModal },
+    'admin-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
     'admin-units': null,
     'admin-elements': null,
     'admin-actions': null,
-    'admin-tasks': null,
+    'admin-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
     'admin-permissions': null,
     'profile-info': null,
     'profile-subscription': null,

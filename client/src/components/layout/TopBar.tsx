@@ -111,7 +111,7 @@ export default function TopBar() {
               value={currentProject?.id?.toString() || ""} 
               onValueChange={handleProjectChange}
             >
-              <SelectTrigger className="bg-transparent border-none p-0 h-auto focus:ring-0 focus:ring-offset-0 shadow-none hover:bg-transparent data-[state=open]:bg-transparent outline-none">
+              <SelectTrigger className="bg-transparent border-none p-0 h-auto focus:ring-0 focus:ring-offset-0 shadow-none hover:bg-transparent data-[state=open]:bg-transparent outline-none [&>svg]:hidden">
                 <SelectValue asChild>
                   <div className="flex items-center space-x-2 cursor-pointer">
                     <span className="text-sm font-medium text-foreground">
