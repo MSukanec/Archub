@@ -84,6 +84,11 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       const dayWidth = 96; // w-24 = 96px
       const centerPosition = 30 * dayWidth; // 30 días desde el inicio
       scrollContainerRef.current.scrollLeft = centerPosition - (scrollContainerRef.current.clientWidth / 2);
+      
+      // También aplicar scroll inicial a la línea de timeline individual
+      if (timelineContentRef.current) {
+        timelineContentRef.current.scrollLeft = centerPosition - (timelineContentRef.current.clientWidth / 2);
+      }
     }
   }, [allDays]);
 
@@ -101,15 +106,11 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const convertTimelineToGantt = useMemo(() => {
     const ganttItems: GanttItem[] = [];
     
-    console.log('Timeline events:', timelineEvents);
-    
     timelineEvents.forEach(dayEvent => {
-      console.log('Processing day event:', dayEvent);
       const eventDate = new Date(dayEvent.date);
       
       // Agregar site logs como bitácora
       if (dayEvent.siteLogs && dayEvent.siteLogs.length > 0) {
-        console.log('Found site logs:', dayEvent.siteLogs);
         dayEvent.siteLogs.forEach((log: any) => {
           ganttItems.push({
             id: `log-${log.id}`,
@@ -211,8 +212,15 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const timelineStart = startOfDay(allDays[0]);
     const timelineEnd = startOfDay(allDays[allDays.length - 1]);
 
+    console.log('Position calc for item:', item.id, {
+      startDay: format(startDay, 'yyyy-MM-dd'),
+      timelineStart: format(timelineStart, 'yyyy-MM-dd'),
+      timelineEnd: format(timelineEnd, 'yyyy-MM-dd')
+    });
+
     // Check if item is visible in current timeline
     if (endDay < timelineStart || startDay > timelineEnd) {
+      console.log('Item outside timeline range');
       return null;
     }
 
@@ -220,10 +228,13 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const duration = differenceInDays(endDay, startDay) + 1;
     const dayWidth = 96; // w-24 = 96px
 
-    return {
+    const position = {
       left: `${startOffset * dayWidth}px`,
       width: `${duration * dayWidth}px`
     };
+
+    console.log('Calculated position:', position, 'startOffset:', startOffset);
+    return position;
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
@@ -374,15 +385,22 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               </div>
 
               {/* Línea de tiempo para este tipo */}
-              <div className="relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-hidden">
+              <div 
+                className="relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-hidden"
+                ref={timelineContentRef}
+                onScroll={handleScroll}
+              >
                 <div 
                   className="relative h-full"
                   style={{ width: `${allDays.length * 96}px` }}
-                  ref={timelineContentRef}
                 >
                   {typeItems.map((item) => {
                     const position = getItemPosition(item);
-                    if (!position) return null;
+                    console.log(`Item ${item.id} position:`, position, 'date:', item.startDate);
+                    if (!position) {
+                      console.log(`Item ${item.id} filtered out - no position`);
+                      return null;
+                    }
 
                     return (
                       <div
