@@ -231,7 +231,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
-    const days = direction === 'prev' ? -1 : 1;
+    const days = direction === 'prev' ? -7 : 7;
     setCurrentWeekStart(addDays(currentWeekStart, days));
   };
 

@@ -170,19 +170,9 @@ export default function Budgets() {
                     No hay presupuestos creados
                   </CardTitle>
                   <CardDescription className="text-center">
-                    Comienza creando tu primer presupuesto para este proyecto
+                    Usa el botón flotante para crear tu primer presupuesto
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-center">
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-2"
-                    onClick={() => setIsCreateBudgetModalOpen(true)}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Crear tu primer presupuesto
-                  </Button>
-                </CardContent>
               </Card>
             ) : (
               /* Budget list */

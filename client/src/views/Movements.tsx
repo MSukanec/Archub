@@ -196,13 +196,6 @@ export default function Movements() {
             Registro de ingresos, egresos y ajustes del proyecto
           </p>
         </div>
-        <Button 
-          onClick={() => setIsMovementModalOpen(true)}
-          className="flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          Nuevo Movimiento
-        </Button>
       </div>
 
       {/* Summary Cards */}
