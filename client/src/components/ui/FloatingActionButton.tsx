@@ -45,32 +45,37 @@ export default function FloatingActionButton() {
   };
   
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div 
+      className="fixed bottom-6 right-6 z-50"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <button
         onClick={handleClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         className={cn(
           "h-14 bg-primary hover:bg-primary/90 text-primary-foreground",
           "rounded-full shadow-lg hover:shadow-xl",
           "flex items-center justify-center",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
-          isHovered ? "px-6" : "w-14"
+          "relative overflow-hidden",
+          isHovered ? "px-4" : "w-14"
         )}
+        style={{
+          width: isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px'
+        }}
       >
-        <div className="flex items-center space-x-2 whitespace-nowrap">
-          <Plus size={20} className="flex-shrink-0" />
-          <span 
-            className={cn(
-              "font-medium text-sm transition-all duration-300 ease-in-out",
-              isHovered 
-                ? "opacity-100 max-w-[200px]" 
-                : "opacity-0 max-w-0 overflow-hidden"
-            )}
-          >
-            {actionConfig.label}
-          </span>
+        <Plus size={20} className="flex-shrink-0 z-10" />
+        <div 
+          className={cn(
+            "absolute left-12 top-1/2 -translate-y-1/2",
+            "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out",
+            isHovered 
+              ? "opacity-100 translate-x-0" 
+              : "opacity-0 translate-x-4"
+          )}
+        >
+          {actionConfig.label}
         </div>
       </button>
     </div>
