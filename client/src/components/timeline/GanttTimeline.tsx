@@ -115,11 +115,13 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       // Agregar site logs como bitácora
       if (dayEvent.siteLogs && dayEvent.siteLogs.length > 0) {
         dayEvent.siteLogs.forEach((log: any) => {
+          // Usar la fecha real del log
+          const logDate = new Date(log.log_date || log.date);
           ganttItems.push({
             id: `log-${log.id}`,
             title: log.comments || log.description || 'Entrada de bitácora',
-            startDate: eventDate,
-            endDate: eventDate,
+            startDate: logDate,
+            endDate: logDate,
             type: 'bitacora',
             color: typeColors.bitacora,
             data: log
@@ -283,34 +285,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   };
 
   return (
-    <div className="bg-card border rounded-lg p-6 shadow-sm">
+    <div>
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Línea de Tiempo - Vista Gantt</h3>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigateWeek('prev')}
-              className="p-2 hover:bg-accent rounded-lg transition-colors"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              onClick={() => setCurrentWeekStart(subDays(new Date(), 3))}
-              className="flex items-center gap-2 px-3 py-1 bg-accent rounded-lg hover:bg-accent/80 transition-colors"
-            >
-              <Calendar size={16} />
-              <span className="text-sm font-medium">
-                {format(weekDays[Math.floor(weekDays.length / 2)], 'MMM yyyy', { locale: es })}
-              </span>
-            </button>
-            <button
-              onClick={() => navigateWeek('next')}
-              className="p-2 hover:bg-accent rounded-lg transition-colors"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
 
         {/* Header con días */}
         <div className="grid grid-cols-[200px_1fr] gap-4 relative">
@@ -322,7 +298,15 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-sm font-medium text-white">Hoy</span>
+              <button 
+                onClick={() => {
+                  // Centrar en el día actual
+                  setCurrentWeekStart(subDays(new Date(), 3));
+                }}
+                className="px-3 py-1 text-sm font-medium text-white bg-primary hover:bg-primary/80 rounded transition-colors"
+              >
+                Hoy
+              </button>
               <button 
                 onClick={() => navigateWeek('next')}
                 className="p-1 text-gray-400 hover:text-white transition-colors"

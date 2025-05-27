@@ -20,7 +20,8 @@ import {
   ChevronDown,
   CheckSquare,
   Package,
-  DollarSign
+  DollarSign,
+  TrendingUp
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -76,7 +77,7 @@ const sectionConfig = {
     title: 'Movimientos de Obra',
     description: 'Registro de ingresos y egresos',
     items: [
-      { view: 'movements-main' as View, icon: DollarSign, label: 'Movimientos Financieros' },
+      { view: 'movements-main' as View, icon: TrendingUp, label: 'Movimientos Financieros' },
     ],
   },
   contacts: {
