@@ -45,20 +45,32 @@ export default function Dashboard() {
       const periodEnd = endOfDay(addDays(today, 30));
       
       // Fetch site logs
-      const { data: siteLogs } = await supabase
+      const { data: siteLogs, error: siteLogsError } = await supabase
         .from('site_logs')
         .select('*')
         .eq('project_id', projectId)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
+        
+      if (siteLogsError) {
+        console.error('Error fetching site logs:', siteLogsError);
+      } else {
+        console.log('Site logs fetched:', siteLogs);
+      }
 
       // Fetch site movements
-      const { data: movements } = await supabase
+      const { data: movements, error: movementsError } = await supabase
         .from('site_movements')
         .select('*')
         .eq('project_id', projectId)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
+        
+      if (movementsError) {
+        console.error('Error fetching site movements:', movementsError);
+      } else {
+        console.log('Site movements fetched:', movements);
+      }
 
       // Agrupar eventos por fecha
       const eventsByDate: Record<string, DayEvent> = {};

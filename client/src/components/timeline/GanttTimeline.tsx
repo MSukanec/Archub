@@ -239,6 +239,17 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
       });
+      
+      // Sincronizar scroll de todas las filas de contenido
+      const contentRows = document.querySelectorAll('.timeline-content-row');
+      contentRows.forEach(row => {
+        if (row instanceof HTMLElement) {
+          row.scrollBy({
+            left: direction === 'left' ? -scrollAmount : scrollAmount,
+            behavior: 'smooth'
+          });
+        }
+      });
     }
   };
 
@@ -247,6 +258,14 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       setShowLeftNav(scrollLeft > 0);
       setShowRightNav(scrollLeft < scrollWidth - clientWidth - 1);
+      
+      // Sincronizar scroll de todas las filas de contenido
+      const contentRows = document.querySelectorAll('.timeline-content-row');
+      contentRows.forEach(row => {
+        if (row instanceof HTMLElement && row.scrollLeft !== scrollLeft) {
+          row.scrollLeft = scrollLeft;
+        }
+      });
     }
   };
 
@@ -375,9 +394,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
 
               {/* Línea de tiempo para este tipo */}
               <div 
-                className="relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-hidden"
-                ref={timelineContentRef}
-                onScroll={handleScroll}
+                className="timeline-content-row relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-x-auto scrollbar-hide"
               >
                 <div 
                   className="relative h-full"
