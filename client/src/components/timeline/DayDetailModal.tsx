@@ -16,6 +16,7 @@ interface DayDetailModalProps {
   attendees: any[];
   files: any[];
   onItemClick: (type: string, item: any) => void;
+  filterType?: string; // Nuevo: para filtrar por tipo específico
 }
 
 export default function DayDetailModal({
@@ -27,7 +28,8 @@ export default function DayDetailModal({
   tasks,
   attendees,
   files,
-  onItemClick
+  onItemClick,
+  filterType
 }: DayDetailModalProps) {
   const dateObj = new Date(date + 'T12:00:00'); // Usar mediodía para evitar problemas de zona horaria
   const formattedDate = dateObj.toString() !== 'Invalid Date' 
@@ -84,7 +86,8 @@ export default function DayDetailModal({
     return 'Usuario';
   };
 
-  const allItems = [
+  // Crear todos los items disponibles
+  const allAvailableItems = [
     ...(siteLogs || []).map(log => ({ 
       type: 'sitelog', 
       item: log, 
@@ -122,6 +125,23 @@ export default function DayDetailModal({
     }))
   ];
 
+  // Filtrar items por tipo si se especifica un filtro
+  const filteredItems = filterType 
+    ? allAvailableItems.filter(item => item.type === filterType)
+    : allAvailableItems;
+
+  // Obtener el nombre del tipo para el título
+  const getTypeLabel = (type: string) => {
+    const labels = {
+      'sitelog': 'Bitácora',
+      'movement': 'Movimientos',
+      'task': 'Tareas', 
+      'attendee': 'Asistentes',
+      'file': 'Archivos'
+    };
+    return labels[type as keyof typeof labels] || 'Eventos';
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg bg-card border-border">
@@ -132,27 +152,28 @@ export default function DayDetailModal({
             </div>
             <div>
               <DialogTitle className="text-lg font-semibold text-foreground capitalize">
-                {formattedDate}
+                {filterType ? getTypeLabel(filterType) : formattedDate}
               </DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
-                {allItems.length} {allItems.length === 1 ? 'evento' : 'eventos'}
+                {filteredItems.length} {filteredItems.length === 1 ? 'evento' : 'eventos'}
+                {filterType && <span className="text-xs ml-2">• {formattedDate}</span>}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
         
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {allItems.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <div className="text-center py-8">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                 <Calendar className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground">
-                No hay eventos para este día
+                {filterType ? `No hay ${getTypeLabel(filterType).toLowerCase()} para este día` : 'No hay eventos para este día'}
               </p>
             </div>
           ) : (
-            allItems.map((entry, index) => {
+            filteredItems.map((entry, index) => {
               const config = getTypeConfig(entry.type);
               const Icon = config.icon;
               const userInitials = getUserInitials(entry.item);
