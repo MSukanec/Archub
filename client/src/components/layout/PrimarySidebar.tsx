@@ -1,4 +1,4 @@
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
@@ -53,6 +53,18 @@ export default function PrimarySidebar() {
       
       {/* Bottom Navigation Icons */}
       <div className="flex flex-col items-center pb-4 space-y-[5px]">
+        {/* Plan button */}
+        <button
+          onClick={() => setSection('profile')}
+          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
+          title="Plan"
+        >
+          <Crown size={20} />
+        </button>
+        
+        {/* Separator */}
+        <div className="w-6 h-px bg-border my-1"></div>
+        
         {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
           // Hide admin section for non-admin users
           if (section === 'admin' && user?.role !== 'admin') {
