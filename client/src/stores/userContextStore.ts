@@ -146,6 +146,49 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
       if (prefsError || !prefs) {
         console.log('Preferencias no encontradas para usuario:', dbUser.id);
+        
+        // Try to create default preferences by finding user's first organization
+        const { data: orgMembership } = await supabase
+          .from('organization_members')
+          .select('organization_id')
+          .eq('user_id', dbUser.id)
+          .limit(1)
+          .maybeSingle();
+
+        if (orgMembership?.organization_id) {
+          console.log('Creando preferencias por defecto con organización:', orgMembership.organization_id);
+          
+          const { data: newPrefs, error: createError } = await supabase
+            .from('user_preferences')
+            .insert({
+              user_id: dbUser.id,
+              last_organization_id: orgMembership.organization_id,
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('Error creando preferencias:', createError);
+            set({ isLoading: false, isInitialized: true });
+            return;
+          }
+
+          console.log('Preferencias creadas exitosamente:', newPrefs);
+          
+          set({
+            organizationId: newPrefs.last_organization_id,
+            projectId: null,
+            budgetId: null,
+            planId: null,
+            isLoading: false,
+            isInitialized: true,
+          });
+
+          console.log('User context initialized successfully with new preferences');
+          return;
+        }
+        
+        console.log('No se encontró membresía de organización para el usuario');
         set({ isLoading: false, isInitialized: true });
         return;
       }
