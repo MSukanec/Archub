@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { useUserContextStore } from '@/stores/userContextStore';
 
 export interface Contact {
   id: number;
@@ -27,47 +28,45 @@ export interface CreateContactData {
 export const contactsService = {
   async getAll(): Promise<Contact[]> {
     try {
+      // Use centralized context instead of making redundant queries
+      const { organizationId } = useUserContextStore.getState();
+      
+      if (!organizationId) {
+        console.log('No organization context, returning empty contacts');
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('contacts')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50); // Reducir aún más el límite
+        .eq('organization_id', organizationId)
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error fetching contacts:', error);
-        return []; // Devolver array vacío en lugar de lanzar error
+        return [];
       }
       
       return data || [];
     } catch (error) {
       console.error('Network error fetching contacts:', error);
-      return []; // Siempre devolver array vacío para evitar errores
+      return [];
     }
   },
 
   async create(contactData: CreateContactData): Promise<Contact> {
-    // Get current user's organization
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error('Usuario no autenticado');
-    }
-
-    // Get organization from existing projects (since projects are working)
-    const { data: projectData, error: projectError } = await supabase
-      .from('projects')
-      .select('organization_id')
-      .limit(1)
-      .single();
-
-    if (projectError || !projectData) {
-      throw new Error('No se pudo obtener la organización. Contacta al administrador.');
+    // Use centralized context instead of multiple queries
+    const { organizationId } = useUserContextStore.getState();
+    
+    if (!organizationId) {
+      throw new Error('No se pudo obtener la organización del usuario');
     }
 
     const { data, error } = await supabase
       .from('contacts')
       .insert([{
         ...contactData,
-        organization_id: projectData.organization_id
+        organization_id: organizationId
       }])
       .select()
       .single();

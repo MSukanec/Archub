@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { useUserContextStore } from '@/stores/userContextStore';
 
 export interface Project {
   id: string;
@@ -30,43 +31,27 @@ export const projectsService = {
   async getAll(): Promise<Project[]> {
     console.log('Fetching projects for current user organization...');
     
-    // Get current user and their organization
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Usuario no autenticado');
-
-    // Get user's organization from the users table
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', user.id)
-      .single();
+    // Use centralized context instead of multiple queries
+    const { organizationId, currentProjects } = useUserContextStore.getState();
     
-    if (userError || !userData) {
-      console.error('Error getting user data:', userError);
-      throw new Error('No se pudo obtener los datos del usuario');
+    // If we have cached projects and a valid organization, return cached data
+    if (organizationId && currentProjects) {
+      console.log('Projects fetched for organization:', currentProjects);
+      return currentProjects;
     }
-
-    // Get user's organization through organization_members table
-    const { data: memberData, error: memberError } = await supabase
-      .from('organization_members')
-      .select('organization_id')
-      .eq('user_id', userData.id)
-      .single();
     
-    if (memberError || !memberData?.organization_id) {
-      console.log('User is not part of any organization yet:', memberError);
-      // Si el usuario no tiene organización, devolver lista vacía en lugar de mostrar proyectos de otros
+    // If no organizationId, user might not be part of an organization yet
+    if (!organizationId) {
+      console.log('User is not part of any organization yet');
       return [];
     }
-
-    console.log('User organization_id:', memberData.organization_id);
 
     // Fetch projects only for user's organization
     const { data, error } = await supabase
       .from('projects')
       .select('*')
       .eq('is_active', true)
-      .eq('organization_id', memberData.organization_id)
+      .eq('organization_id', organizationId)
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -79,34 +64,10 @@ export const projectsService = {
   },
 
   async create(projectData: CreateProjectData): Promise<Project> {
-    // Get current user and their organization
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Usuario no autenticado');
-
-    // First, let's check what columns exist in the users table
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', user.id)
-      .single();
+    // Use centralized context instead of multiple queries
+    const { organizationId } = useUserContextStore.getState();
     
-    if (userError || !userData) {
-      console.error('Error getting user data:', userError);
-      console.log('Available user data:', userData);
-      throw new Error('No se pudo obtener los datos del usuario');
-    }
-    
-    console.log('Full user data:', userData);
-    
-    // Check if user has an organization through organization_members table
-    const { data: memberData, error: memberError } = await supabase
-      .from('organization_members')
-      .select('organization_id')
-      .eq('user_id', userData.id)
-      .single();
-    
-    if (memberError || !memberData?.organization_id) {
-      console.error('Error getting user organization membership:', memberError);
+    if (!organizationId) {
       throw new Error('No se pudo obtener la organización del usuario');
     }
 
@@ -120,7 +81,7 @@ export const projectsService = {
         address: projectData.address || null,
         contact_phone: projectData.contact_phone || null,
         city: projectData.city || null,
-        organization_id: '6acb6b56-294c-46dc-bfce-98595d0e08c9', // Use the known working organization_id
+        organization_id: organizationId,
         is_active: true,
       }])
       .select()
@@ -130,6 +91,9 @@ export const projectsService = {
       console.error('Error creating project:', error);
       throw new Error('Error al crear el proyecto');
     }
+    
+    // Refresh the cached data after creating
+    useUserContextStore.getState().refreshData();
     
     return data;
   },
