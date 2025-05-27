@@ -5,7 +5,7 @@ import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
-import TopBar from './TopBar';
+
 import Dashboard from '@/views/Dashboard';
 import Organization from '@/views/Organization';
 import ProjectsOverview from '@/views/ProjectsOverview';
@@ -113,8 +113,6 @@ export default function AppLayout() {
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <TopBar />
-        
         <main className="flex-1 overflow-auto p-6 relative">
           <ViewComponent />
           <FloatingActionButton />
