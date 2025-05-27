@@ -8,10 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { projectsService } from '@/lib/projectsService';
+import { supabase } from '@/lib/supabase';
+import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
+import AddTaskToBudgetModal from '@/components/modals/AddTaskToBudgetModal';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();
   const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
+  const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
   // Get projects to find current project name
   const { data: projects = [] } = useQuery({
@@ -20,6 +25,23 @@ export default function Budgets() {
   });
 
   const currentProject = projects.find((p: any) => p.id === projectId);
+
+  // Fetch budgets for the current project
+  const { data: budgets = [] } = useQuery({
+    queryKey: ['/api/budgets', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId,
+  });
 
   if (!projectId) {
     return (
@@ -70,30 +92,66 @@ export default function Budgets() {
                 Administra todos los presupuestos asociados a este proyecto
               </p>
             </div>
-            <Button className="flex items-center gap-2">
+            <Button 
+              className="flex items-center gap-2"
+              onClick={() => setIsCreateBudgetModalOpen(true)}
+            >
               <Plus className="h-4 w-4" />
               Crear Presupuesto
             </Button>
           </div>
 
           <div className="grid gap-4">
-            {/* Empty state */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center text-muted-foreground">
-                  No hay presupuestos creados
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Comienza creando tu primer presupuesto para este proyecto
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-center">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Crear tu primer presupuesto
-                </Button>
-              </CardContent>
-            </Card>
+            {budgets.length === 0 ? (
+              /* Empty state */
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-center text-muted-foreground">
+                    No hay presupuestos creados
+                  </CardTitle>
+                  <CardDescription className="text-center">
+                    Comienza creando tu primer presupuesto para este proyecto
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center gap-2"
+                    onClick={() => setIsCreateBudgetModalOpen(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Crear tu primer presupuesto
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              /* Budget list */
+              budgets.map((budget: any) => (
+                <Card key={budget.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setActiveBudgetId(budget.id)}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{budget.name}</CardTitle>
+                      <Badge variant={budget.status === 'approved' ? 'default' : 'secondary'}>
+                        {budget.status === 'draft' ? 'Borrador' : 
+                         budget.status === 'approved' ? 'Aprobado' : 
+                         budget.status === 'rejected' ? 'Rechazado' : budget.status}
+                      </Badge>
+                    </div>
+                    {budget.description && (
+                      <CardDescription>{budget.description}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Creado: {new Date(budget.created_at).toLocaleDateString()}</span>
+                      {activeBudgetId === budget.id && (
+                        <Badge variant="outline">Seleccionado</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </TabsContent>
 
@@ -109,7 +167,11 @@ export default function Budgets() {
               <Button variant="outline" size="sm">
                 Seleccionar Presupuesto
               </Button>
-              <Button className="flex items-center gap-2">
+              <Button 
+                className="flex items-center gap-2"
+                onClick={() => setIsAddTaskModalOpen(true)}
+                disabled={!activeBudgetId}
+              >
                 <Plus className="h-4 w-4" />
                 Agregar Tarea
               </Button>
@@ -172,6 +234,18 @@ export default function Budgets() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      <CreateBudgetModal
+        isOpen={isCreateBudgetModalOpen}
+        onClose={() => setIsCreateBudgetModalOpen(false)}
+      />
+      
+      <AddTaskToBudgetModal
+        isOpen={isAddTaskModalOpen}
+        onClose={() => setIsAddTaskModalOpen(false)}
+        budgetId={activeBudgetId}
+      />
     </div>
   );
 }
