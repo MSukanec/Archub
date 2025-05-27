@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
-import TimelineWorkspace from '@/components/timeline/TimelineWorkspace';
 import DayDetailModal from '@/components/timeline/DayDetailModal';
 import GanttTimeline from '@/components/timeline/GanttTimeline';
 import SiteLogModal from '@/components/modals/SiteLogModal';
@@ -111,7 +110,8 @@ export default function Dashboard() {
 
       // Agregar site logs
       siteLogs?.forEach(log => {
-        const logDate = format(new Date(log.log_date), 'yyyy-MM-dd');
+        // Usar directamente la fecha string sin crear Date object para evitar desfases de zona horaria
+        const logDate = log.log_date; // Ya está en formato 'yyyy-MM-dd'
         if (eventsByDate[logDate]) {
           eventsByDate[logDate].siteLogs.push(log);
         }
@@ -119,7 +119,8 @@ export default function Dashboard() {
 
       // Agregar movements
       movements?.forEach(movement => {
-        const movementDate = format(new Date(movement.date), 'yyyy-MM-dd');
+        // Usar directamente la fecha string
+        const movementDate = movement.date; // Ya está en formato 'yyyy-MM-dd'
         if (eventsByDate[movementDate]) {
           eventsByDate[movementDate].movements.push(movement);
         }

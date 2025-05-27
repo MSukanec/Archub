@@ -303,7 +303,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                   // Centrar en el día actual
                   setCurrentWeekStart(subDays(new Date(), 3));
                 }}
-                className="px-3 py-1 text-sm font-medium text-white bg-primary hover:bg-primary/80 rounded transition-colors"
+                className="px-3 py-1 text-sm font-medium text-white bg-accent hover:bg-accent/80 rounded transition-colors"
               >
                 Hoy
               </button>
