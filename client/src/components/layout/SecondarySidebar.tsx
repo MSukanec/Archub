@@ -21,7 +21,8 @@ import {
   CheckSquare,
   Package,
   DollarSign,
-  TrendingUp
+  TrendingUp,
+  LogOut
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -188,6 +189,35 @@ export default function SecondarySidebar() {
         </div>
       </nav>
 
+      {/* Logout Button - Only show in profile section */}
+      {currentSection === 'profile' && (
+        <div className="p-2 border-t border-border">
+          <button
+            onClick={async () => {
+              try {
+                await authService.signOut();
+                logout();
+                // Clear user context
+                setUserContext({
+                  organizationId: null,
+                  projectId: null,
+                  budgetId: null,
+                  planId: null,
+                  organization: null,
+                  currentProjects: null,
+                  lastDataFetch: null,
+                });
+              } catch (error) {
+                console.error('Error signing out:', error);
+              }
+            }}
+            className="w-full flex items-center px-3 py-2 text-sm rounded-lg transition-all duration-200 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+          >
+            <LogOut size={16} className="mr-3" />
+            Cerrar Sesión
+          </button>
+        </div>
+      )}
 
     </div>
   );
