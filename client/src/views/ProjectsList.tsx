@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useUserContextStore } from '@/stores/userContextStore';
 import { projectsService, Project } from '@/lib/projectsService';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
@@ -18,16 +19,18 @@ export default function ProjectsList() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { organizationId } = useUserContextStore();
 
   const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['user-projects'],
+    queryKey: ['/api/projects', organizationId],
     queryFn: () => projectsService.getAll(),
+    enabled: !!organizationId,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => projectsService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', organizationId] });
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto ha sido eliminado exitosamente.",

@@ -59,7 +59,7 @@ const sectionConfig = {
       { view: 'admin-organizations' as View, icon: Building, label: 'Organizaciones' },
       { view: 'admin-users' as View, icon: Users, label: 'Usuarios' },
       { view: 'admin-categories' as View, icon: FolderTree, label: 'Categorías' },
-      { view: 'admin-materials' as View, icon: Box, label: 'Gestión de Materiales' },
+      { view: 'admin-materials' as View, icon: Box, label: 'Materiales' },
       { view: 'admin-units' as View, icon: Ruler, label: 'Unidades' },
       { view: 'admin-elements' as View, icon: Blocks, label: 'Elementos' },
       { view: 'admin-actions' as View, icon: Zap, label: 'Acciones' },
