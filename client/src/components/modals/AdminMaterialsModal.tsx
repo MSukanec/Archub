@@ -14,7 +14,10 @@ import { unitsService } from '@/lib/unitsService';
 
 const materialSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
-  unit_id: z.number().min(1, 'La unidad es obligatoria'),
+  unit_id: z.number({
+    required_error: 'Debes seleccionar una unidad',
+    invalid_type_error: 'Debes seleccionar una unidad',
+  }).min(1, 'La unidad es obligatoria'),
 });
 
 interface AdminMaterialsModalProps {
@@ -32,7 +35,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     resolver: zodResolver(materialSchema),
     defaultValues: {
       name: '',
-      unit_id: 0,
+      unit_id: undefined,
     },
   });
 
@@ -52,7 +55,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     } else {
       form.reset({
         name: '',
-        unit_id: 0,
+        unit_id: undefined,
       });
     }
   }, [material, form]);

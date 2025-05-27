@@ -111,9 +111,6 @@ export default function AdminMaterials() {
             className="pl-10"
           />
         </div>
-        <Badge variant="secondary">
-          {filteredMaterials.length} material{filteredMaterials.length !== 1 ? 'es' : ''}
-        </Badge>
       </div>
 
       {/* Materials Table */}
@@ -121,36 +118,26 @@ export default function AdminMaterials() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
               <TableHead>Nombre</TableHead>
               <TableHead>Unidad</TableHead>
-              <TableHead>Fecha de Creación</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredMaterials.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
                   {searchTerm ? 'No se encontraron materiales que coincidan con la búsqueda' : 'No hay materiales creados aún'}
                 </TableCell>
               </TableRow>
             ) : (
               filteredMaterials.map((material) => (
                 <TableRow key={material.id}>
-                  <TableCell className="font-medium">{material.id}</TableCell>
-                  <TableCell>{material.name}</TableCell>
+                  <TableCell className="font-medium">{material.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
                       {material.unit?.name || 'Sin unidad'}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(material.created_at).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
