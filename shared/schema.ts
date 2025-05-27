@@ -1,6 +1,14 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, uuid, varchar, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const plans = pgTable("plans", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(), // "FREE", "PRO", "ENTERPRISE"
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  features: jsonb("features").notNull(), // Array of feature strings
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -9,6 +17,7 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   role: text("role").notNull().default("user"), // admin, user
+  planId: integer("plan_id").references(() => plans.id).default(1), // Default to FREE plan
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
