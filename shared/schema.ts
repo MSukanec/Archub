@@ -156,6 +156,23 @@ export const siteLogFiles = pgTable("site_log_files", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Site movements table for tracking financial movements
+export const siteMovements = pgTable("site_movements", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  project_id: uuid("project_id").notNull(),
+  type: text("type").notNull(), // 'ingreso', 'egreso', 'ajuste'
+  date: text("date").notNull(), // Store as ISO date string
+  category: text("category").notNull(),
+  description: text("description").notNull(),
+  amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  currency: text("currency").notNull().default("ARS"),
+  related_contact_id: uuid("related_contact_id"),
+  related_task_id: integer("related_task_id").references(() => tasks.id),
+  file_url: text("file_url"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -240,6 +257,19 @@ export const insertSiteLogFileSchema = createInsertSchema(siteLogFiles).pick({
   file_type: true,
   file_size: true,
   description: true,
+});
+
+export const insertSiteMovementSchema = createInsertSchema(siteMovements).pick({
+  project_id: true,
+  type: true,
+  date: true,
+  category: true,
+  description: true,
+  amount: true,
+  currency: true,
+  related_contact_id: true,
+  related_task_id: true,
+  file_url: true,
 });
 
 // Types

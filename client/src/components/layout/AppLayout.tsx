@@ -11,6 +11,7 @@ import ProjectsOverview from '@/views/ProjectsOverview';
 import ProjectsList from '@/views/ProjectsList';
 import SiteLogs from '@/views/SiteLogs';
 import Budgets from '@/views/Budgets';
+import Movements from '@/views/Movements';
 import Contacts from '@/views/Contacts';
 import Organizations from '@/views/Organizations';
 import AdminOrganizations from '@/views/AdminOrganizations';
@@ -34,6 +35,7 @@ const viewComponents = {
   'projects-list': ProjectsList,
   'projects-sitelog': SiteLogs,
   'projects-budgets': Budgets,
+  'projects-movements': Movements,
   'contacts': Contacts,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,

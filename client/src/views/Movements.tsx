@@ -1,0 +1,342 @@
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { supabase } from '@/lib/supabase';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import MovementModal from '@/components/modals/MovementModal';
+
+interface Movement {
+  id: string;
+  date: string;
+  type: 'ingreso' | 'egreso' | 'ajuste';
+  category: string;
+  description: string;
+  amount: number;
+  currency: string;
+  related_contact_id?: string;
+  related_task_id?: string;
+  file_url?: string;
+  project_id: string;
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  contact?: {
+    id: string;
+    name: string;
+    company_name?: string;
+  };
+  task?: {
+    id: string;
+    name: string;
+  };
+}
+
+export default function Movements() {
+  const { projectId } = useUserContextStore();
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const [editingMovement, setEditingMovement] = useState<Movement | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch movements for current project
+  const { data: movements = [], isLoading } = useQuery({
+    queryKey: ['/api/movements', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      
+      const { data, error } = await supabase
+        .from('site_movements')
+        .select(`
+          *,
+          contacts:related_contact_id(id, name, company_name),
+          tasks:related_task_id(id, name)
+        `)
+        .eq('project_id', projectId)
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      return data as Movement[];
+    },
+    enabled: !!projectId,
+  });
+
+  // Delete movement mutation
+  const deleteMovementMutation = useMutation({
+    mutationFn: async (movementId: string) => {
+      const { error } = await supabase
+        .from('site_movements')
+        .delete()
+        .eq('id', movementId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/movements', projectId] });
+      toast({
+        title: "Movimiento eliminado",
+        description: "El movimiento se ha eliminado correctamente.",
+      });
+    },
+    onError: (error) => {
+      console.error('Error al eliminar movimiento:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el movimiento. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEdit = (movement: Movement) => {
+    setEditingMovement(movement);
+    setIsMovementModalOpen(true);
+  };
+
+  const handleDelete = (movementId: string) => {
+    if (confirm('¿Estás seguro de que quieres eliminar este movimiento?')) {
+      deleteMovementMutation.mutate(movementId);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsMovementModalOpen(false);
+    setEditingMovement(null);
+  };
+
+  // Calculate totals
+  const totals = movements.reduce(
+    (acc, movement) => {
+      const amount = movement.amount;
+      switch (movement.type) {
+        case 'ingreso':
+          acc.ingresos += amount;
+          break;
+        case 'egreso':
+          acc.egresos += amount;
+          break;
+        case 'ajuste':
+          acc.ajustes += amount;
+          break;
+      }
+      return acc;
+    },
+    { ingresos: 0, egresos: 0, ajustes: 0 }
+  );
+
+  const balance = totals.ingresos - totals.egresos + totals.ajustes;
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'ingreso':
+        return <TrendingUp className="h-4 w-4 text-green-500" />;
+      case 'egreso':
+        return <TrendingDown className="h-4 w-4 text-red-500" />;
+      case 'ajuste':
+        return <DollarSign className="h-4 w-4 text-blue-500" />;
+      default:
+        return <DollarSign className="h-4 w-4" />;
+    }
+  };
+
+  const getTypeBadgeVariant = (type: string) => {
+    switch (type) {
+      case 'ingreso':
+        return 'default';
+      case 'egreso':
+        return 'destructive';
+      case 'ajuste':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: currency === 'ARS' ? 'ARS' : 'USD',
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  if (!projectId) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">Selecciona un proyecto para ver los movimientos</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Movimientos de Obra</h1>
+          <p className="text-muted-foreground">
+            Registro de ingresos, egresos y ajustes del proyecto
+          </p>
+        </div>
+        <Button 
+          onClick={() => setIsMovementModalOpen(true)}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Nuevo Movimiento
+        </Button>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {formatCurrency(totals.ingresos, 'ARS')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Egresos</CardTitle>
+            <TrendingDown className="h-4 w-4 text-red-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {formatCurrency(totals.egresos, 'ARS')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ajustes</CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {formatCurrency(totals.ajustes, 'ARS')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Balance</CardTitle>
+            <DollarSign className="h-4 w-4" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {formatCurrency(balance, 'ARS')}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Movements List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Historial de Movimientos</CardTitle>
+          <CardDescription>
+            Lista completa de todos los movimientos registrados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-32">
+              <p className="text-muted-foreground">Cargando movimientos...</p>
+            </div>
+          ) : movements.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-32 space-y-2">
+              <FileText className="h-8 w-8 text-muted-foreground" />
+              <p className="text-muted-foreground">No hay movimientos registrados</p>
+              <p className="text-sm text-muted-foreground">
+                Comienza agregando tu primer movimiento
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {movements.map((movement) => (
+                <div
+                  key={movement.id}
+                  className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center space-x-4">
+                    {getTypeIcon(movement.type)}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-medium">{movement.description}</h3>
+                        <Badge variant={getTypeBadgeVariant(movement.type)}>
+                          {movement.type}
+                        </Badge>
+                        {movement.category && (
+                          <Badge variant="outline">{movement.category}</Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>{format(new Date(movement.date), 'dd/MM/yyyy', { locale: es })}</span>
+                        {movement.contact && (
+                          <span>• {movement.contact.company_name || movement.contact.name}</span>
+                        )}
+                        {movement.task && (
+                          <span>• Tarea: {movement.task.name}</span>
+                        )}
+                        {movement.file_url && (
+                          <span>• 📎 Archivo adjunto</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className={`text-lg font-semibold ${
+                      movement.type === 'ingreso' ? 'text-green-600' : 
+                      movement.type === 'egreso' ? 'text-red-600' : 'text-blue-600'
+                    }`}>
+                      {movement.type === 'egreso' ? '-' : ''}
+                      {formatCurrency(movement.amount, movement.currency)}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(movement)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(movement.id)}
+                        disabled={deleteMovementMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Movement Modal */}
+      <MovementModal
+        isOpen={isMovementModalOpen}
+        onClose={handleCloseModal}
+        movement={editingMovement}
+        projectId={projectId}
+      />
+    </div>
+  );
+}
