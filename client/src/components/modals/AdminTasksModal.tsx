@@ -199,7 +199,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Sin categoría</SelectItem>
+                          <SelectItem value="none">Sin categoría</SelectItem>
                           {/* Add category options here when categories are available */}
                         </SelectContent>
                       </Select>
@@ -221,7 +221,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Sin subcategoría</SelectItem>
+                          <SelectItem value="none">Sin subcategoría</SelectItem>
                           {/* Add subcategory options here when subcategories are available */}
                         </SelectContent>
                       </Select>
@@ -243,7 +243,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Sin elemento</SelectItem>
+                          <SelectItem value="none">Sin elemento</SelectItem>
                           {/* Add element options here when elements are available */}
                         </SelectContent>
                       </Select>
