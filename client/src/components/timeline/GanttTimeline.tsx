@@ -21,6 +21,7 @@ interface GanttTimelineProps {
   timelineEvents?: any[];
   weekDays?: Date[];
   onItemClick?: (item: GanttItem) => void;
+  onDayClick?: (date: string, dayData: any) => void;
 }
 
 // Colores para cada tipo de elemento
@@ -48,7 +49,7 @@ const typeLabels = {
   asistentes: 'Asistentes'
 };
 
-export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays, onItemClick }: GanttTimelineProps) {
+export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays, onItemClick, onDayClick }: GanttTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const timelineContentRef = useRef<HTMLDivElement>(null);
   const [showLeftNav, setShowLeftNav] = useState(false);
@@ -405,28 +406,60 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                   className="relative h-full"
                   style={{ width: `${allDays.length * 96}px` }}
                 >
-                  {typeItems.map((item) => {
-                    const position = getItemPosition(item);
-                    if (!position) {
-                      return null;
-                    }
+                  {/* Agrupar items por día para mostrar contadores */}
+                  {(() => {
+                    const itemsByDay: Record<string, typeof typeItems> = {};
+                    typeItems.forEach(item => {
+                      const dayKey = format(item.startDate, 'yyyy-MM-dd');
+                      if (!itemsByDay[dayKey]) {
+                        itemsByDay[dayKey] = [];
+                      }
+                      itemsByDay[dayKey].push(item);
+                    });
 
-                    return (
-                      <div
-                        key={item.id}
-                        className={cn(
-                          "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
-                          item.color,
-                          "flex items-center justify-center text-white text-xs font-medium"
-                        )}
-                        style={position}
-                        title={`${item.title} (${format(item.startDate, 'dd/MM')} - ${format(item.endDate, 'dd/MM')})`}
-                        onClick={() => onItemClick?.(item)}
-                      >
-                        <span className="truncate px-2">{item.title}</span>
-                      </div>
-                    );
-                  })}
+                    return Object.entries(itemsByDay).map(([dayKey, dayItems]) => {
+                      const firstItem = dayItems[0];
+                      const position = getItemPosition(firstItem);
+                      if (!position) {
+                        return null;
+                      }
+
+                      const hasMultipleItems = dayItems.length > 1;
+                      
+                      // Buscar el evento del día correspondiente
+                      const dayEvent = timelineEvents.find(event => event.date === dayKey);
+
+                      return (
+                        <div
+                          key={`${type}-${dayKey}`}
+                          className={cn(
+                            "absolute h-8 top-2 rounded-md shadow-sm cursor-pointer transition-all hover:shadow-md hover:scale-105",
+                            firstItem.color,
+                            "flex items-center justify-center text-white text-xs font-medium"
+                          )}
+                          style={position}
+                          title={hasMultipleItems 
+                            ? `${dayItems.length} eventos el ${format(firstItem.startDate, 'dd/MM')}`
+                            : `${firstItem.title} (${format(firstItem.startDate, 'dd/MM')})`
+                          }
+                          onClick={() => {
+                            if (hasMultipleItems && onDayClick && dayEvent) {
+                              onDayClick(dayKey, dayEvent);
+                            } else {
+                              onItemClick?.(firstItem);
+                            }
+                          }}
+                        >
+                          <span className="truncate px-2">
+                            {hasMultipleItems 
+                              ? `(${dayItems.length})`
+                              : firstItem.title
+                            }
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             </div>

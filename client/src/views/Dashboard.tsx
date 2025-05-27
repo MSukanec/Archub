@@ -31,6 +31,8 @@ export default function Dashboard() {
   const [selectedSiteLog, setSelectedSiteLog] = useState<any | null>(null);
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [selectedMovement, setSelectedMovement] = useState<any | null>(null);
+  const [isDayDetailModalOpen, setIsDayDetailModalOpen] = useState(false);
+  const [selectedDayData, setSelectedDayData] = useState<any | null>(null);
   const [viewStartDate, setViewStartDate] = useState(() => {
     // Mostrar 15 días antes de hoy y 15 días después (30 días total)
     return subDays(new Date(), 15);
@@ -131,9 +133,10 @@ export default function Dashboard() {
     enabled: !!projectId
   });
 
-  const handleDayClick = (dayEvent: DayEvent) => {
-    setSelectedDay(dayEvent);
-    setIsModalOpen(true);
+  const handleDayClick = (date: string, dayData: any) => {
+    console.log('Day clicked:', date, dayData);
+    setSelectedDayData(dayData);
+    setIsDayDetailModalOpen(true);
   };
 
   const handleItemClick = (item: any) => {
@@ -146,6 +149,19 @@ export default function Dashboard() {
       setIsMovementModalOpen(true);
     }
     // Aquí agregaremos más tipos cuando implementemos los otros modales
+  };
+
+  const handleDayItemClick = (type: string, item: any) => {
+    console.log('Day item clicked:', type, item);
+    setIsDayDetailModalOpen(false);
+    
+    if (type === 'sitelog') {
+      setSelectedSiteLog(item);
+      setIsSiteLogModalOpen(true);
+    } else if (type === 'movement') {
+      setSelectedMovement(item);
+      setIsMovementModalOpen(true);
+    }
   };
 
   const navigatePeriod = (direction: 'prev' | 'next') => {
@@ -228,6 +244,7 @@ export default function Dashboard() {
         startDate={subDays(new Date(), 3)}
         endDate={addDays(new Date(), 3)}
         onItemClick={handleItemClick}
+        onDayClick={handleDayClick}
       />
 
       {/* Detail Modal */}
@@ -263,6 +280,19 @@ export default function Dashboard() {
         }}
         movement={selectedMovement}
         projectId={projectId}
+      />
+
+      {/* Day Detail Modal */}
+      <DayDetailModal
+        isOpen={isDayDetailModalOpen}
+        onClose={() => setIsDayDetailModalOpen(false)}
+        date={selectedDayData?.date || ''}
+        siteLogs={selectedDayData?.siteLogs || []}
+        movements={selectedDayData?.movements || []}
+        tasks={selectedDayData?.tasks || []}
+        attendees={selectedDayData?.attendees || []}
+        files={selectedDayData?.files || []}
+        onItemClick={handleDayItemClick}
       />
     </div>
   );
