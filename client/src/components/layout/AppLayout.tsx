@@ -17,6 +17,7 @@ import AdminElements from '@/views/AdminElements';
 import AdminActions from '@/views/AdminActions';
 import AdminUsers from '@/views/AdminUsers';
 import AdminCategories from '@/views/AdminCategories';
+import AdminMaterials from '@/views/AdminMaterials';
 
 import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
@@ -32,6 +33,7 @@ const viewComponents = {
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
   'admin-categories': AdminCategories,
+  'admin-materials': AdminMaterials,
   'admin-units': AdminUnits,
   'admin-elements': AdminElements,
   'admin-actions': AdminActions,
