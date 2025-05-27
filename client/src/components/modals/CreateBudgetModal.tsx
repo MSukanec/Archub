@@ -64,6 +64,23 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
     enabled: !!user?.id,
   });
 
+  // Get current project data
+  const { data: currentProject } = useQuery({
+    queryKey: ['/api/projects', projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId,
+  });
+
   const form = useForm<BudgetForm>({
     resolver: zodResolver(budgetSchema),
     defaultValues: {
@@ -79,15 +96,14 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
       if (!organizationId) throw new Error('No hay organización seleccionada');
       if (!internalUser?.id) throw new Error('Usuario interno no encontrado');
       
+      // Crear objeto simplificado con solo los campos esenciales
       const budgetData = {
         name: data.name,
         description: data.description || null,
-        project_id: projectId,
+        project_id: Number(projectId),
         organization_id: organizationId,
         created_by: internalUser.id,
-        status: data.status,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        status: data.status || 'draft'
       };
 
       console.log('Creating budget with data:', budgetData);
@@ -145,7 +161,28 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form 
+            onSubmit={form.handleSubmit(onSubmit)} 
+            className="space-y-4"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.handleSubmit(onSubmit)();
+              }
+            }}
+          >
+            {/* Campo del proyecto activo (bloqueado) */}
+            <FormItem>
+              <FormLabel>Proyecto</FormLabel>
+              <FormControl>
+                <Input
+                  value={currentProject?.name || 'Cargando...'}
+                  disabled
+                  className="bg-muted cursor-not-allowed"
+                />
+              </FormControl>
+            </FormItem>
+
             <FormField
               control={form.control}
               name="name"

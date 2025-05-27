@@ -145,20 +145,11 @@ export default function Budgets() {
         </TabsList>
 
         <TabsContent value="budgets" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-medium text-foreground">Presupuestos del Proyecto</h3>
-              <p className="text-sm text-muted-foreground">
-                Administra todos los presupuestos asociados a este proyecto
-              </p>
-            </div>
-            <Button 
-              className="flex items-center gap-2"
-              onClick={() => setIsCreateBudgetModalOpen(true)}
-            >
-              <Plus className="h-4 w-4" />
-              Crear Presupuesto
-            </Button>
+          <div>
+            <h3 className="text-lg font-medium text-foreground">Presupuestos del Proyecto</h3>
+            <p className="text-sm text-muted-foreground">
+              Administra todos los presupuestos asociados a este proyecto
+            </p>
           </div>
 
           <div className="grid gap-4">
