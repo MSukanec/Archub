@@ -30,7 +30,9 @@ import SubscriptionTables from '@/views/SubscriptionTables';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import FloatingOrganizationButton from '@/components/ui/FloatingOrganizationButton';
 import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
+import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { useNavigationStore } from '@/stores/navigationStore';
+import { useState } from 'react';
 
 const viewComponents = {
   'dashboard-main': Dashboard,
@@ -64,6 +66,7 @@ export default function AppLayout() {
   const { currentView } = useNavigationStore();
   const { setSecondarySidebarVisible } = useSidebarStore();
   const { initializeUserContext } = useUserContextStore();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     // Check initial auth state

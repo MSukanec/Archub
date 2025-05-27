@@ -66,7 +66,7 @@ export default function FloatingProjectButton() {
 
   return (
     <div 
-      className="fixed bottom-6 left-20 z-50"
+      className="fixed top-6 right-24 z-50"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -79,11 +79,12 @@ export default function FloatingProjectButton() {
           "border border-primary/20",
           "relative overflow-hidden",
           isHovered 
-            ? "h-auto py-3 px-4 min-w-48 flex-col" 
+            ? "h-auto py-3 px-4 min-w-48 flex-col items-start" 
             : "h-14 w-14"
         )}
         style={{
-          width: isHovered ? '192px' : '56px'
+          width: isHovered ? '192px' : '56px',
+          transformOrigin: 'top right'
         }}
       >
         {isHovered ? (
