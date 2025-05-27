@@ -1,4 +1,4 @@
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -23,6 +23,21 @@ const bottomNavigationItems = [
 export default function PrimarySidebar() {
   const { currentSection, setSection, setHoveredSection } = useNavigationStore();
   const { user } = useAuthStore();
+
+  // Function to get the plan icon based on plan name
+  const getPlanIcon = (planName: string) => {
+    const name = planName?.toLowerCase();
+    switch (name) {
+      case 'free':
+        return Zap;
+      case 'pro':
+        return Crown;
+      case 'enterprise':
+        return Rocket;
+      default:
+        return Crown; // Default to Crown
+    }
+  };
 
   // Obtener el plan actual del usuario
   const { data: userPlan } = useQuery({
@@ -94,7 +109,10 @@ export default function PrimarySidebar() {
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
           title={userPlan ? `Plan: ${userPlan.name}` : "Plan"}
         >
-          <Crown size={20} />
+          {(() => {
+            const PlanIcon = getPlanIcon(userPlan?.name || '');
+            return <PlanIcon size={20} />;
+          })()}
         </button>
         
         {/* Separator */}

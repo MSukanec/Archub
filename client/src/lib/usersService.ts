@@ -4,6 +4,8 @@ export interface User {
   id: number;
   email: string;
   full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
   role: string;
   plan_id: string | null;
   plan_name?: string; // Para mostrar el nombre del plan
@@ -14,6 +16,8 @@ export interface User {
 export interface CreateUserData {
   email: string;
   full_name: string;
+  first_name: string;
+  last_name: string;
   role: string;
   plan_id: string;
 }
@@ -50,6 +54,8 @@ export const usersService = {
       .insert([{
         email: userData.email,
         full_name: userData.full_name,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
         role: userData.role,
         plan_id: userData.plan_id,
         auth_id: `temp_${Date.now()}` // Temporal auth_id
