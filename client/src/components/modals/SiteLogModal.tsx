@@ -73,14 +73,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       if (!projectId) throw new Error('No hay proyecto seleccionado');
       if (!user?.id) throw new Error('Usuario no encontrado');
       
-      // Simplify the data to only essential fields that exist in DB
+      // Use the correct column names from the actual database
       const siteLogData = {
         project_id: projectId,
-        // Remove fields that don't exist in the actual database table
-        // date: data.date,
-        // weather: data.weather || '',
-        // comments: data.comments || '',
-        // created_by: user.id,
+        log_date: data.date, // Using log_date instead of date
       };
 
       let createdSiteLog: SiteLog;
