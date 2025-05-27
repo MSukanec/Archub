@@ -122,12 +122,12 @@ export default function FloatingActionButton() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <button
+      <div
         onClick={handleClick}
         className={cn(
           "bg-primary hover:bg-primary/90 text-primary-foreground",
           "shadow-lg hover:shadow-xl rounded-xl",
-          "flex items-center justify-center",
+          "flex items-center justify-center cursor-pointer",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
@@ -148,9 +148,9 @@ export default function FloatingActionButton() {
         {actionConfig.isMultiple ? (
           isHovered ? (
             // Mostrar opciones verticalmente dentro del botón
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               {actionConfig.options?.map((option, index) => (
-                <button
+                <div
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -160,7 +160,7 @@ export default function FloatingActionButton() {
                 >
                   <Plus size={14} className="mr-2 flex-shrink-0" />
                   <span className="whitespace-nowrap">{option.label}</span>
-                </button>
+                </div>
               ))}
             </div>
           ) : (
@@ -183,7 +183,7 @@ export default function FloatingActionButton() {
             </span>
           </>
         )}
-      </button>
+      </div>
     </div>
   );
 }

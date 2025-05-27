@@ -42,7 +42,22 @@ export default function SiteLogs() {
 
   const { data: siteLogs = [], isLoading } = useQuery({
     queryKey: ['/api/site-logs', projectId],
-    queryFn: () => projectId ? siteLogsService.getSiteLogsByProject(projectId) : Promise.resolve([]),
+    queryFn: async () => {
+      if (!projectId) return [];
+      try {
+        const { data, error } = await supabase
+          .from('site_logs')
+          .select('*')
+          .eq('project_id', projectId)
+          .order('date', { ascending: false });
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching site logs:', error);
+        return [];
+      }
+    },
     enabled: !!projectId,
   });
 
