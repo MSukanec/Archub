@@ -546,6 +546,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
               </div>
             </CardContent>
           </Card>
+            </>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end gap-2 pt-4">
