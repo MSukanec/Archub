@@ -25,8 +25,8 @@ import { useAuthStore } from '@/stores/authStore';
 import type { SiteLog, Task, Contact, InsertSiteLogTask, InsertSiteLogAttendee } from '@shared/schema';
 
 const siteLogSchema = z.object({
-  log_date: z.string(), // Usar string para el input de fecha
-  description: z.string().optional(),
+  date: z.date(),
+  comments: z.string().optional(),
   weather: z.string().optional(),
 });
 
@@ -54,8 +54,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
     defaultValues: {
-      log_date: format(new Date(), 'yyyy-MM-dd'),
-      description: '',
+      date: new Date(),
+      comments: '',
       weather: '',
     },
   });
@@ -91,9 +91,9 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       // Create the site log data with required fields (using correct column names)
       const siteLogData = {
         project_id: projectId,
-        log_date: data.log_date,
+        log_date: data.date.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
         weather: data.weather || '',
-        description: data.description || '',
+        description: data.comments || '',
         author_id: internalUser.id,
       };
 

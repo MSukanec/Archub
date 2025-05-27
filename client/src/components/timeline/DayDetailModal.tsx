@@ -124,7 +124,7 @@ export default function DayDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg bg-card border-border" aria-describedby="day-detail-description">
+      <DialogContent className="max-w-lg bg-card border-border">
         <DialogHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
@@ -134,7 +134,7 @@ export default function DayDetailModal({
               <DialogTitle className="text-lg font-semibold text-foreground capitalize">
                 {formattedDate}
               </DialogTitle>
-              <p id="day-detail-description" className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {allItems.length} {allItems.length === 1 ? 'evento' : 'eventos'}
               </p>
             </div>
