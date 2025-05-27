@@ -4,6 +4,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import TimelineWorkspace from '@/components/timeline/TimelineWorkspace';
 import DayDetailModal from '@/components/timeline/DayDetailModal';
+import GanttTimeline from '@/components/timeline/GanttTimeline';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
@@ -203,6 +204,9 @@ export default function Dashboard() {
         isLoading={isLoading}
         onDayClick={handleDayClick}
       />
+
+      {/* Nueva Vista Gantt */}
+      <GanttTimeline />
 
       {/* Detail Modal */}
       <DayDetailModal
