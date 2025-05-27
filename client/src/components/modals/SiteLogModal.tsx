@@ -336,11 +336,15 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
             {/* Weather */}
             <div className="space-y-2">
               <Label htmlFor="weather">Clima <span className="text-gray-400">(opcional)</span></Label>
-              <Select value={form.watch('weather')} onValueChange={(value) => form.setValue('weather', value)}>
+              <Select 
+                value={form.getValues('weather') || ''} 
+                onValueChange={(value) => form.setValue('weather', value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar clima" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="">Sin especificar</SelectItem>
                   {weatherOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex items-center gap-2">
