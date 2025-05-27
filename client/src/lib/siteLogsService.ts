@@ -15,15 +15,9 @@ export const siteLogsService = {
   },
 
   async createSiteLog(siteLog: InsertSiteLog): Promise<SiteLog> {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) throw new Error('Usuario no autenticado');
-
     const { data, error } = await supabase
       .from('site_logs')
-      .insert({
-        ...siteLog,
-        created_by: user.user.id,
-      })
+      .insert(siteLog)
       .select()
       .single();
 

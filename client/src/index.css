@@ -29,6 +29,34 @@
   --surface-light: 0 0% 30%; /* #4d4d4d */
 }
 
+/* Custom scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) hsl(var(--background));
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+*::-webkit-scrollbar-corner {
+  background: hsl(var(--background));
+}
+
 .light {
   --background: 0 0% 100%; /* #ffffff */
   --foreground: 20 14% 4%; /* #0a0a0a */
