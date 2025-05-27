@@ -34,8 +34,16 @@ export default function AdminUsers() {
   // Fetch users
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['users'],
-    queryFn: usersService.getAll,
-    retry: 1,
+    queryFn: () => {
+      // Add timeout to prevent hanging
+      return Promise.race([
+        usersService.getAll(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout: La consulta tardó demasiado')), 5000)
+        )
+      ]);
+    },
+    retry: 0, // No retry to fail faster
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

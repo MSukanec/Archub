@@ -140,19 +140,11 @@ export default function AdminOrganizations() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Gestión de Organizaciones</h1>
-          <p className="text-gray-400 mt-1">
-            Administra todas las organizaciones del sistema.
-          </p>
-        </div>
-        <Button 
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Organización
-        </Button>
+      <div>
+        <h1 className="text-2xl font-bold text-white">Gestión de Organizaciones</h1>
+        <p className="text-gray-400 mt-1">
+          Administra todas las organizaciones del sistema.
+        </p>
       </div>
 
       {/* Search and Filters */}
