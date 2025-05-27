@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, Users } from 'lucide-react';
+import { Loader2, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { userPreferencesService } from '@/lib/userPreferencesService';
 import { useAuthStore } from '@/stores/authStore';
@@ -61,10 +61,11 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { setUserContext } = useUserContextStore();
+  const { setUserContext, organizationId } = useUserContextStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -88,16 +89,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     staleTime: 5 * 60 * 1000,
   });
 
-  // Get current user's organization - use the one from user logs
+  // Get current user's organization from context
   useEffect(() => {
     const fetchActiveOrganization = async () => {
       try {
-        if (!user) return;
+        if (!user || !organizationId) return;
 
-        // Use the organization ID that we know exists: 6acb6b56-294c-46dc-bfce-98595d0e08c9
-        const organizationId = '6acb6b56-294c-46dc-bfce-98595d0e08c9';
-
-        // Get the organization details
+        // Get the organization details using the organizationId from context
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
@@ -106,11 +104,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
         if (orgError) {
           console.error('Error fetching organization:', orgError);
-          // Set a default organization name if query fails to prevent blocking
-          setCurrentOrganization({ 
-            name: 'Constructora Matias Sukanec',
-            id: organizationId 
-          } as Organization);
           return;
         }
 
@@ -119,18 +112,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         }
       } catch (error) {
         console.error('Error fetching active organization:', error);
-        // Set fallback to prevent app from hanging
-        setCurrentOrganization({ 
-          name: 'Constructora Matias Sukanec',
-          id: '6acb6b56-294c-46dc-bfce-98595d0e08c9'
-        } as Organization);
       }
     };
 
-    if (user) {
+    if (user && organizationId) {
       fetchActiveOrganization();
     }
-  }, [user]);
+  }, [user, organizationId]);
 
   // Reset form when project changes (for editing)
   useEffect(() => {
@@ -228,155 +216,197 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         <Form {...form}>
           <form 
             onSubmit={form.handleSubmit(onSubmit)} 
-            className="space-y-4"
+            className="space-y-6"
           >
-            <div className="grid grid-cols-2 gap-6">
-              {/* Columna Izquierda */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Organización
-                  </label>
-                  <Input 
-                    value={currentOrganization?.name || "Tu organización"}
-                    disabled
-                    className="bg-muted text-muted-foreground"
-                  />
-                </div>
+            {/* Campos básicos - siempre visibles */}
+            <div className="space-y-4">
+              {/* Organización */}
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium w-32 text-left flex-shrink-0">
+                  Organización
+                </label>
+                <Input 
+                  value={currentOrganization?.name || "Cargando..."}
+                  disabled
+                  className="bg-muted text-muted-foreground flex-1"
+                />
+              </div>
 
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre del Proyecto</FormLabel>
-                      <FormControl>
+              {/* Nombre del Proyecto */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-4">
+                      <FormLabel className="w-32 text-left flex-shrink-0">Nombre del Proyecto</FormLabel>
+                      <FormControl className="flex-1">
                         <Input 
                           placeholder="Ej. Edificio Residencial Norte"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </div>
+                    <FormMessage className="ml-36" />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="client_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cliente</FormLabel>
-                      <FormControl>
+              {/* Cliente */}
+              <FormField
+                control={form.control}
+                name="client_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-4">
+                      <FormLabel className="w-32 text-left flex-shrink-0">Cliente</FormLabel>
+                      <FormControl className="flex-1">
                         <Input 
                           placeholder="Nombre del cliente"
                           {...field} 
                         />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </div>
+                    <FormMessage className="ml-36" />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Dirección</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Dirección del proyecto"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            {/* Botón para mostrar más detalles */}
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowMoreDetails(!showMoreDetails)}
+                className="flex items-center gap-2"
+              >
+                {showMoreDetails ? (
+                  <>
+                    <ChevronUp className="h-4 w-4" />
+                    Menos Detalles
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4" />
+                    Más Detalles
+                  </>
+                )}
+              </Button>
+            </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ciudad</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ciudad"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="contact_phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Teléfono de Contacto</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Número de teléfono"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Columna Derecha */}
-              <div className="space-y-4">
+            {/* Campos adicionales - mostrar solo cuando showMoreDetails es true */}
+            {showMoreDetails && (
+              <div className="space-y-4 border-t pt-4">
+                {/* Estado del Proyecto */}
                 <FormField
                   control={form.control}
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estado del Proyecto</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un estado" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="planning">Planificación</SelectItem>
-                          <SelectItem value="active">Activo</SelectItem>
-                          <SelectItem value="completed">Completado</SelectItem>
-                          <SelectItem value="on_hold">En Pausa</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
+                      <div className="flex items-center gap-4">
+                        <FormLabel className="w-32 text-left flex-shrink-0">Estado del Proyecto</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl className="flex-1">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecciona un estado" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="planning">Planificación</SelectItem>
+                            <SelectItem value="active">Activo</SelectItem>
+                            <SelectItem value="completed">Completado</SelectItem>
+                            <SelectItem value="on_hold">En Pausa</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage className="ml-36" />
                     </FormItem>
                   )}
                 />
 
+                {/* Descripción */}
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descripción</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Describe el proyecto..."
-                          className="min-h-[120px] resize-none"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="flex items-start gap-4">
+                        <FormLabel className="w-32 text-left flex-shrink-0 pt-2">Descripción</FormLabel>
+                        <FormControl className="flex-1">
+                          <Textarea 
+                            placeholder="Describe el proyecto..."
+                            className="min-h-[100px] resize-none"
+                            {...field} 
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-36" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Dirección */}
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-4">
+                        <FormLabel className="w-32 text-left flex-shrink-0">Dirección</FormLabel>
+                        <FormControl className="flex-1">
+                          <Input 
+                            placeholder="Dirección del proyecto"
+                            {...field} 
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-36" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Ciudad */}
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-4">
+                        <FormLabel className="w-32 text-left flex-shrink-0">Ciudad</FormLabel>
+                        <FormControl className="flex-1">
+                          <Input 
+                            placeholder="Ciudad"
+                            {...field} 
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-36" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Teléfono de Contacto */}
+                <FormField
+                  control={form.control}
+                  name="contact_phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-4">
+                        <FormLabel className="w-32 text-left flex-shrink-0">Teléfono de Contacto</FormLabel>
+                        <FormControl className="flex-1">
+                          <Input 
+                            placeholder="Número de teléfono"
+                            {...field} 
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-36" />
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
+            )}
 
             <div className="flex justify-end space-x-3 pt-4">
               <Button
