@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 import { cn } from '@/lib/utils';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import MovementModal from '@/components/modals/MovementModal';
@@ -39,6 +40,7 @@ const getActionConfig = (currentSection: string) => {
 
 export default function FloatingActionButton() {
   const { currentSection } = useNavigationStore();
+  const { projectId } = useUserContextStore();
   const [isHovered, setIsHovered] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
@@ -100,6 +102,7 @@ export default function FloatingActionButton() {
       <MovementModal 
         isOpen={isMovementModalOpen}
         onClose={() => setIsMovementModalOpen(false)}
+        projectId={projectId}
       />
     </>
   );
