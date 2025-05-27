@@ -53,8 +53,10 @@ export function useUserPlan() {
       return data;
     },
     enabled: !!user?.id,
-    staleTime: 0, // Always refetch to ensure fresh data
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // 5 minutos de cache
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
   });
 }
 

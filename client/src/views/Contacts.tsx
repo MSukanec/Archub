@@ -136,13 +136,6 @@ export default function Contacts() {
           <h1 className="text-2xl font-semibold text-foreground">Agenda de Contactos</h1>
           <p className="text-muted-foreground">Gestiona proveedores, contratistas y otros contactos</p>
         </div>
-        <Button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary hover:bg-primary/90"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar Contacto
-        </Button>
       </div>
 
       {/* Filters */}
