@@ -118,11 +118,6 @@ export default function SecondarySidebar() {
 
   const config = sectionConfig[currentSection];
 
-  // No mostrar sidebar secundario para dashboard
-  if (currentSection === 'dashboard') {
-    return null;
-  }
-
   // Fetch current organization details only
   const { data: currentOrganization } = useQuery({
     queryKey: ['/api/organization', organizationId],
@@ -144,6 +139,11 @@ export default function SecondarySidebar() {
     await authService.signOut();
     logout();
   };
+
+  // No mostrar sidebar secundario para dashboard
+  if (currentSection === 'dashboard') {
+    return null;
+  }
 
   return (
     <div className={cn(
