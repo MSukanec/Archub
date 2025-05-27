@@ -69,7 +69,7 @@ export default function SiteLogs() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (siteLogId: string) => siteLogsService.deleteSiteLog(siteLogId),
+    mutationFn: (siteLogId: number) => siteLogsService.deleteSiteLog(siteLogId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-logs'] });
       toast({
@@ -97,7 +97,7 @@ export default function SiteLogs() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteSiteLog = (siteLogId: string) => {
+  const handleDeleteSiteLog = (siteLogId: number) => {
     if (confirm('¿Estás seguro de que quieres eliminar este registro? Esta acción no se puede deshacer.')) {
       deleteMutation.mutate(siteLogId);
     }
@@ -286,7 +286,7 @@ export default function SiteLogs() {
                               Editar registro
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              onClick={() => handleDeleteSiteLog(siteLog.id.toString())}
+                              onClick={() => handleDeleteSiteLog(siteLog.id)}
                               className="text-destructive"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
