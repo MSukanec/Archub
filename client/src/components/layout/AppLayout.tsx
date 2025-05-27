@@ -104,6 +104,18 @@ export default function AppLayout() {
     return () => subscription.unsubscribe();
   }, [setUser, setLoading]);
 
+  // Listen for create project modal event
+  useEffect(() => {
+    const handleOpenCreateProjectModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
+    return () => {
+      window.removeEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
+    };
+  }, []);
+
   const ViewComponent = viewComponents[currentView] || Dashboard;
 
   return (
@@ -125,6 +137,11 @@ export default function AppLayout() {
           <FloatingActionButton />
         </main>
       </div>
+      
+      <CreateProjectModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </div>
   );
 }
