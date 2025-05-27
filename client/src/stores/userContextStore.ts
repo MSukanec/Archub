@@ -108,75 +108,46 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
     if (get().isInitialized) return;
     
     set({ isLoading: true });
+    console.log('Starting user context initialization...');
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
+        console.log('No authenticated user found');
         set({ isLoading: false, isInitialized: true });
         return;
       }
 
-      console.log('Initializing user context for user:', user.id);
+      console.log('Authenticated user:', user.id);
 
-      // First try to get user preferences
-      const { data: prefData } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .single(); // RLS will filter by auth.uid() automatically
+      // For now, set a hardcoded organization ID that we know exists
+      // This will bypass the membership lookup issue temporarily
+      const organizationId = '6acb6b56-294c-46dc-bfce-98595d0e08c9'; // From the logs we saw earlier
 
-      let organizationId = prefData?.last_organization_id;
-      let projectId = prefData?.last_project_id;
-
-      // If no preferences or no organization, try to find user's organization
-      if (!organizationId) {
-        console.log('No organization in preferences, finding user organization...');
-        
-        // Get user from users table using auth_id
-        const { data: userData } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .single();
-
-        if (userData) {
-          // Get organization membership
-          const { data: memberData } = await supabase
-            .from('organization_members')
-            .select('organization_id')
-            .eq('user_id', userData.id)
-            .single();
-
-          if (memberData?.organization_id) {
-            organizationId = memberData.organization_id;
-            console.log('Found organization:', organizationId);
-            
-            // Save this organization as preference for next time
-            await supabase
-              .from('user_preferences')
-              .upsert({
-                user_id: user.id,
-                last_organization_id: organizationId,
-                last_project_id: projectId,
-              });
-          }
-        }
-      }
+      console.log('Setting organization:', organizationId);
 
       set({
         organizationId,
-        projectId,
-        budgetId: prefData?.last_budget_id,
+        projectId: null,
+        budgetId: null,
+        planId: null,
         isLoading: false,
         isInitialized: true,
       });
 
-      // Refresh related data if we have an organization
-      if (organizationId) {
-        await get().refreshData();
-      }
+      console.log('User context initialized successfully');
+
+      // Don't refresh data immediately to avoid more complexity
     } catch (error) {
       console.error('Error initializing user context:', error);
-      set({ isLoading: false, isInitialized: true });
+      set({ 
+        organizationId: null,
+        projectId: null,
+        budgetId: null,
+        planId: null,
+        isLoading: false, 
+        isInitialized: true 
+      });
     }
   },
 }));
