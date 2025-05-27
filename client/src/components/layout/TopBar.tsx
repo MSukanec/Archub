@@ -17,6 +17,7 @@ const breadcrumbConfig = {
   'projects-overview': { section: 'Proyectos', view: 'Resumen' },
   'projects-list': { section: 'Proyectos', view: 'Lista' },
   'projects-sitelog': { section: 'Proyectos', view: 'Bitácora' },
+  'projects-budgets': { section: 'Proyectos', view: 'Presupuestos' },
   'contacts': { section: 'Agenda', view: 'Contactos' },
   'admin-organizations': { section: 'Administración', view: 'Organizaciones' },
   'admin-users': { section: 'Administración', view: 'Usuarios' },

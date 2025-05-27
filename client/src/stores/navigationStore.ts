@@ -7,6 +7,7 @@ export type View =
   | 'projects-overview'
   | 'projects-list'
   | 'projects-sitelog'
+  | 'projects-budgets'
   | 'contacts'
   | 'admin-organizations'
   | 'admin-users'

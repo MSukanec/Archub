@@ -10,6 +10,7 @@ import Dashboard from '@/views/Dashboard';
 import ProjectsOverview from '@/views/ProjectsOverview';
 import ProjectsList from '@/views/ProjectsList';
 import SiteLogs from '@/views/SiteLogs';
+import Budgets from '@/views/Budgets';
 import Contacts from '@/views/Contacts';
 import Organizations from '@/views/Organizations';
 import AdminOrganizations from '@/views/AdminOrganizations';
@@ -32,6 +33,7 @@ const viewComponents = {
   'projects-overview': ProjectsOverview,
   'projects-list': ProjectsList,
   'projects-sitelog': SiteLogs,
+  'projects-budgets': Budgets,
   'contacts': Contacts,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
