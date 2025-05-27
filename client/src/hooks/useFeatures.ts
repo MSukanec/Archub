@@ -1,4 +1,4 @@
-import { useUserContextStore } from '@/stores/userContextStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
@@ -33,7 +33,7 @@ const FEATURE_PLANS: Record<FeatureName, PlanType> = {
 };
 
 export function useUserPlan() {
-  const { user } = useUserContextStore();
+  const { user } = useAuthStore();
 
   return useQuery({
     queryKey: ['/api/user-plan', user?.id],
@@ -46,7 +46,7 @@ export function useUserPlan() {
           *,
           plan:plans(*)
         `)
-        .eq('id', user.id)
+        .eq('auth_id', user.id)
         .single();
 
       if (error) throw error;
