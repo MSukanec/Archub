@@ -206,7 +206,12 @@ export default function Dashboard() {
       />
 
       {/* Nueva Vista Gantt */}
-      <GanttTimeline />
+      <GanttTimeline 
+        timelineEvents={timelineEvents}
+        weekDays={visibleDays}
+        startDate={viewStartDate}
+        endDate={addDays(viewStartDate, 29)}
+      />
 
       {/* Detail Modal */}
       <DayDetailModal

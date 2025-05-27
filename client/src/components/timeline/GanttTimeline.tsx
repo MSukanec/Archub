@@ -18,6 +18,8 @@ interface GanttTimelineProps {
   items?: GanttItem[];
   startDate?: Date;
   endDate?: Date;
+  timelineEvents?: any[];
+  weekDays?: Date[];
 }
 
 // Colores para cada tipo de elemento
@@ -45,70 +47,97 @@ const typeLabels = {
   asistentes: 'Asistentes'
 };
 
-export default function GanttTimeline({ items = [], startDate, endDate }: GanttTimelineProps) {
+export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays }: GanttTimelineProps) {
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startDate || startOfWeek(new Date(), { weekStartsOn: 1 })
   );
 
-  // Datos de ejemplo para mostrar el concepto
-  const sampleItems: GanttItem[] = [
-    {
-      id: '1',
-      title: 'Reunión de inicio',
-      startDate: new Date(2024, 4, 27),
-      endDate: new Date(2024, 4, 27),
-      type: 'bitacora',
-      color: typeColors.bitacora,
-      data: { description: 'Reunión inicial del proyecto' }
-    },
-    {
-      id: '2',
-      title: 'Pago inicial',
-      startDate: new Date(2024, 4, 28),
-      endDate: new Date(2024, 4, 28),
-      type: 'movimientos',
-      color: typeColors.movimientos,
-      data: { amount: 50000, type: 'ingreso' }
-    },
-    {
-      id: '3',
-      title: 'Excavación',
-      startDate: new Date(2024, 4, 29),
-      endDate: new Date(2024, 5, 2),
-      type: 'tareas',
-      color: typeColors.tareas,
-      data: { progress: 0.6 }
-    },
-    {
-      id: '4',
-      title: 'Planos actualizados',
-      startDate: new Date(2024, 5, 1),
-      endDate: new Date(2024, 5, 1),
-      type: 'archivos',
-      color: typeColors.archivos,
-      data: { fileCount: 3 }
-    },
-    {
-      id: '5',
-      title: 'Equipo técnico',
-      startDate: new Date(2024, 4, 30),
-      endDate: new Date(2024, 5, 3),
-      type: 'asistentes',
-      color: typeColors.asistentes,
-      data: { count: 5 }
-    }
-  ];
-
-  const displayItems = items.length > 0 ? items : sampleItems;
-
-  // Generar días de la semana
-  const weekDays = useMemo(() => {
+  // Usar los días proporcionados desde el Dashboard o generar los propios
+  const weekDays = propWeekDays || useMemo(() => {
     const days = [];
     for (let i = 0; i < 14; i++) { // Mostrar 2 semanas
       days.push(addDays(currentWeekStart, i));
     }
     return days;
   }, [currentWeekStart]);
+
+  // Convertir datos reales del timeline a elementos Gantt
+  const convertTimelineToGantt = useMemo(() => {
+    const ganttItems: GanttItem[] = [];
+    
+    timelineEvents.forEach(dayEvent => {
+      const eventDate = new Date(dayEvent.date);
+      
+      // Agregar site logs como bitácora
+      dayEvent.siteLogs?.forEach((log: any) => {
+        ganttItems.push({
+          id: `log-${log.id}`,
+          title: log.comments || 'Entrada de bitácora',
+          startDate: eventDate,
+          endDate: eventDate,
+          type: 'bitacora',
+          color: typeColors.bitacora,
+          data: log
+        });
+      });
+
+      // Agregar movimientos
+      dayEvent.movements?.forEach((movement: any) => {
+        ganttItems.push({
+          id: `movement-${movement.id}`,
+          title: `${movement.description || 'Movimiento'} - $${movement.amount}`,
+          startDate: eventDate,
+          endDate: eventDate,
+          type: 'movimientos',
+          color: typeColors.movimientos,
+          data: movement
+        });
+      });
+
+      // Agregar tareas (si existen en el futuro)
+      dayEvent.tasks?.forEach((task: any) => {
+        ganttItems.push({
+          id: `task-${task.id}`,
+          title: task.name || 'Tarea',
+          startDate: new Date(task.start_date || eventDate),
+          endDate: new Date(task.end_date || eventDate),
+          type: 'tareas',
+          color: typeColors.tareas,
+          data: task
+        });
+      });
+
+      // Agregar archivos
+      dayEvent.files?.forEach((file: any) => {
+        ganttItems.push({
+          id: `file-${file.id}`,
+          title: file.name || 'Archivo',
+          startDate: eventDate,
+          endDate: eventDate,
+          type: 'archivos',
+          color: typeColors.archivos,
+          data: file
+        });
+      });
+
+      // Agregar asistentes
+      dayEvent.attendees?.forEach((attendee: any) => {
+        ganttItems.push({
+          id: `attendee-${attendee.id}`,
+          title: attendee.name || 'Asistente',
+          startDate: eventDate,
+          endDate: eventDate,
+          type: 'asistentes',
+          color: typeColors.asistentes,
+          data: attendee
+        });
+      });
+    });
+
+    return ganttItems;
+  }, [timelineEvents]);
+
+  const displayItems = items.length > 0 ? items : convertTimelineToGantt;
 
   // Agrupar elementos por tipo
   const itemsByType = useMemo(() => {
@@ -184,14 +213,14 @@ export default function GanttTimeline({ items = [], startDate, endDate }: GanttT
         {/* Header con días */}
         <div className="grid grid-cols-[200px_1fr] gap-4">
           <div className="font-medium text-sm text-muted-foreground">Tipo / Fecha</div>
-          <div className="grid grid-cols-14 gap-1">
+          <div className="flex">
             {weekDays.map((day, index) => (
-              <div key={index} className="text-center">
-                <div className="text-xs text-muted-foreground">
+              <div key={index} className="flex-1 text-center border-l border-muted first:border-l-0">
+                <div className="text-xs text-muted-foreground py-1">
                   {format(day, 'EEE', { locale: es })}
                 </div>
                 <div className={cn(
-                  "text-sm font-medium",
+                  "text-sm font-medium pb-2",
                   isSameDay(day, new Date()) ? "text-primary" : "text-foreground"
                 )}>
                   {format(day, 'd')}
