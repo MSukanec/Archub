@@ -9,12 +9,12 @@ export interface UserPreference {
 }
 
 export const userPreferencesService = {
-  async getUserPreferences(userId: string): Promise<UserPreference | null> {
+  async getUserPreferences(authUserId: string): Promise<UserPreference | null> {
     try {
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', authUserId)
         .single();
       
       if (error) {
@@ -33,13 +33,13 @@ export const userPreferencesService = {
     }
   },
 
-  async updateLastProject(userId: string, projectId: string): Promise<void> {
+  async updateLastProject(authUserId: string, projectId: string): Promise<void> {
     try {
       // First try to update existing preferences
       const { data: existing } = await supabase
         .from('user_preferences')
         .select('id')
-        .eq('user_id', userId)
+        .eq('user_id', authUserId)
         .single();
 
       if (existing) {
@@ -47,7 +47,7 @@ export const userPreferencesService = {
         const { error } = await supabase
           .from('user_preferences')
           .update({ last_project_id: projectId })
-          .eq('user_id', userId);
+          .eq('user_id', authUserId);
         
         if (error) {
           console.error('Error updating user preferences:', error);
@@ -58,7 +58,7 @@ export const userPreferencesService = {
         const { error } = await supabase
           .from('user_preferences')
           .insert({
-            user_id: userId,
+            user_id: authUserId,
             last_project_id: projectId,
             last_organization_id: null,
             last_budget_id: null
