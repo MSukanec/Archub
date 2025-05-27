@@ -44,7 +44,7 @@ export default function FloatingProjectButton() {
   const handleProjectChange = async (projId: string) => {
     const project = projects?.find(p => p.id === projId);
     if (project) {
-      await setUserContext(organizationId, projId);
+      setUserContext({ projectId: projId });
     }
   };
 
