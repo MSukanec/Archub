@@ -14,8 +14,8 @@ import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
 
 const createTaskSchema = insertTaskSchema.extend({
-  unit_labor_price: z.string().min(1, 'El precio de mano de obra es requerido'),
-  unit_material_price: z.string().min(1, 'El precio de material es requerido'),
+  unit_labor_price: z.string().optional().or(z.literal('')),
+  unit_material_price: z.string().optional().or(z.literal('')),
 });
 
 type FormData = z.infer<typeof createTaskSchema>;
@@ -29,6 +29,7 @@ interface AdminTasksModalProps {
 interface TaskCategory {
   id: number;
   name: string;
+  code: string;
   parent_id: number | null;
   position: number;
 }
@@ -45,7 +46,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     queryFn: async () => {
       const { data, error } = await supabase
         .from('task_categories')
-        .select('*')
+        .select('id, name, code, parent_id, position')
         .order('position');
       
       if (error) throw error;
@@ -128,7 +129,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   };
 
   const createMutation = useMutation({
-    mutationFn: (data: CreateTaskData) => tasksService.createTask(data),
+    mutationFn: (data: CreateTaskData) => tasksService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       toast({
@@ -148,7 +149,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   const updateMutation = useMutation({
     mutationFn: (data: { id: number; updates: Partial<CreateTaskData> }) => 
-      tasksService.updateTask(data.id, data.updates),
+      tasksService.update(data.id, data.updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       toast({
@@ -169,11 +170,11 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   const onSubmit = (data: FormData) => {
     const taskData = {
       name: data.name,
-      unit_labor_price: parseFloat(data.unit_labor_price),
-      unit_material_price: parseFloat(data.unit_material_price),
-      category_id: data.category_id,
-      subcategory_id: data.subcategory_id,
-      element_category_id: data.element_category_id,
+      unit_labor_price: data.unit_labor_price ? parseFloat(data.unit_labor_price) : undefined,
+      unit_material_price: data.unit_material_price ? parseFloat(data.unit_material_price) : undefined,
+      category_id: data.category_id || undefined,
+      subcategory_id: data.subcategory_id || undefined,
+      element_category_id: data.element_category_id || undefined,
     };
 
     if (task) {
@@ -220,7 +221,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           <SelectItem value="none">Sin rubro</SelectItem>
                           {parentCategories.map((category) => (
                             <SelectItem key={category.id} value={category.id.toString()}>
-                              {category.name}
+                              {category.code} {category.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -251,7 +252,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           <SelectItem value="none">Sin subrubro</SelectItem>
                           {subcategories.map((subcategory) => (
                             <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                              {subcategory.name}
+                              {subcategory.code} {subcategory.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -282,7 +283,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           <SelectItem value="none">Sin elemento</SelectItem>
                           {elementCategories.map((element) => (
                             <SelectItem key={element.id} value={element.id.toString()}>
-                              {element.name}
+                              {element.code} {element.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
