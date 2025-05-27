@@ -115,7 +115,7 @@ export default function Subscription() {
           <div>
             <h3 className="font-semibold text-foreground">Plan {currentPlan.name}</h3>
             <p className="text-sm text-muted-foreground">
-              {currentPlan.price === '0' || currentPlan.price === 0 
+              {String(currentPlan.price) === '0' 
                 ? 'Gratis para siempre • Hasta 5 proyectos'
                 : `$${currentPlan.price}/mes • Proyectos ilimitados`}
             </p>
@@ -123,7 +123,7 @@ export default function Subscription() {
 
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar size={16} className="mr-2" />
-            {currentPlan.price === '0' || currentPlan.price === 0 
+            {String(currentPlan.price) === '0' 
               ? 'Sin fecha de renovación'
               : 'Próxima renovación: Mensual'}
           </div>
@@ -168,9 +168,9 @@ export default function Subscription() {
                   </CardTitle>
                   <div className="py-4">
                     <span className="text-3xl font-bold text-foreground">
-                      {plan.price === '0' || plan.price === 0 ? 'Gratis' : `$${plan.price}`}
+                      {String(plan.price) === '0' ? 'Gratis' : `$${plan.price}`}
                     </span>
-                    {(plan.price !== '0' && plan.price !== 0) && (
+                    {String(plan.price) !== '0' && (
                       <span className="text-muted-foreground">/mes</span>
                     )}
                   </div>
@@ -183,7 +183,7 @@ export default function Subscription() {
               
                 <CardContent className="space-y-4">
                   <ul className="space-y-2">
-                    {plan.features && plan.features.map((feature, index) => (
+                    {plan.features && Array.isArray(plan.features) && plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center text-sm">
                         <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
                         <span className="text-muted-foreground">{feature}</span>

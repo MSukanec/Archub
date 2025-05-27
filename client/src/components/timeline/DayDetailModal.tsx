@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -134,9 +134,9 @@ export default function DayDetailModal({
               <DialogTitle className="text-lg font-semibold text-foreground capitalize">
                 {formattedDate}
               </DialogTitle>
-              <p className="text-sm text-muted-foreground">
+              <DialogDescription className="text-sm text-muted-foreground">
                 {allItems.length} {allItems.length === 1 ? 'evento' : 'eventos'}
-              </p>
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
