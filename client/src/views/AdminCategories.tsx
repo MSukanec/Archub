@@ -136,14 +136,16 @@ function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: Categor
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1" ref={setNodeRef} style={style}>
       <div 
         className={`flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 group ${
           level > 0 ? 'ml-' + (level * 6) : ''
         }`}
         style={{ marginLeft: level * 24 }}
       >
-        <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+          <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
         
         {hasChildren && (
           <button
@@ -216,6 +218,13 @@ export default function AdminCategories() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['task-categories'],
@@ -319,6 +328,36 @@ export default function AdminCategories() {
     setIsModalOpen(true);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = categories.findIndex((item) => item.id === active.id);
+      const newIndex = categories.findIndex((item) => item.id === over?.id);
+      
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newCategories = arrayMove(categories, oldIndex, newIndex);
+        
+        // Update positions in the backend
+        const updates = newCategories.map((category, index) => ({
+          id: category.id,
+          position: index + 1,
+          parent_id: category.parent_id
+        }));
+        
+        taskCategoriesService.updatePositions(updates).then(() => {
+          queryClient.invalidateQueries({ queryKey: ['task-categories'] });
+        }).catch(() => {
+          toast({
+            title: 'Error',
+            description: 'Error al actualizar las posiciones',
+            variant: 'destructive',
+          });
+        });
+      }
+    }
+  };
+
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     category.code.toLowerCase().includes(searchTerm.toLowerCase())
@@ -369,18 +408,29 @@ export default function AdminCategories() {
               No hay categorías disponibles
             </div>
           ) : (
-            <div className="space-y-1">
-              {filteredCategories.map((category) => (
-                <CategoryItem
-                  key={category.id}
-                  category={category}
-                  level={0}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onAddChild={handleAddChild}
-                />
-              ))}
-            </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={filteredCategories.map(cat => cat.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-1">
+                  {filteredCategories.map((category) => (
+                    <CategoryItem
+                      key={category.id}
+                      category={category}
+                      level={0}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onAddChild={handleAddChild}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           )}
         </CardContent>
       </Card>
