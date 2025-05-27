@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { siteLogsService } from '@/lib/siteLogsService';
+import { supabase } from '@/lib/supabase';
 import { tasksService } from '@/lib/tasksService';
 import { contactsService } from '@/lib/contactsService';
 import { useAuthStore } from '@/stores/authStore';
@@ -73,13 +74,24 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       if (!projectId) throw new Error('No hay proyecto seleccionado');
       if (!user?.id) throw new Error('Usuario no encontrado');
       
+      // Get the internal user ID from the database
+      const { data: internalUser, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (userError || !internalUser) {
+        throw new Error('No se pudo encontrar el usuario interno');
+      }
+      
       // Create the site log data with required fields
       const siteLogData = {
         project_id: projectId,
-        log_date: format(data.date, 'yyyy-MM-dd'),
+        date: data.date,
         weather: data.weather || '',
         comments: data.comments || '',
-        created_by: user.id,
+        created_by: internalUser.id,
       };
 
       let createdSiteLog: SiteLog;
