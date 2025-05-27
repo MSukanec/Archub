@@ -179,7 +179,11 @@ export default function EditBudgetModal({ budget, isOpen, onClose }: EditBudgetM
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || 'draft'}
+                    defaultValue="draft"
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona el estado" />

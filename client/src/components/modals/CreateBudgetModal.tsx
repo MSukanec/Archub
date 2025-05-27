@@ -150,6 +150,7 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
       toast({
         title: 'Presupuesto creado',
         description: 'El presupuesto se ha creado exitosamente.',
+        duration: 2000,
       });
       form.reset();
       onClose();
