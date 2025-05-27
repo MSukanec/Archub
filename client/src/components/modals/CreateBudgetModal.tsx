@@ -94,7 +94,15 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
     mutationFn: async (data: BudgetForm) => {
       if (!projectId) throw new Error('No hay proyecto seleccionado');
       if (!organizationId) throw new Error('No hay organización seleccionada');
-      if (!internalUser?.id) throw new Error('Usuario interno no encontrado');
+      if (!user?.id) throw new Error('Usuario no autenticado');
+      
+      // Intentar obtener el usuario interno, o usar el auth_id directamente
+      let userId = internalUser?.id;
+      if (!userId) {
+        // Si no existe el usuario interno, intentar crearlo o usar un valor por defecto
+        console.warn('Usuario interno no encontrado, usando auth_id directamente');
+        userId = user.id; // Usar el auth_id como fallback
+      }
       
       // Crear objeto simplificado con solo los campos esenciales
       const budgetData = {
@@ -102,7 +110,7 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
         description: data.description || null,
         project_id: Number(projectId),
         organization_id: organizationId,
-        created_by: internalUser.id,
+        created_by: userId,
         status: data.status || 'draft'
       };
 

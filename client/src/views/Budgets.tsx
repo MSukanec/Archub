@@ -145,12 +145,6 @@ export default function Budgets() {
         </TabsList>
 
         <TabsContent value="budgets" className="space-y-4">
-          <div>
-            <h3 className="text-lg font-medium text-foreground">Presupuestos del Proyecto</h3>
-            <p className="text-sm text-muted-foreground">
-              Administra todos los presupuestos asociados a este proyecto
-            </p>
-          </div>
 
           <div className="grid gap-4">
             {budgets.length === 0 ? (
