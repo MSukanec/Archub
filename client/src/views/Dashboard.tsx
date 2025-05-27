@@ -4,7 +4,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import DayDetailModal from '@/components/timeline/DayDetailModal';
 import GanttTimeline from '@/components/timeline/GanttTimeline';
-import SiteLogModal from '@/components/modals/SiteLogModal';
+import SiteLogModalFixed from '@/components/modals/SiteLogModalFixed';
 import MovementModal from '@/components/modals/MovementModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -296,7 +296,7 @@ export default function Dashboard() {
       />
 
       {/* Site Log Modal */}
-      <SiteLogModal
+      <SiteLogModalFixed
         isOpen={isSiteLogModalOpen}
         onClose={() => {
           setIsSiteLogModalOpen(false);
@@ -305,7 +305,6 @@ export default function Dashboard() {
             queryKey: ['/api/timeline-events']
           });
         }}
-        siteLog={selectedSiteLog}
         projectId={projectId}
       />
 
