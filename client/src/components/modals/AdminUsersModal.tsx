@@ -107,7 +107,12 @@ export default function AdminUsersModal({
 
   const updateMutation = useMutation({
     mutationFn: async (data: UserFormData) => {
-      return usersService.update(user!.id, data);
+      try {
+        return await usersService.update(user!.id, data);
+      } catch (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -118,6 +123,7 @@ export default function AdminUsersModal({
       onClose();
     },
     onError: (error: any) => {
+      console.error('Update mutation error:', error);
       toast({
         title: 'Error',
         description: error.message || 'Error al actualizar el usuario',

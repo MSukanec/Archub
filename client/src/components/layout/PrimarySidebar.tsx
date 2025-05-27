@@ -1,4 +1,4 @@
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -31,11 +31,11 @@ export default function PrimarySidebar() {
       case 'free':
         return Zap;
       case 'pro':
-        return Crown;
+        return Star;
       case 'enterprise':
-        return Rocket;
+        return Diamond;
       default:
-        return Crown; // Default to Crown
+        return Zap; // Default to Zap for free
     }
   };
 
@@ -65,6 +65,9 @@ export default function PrimarySidebar() {
       return data?.plans || null;
     },
     enabled: !!user?.id,
+    staleTime: 1 * 60 * 1000, // 1 minuto de cache para actualizaciones más rápidas
+    refetchOnWindowFocus: true, // Refrescar cuando la ventana recibe foco
+    refetchInterval: 30 * 1000, // Refrescar cada 30 segundos
   });
 
   return (
