@@ -19,6 +19,7 @@ import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
 import TaskModal from '@/components/modals/TaskModal';
+import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();
@@ -26,6 +27,8 @@ export default function Budgets() {
   const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [budgetToDelete, setBudgetToDelete] = useState<any>(null);
 
   // Listen for floating action button events
   useEffect(() => {
@@ -83,6 +86,15 @@ export default function Budgets() {
       });
     },
   });
+
+  // Función para confirmar eliminación
+  const confirmDelete = () => {
+    if (budgetToDelete) {
+      deleteBudgetMutation.mutate(budgetToDelete.id);
+      setIsDeleteModalOpen(false);
+      setBudgetToDelete(null);
+    }
+  };
 
   // Fetch budgets for the current project
   const { data: budgets = [] } = useQuery({
@@ -192,7 +204,10 @@ export default function Budgets() {
                               Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              onClick={() => deleteBudgetMutation.mutate(budget.id)}
+                              onClick={() => {
+                                setBudgetToDelete(budget);
+                                setIsDeleteModalOpen(true);
+                              }}
                               className="text-destructive"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
@@ -337,6 +352,18 @@ export default function Budgets() {
           setIsTaskModalOpen(false);
           setEditingTask(null);
         }}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setBudgetToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="¿Eliminar presupuesto?"
+        description={`Esta acción no se puede deshacer. Se eliminará permanentemente el presupuesto "${budgetToDelete?.name}" y todas sus tareas asociadas.`}
+        isLoading={deleteBudgetMutation.isPending}
       />
     </div>
   );
