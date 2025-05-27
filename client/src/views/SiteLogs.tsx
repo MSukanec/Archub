@@ -73,7 +73,7 @@ export default function SiteLogs() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Bitácora de Obra</h1>
           <p className="text-muted-foreground mt-1">
-            Registro diario de actividades - {currentProject.name}
+            Registro diario de actividades - {currentProject?.name || 'Cargando...'}
           </p>
         </div>
         <Button onClick={handleCreateNew} className="gap-2">

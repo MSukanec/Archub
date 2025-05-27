@@ -117,7 +117,6 @@ export default function AdminOrganizations() {
         </div>
         <Button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-[#4f9eff] hover:bg-[#3a8bef]"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva Organización
