@@ -44,13 +44,13 @@ export default function Dashboard() {
       const periodStart = startOfDay(addDays(today, -30));
       const periodEnd = endOfDay(addDays(today, 30));
       
-      // Fetch site logs
+      // Fetch site logs (usando 'log_date' en lugar de 'date')
       const { data: siteLogs, error: siteLogsError } = await supabase
         .from('site_logs')
         .select('*')
         .eq('project_id', projectId)
-        .gte('date', format(periodStart, 'yyyy-MM-dd'))
-        .lte('date', format(periodEnd, 'yyyy-MM-dd'));
+        .gte('log_date', format(periodStart, 'yyyy-MM-dd'))
+        .lte('log_date', format(periodEnd, 'yyyy-MM-dd'));
         
       if (siteLogsError) {
         console.error('Error fetching site logs:', siteLogsError);
@@ -91,7 +91,7 @@ export default function Dashboard() {
 
       // Agregar site logs
       siteLogs?.forEach(log => {
-        const logDate = format(new Date(log.date), 'yyyy-MM-dd');
+        const logDate = format(new Date(log.log_date), 'yyyy-MM-dd');
         if (eventsByDate[logDate]) {
           eventsByDate[logDate].siteLogs.push(log);
         }
