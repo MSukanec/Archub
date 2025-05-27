@@ -46,6 +46,7 @@ const sectionConfig = {
       { view: 'projects-list' as View, icon: List, label: 'Lista de Proyectos' },
       { view: 'projects-sitelog' as View, icon: CheckSquare, label: 'Bitácora' },
       { view: 'projects-budgets' as View, icon: CreditCard, label: 'Presupuestos' },
+      { view: 'projects-movements' as View, icon: MoreHorizontal, label: 'Movimientos de Obra' },
     ],
   },
   contacts: {
@@ -81,14 +82,12 @@ const sectionConfig = {
 };
 
 export default function SecondarySidebar() {
-  const { currentSection, currentView, setView, hoveredSection, setHoveredSection } = useNavigationStore();
+  const { currentSection, currentView, setView } = useNavigationStore();
   const { user, logout } = useAuthStore();
   const { isSecondarySidebarVisible } = useSidebarStore();
   const { organizationId, setUserContext } = useUserContextStore();
 
-  // Use hovered section if available, otherwise current section
-  const displaySection = hoveredSection || currentSection;
-  const config = sectionConfig[displaySection];
+  const config = sectionConfig[currentSection];
 
   // Fetch current organization details only
   const { data: currentOrganization } = useQuery({
@@ -113,14 +112,10 @@ export default function SecondarySidebar() {
   };
 
   return (
-    <div 
-      className={cn(
-        "fixed left-[45px] top-[45px] h-[calc(100vh-45px)] bg-[#282828] border-r border-border flex flex-col z-50",
-        isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
-      )}
-      onMouseEnter={() => setHoveredSection(displaySection)}
-      onMouseLeave={() => setHoveredSection(null)}
-    >
+    <div className={cn(
+      "fixed left-[45px] top-[45px] h-[calc(100vh-45px)] bg-[#282828] border-r border-border flex flex-col z-50",
+      isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
+    )}>
       {/* Header */}
       <div className="p-4 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">{config.title}</h2>
