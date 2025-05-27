@@ -214,25 +214,19 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   // Calcular posición y ancho de un elemento en la línea de tiempo
   const getItemPosition = (item: GanttItem) => {
     const startDay = startOfDay(item.startDate);
-    const timelineStart = startOfDay(weekDays[0]);
-    const timelineEnd = startOfDay(weekDays[weekDays.length - 1]);
-
-    // Check if item is visible in current 7-day timeline
-    if (startDay < timelineStart || startDay > timelineEnd) {
-      return null;
-    }
-
-    const dayIndex = weekDays.findIndex(day => 
+    
+    const dayIndex = allDays.findIndex(day => 
       format(day, 'yyyy-MM-dd') === format(startDay, 'yyyy-MM-dd')
     );
     
     if (dayIndex === -1) return null;
 
     return {
-      gridColumn: `${dayIndex + 1}`,
-      width: `calc(100% - 8px)`,
-      marginLeft: '4px',
-      marginRight: '4px'
+      position: 'absolute' as const,
+      left: `${dayIndex * 128 + 4}px`,
+      width: '120px',
+      top: '50%',
+      transform: 'translateY(-50%)'
     };
   };
 
@@ -338,11 +332,11 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
           >
             <div 
               ref={scrollContainerRef}
-              className="grid grid-cols-7 w-full"
+              className="flex overflow-x-auto scrollbar-hide"
               onScroll={handleScroll}
             >
-              {weekDays.map((day, index) => (
-                <div key={index} className="text-center border-l border-muted first:border-l-0">
+              {allDays.map((day, index) => (
+                <div key={index} className="flex-shrink-0 w-32 text-center border-l border-muted first:border-l-0">
                   <div className="text-xs text-muted-foreground py-1">
                     {format(day, 'EEE', { locale: es })}
                   </div>
@@ -405,14 +399,15 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
 
               {/* Línea de tiempo para este tipo */}
               <div 
-                className="timeline-content-row relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-x-auto"
+                className="timeline-content-row relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-x-auto scrollbar-hide"
                 style={{ 
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none'
                 }}
               >
                 <div 
-                  className="relative h-full w-full grid grid-cols-7"
+                  className="relative h-full flex"
+                  style={{ width: `${allDays.length * 128}px` }}
                 >
                   {/* Agrupar items por día para mostrar contadores */}
                   {(() => {
@@ -459,7 +454,19 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                         >
                           {/* Avatar del usuario */}
                           <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <User size={10} className="text-primary" />
+                            <span className="text-xs font-medium text-primary">
+                              {(() => {
+                                // Obtener las iniciales del usuario que creó el item
+                                const userData = firstItem.data;
+                                if (userData?.author_full_name) {
+                                  return userData.author_full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                                }
+                                if (userData?.created_by_name) {
+                                  return userData.created_by_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                                }
+                                return 'MS'; // Fallback para tu usuario
+                              })()}
+                            </span>
                           </div>
                           
                           {/* Contenido del elemento */}
