@@ -1,6 +1,9 @@
 import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 
 const topNavigationItems = [
@@ -20,6 +23,34 @@ const bottomNavigationItems = [
 export default function PrimarySidebar() {
   const { currentSection, setSection, setHoveredSection } = useNavigationStore();
   const { user } = useAuthStore();
+
+  // Obtener el plan actual del usuario
+  const { data: userPlan } = useQuery({
+    queryKey: ['/api/user-plan', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select(`
+          plan_id,
+          plans (
+            name,
+            price
+          )
+        `)
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user plan:', error);
+        return null;
+      }
+      
+      return data?.plans || { name: 'Free', price: 0 };
+    },
+    enabled: !!user?.id,
+  });
 
   return (
     <div className="w-[45px] bg-surface border-r border-border flex flex-col">
@@ -61,7 +92,7 @@ export default function PrimarySidebar() {
             window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
           }}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
-          title="Plan"
+          title={userPlan?.name ? `Plan: ${userPlan.name}` : "Plan"}
         >
           <Crown size={20} />
         </button>

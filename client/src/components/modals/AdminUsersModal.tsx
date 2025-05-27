@@ -42,13 +42,17 @@ export default function AdminUsersModal({
     enabled: isOpen, // Only fetch when modal is open
   });
   
+  // Find the FREE plan ID
+  const freePlan = plans.find(plan => plan.name.toLowerCase() === 'free' || plan.price === 0);
+  const defaultPlanId = freePlan?.id || plans[0]?.id || '';
+
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
       email: user?.email || '',
       full_name: user?.full_name || '',
       role: user?.role || 'user',
-      plan_id: user?.plan_id || 'basic',
+      plan_id: user?.plan_id || defaultPlanId,
     },
   });
 
