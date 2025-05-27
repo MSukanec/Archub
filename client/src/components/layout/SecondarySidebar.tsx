@@ -84,22 +84,7 @@ export default function SecondarySidebar() {
 
   const config = sectionConfig[currentSection];
 
-  // Fetch organizations that the user belongs to
-  const { data: organizations = [] } = useQuery({
-    queryKey: ['/api/user-organizations'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('organization_members')
-        .select(`
-          organization_id,
-          organizations!inner(id, name)
-        `);
-      return data?.map(item => item.organizations) || [];
-    },
-    enabled: !!user,
-  });
-
-  // Fetch current organization details
+  // Fetch current organization details only
   const { data: currentOrganization } = useQuery({
     queryKey: ['/api/organization', organizationId],
     queryFn: async () => {
@@ -114,18 +99,7 @@ export default function SecondarySidebar() {
     enabled: !!organizationId,
   });
 
-  const handleOrganizationChange = async (newOrgId: string) => {
-    // Update user preferences
-    await supabase
-      .from('user_preferences')
-      .upsert({
-        user_id: user?.id,
-        last_organization_id: newOrgId,
-      });
-
-    // Update context
-    setUserContext({ organizationId: newOrgId });
-  };
+  // Remove unused function since we're not using a selector anymore
 
   const handleLogout = async () => {
     await authService.signOut();
@@ -140,31 +114,13 @@ export default function SecondarySidebar() {
       {/* Header */}
       <div className="p-4 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">{config.title}</h2>
-        <p className="text-sm text-muted-foreground">{config.description}</p>
         
-        {/* Organization Selector - Only show in dashboard section */}
-        {currentSection === 'dashboard' && (
-          <div className="mt-3">
-            <label className="text-xs font-medium text-muted-foreground mb-2 block">
-              Organización Activa
-            </label>
-            <Select 
-              value={organizationId || ''} 
-              onValueChange={handleOrganizationChange}
-            >
-              <SelectTrigger className="w-full h-8 text-sm bg-[#1e1e1e] border-border">
-                <SelectValue placeholder="Seleccionar organización">
-                  {currentOrganization?.name || 'Cargando...'}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {organizations.map((org: any) => (
-                  <SelectItem key={org.id} value={org.id}>
-                    {org.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Organization Display - Only show in dashboard section */}
+        {currentSection === 'dashboard' && currentOrganization && (
+          <div className="mt-3 p-2 bg-[#1e1e1e] rounded-lg border border-border">
+            <div className="text-sm font-medium text-foreground">
+              {currentOrganization.name}
+            </div>
           </div>
         )}
       </div>
