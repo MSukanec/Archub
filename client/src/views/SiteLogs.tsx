@@ -273,7 +273,7 @@ export default function SiteLogs() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         siteLog={selectedSiteLog}
-        projectId={currentProject?.id}
+        projectId={currentProject?.id ? parseInt(currentProject.id) : undefined}
       />
     </div>
   );
