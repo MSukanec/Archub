@@ -10,54 +10,72 @@ export interface UserPreference {
 
 export const userPreferencesService = {
   async getUserPreferences(userId: string): Promise<UserPreference | null> {
-    const { data, error } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-    
-    if (error) {
-      console.error('Error fetching user preferences:', error);
+    try {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+      
+      if (error) {
+        // If no rows found, that's normal for new users
+        if (error.code === 'PGRST116') {
+          return null;
+        }
+        console.error('Error fetching user preferences:', error);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      console.warn('User preferences not available:', error);
       return null;
     }
-    
-    return data;
   },
 
   async updateLastProject(userId: string, projectId: string): Promise<void> {
-    // First try to update existing preferences
-    const { data: existing } = await supabase
-      .from('user_preferences')
-      .select('id')
-      .eq('user_id', userId)
-      .single();
+    try {
+      // First try to update existing preferences
+      const { data: existing } = await supabase
+        .from('user_preferences')
+        .select('id')
+        .eq('user_id', userId)
+        .single();
 
-    if (existing) {
-      // Update existing record
-      const { error } = await supabase
-        .from('user_preferences')
-        .update({ last_project_id: projectId })
-        .eq('user_id', userId);
-      
-      if (error) {
-        console.error('Error updating user preferences:', error);
-        throw error;
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('user_preferences')
+          .update({ last_project_id: projectId })
+          .eq('user_id', userId);
+        
+        if (error) {
+          console.error('Error updating user preferences:', error);
+          throw error;
+        }
+      } else {
+        // Create new record
+        const { error } = await supabase
+          .from('user_preferences')
+          .insert({
+            user_id: userId,
+            last_project_id: projectId,
+            last_organization_id: null,
+            last_budget_id: null
+          });
+        
+        if (error) {
+          console.error('Error creating user preferences:', error);
+          throw error;
+        }
       }
-    } else {
-      // Create new record
-      const { error } = await supabase
-        .from('user_preferences')
-        .insert({
-          user_id: userId,
-          last_project_id: projectId,
-          last_organization_id: null,
-          last_budget_id: null
-        });
-      
-      if (error) {
-        console.error('Error creating user preferences:', error);
-        throw error;
+    } catch (error: any) {
+      // If foreign key constraint error, just log and continue
+      if (error?.code === '23503') {
+        console.warn('User preferences skipped - user not found in database');
+        return;
       }
+      console.error('Error saving last project:', error);
     }
   },
 
