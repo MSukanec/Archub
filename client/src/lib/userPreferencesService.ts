@@ -11,11 +11,14 @@ export interface UserPreference {
 export const userPreferencesService = {
   async getUserPreferences(authUserId: string): Promise<UserPreference | null> {
     try {
+      // Get current auth user to use auth.uid() in query  
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
-        .eq('user_id', authUserId)
-        .single();
+        .single(); // RLS will filter by auth.uid() automatically
       
       if (error) {
         // If no rows found, that's normal for new users
