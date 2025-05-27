@@ -85,21 +85,22 @@ export default function TopBar() {
         {/* Left side - Organization and Project selectors */}
         <div className="flex items-center space-x-4">
           {/* Organization Display */}
-          <div className="text-sm text-muted-foreground">
-            <span>Organización: </span>
-            <span className="text-foreground font-medium">
+          <div className="min-w-[180px]">
+            <div className="text-sm text-muted-foreground">Organización</div>
+            <div className="text-sm font-medium text-foreground">
               {currentOrganization?.name || 'Cargando...'}
-            </span>
+            </div>
           </div>
           
           {/* Project Selector */}
           <div className="min-w-[200px]">
+            <div className="text-sm text-muted-foreground mb-1">Proyecto</div>
             <Select 
               value={currentProject?.id?.toString() || ""} 
               onValueChange={handleProjectChange}
             >
               <SelectTrigger className="bg-[#1e1e1e] border-border h-8">
-                <SelectValue placeholder="Proyecto: Crear nuevo proyecto" />
+                <SelectValue placeholder="Crear nuevo proyecto" />
               </SelectTrigger>
               <SelectContent>
                 {projects.length > 0 && projects.map((project: any) => (
@@ -116,6 +117,17 @@ export default function TopBar() {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        {/* Right side - Plan button only */}
+        <div className="flex items-center">
+          <button
+            onClick={() => setView('subscription-tables')}
+            className="w-8 h-8 rounded-full bg-[#1e1e1e] border border-border hover:bg-[#282828] flex items-center justify-center transition-colors"
+            title={`Plan: ${currentUserData?.plan_name || 'No asignado'}`}
+          >
+            {getPlanIcon(currentUserData?.plan_name)}
+          </button>
         </div>
       </header>
 

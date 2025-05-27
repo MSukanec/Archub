@@ -1,4 +1,4 @@
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, TrendingUp, Users, Settings, User, Shield, Bell, Contact, Crown } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, TrendingUp, Users, Settings, User, Shield, Bell, Contact } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
@@ -13,24 +13,20 @@ const topNavigationItems = [
   { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
 ];
 
-const planNavigationItems = [
-  { icon: Crown, label: 'Plan', view: 'subscription-tables' },
-];
-
 const bottomNavigationItems = [
   { section: 'admin' as Section, icon: Shield, label: 'Administración' },
 ];
 
 export default function PrimarySidebar() {
-  const { currentSection, setSection, setView } = useNavigationStore();
+  const { currentSection, setSection, setHoveredSection } = useNavigationStore();
   const { user } = useAuthStore();
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-[45px] bg-[#282828] border-r border-border flex flex-col items-center z-50">
-      {/* Logo */}
-      <div className="h-[45px] flex items-center justify-center border-b border-border w-full">
-        <div className="w-[30px] h-[30px] bg-primary rounded-md flex items-center justify-center">
-          <span className="text-sm font-bold text-black">M</span>
+    <div className="w-[45px] bg-surface border-r border-border flex flex-col">
+      {/* Header area - 45px alto para coincidir con TopBar */}
+      <div className="h-[45px] flex items-center justify-center border-b border-border">
+        <div className="w-[30px] h-[30px] bg-primary rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold text-sm">M</span>
         </div>
       </div>
       
@@ -54,24 +50,6 @@ export default function PrimarySidebar() {
       </div>
       
       <div className="flex-1" />
-      
-      {/* Plan Button with Separator */}
-      <div className="flex flex-col items-center pb-2">
-        {/* Separator */}
-        <div className="w-[35px] h-px bg-border mb-3"></div>
-        
-        {/* Plan Button */}
-        {planNavigationItems.map(({ icon: Icon, label, view }) => (
-          <button
-            key={label}
-            onClick={() => setView(view as any)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60 mb-3"
-            title={label}
-          >
-            <Icon size={20} />
-          </button>
-        ))}
-      </div>
       
       {/* Bottom Navigation Icons */}
       <div className="flex flex-col items-center pb-4 space-y-[5px]">
@@ -97,6 +75,33 @@ export default function PrimarySidebar() {
             </button>
           );
         })}
+        
+        {/* Notifications */}
+        <button
+          onClick={() => setSection('profile')}
+          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60 relative"
+          title="Notificaciones"
+        >
+          <Bell size={20} />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+        </button>
+        
+        {/* Profile Avatar */}
+        <button
+          onMouseEnter={() => setSection('profile')}
+          className={cn(
+            "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2",
+            currentSection === 'profile'
+              ? "bg-primary border-primary text-white"
+              : "bg-gray-600 border-gray-500 text-white hover:bg-gray-500 hover:border-gray-400"
+          )}
+          title="Perfil"
+        >
+          <span className="text-xs font-semibold">
+            {user?.firstName?.[0]?.toUpperCase() || ''}
+            {user?.lastName?.[0]?.toUpperCase() || ''}
+          </span>
+        </button>
       </div>
     </div>
   );
