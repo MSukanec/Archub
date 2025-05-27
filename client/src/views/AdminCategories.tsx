@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit, Trash2, GripVertical, FolderOpen, Folder, FileText } from 'lucide-react';
+import { useUserContextStore } from '@/stores/userContextStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -226,11 +227,18 @@ export default function AdminCategories() {
     })
   );
 
+  // Simplify the query to avoid context dependencies for now
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['task-categories'],
-    queryFn: taskCategoriesService.getAll,
-    retry: 3,
-    retryDelay: 1000,
+    queryFn: async () => {
+      console.log('Fetching task categories...');
+      const result = await taskCategoriesService.getAll();
+      console.log('Found', result.length, 'categories');
+      console.log('Returning sorted data:', result.length, 'categories');
+      return result;
+    },
+    retry: 1,
+    retryDelay: 500,
   });
 
   console.log('Categories state:', { categories: categories.length, isLoading });

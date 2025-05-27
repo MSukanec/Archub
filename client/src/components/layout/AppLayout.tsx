@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import PrimarySidebar from './PrimarySidebar';
@@ -45,6 +46,7 @@ export default function AppLayout() {
   const { setUser, setLoading } = useAuthStore();
   const { currentView } = useNavigationStore();
   const { setSecondarySidebarVisible } = useSidebarStore();
+  const { initializeUserContext } = useUserContextStore();
 
   useEffect(() => {
     // Check initial auth state
@@ -64,6 +66,9 @@ export default function AppLayout() {
         console.log('User from database on init:', dbUser);
         console.log('Setting user:', authUser);
         setUser(authUser);
+        
+        // Initialize user context after setting user
+        await initializeUserContext();
       } else {
         setUser(null);
       }
