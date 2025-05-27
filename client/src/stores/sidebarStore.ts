@@ -6,6 +6,6 @@ interface SidebarState {
 }
 
 export const useSidebarStore = create<SidebarState>((set) => ({
-  isSecondarySidebarVisible: true,
+  isSecondarySidebarVisible: false,
   setSecondarySidebarVisible: (visible) => set({ isSecondarySidebarVisible: visible }),
 }));

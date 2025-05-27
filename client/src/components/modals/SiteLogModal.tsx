@@ -132,6 +132,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     },
     onError: (error) => {
       console.error('Error al guardar registro:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       toast({
         title: 'Error',
         description: 'No se pudo guardar el registro de obra.',
