@@ -113,10 +113,14 @@ export default function SecondarySidebar() {
   };
 
   return (
-    <div className={cn(
-      "fixed left-[45px] top-[45px] h-[calc(100vh-45px)] bg-[#282828] border-r border-border flex flex-col z-50",
-      isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
-    )}>
+    <div 
+      className={cn(
+        "fixed left-[45px] top-[45px] h-[calc(100vh-45px)] bg-[#282828] border-r border-border flex flex-col z-50",
+        isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
+      )}
+      onMouseEnter={() => setHoveredSection(displaySection)}
+      onMouseLeave={() => setHoveredSection(null)}
+    >
       {/* Header */}
       <div className="p-4 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">{config.title}</h2>
