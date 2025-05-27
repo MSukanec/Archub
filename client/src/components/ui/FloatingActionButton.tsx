@@ -171,8 +171,10 @@ export default function FloatingActionButton() {
               ))}
             </div>
           ) : (
-            // Mostrar solo el ícono +
-            <Plus size={20} className="flex-shrink-0" />
+            // Mostrar solo el ícono + centrado
+            <div className="w-14 h-14 flex items-center justify-center">
+              <Plus size={20} className="flex-shrink-0" />
+            </div>
           )
         ) : (
           // Botón simple para otras vistas

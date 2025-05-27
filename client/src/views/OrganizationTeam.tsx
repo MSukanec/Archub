@@ -118,11 +118,14 @@ export default function OrganizationTeam() {
     queryFn: async () => {
       if (!organizationId) return [];
       
-      const { data, error } = await supabase
-        .from('organization_members')
+      console.log('Fetching team members for organization:', organizationId);
+      
+      // First, get the organization owner
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
         .select(`
           *,
-          user:users(
+          owner:users!owner_id(
             id,
             firstName:first_name,
             lastName:last_name,
@@ -131,28 +134,89 @@ export default function OrganizationTeam() {
             createdAt:created_at
           )
         `)
-        .eq('organizationId', organizationId);
+        .eq('id', organizationId)
+        .single();
 
-      if (error) throw error;
+      if (orgError) {
+        console.error('Error fetching organization:', orgError);
+        throw orgError;
+      }
 
-      // Transform data to match our interface
-      return data.map(member => ({
-        id: member.user.id,
-        firstName: member.user.firstName,
-        lastName: member.user.lastName,
-        email: member.user.email,
-        role: member.role,
-        joinedAt: member.createdAt,
-        lastActive: new Date().toISOString(), // Mock for now
-        permissions: {
-          projects: { view: true, create: true, edit: true, delete: false },
-          budgets: { view: true, create: false, edit: false, delete: false },
-          sitelog: { view: true, create: true, edit: true, delete: false },
-          movements: { view: true, create: false, edit: false, delete: false },
-          team: { view: true, invite: false, manage: false },
-          reports: { view: true, export: false },
-        }
-      }));
+      console.log('Organization data:', orgData);
+
+      // Get organization members
+      const { data: membersData, error: membersError } = await supabase
+        .from('organization_members')
+        .select(`
+          *,
+          user:users!user_id(
+            id,
+            firstName:first_name,
+            lastName:last_name,
+            email,
+            role,
+            createdAt:created_at
+          )
+        `)
+        .eq('organization_id', organizationId);
+
+      if (membersError) {
+        console.error('Error fetching members:', membersError);
+      }
+
+      console.log('Members data:', membersData);
+
+      // Combine owner and members
+      const allMembers = [];
+      
+      // Add owner
+      if (orgData.owner) {
+        allMembers.push({
+          id: orgData.owner.id,
+          firstName: orgData.owner.firstName,
+          lastName: orgData.owner.lastName,
+          email: orgData.owner.email,
+          role: 'owner',
+          joinedAt: orgData.created_at,
+          lastActive: new Date().toISOString(),
+          permissions: {
+            projects: { view: true, create: true, edit: true, delete: true },
+            budgets: { view: true, create: true, edit: true, delete: true },
+            sitelog: { view: true, create: true, edit: true, delete: true },
+            movements: { view: true, create: true, edit: true, delete: true },
+            team: { view: true, invite: true, manage: true },
+            reports: { view: true, export: true },
+          }
+        });
+      }
+
+      // Add members
+      if (membersData) {
+        membersData.forEach(member => {
+          if (member.user) {
+            allMembers.push({
+              id: member.user.id,
+              firstName: member.user.firstName,
+              lastName: member.user.lastName,
+              email: member.user.email,
+              role: member.role,
+              joinedAt: member.created_at,
+              lastActive: new Date().toISOString(),
+              permissions: {
+                projects: { view: true, create: true, edit: true, delete: false },
+                budgets: { view: true, create: false, edit: false, delete: false },
+                sitelog: { view: true, create: true, edit: true, delete: false },
+                movements: { view: true, create: false, edit: false, delete: false },
+                team: { view: true, invite: false, manage: false },
+                reports: { view: true, export: false },
+              }
+            });
+          }
+        });
+      }
+
+      console.log('Final team members:', allMembers);
+      return allMembers;
     },
     enabled: !!organizationId,
   });
@@ -247,11 +311,6 @@ export default function OrganizationTeam() {
           <p className="text-muted-foreground">
             Gestiona los miembros y permisos de tu organización
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="bg-muted text-foreground">
-            {teamMembers.length} miembros
-          </Badge>
         </div>
       </div>
 
