@@ -104,6 +104,17 @@ export const materials = pgTable("materials", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const tasks = pgTable("tasks", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  unit_labor_price: decimal("unit_labor_price", { precision: 12, scale: 2 }),
+  unit_material_price: decimal("unit_material_price", { precision: 12, scale: 2 }),
+  category_id: integer("category_id").references(() => taskCategories.id),
+  subcategory_id: integer("subcategory_id").references(() => taskCategories.id),
+  element_category_id: integer("element_category_id").references(() => taskCategories.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -152,6 +163,15 @@ export const insertMaterialSchema = createInsertSchema(materials).pick({
   unit_id: true,
 });
 
+export const insertTaskSchema = createInsertSchema(tasks).pick({
+  name: true,
+  unit_labor_price: true,
+  unit_material_price: true,
+  category_id: true,
+  subcategory_id: true,
+  element_category_id: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -182,3 +202,6 @@ export type InsertUnit = z.infer<typeof insertActionSchema>; // We'll use existi
 
 export type Material = typeof materials.$inferSelect;
 export type InsertMaterial = z.infer<typeof insertMaterialSchema>;
+
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = z.infer<typeof insertTaskSchema>;

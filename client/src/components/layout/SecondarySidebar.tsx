@@ -16,7 +16,8 @@ import {
   Box,
   Contact,
   FolderTree,
-  ChevronDown
+  ChevronDown,
+  CheckSquare
 } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -63,6 +64,7 @@ const sectionConfig = {
       { view: 'admin-units' as View, icon: Ruler, label: 'Unidades' },
       { view: 'admin-elements' as View, icon: Blocks, label: 'Elementos' },
       { view: 'admin-actions' as View, icon: Zap, label: 'Acciones' },
+      { view: 'admin-tasks' as View, icon: CheckSquare, label: 'Tareas' },
     ],
   },
   profile: {
