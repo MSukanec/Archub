@@ -117,7 +117,7 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
       const budgetData = {
         name: data.name,
         description: data.description || null,
-        project_id: Number(projectId),
+        project_id: projectId, // Mantener como UUID string
         organization_id: organizationId,
         created_by: userId,
         status: data.status || 'draft'
