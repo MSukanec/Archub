@@ -96,12 +96,21 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
       if (!organizationId) throw new Error('No hay organización seleccionada');
       if (!user?.id) throw new Error('Usuario no autenticado');
       
-      // Intentar obtener el usuario interno, o usar el auth_id directamente
+      // Intentar obtener el usuario interno
       let userId = internalUser?.id;
       if (!userId) {
-        // Si no existe el usuario interno, intentar crearlo o usar un valor por defecto
-        console.warn('Usuario interno no encontrado, usando auth_id directamente');
-        userId = user.id; // Usar el auth_id como fallback
+        // Si no existe el usuario interno, intentar obtenerlo de la base de datos
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+        
+        if (userError || !userData) {
+          throw new Error('No se pudo encontrar el usuario en la base de datos. Por favor, contacta al administrador.');
+        }
+        
+        userId = userData.id;
       }
       
       // Crear objeto simplificado con solo los campos esenciales
