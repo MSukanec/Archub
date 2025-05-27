@@ -150,17 +150,17 @@ export default function FloatingActionButton() {
             // Mostrar opciones verticalmente dentro del botón
             <div className="space-y-2">
               {actionConfig.options?.map((option, index) => (
-                <div
+                <button
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
                     option.action();
                   }}
-                  className="flex items-center text-sm hover:bg-primary-foreground/10 rounded px-2 py-1 cursor-pointer transition-colors"
+                  className="flex items-center text-sm hover:bg-primary-foreground/10 rounded px-2 py-1 cursor-pointer transition-colors w-full text-left"
                 >
                   <Plus size={14} className="mr-2 flex-shrink-0" />
                   <span className="whitespace-nowrap">{option.label}</span>
-                </div>
+                </button>
               ))}
             </div>
           ) : (
