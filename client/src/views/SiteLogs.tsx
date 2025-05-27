@@ -14,14 +14,14 @@ import SiteLogModal from '@/components/modals/SiteLogModal';
 import type { SiteLog } from '@shared/schema';
 
 export default function SiteLogs() {
-  const { currentProject } = useUserContextStore();
+  const { projectId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<SiteLog | null>(null);
 
   const { data: siteLogs = [], isLoading } = useQuery({
-    queryKey: ['/api/site-logs', currentProject?.id],
-    queryFn: () => currentProject ? siteLogsService.getSiteLogsByProject(currentProject.id) : Promise.resolve([]),
-    enabled: !!currentProject,
+    queryKey: ['/api/site-logs', projectId],
+    queryFn: () => projectId ? siteLogsService.getSiteLogsByProject(projectId) : Promise.resolve([]),
+    enabled: !!projectId,
   });
 
   const handleCreateNew = () => {

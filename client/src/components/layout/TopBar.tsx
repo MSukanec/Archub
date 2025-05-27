@@ -1,7 +1,7 @@
 import { Bell, ChevronRight, Plus, ChevronDown, Zap, Crown, Rocket } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/stores/navigationStore';
-import { useProjectStore } from '@/stores/projectStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,7 @@ const breadcrumbConfig = {
 
 export default function TopBar() {
   const { currentView, setView, setSection } = useNavigationStore();
-  const { currentProject, setCurrentProject } = useProjectStore();
+  const { organizationId, projectId, setUserContext } = useUserContextStore();
   const { user } = useAuthStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
@@ -61,31 +61,15 @@ export default function TopBar() {
     }
   };
 
-  // Fetch projects for the selector
+  // Fetch projects for the current organization
   const { data: projects = [] } = useQuery({
-    queryKey: ['user-projects'],
+    queryKey: ['user-projects', organizationId],
     queryFn: () => projectsService.getAll(),
+    enabled: !!organizationId,
   });
 
-  // Load last active project when user logs in
-  useEffect(() => {
-    if (user && projects.length > 0 && !currentProject) {
-      const loadLastProject = async () => {
-        try {
-          const lastProjectId = await userPreferencesService.getLastProjectId(user.id);
-          if (lastProjectId) {
-            const lastProject = projects.find((p: any) => p.id === lastProjectId);
-            if (lastProject) {
-              setCurrentProject(lastProject);
-            }
-          }
-        } catch (error) {
-          console.error('Error loading last project:', error);
-        }
-      };
-      loadLastProject();
-    }
-  }, [user, projects, currentProject, setCurrentProject]);
+  // Find the current project based on projectId from context
+  const currentProject = projects.find((p: any) => p.id === projectId);
 
   const handleProjectChange = async (projectId: string) => {
     console.log('Project change triggered:', projectId);
@@ -98,15 +82,7 @@ export default function TopBar() {
     } else {
       const project = projects.find((p: any) => p.id === projectId);
       if (project) {
-        setCurrentProject(project);
-        // Save last project to preferences
-        if (user) {
-          try {
-            await userPreferencesService.updateLastProject(user.id, projectId);
-          } catch (error) {
-            console.error('Error saving last project:', error);
-          }
-        }
+        setUserContext({ projectId: projectId });
       }
     }
   };
