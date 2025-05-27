@@ -104,6 +104,8 @@ export const projectsService = {
       throw new Error(`Error al crear el proyecto: ${error.message}`);
     }
     
+    console.log('Project created successfully:', data);
+    
     // Refresh the cached data after creating
     useUserContextStore.getState().refreshData();
     

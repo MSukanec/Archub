@@ -44,12 +44,7 @@ export default function Dashboard() {
       // Fetch site logs
       const { data: siteLogs } = await supabase
         .from('site_logs')
-        .select(`
-          *,
-          site_log_tasks(*),
-          site_log_attendees(*),
-          site_log_files(*)
-        `)
+        .select('*')
         .eq('project_id', projectId)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
