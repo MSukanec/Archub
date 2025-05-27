@@ -58,6 +58,7 @@ export default function Dashboard() {
   const [selectedMovement, setSelectedMovement] = useState<any | null>(null);
   const [isDayDetailModalOpen, setIsDayDetailModalOpen] = useState(false);
   const [selectedDayData, setSelectedDayData] = useState<any | null>(null);
+  const [filterType, setFilterType] = useState<string | undefined>(undefined);
   const [viewStartDate, setViewStartDate] = useState(() => {
     // Mostrar 3 días antes de hoy y 3 después (7 días total)
     return subDays(new Date(), 3);
@@ -169,19 +170,46 @@ export default function Dashboard() {
   const handleDayClick = (date: string, dayData: any) => {
     console.log('Day clicked:', date, dayData);
     setSelectedDayData(dayData);
+    setFilterType(undefined); // Sin filtro cuando se hace clic en el día completo
     setIsDayDetailModalOpen(true);
   };
 
   const handleItemClick = (item: any) => {
     console.log('Item clicked:', item);
-    if (item.type === 'bitacora') {
-      setSelectedSiteLog(item.data);
-      setIsSiteLogModalOpen(true);
-    } else if (item.type === 'movimientos') {
-      setSelectedMovement(item.data);
-      setIsMovementModalOpen(true);
+    
+    // Mapear tipos del timeline a tipos del modal
+    const typeMapping = {
+      'bitacora': 'sitelog',
+      'movimientos': 'movement',
+      'tareas': 'task',
+      'asistentes': 'attendee',
+      'archivos': 'file'
+    };
+    
+    const modalType = typeMapping[item.type as keyof typeof typeMapping];
+    
+    if (modalType) {
+      // Abrir el modal de día con filtro por tipo específico
+      setSelectedDayData({
+        date: item.date,
+        siteLogs: item.type === 'bitacora' ? [item.data] : [],
+        movements: item.type === 'movimientos' ? [item.data] : [],
+        tasks: item.type === 'tareas' ? [item.data] : [],
+        attendees: item.type === 'asistentes' ? [item.data] : [],
+        files: item.type === 'archivos' ? [item.data] : []
+      });
+      setFilterType(modalType);
+      setIsDayDetailModalOpen(true);
+    } else {
+      // Fallback para modales específicos si es necesario
+      if (item.type === 'bitacora') {
+        setSelectedSiteLog(item.data);
+        setIsSiteLogModalOpen(true);
+      } else if (item.type === 'movimientos') {
+        setSelectedMovement(item.data);
+        setIsMovementModalOpen(true);
+      }
     }
-    // Aquí agregaremos más tipos cuando implementemos los otros modales
   };
 
   const handleDayItemClick = (type: string, item: any) => {
@@ -334,7 +362,10 @@ export default function Dashboard() {
       {/* Day Detail Modal */}
       <DayDetailModal
         isOpen={isDayDetailModalOpen}
-        onClose={() => setIsDayDetailModalOpen(false)}
+        onClose={() => {
+          setIsDayDetailModalOpen(false);
+          setFilterType(undefined); // Limpiar filtro al cerrar
+        }}
         date={selectedDayData?.date || ''}
         siteLogs={selectedDayData?.siteLogs || []}
         movements={selectedDayData?.movements || []}
@@ -342,6 +373,7 @@ export default function Dashboard() {
         attendees={selectedDayData?.attendees || []}
         files={selectedDayData?.files || []}
         onItemClick={handleDayItemClick}
+        filterType={filterType}
       />
     </div>
   );
