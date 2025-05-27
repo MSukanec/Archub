@@ -15,13 +15,20 @@ export const siteLogsService = {
   },
 
   async createSiteLog(siteLog: InsertSiteLog): Promise<SiteLog> {
+    console.log('Creating site log with data:', siteLog);
+    
     const { data, error } = await supabase
       .from('site_logs')
       .insert(siteLog)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error creating site log:', error);
+      throw error;
+    }
+    
+    console.log('Site log created successfully:', data);
     return data;
   },
 

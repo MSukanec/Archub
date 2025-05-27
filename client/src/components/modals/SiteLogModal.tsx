@@ -142,6 +142,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   });
 
   const onSubmit = (data: SiteLogForm) => {
+    console.log('Form data being submitted:', data);
+    console.log('Selected tasks:', selectedTasks);
+    console.log('Selected attendees:', selectedAttendees);
+    console.log('Active project ID:', activeProjectId);
     createMutation.mutate(data);
   };
 
