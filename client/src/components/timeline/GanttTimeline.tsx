@@ -101,34 +101,45 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const convertTimelineToGantt = useMemo(() => {
     const ganttItems: GanttItem[] = [];
     
+    console.log('Timeline events:', timelineEvents);
+    
     timelineEvents.forEach(dayEvent => {
+      console.log('Processing day event:', dayEvent);
       const eventDate = new Date(dayEvent.date);
       
       // Agregar site logs como bitácora
-      dayEvent.siteLogs?.forEach((log: any) => {
-        ganttItems.push({
-          id: `log-${log.id}`,
-          title: log.comments || 'Entrada de bitácora',
-          startDate: eventDate,
-          endDate: eventDate,
-          type: 'bitacora',
-          color: typeColors.bitacora,
-          data: log
+      if (dayEvent.siteLogs && dayEvent.siteLogs.length > 0) {
+        console.log('Found site logs:', dayEvent.siteLogs);
+        dayEvent.siteLogs.forEach((log: any) => {
+          ganttItems.push({
+            id: `log-${log.id}`,
+            title: log.comments || log.description || 'Entrada de bitácora',
+            startDate: eventDate,
+            endDate: eventDate,
+            type: 'bitacora',
+            color: typeColors.bitacora,
+            data: log
+          });
         });
-      });
+      }
 
       // Agregar movimientos
-      dayEvent.movements?.forEach((movement: any) => {
-        ganttItems.push({
-          id: `movement-${movement.id}`,
-          title: `${movement.description || 'Movimiento'} - $${movement.amount}`,
-          startDate: eventDate,
-          endDate: eventDate,
-          type: 'movimientos',
-          color: typeColors.movimientos,
-          data: movement
+      if (dayEvent.movements && dayEvent.movements.length > 0) {
+        console.log('Found movements:', dayEvent.movements);
+        dayEvent.movements.forEach((movement: any) => {
+          // Usar la fecha real del movimiento, no la fecha del evento
+          const movementDate = new Date(movement.date);
+          ganttItems.push({
+            id: `movement-${movement.id}`,
+            title: `${movement.description || 'Movimiento'} - $${movement.amount}`,
+            startDate: movementDate,
+            endDate: movementDate,
+            type: 'movimientos',
+            color: typeColors.movimientos,
+            data: movement
+          });
         });
-      });
+      }
 
       // Agregar tareas (si existen en el futuro)
       dayEvent.tasks?.forEach((task: any) => {
@@ -170,6 +181,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
       });
     });
 
+    console.log('Final gantt items:', ganttItems);
     return ganttItems;
   }, [timelineEvents]);
 
@@ -240,12 +252,13 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const handleCreateAction = (type: keyof typeof typeLabels) => {
     const eventMap = {
       bitacora: 'openCreateSiteLogModal',
-      movimientos: 'openCreateMovementModal',
+      movimientos: 'openCreateMovementModal', 
       tareas: 'openCreateTaskModal',
       archivos: 'openCreateFileModal',
       asistentes: 'openCreateAttendeeModal'
     };
     
+    console.log('Creating action for type:', type, 'event:', eventMap[type]);
     window.dispatchEvent(new CustomEvent(eventMap[type]));
   };
 
