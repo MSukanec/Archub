@@ -24,6 +24,7 @@ const useModalActions = () => {
   };
 
   const openCreateSiteLogModal = () => {
+    console.log('Dispatching openCreateSiteLogModal event');
     window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'));
   };
 
