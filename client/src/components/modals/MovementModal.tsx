@@ -82,13 +82,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     if (movement && isEditing) {
       form.reset({
         type: movement.type,
-        date: movement.date.split('T')[0],
+        date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
         category: movement.category || '',
         description: movement.description || '',
         amount: movement.amount || 0,
         currency: movement.currency || 'ARS',
-        related_contact_id: movement.related_contact_id || '',
-        related_task_id: movement.related_task_id || '',
+        related_contact_id: movement.related_contact_id || 'none',
+        related_task_id: movement.related_task_id || 'none',
       });
     } else {
       form.reset({
@@ -98,25 +98,33 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         description: '',
         amount: 0,
         currency: 'ARS',
-        related_contact_id: '',
-        related_task_id: '',
+        related_contact_id: 'none',
+        related_task_id: 'none',
       });
     }
-  }, [movement, isEditing, form]);
+  }, [movement, isEditing, form, isOpen]);
 
   // Fetch contacts
   const { data: contacts = [] } = useQuery({
     queryKey: ['/api/contacts', organizationId],
     queryFn: async () => {
       if (!organizationId) return [];
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('id, name, company_name')
-        .eq('organization_id', organizationId)
-        .order('name');
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('contacts')
+          .select('id, name, company_name')
+          .eq('organization_id', organizationId)
+          .order('name');
+        
+        if (error) {
+          console.warn('Error fetching contacts:', error);
+          return [];
+        }
+        return data || [];
+      } catch (error) {
+        console.warn('Failed to fetch contacts:', error);
+        return [];
+      }
     },
     enabled: !!organizationId && isOpen,
   });
@@ -126,14 +134,21 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     queryKey: ['/api/tasks', organizationId],
     queryFn: async () => {
       if (!organizationId) return [];
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('id, name')
-        .eq('organization_id', organizationId)
-        .order('name');
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('tasks')
+          .select('id, name')
+          .order('name');
+        
+        if (error) {
+          console.warn('Error fetching tasks:', error);
+          return [];
+        }
+        return data || [];
+      } catch (error) {
+        console.warn('Failed to fetch tasks:', error);
+        return [];
+      }
     },
     enabled: !!organizationId && isOpen,
   });
