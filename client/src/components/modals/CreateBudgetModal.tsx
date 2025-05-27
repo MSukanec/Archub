@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 
 const budgetSchema = z.object({
@@ -40,7 +41,8 @@ interface CreateBudgetModalProps {
 }
 
 export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModalProps) {
-  const { projectId } = useUserContextStore();
+  const { projectId, organizationId } = useUserContextStore();
+  const { user } = useAuthStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -56,11 +58,15 @@ export default function CreateBudgetModal({ isOpen, onClose }: CreateBudgetModal
   const createBudgetMutation = useMutation({
     mutationFn: async (data: BudgetForm) => {
       if (!projectId) throw new Error('No hay proyecto seleccionado');
+      if (!organizationId) throw new Error('No hay organización seleccionada');
+      if (!user?.id) throw new Error('Usuario no encontrado');
       
       const budgetData = {
         name: data.name,
         description: data.description || null,
         project_id: projectId,
+        organization_id: organizationId,
+        created_by: user.id,
         status: data.status,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
