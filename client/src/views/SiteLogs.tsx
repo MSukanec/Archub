@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { supabase } from '@/lib/supabase';
-import { Plus, Calendar, Users, CheckSquare, FileText, Camera, Video, File, Clock, MapPin } from 'lucide-react';
+import { Plus, Calendar, Users, CheckSquare, FileText, Camera, Video, File, Clock, MapPin, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 import { siteLogsService } from '@/lib/siteLogsService';
 import { projectsService } from '@/lib/projectsService';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -19,6 +21,8 @@ export default function SiteLogs() {
   const { projectId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSiteLog, setSelectedSiteLog] = useState<SiteLog | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Listen for floating action button events
   useEffect(() => {
@@ -63,6 +67,26 @@ export default function SiteLogs() {
     enabled: !!projectId,
   });
 
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (siteLogId: string) => siteLogsService.deleteSiteLog(siteLogId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/site-logs'] });
+      toast({
+        title: 'Registro eliminado',
+        description: 'El registro de obra ha sido eliminado correctamente.',
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting site log:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo eliminar el registro de obra.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const handleCreateNew = () => {
     setSelectedSiteLog(null);
     setIsModalOpen(true);
@@ -71,6 +95,12 @@ export default function SiteLogs() {
   const handleEditSiteLog = (siteLog: SiteLog) => {
     setSelectedSiteLog(siteLog);
     setIsModalOpen(true);
+  };
+
+  const handleDeleteSiteLog = (siteLogId: string) => {
+    if (confirm('¿Estás seguro de que quieres eliminar este registro? Esta acción no se puede deshacer.')) {
+      deleteMutation.mutate(siteLogId);
+    }
   };
 
   const getWeatherIcon = (weather?: string) => {
@@ -99,17 +129,13 @@ export default function SiteLogs() {
   return (
     <div className="flex-1 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Bitácora de Obra</h1>
           <p className="text-muted-foreground mt-1">
             Registro diario de actividades - {currentProject?.name || 'Cargando...'}
           </p>
         </div>
-        <Button onClick={handleCreateNew} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nuevo registro
-        </Button>
       </div>
 
       {/* Content */}
@@ -229,24 +255,46 @@ export default function SiteLogs() {
               return (
                 <Card 
                   key={siteLog.id} 
-                  className={`cursor-pointer transition-all hover:shadow-md ${
+                  className={`transition-all hover:shadow-md ${
                     isToday ? 'ring-2 ring-primary' : ''
                   }`}
-                  onClick={() => handleEditSiteLog(siteLog)}
                 >
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5" />
-                        {format(logDate, 'dd MMMM yyyy', { locale: es })}
-                        {isToday && <Badge variant="default">Hoy</Badge>}
-                      </CardTitle>
-                      {siteLog.weather && (
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <span>{getWeatherIcon(siteLog.weather)}</span>
-                          <span>{siteLog.weather}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => handleEditSiteLog(siteLog)}>
+                        <CardTitle className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5" />
+                          {format(logDate, 'dd MMMM yyyy', { locale: es })}
+                          {isToday && <Badge variant="default">Hoy</Badge>}
+                        </CardTitle>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {siteLog.weather && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <span>{getWeatherIcon(siteLog.weather)}</span>
+                            <span>{siteLog.weather}</span>
+                          </div>
+                        )}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditSiteLog(siteLog)}>
+                              Editar registro
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteSiteLog(siteLog.id.toString())}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   </CardHeader>
                   
