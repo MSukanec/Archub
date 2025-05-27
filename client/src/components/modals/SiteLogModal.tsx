@@ -73,7 +73,6 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       const siteLogData = {
         project_id: projectId,
         date: data.date,
-        comments: data.comments || '',
         weather: data.weather || '',
       };
 
@@ -209,7 +208,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       if (siteLog) {
         form.reset({
           date: new Date(siteLog.date),
-          comments: siteLog.comments || '',
+          comments: '',
           weather: siteLog.weather || '',
         });
       } else {
@@ -239,7 +238,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Date */}
             <div className="space-y-2">
-              <Label htmlFor="date">Fecha</Label>
+              <Label htmlFor="date">Fecha <span className="text-red-400">*</span></Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -263,7 +262,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
             {/* Weather */}
             <div className="space-y-2">
-              <Label htmlFor="weather">Clima</Label>
+              <Label htmlFor="weather">Clima <span className="text-gray-400">(opcional)</span></Label>
               <Select value={form.watch('weather')} onValueChange={(value) => form.setValue('weather', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar clima" />
@@ -303,7 +302,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
             <CardContent className="space-y-4">
               {/* Add task */}
               <div className="space-y-2">
-                <Label>Agregar tarea</Label>
+                <Label>Agregar tarea <span className="text-gray-400">(opcional)</span></Label>
                 <Select onValueChange={(value) => {
                   const task = tasks.find(t => t.id === parseInt(value));
                   if (task) addTask(task);
@@ -373,7 +372,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
             <CardContent className="space-y-4">
               {/* Add attendee */}
               <div className="space-y-2">
-                <Label>Agregar asistente</Label>
+                <Label>Agregar asistente <span className="text-gray-400">(opcional)</span></Label>
                 <Select onValueChange={(value) => {
                   const contact = contacts.find(c => c.id === parseInt(value));
                   if (contact) addAttendee(contact);
