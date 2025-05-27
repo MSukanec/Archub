@@ -146,6 +146,9 @@ export default function ContactModal({ isOpen, onClose, contact, contactTypes }:
           <DialogTitle>
             {contact ? 'Editar Contacto' : 'Agregar Nuevo Contacto'}
           </DialogTitle>
+          <DialogDescription>
+            {contact ? 'Actualiza la información del contacto seleccionado' : 'Completa los datos para agregar un nuevo contacto'}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
