@@ -225,6 +225,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Task Categories routes
+  app.get('/api/task-categories', async (req, res) => {
+    try {
+      // Return empty array for now - we'll implement this with real data later
+      res.json([]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Tasks routes
   app.get('/api/tasks', async (req, res) => {
     try {
