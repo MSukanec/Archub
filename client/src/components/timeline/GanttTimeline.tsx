@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus } from 'lucide-react';
@@ -49,6 +49,7 @@ const typeLabels = {
 
 export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays }: GanttTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const timelineContentRef = useRef<HTMLDivElement>(null);
   const [showLeftNav, setShowLeftNav] = useState(false);
   const [showRightNav, setShowRightNav] = useState(false);
   
@@ -57,7 +58,18 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     startDate || subDays(new Date(), 3)
   );
 
-  // Usar los días proporcionados desde el Dashboard o generar 7 días centrados en hoy
+  // Generar muchos más días para scroll infinito
+  const allDays = useMemo(() => {
+    const days = [];
+    // Generar 60 días: 30 antes del centro y 30 después
+    const centerDate = addDays(currentWeekStart, 3);
+    for (let i = -30; i <= 30; i++) {
+      days.push(addDays(centerDate, i));
+    }
+    return days;
+  }, [currentWeekStart]);
+
+  // Los 7 días visibles siguen siendo centrados
   const weekDays = propWeekDays ? propWeekDays.slice(0, 7) : useMemo(() => {
     const days = [];
     for (let i = 0; i < 7; i++) {
@@ -65,6 +77,25 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     }
     return days;
   }, [currentWeekStart]);
+
+  // Scroll automático al centro al montar
+  useEffect(() => {
+    if (scrollContainerRef.current && allDays.length > 0) {
+      const dayWidth = 96; // w-24 = 96px
+      const centerPosition = 30 * dayWidth; // 30 días desde el inicio
+      scrollContainerRef.current.scrollLeft = centerPosition - (scrollContainerRef.current.clientWidth / 2);
+    }
+  }, [allDays]);
+
+  // Detectar cuando necesitamos mostrar navigation
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setShowLeftNav(scrollLeft > 10);
+      setShowRightNav(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  }, []);
 
   // Convertir datos reales del timeline a elementos Gantt
   const convertTimelineToGantt = useMemo(() => {
@@ -165,8 +196,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const getItemPosition = (item: GanttItem) => {
     const startDay = startOfDay(item.startDate);
     const endDay = startOfDay(item.endDate);
-    const timelineStart = startOfDay(weekDays[0]);
-    const timelineEnd = startOfDay(weekDays[weekDays.length - 1]);
+    const timelineStart = startOfDay(allDays[0]);
+    const timelineEnd = startOfDay(allDays[allDays.length - 1]);
 
     // Check if item is visible in current timeline
     if (endDay < timelineStart || startDay > timelineEnd) {
@@ -175,11 +206,11 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
 
     const startOffset = Math.max(0, differenceInDays(startDay, timelineStart));
     const duration = differenceInDays(endDay, startDay) + 1;
-    const dayWidth = 100 / weekDays.length; // Porcentaje por día
+    const dayWidth = 96; // w-24 = 96px
 
     return {
-      left: `${startOffset * dayWidth}%`,
-      width: `${duration * dayWidth}%`
+      left: `${startOffset * dayWidth}px`,
+      width: `${duration * dayWidth}px`
     };
   };
 
@@ -230,12 +261,15 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
             >
               <ChevronLeft size={16} />
             </button>
-            <div className="flex items-center gap-2 px-3 py-1 bg-accent rounded-lg">
+            <button
+              onClick={() => setCurrentWeekStart(subDays(new Date(), 3))}
+              className="flex items-center gap-2 px-3 py-1 bg-accent rounded-lg hover:bg-accent/80 transition-colors"
+            >
               <Calendar size={16} />
               <span className="text-sm font-medium">
                 {format(weekDays[Math.floor(weekDays.length / 2)], 'MMM yyyy', { locale: es })}
               </span>
-            </div>
+            </button>
             <button
               onClick={() => navigateWeek('next')}
               className="p-2 hover:bg-accent rounded-lg transition-colors"
@@ -264,7 +298,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               className="flex overflow-x-auto scrollbar-hide"
               onScroll={handleScroll}
             >
-              {weekDays.map((day, index) => (
+              {allDays.map((day, index) => (
                 <div key={index} className="flex-shrink-0 w-24 text-center border-l border-muted first:border-l-0">
                   <div className="text-xs text-muted-foreground py-1">
                     {format(day, 'EEE', { locale: es })}

@@ -197,15 +197,7 @@ export default function Dashboard() {
         </h2>
       </div>
 
-      {/* Timeline */}
-      <TimelineWorkspace 
-        weekEvents={timelineEvents}
-        weekDays={visibleDays}
-        isLoading={isLoading}
-        onDayClick={handleDayClick}
-      />
-
-      {/* Nueva Vista Gantt */}
+      {/* Vista Gantt */}
       <GanttTimeline 
         timelineEvents={timelineEvents}
         weekDays={visibleDays.slice(15 - 3, 15 + 4)} // 7 días centrados en hoy
