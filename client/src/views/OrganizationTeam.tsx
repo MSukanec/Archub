@@ -120,66 +120,115 @@ export default function OrganizationTeam() {
       
       console.log('Fetching team members for organization:', organizationId);
       
-      // For now, let's create a mock member based on current user to show the functionality
-      const currentUserMember = {
-        id: 1,
-        firstName: currentUser?.firstName || 'Usuario',
-        lastName: currentUser?.lastName || 'Actual',
-        email: currentUser?.email || 'usuario@ejemplo.com',
-        role: 'owner',
-        joinedAt: new Date().toISOString(),
-        lastActive: new Date().toISOString(),
-        permissions: {
-          projects: { view: true, create: true, edit: true, delete: true },
-          budgets: { view: true, create: true, edit: true, delete: true },
-          sitelog: { view: true, create: true, edit: true, delete: true },
-          movements: { view: true, create: true, edit: true, delete: true },
-          team: { view: true, invite: true, manage: true },
-          reports: { view: true, export: true },
-        }
-      };
+      try {
+        // First, get the organization with owner
+        const { data: orgData, error: orgError } = await supabase
+          .from('organizations')
+          .select(`
+            id,
+            name,
+            created_at,
+            owner_id,
+            owner:users!owner_id(
+              id,
+              first_name,
+              last_name,
+              email,
+              role,
+              created_at
+            )
+          `)
+          .eq('id', organizationId)
+          .single();
 
-      // Add some example team members for demonstration
-      const mockMembers = [
-        currentUserMember,
-        {
-          id: 2,
-          firstName: 'María',
-          lastName: 'García',
-          email: 'maria.garcia@ejemplo.com',
-          role: 'admin',
-          joinedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          lastActive: new Date().toISOString(),
-          permissions: {
-            projects: { view: true, create: true, edit: true, delete: false },
-            budgets: { view: true, create: true, edit: true, delete: false },
-            sitelog: { view: true, create: true, edit: true, delete: false },
-            movements: { view: true, create: false, edit: false, delete: false },
-            team: { view: true, invite: true, manage: false },
-            reports: { view: true, export: true },
-          }
-        },
-        {
-          id: 3,
-          firstName: 'Carlos',
-          lastName: 'López',
-          email: 'carlos.lopez@ejemplo.com',
-          role: 'member',
-          joinedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-          lastActive: new Date().toISOString(),
-          permissions: {
-            projects: { view: true, create: false, edit: false, delete: false },
-            budgets: { view: true, create: false, edit: false, delete: false },
-            sitelog: { view: true, create: true, edit: true, delete: false },
-            movements: { view: true, create: false, edit: false, delete: false },
-            team: { view: true, invite: false, manage: false },
-            reports: { view: true, export: false },
-          }
+        if (orgError) {
+          console.error('Error fetching organization:', orgError);
+          return [];
         }
-      ];
 
-      console.log('Team members:', mockMembers);
-      return mockMembers;
+        console.log('Organization data:', orgData);
+
+        // Get organization members
+        const { data: membersData, error: membersError } = await supabase
+          .from('organization_members')
+          .select(`
+            id,
+            role,
+            created_at,
+            user_id,
+            organization_id,
+            user:users!user_id(
+              id,
+              first_name,
+              last_name,
+              email,
+              role,
+              created_at
+            )
+          `)
+          .eq('organization_id', organizationId);
+
+        if (membersError) {
+          console.error('Error fetching members:', membersError);
+        }
+
+        console.log('Members data:', membersData);
+
+        // Combine owner and members
+        const allMembers = [];
+        
+        // Add owner
+        if (orgData?.owner) {
+          allMembers.push({
+            id: orgData.owner.id,
+            firstName: orgData.owner.first_name || '',
+            lastName: orgData.owner.last_name || '',
+            email: orgData.owner.email || '',
+            role: 'owner',
+            joinedAt: orgData.created_at,
+            lastActive: new Date().toISOString(),
+            permissions: {
+              projects: { view: true, create: true, edit: true, delete: true },
+              budgets: { view: true, create: true, edit: true, delete: true },
+              sitelog: { view: true, create: true, edit: true, delete: true },
+              movements: { view: true, create: true, edit: true, delete: true },
+              team: { view: true, invite: true, manage: true },
+              reports: { view: true, export: true },
+            }
+          });
+        }
+
+        // Add organization members
+        if (membersData) {
+          membersData.forEach(member => {
+            if (member.user && member.user.id !== orgData?.owner_id) {
+              allMembers.push({
+                id: member.user.id,
+                firstName: member.user.first_name || '',
+                lastName: member.user.last_name || '',
+                email: member.user.email || '',
+                role: member.role || 'member',
+                joinedAt: member.created_at,
+                lastActive: new Date().toISOString(),
+                permissions: {
+                  projects: { view: true, create: member.role === 'admin', edit: member.role === 'admin', delete: false },
+                  budgets: { view: true, create: member.role === 'admin', edit: member.role === 'admin', delete: false },
+                  sitelog: { view: true, create: true, edit: true, delete: false },
+                  movements: { view: true, create: member.role === 'admin', edit: member.role === 'admin', delete: false },
+                  team: { view: true, invite: member.role === 'admin', manage: false },
+                  reports: { view: true, export: member.role === 'admin' },
+                }
+              });
+            }
+          });
+        }
+
+        console.log('Final team members:', allMembers);
+        return allMembers;
+      } catch (error) {
+        console.error('Error in team members query:', error);
+        return [];
+      }
     },
     enabled: !!organizationId,
   });
