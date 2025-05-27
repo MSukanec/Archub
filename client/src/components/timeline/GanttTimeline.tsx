@@ -24,13 +24,13 @@ interface GanttTimelineProps {
   onDayClick?: (date: string, dayData: any) => void;
 }
 
-// Colores para cada tipo de elemento
+// Colores para cada tipo de elemento - usando color primario con transparencia
 const typeColors = {
-  bitacora: 'bg-blue-500',
-  movimientos: 'bg-green-500', 
-  tareas: 'bg-orange-500',
-  archivos: 'bg-purple-500',
-  asistentes: 'bg-pink-500'
+  bitacora: 'bg-primary/50 border border-primary/30',
+  movimientos: 'bg-primary/50 border border-primary/30', 
+  tareas: 'bg-primary/50 border border-primary/30',
+  archivos: 'bg-primary/50 border border-primary/30',
+  asistentes: 'bg-primary/50 border border-primary/30'
 };
 
 const typeIcons = {
