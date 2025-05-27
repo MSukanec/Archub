@@ -230,8 +230,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     if (isOpen) {
       if (siteLog) {
         form.reset({
-          date: siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date(),
-          comments: siteLog.description || '',
+          date: siteLog.date ? new Date(siteLog.date) : new Date(),
+          comments: siteLog.comments || '',
           weather: siteLog.weather || '',
         });
       } else {

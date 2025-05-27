@@ -193,7 +193,7 @@ export default function SiteLogs() {
                 
                 <div className="space-y-6">
                   {siteLogs.map((siteLog, index) => {
-                    const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
+                    const logDate = siteLog.date ? new Date(siteLog.date) : new Date();
                     const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
                     
                     return (
@@ -264,7 +264,7 @@ export default function SiteLogs() {
             </div>
           ) : (
             siteLogs.map((siteLog) => {
-              const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
+              const logDate = siteLog.date ? new Date(siteLog.date) : new Date();
               const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               
               return (
