@@ -46,14 +46,42 @@ export default function DayDetailModal({
   };
 
   const getUserInitials = (item: any) => {
+    // Priorizar datos del autor desde la relación de la base de datos
+    if (item.author?.first_name && item.author?.last_name) {
+      return `${item.author.first_name.charAt(0)}${item.author.last_name.charAt(0)}`.toUpperCase();
+    }
+    
+    // Fallback a campos directos si existen
     if (item.first_name && item.last_name) {
       return `${item.first_name.charAt(0)}${item.last_name.charAt(0)}`.toUpperCase();
     }
+    
+    // Fallback a nombre completo si existe
     if (item.author_name) {
       const names = item.author_name.split(' ');
       return names.length > 1 ? `${names[0].charAt(0)}${names[1].charAt(0)}`.toUpperCase() : names[0].charAt(0).toUpperCase();
     }
+    
     return 'U';
+  };
+
+  const getAuthorName = (item: any) => {
+    // Priorizar datos del autor desde la relación de la base de datos
+    if (item.author?.first_name && item.author?.last_name) {
+      return `${item.author.first_name} ${item.author.last_name}`;
+    }
+    
+    // Fallback a campos directos si existen
+    if (item.first_name && item.last_name) {
+      return `${item.first_name} ${item.last_name}`;
+    }
+    
+    // Fallback a nombre completo si existe
+    if (item.author_name) {
+      return item.author_name;
+    }
+    
+    return 'Usuario';
   };
 
   const allItems = [
@@ -62,35 +90,35 @@ export default function DayDetailModal({
       item: log, 
       title: log.description || log.comments || 'Registro de bitácora',
       subtitle: log.weather ? `Clima: ${log.weather}` : '',
-      author: log.author_name || 'Usuario'
+      author: getAuthorName(log)
     })),
     ...(movements || []).map(movement => ({ 
       type: 'movement', 
       item: movement, 
       title: movement.description || 'Movimiento financiero',
       subtitle: `$${movement.amount?.toLocaleString() || '0'}`,
-      author: movement.author_name || 'Usuario'
+      author: getAuthorName(movement)
     })),
     ...(tasks || []).map(task => ({ 
       type: 'task', 
       item: task, 
       title: task.name || 'Tarea',
       subtitle: task.quantity ? `Cantidad: ${task.quantity}` : '',
-      author: task.author_name || 'Usuario'
+      author: getAuthorName(task)
     })),
     ...(attendees || []).map(attendee => ({ 
       type: 'attendee', 
       item: attendee, 
       title: attendee.name || 'Asistente',
       subtitle: attendee.role || 'Trabajador',
-      author: attendee.author_name || 'Usuario'
+      author: getAuthorName(attendee)
     })),
     ...(files || []).map(file => ({ 
       type: 'file', 
       item: file, 
       title: file.name || 'Archivo',
       subtitle: file.description || 'Sin descripción',
-      author: file.author_name || 'Usuario'
+      author: getAuthorName(file)
     }))
   ];
 

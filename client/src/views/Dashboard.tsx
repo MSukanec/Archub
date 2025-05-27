@@ -87,10 +87,13 @@ export default function Dashboard() {
       const periodStart = startOfDay(addDays(today, -30));
       const periodEnd = endOfDay(addDays(today, 30));
       
-      // Fetch site logs (usando 'log_date' en lugar de 'date')
+      // Fetch site logs con información del autor
       const { data: siteLogs, error: siteLogsError } = await supabase
         .from('site_logs')
-        .select('*')
+        .select(`
+          *,
+          author:users(first_name, last_name)
+        `)
         .eq('project_id', projectId)
         .gte('log_date', format(periodStart, 'yyyy-MM-dd'))
         .lte('log_date', format(periodEnd, 'yyyy-MM-dd'));
@@ -101,10 +104,13 @@ export default function Dashboard() {
         console.log('Site logs fetched:', siteLogs);
       }
 
-      // Fetch site movements
+      // Fetch site movements con información del autor
       const { data: movements, error: movementsError } = await supabase
         .from('site_movements')
-        .select('*')
+        .select(`
+          *,
+          author:users(first_name, last_name)
+        `)
         .eq('project_id', projectId)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));

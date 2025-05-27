@@ -458,13 +458,24 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                               {(() => {
                                 // Obtener las iniciales del usuario que creó el item
                                 const userData = firstItem.data;
-                                if (userData?.author_full_name) {
-                                  return userData.author_full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                                
+                                // Usar la información del autor desde la relación de la base de datos
+                                if (userData?.author?.first_name && userData?.author?.last_name) {
+                                  return `${userData.author.first_name.charAt(0)}${userData.author.last_name.charAt(0)}`.toUpperCase();
                                 }
-                                if (userData?.created_by_name) {
-                                  return userData.created_by_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                                
+                                // Fallback a campos directos si existen
+                                if (userData?.first_name && userData?.last_name) {
+                                  return `${userData.first_name.charAt(0)}${userData.last_name.charAt(0)}`.toUpperCase();
                                 }
-                                return 'MS'; // Fallback para tu usuario
+                                
+                                // Fallback a nombre completo si existe
+                                if (userData?.author_name) {
+                                  const names = userData.author_name.split(' ');
+                                  return names.length > 1 ? `${names[0].charAt(0)}${names[1].charAt(0)}`.toUpperCase() : names[0].charAt(0).toUpperCase();
+                                }
+                                
+                                return 'U';
                               })()}
                             </span>
                           </div>
