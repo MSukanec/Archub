@@ -83,7 +83,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   // Scroll automático al centro al montar
   useEffect(() => {
     if (scrollContainerRef.current && allDays.length > 0) {
-      const dayWidth = 96; // w-24 = 96px
+      const dayWidth = 128; // w-32 = 128px
       const centerPosition = 30 * dayWidth; // 30 días desde el inicio
       scrollContainerRef.current.scrollLeft = centerPosition - (scrollContainerRef.current.clientWidth / 2);
       
@@ -334,8 +334,8 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               className="flex overflow-x-auto scrollbar-hide"
               onScroll={handleScroll}
             >
-              {weekDays.map((day, index) => (
-                <div key={index} className="flex-shrink-0 w-24 text-center border-l border-muted first:border-l-0">
+              {allDays.map((day, index) => (
+                <div key={index} className="flex-shrink-0 w-32 text-center border-l border-muted first:border-l-0">
                   <div className="text-xs text-muted-foreground py-1">
                     {format(day, 'EEE', { locale: es })}
                   </div>
@@ -406,7 +406,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
               >
                 <div 
                   className="relative h-full"
-                  style={{ width: `${weekDays.length * 96}px` }}
+                  style={{ width: `${allDays.length * 128}px` }}
                 >
                   {/* Agrupar items por día para mostrar contadores */}
                   {(() => {
