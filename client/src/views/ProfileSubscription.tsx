@@ -62,10 +62,13 @@ export default function Subscription() {
   const { getCurrentPlan, userPlan, isLoading } = useFeatures();
   
   // Fetch all available plans
-  const { data: availablePlans = [] } = useQuery({
+  const { data: availablePlans = [], isLoading: plansLoading } = useQuery({
     queryKey: ['/api/plans'],
     queryFn: () => plansService.getAll(),
   });
+
+  // Log para debugging
+  console.log('Available plans:', availablePlans);
 
   const getPlanIcon = (planName: string) => {
     switch (planName?.toLowerCase()) {
@@ -143,11 +146,20 @@ export default function Subscription() {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {availablePlans.map((plan) => {
-            const IconComponent = getPlanIcon(plan.name);
-            const isCurrentPlan = plan.name === currentPlan.name;
+          {plansLoading ? (
+            <div className="col-span-3 text-center py-8">
+              <p className="text-muted-foreground">Cargando planes disponibles...</p>
+            </div>
+          ) : availablePlans.length === 0 ? (
+            <div className="col-span-3 text-center py-8">
+              <p className="text-muted-foreground">No hay planes disponibles en este momento.</p>
+            </div>
+          ) : (
+            availablePlans.map((plan) => {
+              const IconComponent = getPlanIcon(plan.name);
+              const isCurrentPlan = plan.name === currentPlan.name;
             
-            return (
+              return (
               <Card 
                 key={plan.id} 
                 className={isCurrentPlan ? 'border-primary border-2' : 'hover:border-border/60 transition-colors'}
@@ -204,7 +216,8 @@ export default function Subscription() {
                 </CardContent>
               </Card>
             );
-          })}
+          })
+        )}
         </div>
       </div>
 
