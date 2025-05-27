@@ -195,11 +195,12 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
       console.log('Preferencias encontradas:', prefs);
       console.log('Organización activa:', prefs.last_organization_id);
+      console.log('Proyecto activo:', prefs.last_project_id);
 
       set({
         organizationId: prefs.last_organization_id,
-        projectId: null,
-        budgetId: null,
+        projectId: prefs.last_project_id,
+        budgetId: prefs.last_budget_id,
         planId: null,
         isLoading: false,
         isInitialized: true,
