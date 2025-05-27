@@ -23,6 +23,28 @@ interface DayEvent {
 
 export default function Dashboard() {
   const { projectId } = useUserContextStore();
+
+  // Obtener datos del proyecto activo
+  const { data: activeProject } = useQuery({
+    queryKey: ['/api/projects', projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single();
+        
+      if (error) {
+        console.error('Error fetching project:', error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!projectId
+  });
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<DayEvent | null>(null);
@@ -215,17 +237,31 @@ export default function Dashboard() {
 
   if (!projectId) {
     return (
-      <div className="flex-1 p-6 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center">Línea de Tiempo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-muted-foreground">
-              Selecciona un proyecto para ver la línea de tiempo de eventos
-            </p>
-          </CardContent>
-        </Card>
+      <div className="flex-1 p-6">
+        <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+          <div className="text-center max-w-md">
+            <div className="border-2 border-dashed border-muted rounded-lg p-12 bg-muted/20">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                  <FolderKanban className="w-8 h-8 text-primary" />
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                Todavía no tienes proyectos
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Crea tu primer proyecto para comenzar a gestionar presupuestos, bitácoras y movimientos de obra.
+              </p>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Crear Proyecto
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
