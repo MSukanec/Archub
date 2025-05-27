@@ -31,7 +31,7 @@ export default function PrimarySidebar() {
         {topNavigationItems.map(({ section, icon: Icon, label }) => (
           <button
             key={section}
-            onClick={() => setSection(section)}
+            onMouseEnter={() => setSection(section)}
             className={cn(
               "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
               currentSection === section
@@ -58,7 +58,7 @@ export default function PrimarySidebar() {
           return (
             <button
               key={section}
-              onClick={() => setSection(section)}
+              onMouseEnter={() => setSection(section)}
               className={cn(
                 "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
                 currentSection === section
@@ -84,7 +84,7 @@ export default function PrimarySidebar() {
         
         {/* Profile Avatar */}
         <button
-          onClick={() => setSection('profile')}
+          onMouseEnter={() => setSection('profile')}
           className={cn(
             "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2",
             currentSection === 'profile'
