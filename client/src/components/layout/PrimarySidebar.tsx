@@ -2,6 +2,7 @@ import { ChartLine, Building, Settings, User, Shield, Bell, Contact } from 'luci
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
+import { QuickHelp, QuickTip } from '@/components/ui/help-tooltip';
 
 const topNavigationItems = [
   { section: 'dashboard' as Section, icon: ChartLine, label: 'Organización' },
