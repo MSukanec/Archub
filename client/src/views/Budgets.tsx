@@ -18,14 +18,12 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
-import EditBudgetModal from '@/components/modals/EditBudgetModal';
 import TaskModal from '@/components/modals/TaskModal';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();
   const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
   const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
-  const [isEditBudgetModalOpen, setIsEditBudgetModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
@@ -188,7 +186,7 @@ export default function Budgets() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => {
                               setEditingBudget(budget);
-                              setIsEditBudgetModalOpen(true);
+                              setIsCreateBudgetModalOpen(true);
                             }}>
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
@@ -323,15 +321,10 @@ export default function Budgets() {
 
       {/* Modals */}
       <CreateBudgetModal
-        isOpen={isCreateBudgetModalOpen}
-        onClose={() => setIsCreateBudgetModalOpen(false)}
-      />
-
-      <EditBudgetModal
         budget={editingBudget}
-        isOpen={isEditBudgetModalOpen}
+        isOpen={isCreateBudgetModalOpen}
         onClose={() => {
-          setIsEditBudgetModalOpen(false);
+          setIsCreateBudgetModalOpen(false);
           setEditingBudget(null);
         }}
       />

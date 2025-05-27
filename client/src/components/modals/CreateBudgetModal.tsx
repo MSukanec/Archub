@@ -18,6 +18,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -198,9 +205,9 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Crear Nuevo Presupuesto</DialogTitle>
+          <DialogTitle>{budget?.id ? 'Editar Presupuesto' : 'Crear Nuevo Presupuesto'}</DialogTitle>
           <DialogDescription>
-            Crea un nuevo presupuesto para el proyecto actual
+            {budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
           </DialogDescription>
         </DialogHeader>
 
@@ -262,23 +269,52 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
               )}
             />
 
+            {budget?.id && (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado *</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      value={field.value || 'draft'}
+                      defaultValue="draft"
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona el estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="draft">Borrador</SelectItem>
+                        <SelectItem value="approved">Aprobado</SelectItem>
+                        <SelectItem value="rejected">Rechazado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <div className="flex justify-end space-x-2 pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleClose}
-                disabled={createBudgetMutation.isPending}
+                disabled={budgetMutation.isPending}
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
-                disabled={createBudgetMutation.isPending}
+                disabled={budgetMutation.isPending}
               >
-                {createBudgetMutation.isPending && (
+                {budgetMutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Crear Presupuesto
+                {budget?.id ? 'Actualizar Presupuesto' : 'Crear Presupuesto'}
               </Button>
             </div>
           </form>
