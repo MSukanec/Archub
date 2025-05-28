@@ -72,6 +72,10 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   // Reset form when modal opens/closes or contact changes
   useEffect(() => {
     if (isOpen) {
+      // Always clear state first to prevent contamination
+      setSelectedTypes([]);
+      setOpen(false);
+      
       if (contact) {
         // Load existing contact data
         form.reset({
@@ -85,7 +89,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
           contact_types: [],
         });
       } else {
-        // Reset to empty form for new contact
+        // Reset to completely empty form for new contact
         form.reset({
           first_name: '',
           last_name: '',
@@ -96,8 +100,11 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
           notes: '',
           contact_types: [],
         });
-        setSelectedTypes([]);
       }
+    } else {
+      // Clean up when modal closes
+      setSelectedTypes([]);
+      setOpen(false);
     }
   }, [isOpen, contact?.id]);
 
@@ -124,7 +131,12 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       queryClient.invalidateQueries({ queryKey: ['contact-types'] });
       queryClient.refetchQueries({ queryKey: ['contacts'] });
       queryClient.refetchQueries({ queryKey: ['contact-types'] });
+      
+      // Complete state cleanup to prevent issues with subsequent creations
       form.reset();
+      setSelectedTypes([]);
+      setOpen(false);
+      
       toast({
         title: "Contacto creado",
         description: "El contacto se ha guardado correctamente.",
