@@ -306,82 +306,147 @@ export default function Movements() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Movimientos Financieros</h1>
-          <p className="text-muted-foreground">
-            Registro de ingresos, egresos y ajustes del proyecto
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <DollarSign className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Movimientos Financieros
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Registro de ingresos, egresos y ajustes del proyecto
+            </p>
+          </div>
         </div>
+        <Button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl hover:scale-105 transition-all shadow-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nuevo Movimiento
+        </Button>
       </div>
 
-      {/* Summary Cards - Compact Format */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Summary Cards - Modern Professional Style */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Pesos Argentinos */}
-        <Card className="p-4">
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <span>🇦🇷</span>
-              Pesos Argentinos (ARS)
-            </h3>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-emerald-500">Ingreso:</span>
-                <span className="font-medium text-emerald-500">{formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}</span>
+        <Card className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 bg-green-500/10 rounded-xl flex items-center justify-center">
+              <span className="text-lg">🇦🇷</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Pesos Argentinos</h3>
+              <p className="text-sm text-muted-foreground">ARS</p>
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                <span className="text-sm text-muted-foreground">Ingresos</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-rose-500">Egreso:</span>
-                <span className="font-medium text-rose-500">{formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}</span>
+              <span className="text-lg font-bold text-emerald-500">
+                {formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <TrendingDown className="w-4 h-4 text-rose-500" />
+                <span className="text-sm text-muted-foreground">Egresos</span>
               </div>
-              <hr className="my-1" />
-              <div className="flex justify-between">
-                <span className={balancePesos >= 0 ? 'text-emerald-500 font-medium' : 'text-rose-500 font-medium'}>Balance:</span>
-                <span className={`font-bold ${balancePesos >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{formatCurrency(balancePesos, 'ARS')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sky-500">Ajuste:</span>
-                <span className="font-medium text-sky-500">{formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}</span>
-              </div>
+              <span className="text-lg font-bold text-rose-500">
+                {formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}
+              </span>
+            </div>
+            
+            <div className="h-px bg-border/50 my-3"></div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-foreground">Balance Total</span>
+              <span className={`text-2xl font-bold ${balancePesos >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                {formatCurrency(balancePesos, 'ARS')}
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Ajustes</span>
+              <span className="text-sm font-medium text-blue-500">
+                {formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}
+              </span>
             </div>
           </div>
         </Card>
 
         {/* Dólares */}
-        <Card className="p-4">
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <span>🇺🇸</span>
-              Dólares Estadounidenses (USD)
-            </h3>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-emerald-500">Ingreso:</span>
-                <span className="font-medium text-emerald-500">{formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}</span>
+        <Card className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 bg-blue-500/10 rounded-xl flex items-center justify-center">
+              <span className="text-lg">🇺🇸</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Dólares Estadounidenses</h3>
+              <p className="text-sm text-muted-foreground">USD</p>
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                <span className="text-sm text-muted-foreground">Ingresos</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-rose-500">Egreso:</span>
-                <span className="font-medium text-rose-500">{formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}</span>
+              <span className="text-lg font-bold text-emerald-500">
+                {formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <TrendingDown className="w-4 h-4 text-rose-500" />
+                <span className="text-sm text-muted-foreground">Egresos</span>
               </div>
-              <hr className="my-1" />
-              <div className="flex justify-between">
-                <span className={balanceDolares >= 0 ? 'text-emerald-500 font-medium' : 'text-rose-500 font-medium'}>Balance:</span>
-                <span className={`font-bold ${balanceDolares >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{formatCurrency(balanceDolares, 'USD')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sky-500">Ajuste:</span>
-                <span className="font-medium text-sky-500">{formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}</span>
-              </div>
+              <span className="text-lg font-bold text-rose-500">
+                {formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}
+              </span>
+            </div>
+            
+            <div className="h-px bg-border/50 my-3"></div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-foreground">Balance Total</span>
+              <span className={`text-2xl font-bold ${balanceDolares >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                {formatCurrency(balanceDolares, 'USD')}
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Ajustes</span>
+              <span className="text-sm font-medium text-blue-500">
+                {formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}
+              </span>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Movements List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Historial de Movimientos</CardTitle>
-          <CardDescription>
-            Lista completa de todos los movimientos registrados
-          </CardDescription>
+      <Card className="rounded-2xl shadow-md bg-muted/10 border-0">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <FileText className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-semibold">Historial de Movimientos</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Lista completa de todos los movimientos registrados
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {/* Filters inside movements list */}

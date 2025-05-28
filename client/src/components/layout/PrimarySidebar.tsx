@@ -86,29 +86,29 @@ export default function PrimarySidebar() {
   });
 
   return (
-    <div className="w-[45px] bg-surface border-r border-border flex flex-col">
-      {/* Header area - 45px alto para coincidir con TopBar */}
-      <div className="h-[45px] flex items-center justify-center border-b border-border">
-        <div className="w-[30px] h-[30px] bg-primary rounded-lg flex items-center justify-center">
+    <div className="w-[56px] bg-card border-r border-border flex flex-col shadow-sm">
+      {/* Header area - Logo */}
+      <div className="h-[56px] flex items-center justify-center border-b border-border/50">
+        <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-sm">
           <span className="text-white font-bold text-sm">M</span>
         </div>
       </div>
       
       {/* Top Navigation Icons */}
-      <div className="flex flex-col items-center pt-4 space-y-[5px]">
+      <div className="flex flex-col items-center pt-6 space-y-2">
         {topNavigationItems.map(({ section, icon: Icon, label }) => (
           <button
             key={section}
             onClick={() => setSection(section)}
             className={cn(
-              "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
+              "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 group",
               currentSection === section
-                ? "text-primary bg-primary/10"
-                : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
+                ? "text-primary bg-primary/10 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:scale-105"
             )}
             title={label}
           >
-            <Icon size={20} />
+            <Icon size={20} className="transition-transform group-hover:scale-105" />
           </button>
         ))}
       </div>
@@ -116,7 +116,7 @@ export default function PrimarySidebar() {
       <div className="flex-1" />
       
       {/* Bottom Navigation Icons */}
-      <div className="flex flex-col items-center pb-4 space-y-[5px]">
+      <div className="flex flex-col items-center pb-6 space-y-2">
         {/* Plan button */}
         <button
           onClick={() => {
@@ -124,17 +124,17 @@ export default function PrimarySidebar() {
             // Use the navigation store to change view
             window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
           }}
-          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60"
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:scale-105 group"
           title={userPlan ? `Plan: ${userPlan.name}` : "Plan"}
         >
           {(() => {
             const PlanIcon = getPlanIcon(userPlan?.name || '');
-            return <PlanIcon size={20} />;
+            return <PlanIcon size={20} className="transition-transform group-hover:scale-105" />;
           })()}
         </button>
         
         {/* Separator */}
-        <div className="w-6 h-px bg-border my-1"></div>
+        <div className="w-6 h-px bg-border/50 my-2"></div>
         
         {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
           // Hide admin section for non-admin users
@@ -147,14 +147,14 @@ export default function PrimarySidebar() {
               key={section}
               onClick={() => setSection(section)}
               className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 group",
                 currentSection === section
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-surface/60"
+                  ? "text-primary bg-primary/10 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:scale-105"
               )}
               title={label}
             >
-              <Icon size={20} />
+              <Icon size={20} className="transition-transform group-hover:scale-105" />
             </button>
           );
         })}
@@ -162,11 +162,11 @@ export default function PrimarySidebar() {
         {/* Notifications */}
         <button
           onClick={() => setSection('profile')}
-          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-surface/60 relative"
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:scale-105 relative group"
           title="Notificaciones"
         >
-          <Bell size={20} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+          <Bell size={20} className="transition-transform group-hover:scale-105" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full shadow-sm"></span>
         </button>
         
         {/* Profile Avatar */}
