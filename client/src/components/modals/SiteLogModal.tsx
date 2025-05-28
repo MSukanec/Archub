@@ -65,7 +65,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
     defaultValues: {
-      date: siteLog ? new Date(siteLog.date) : new Date(),
+      date: siteLog ? new Date(siteLog.log_date) : new Date(),
       comments: siteLog?.comments || '',
       weather: siteLog?.weather || '',
     },
@@ -113,9 +113,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
       const siteLogData = {
         project_id: projectId,
-        date: data.date.toISOString().split('T')[0], // Send only date part
+        log_date: data.date.toISOString().split('T')[0], // Send only date part
         weather: data.weather === 'none' ? null : data.weather || null,
         comments: data.comments || null,
+        author_id: user?.id, // Add the current user as author
       };
 
       console.log('Creating site log with data:', siteLogData);
