@@ -128,7 +128,12 @@ export default function ProjectsOverview() {
     return <ProjectsListSkeleton />;
   }
 
-  const filteredProjects = projects
+  // Primero separar proyectos permitidos y bloqueados
+  const allowedProjects = projects.slice(0, allowedProjectsCount);
+  const blockedProjects = projects.slice(allowedProjectsCount);
+  
+  // Filtrar y ordenar solo los proyectos permitidos
+  const filteredAllowedProjects = allowedProjects
     .filter((project: Project) =>
       project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -144,6 +149,9 @@ export default function ProjectsOverview() {
       const dateB = new Date(b.created_at);
       return sortOrder === 'newest' ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
     });
+
+  // Combinar proyectos filtrados con bloqueados (los bloqueados siempre al final)
+  const filteredProjects = [...filteredAllowedProjects, ...blockedProjects];
 
   // Calcular estadísticas del dashboard
   const totalProjects = projects.length;
@@ -267,7 +275,9 @@ export default function ProjectsOverview() {
         <div className="space-y-4">
           {filteredProjects.map((project: Project, index: number) => {
             const isActiveProject = project.id === projectId;
-            const isBlocked = limitCheck.isLimited && index >= allowedProjectsCount;
+            // Verificar si el proyecto está en la lista de bloqueados
+            const originalIndex = projects.findIndex(p => p.id === project.id);
+            const isBlocked = limitCheck.isLimited && originalIndex >= allowedProjectsCount;
             return (
               <div key={project.id} className="relative">
                 <Card 
