@@ -99,6 +99,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const isEditing = !!movement;
 
   // Fetch contacts for selection
@@ -224,32 +225,40 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Function to upload file to Supabase Storage
   const uploadFile = async (file: File, movementId: string) => {
     console.log('Starting file upload:', file.name, 'Size:', file.size);
+    setUploadProgress(0);
     
     // Check file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       throw new Error('El archivo es demasiado grande. Máximo 10MB permitido.');
     }
     
-    const fileExtension = file.name.split('.').pop();
     const fileName = `${Date.now()}-${file.name}`;
     const filePath = `${organizationId}/${movementId}/${fileName}`;
 
     console.log('Uploading to path:', filePath);
+    setUploadProgress(25);
 
-    const { data, error } = await supabase.storage
-      .from('movement-files')
-      .upload(filePath, file, {
-        upsert: true,
-        cacheControl: '3600'
-      });
+    try {
+      setUploadProgress(50);
+      const { data, error } = await supabase.storage
+        .from('movement-files')
+        .upload(filePath, file, {
+          upsert: true,
+          cacheControl: '3600'
+        });
 
-    if (error) {
-      console.error('Upload error:', error);
-      throw new Error(`Error al subir archivo: ${error.message}`);
+      if (error) {
+        console.error('Upload error:', error);
+        throw new Error(`Error al subir archivo: ${error.message}`);
+      }
+      
+      setUploadProgress(100);
+      console.log('File uploaded successfully:', data);
+      return filePath;
+    } catch (error) {
+      setUploadProgress(0);
+      throw error;
     }
-    
-    console.log('File uploaded successfully:', data);
-    return filePath;
   };
 
   // Create movement mutation
@@ -709,22 +718,40 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       </div>
                       
                       {selectedFile && (
-                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <File className="w-4 h-4 text-blue-500" />
-                            <span className="text-sm font-medium">{selectedFile.name}</span>
-                            <span className="text-xs text-gray-500">
-                              ({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)
-                            </span>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <File className="w-4 h-4 text-primary" />
+                              <span className="text-sm font-medium">{selectedFile.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                ({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)
+                              </span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedFile(null)}
+                              disabled={isUploadingFile}
+                            >
+                              ×
+                            </Button>
                           </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedFile(null)}
-                          >
-                            ×
-                          </Button>
+                          
+                          {isUploadingFile && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm text-muted-foreground">Subiendo archivo...</span>
+                                <span className="text-sm font-medium text-primary">{uploadProgress}%</span>
+                              </div>
+                              <div className="w-full bg-muted rounded-full h-2">
+                                <div 
+                                  className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
+                                  style={{ width: `${uploadProgress}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
 

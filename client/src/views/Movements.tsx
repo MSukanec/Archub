@@ -187,6 +187,8 @@ export default function Movements() {
     const pesos = { ingresos: 0, egresos: 0, ajustes: 0 };
     const dolares = { ingresos: 0, egresos: 0, ajustes: 0 };
     
+    console.log('Calculating totals for movements:', filteredMovements);
+    
     filteredMovements.forEach(movement => {
       const amount = movement.amount;
       const target = movement.currency === 'USD' ? dolares : pesos;
@@ -195,6 +197,13 @@ export default function Movements() {
       const parentType = movement.movement_concepts?.parent_id ? 
         movement.movement_concepts?.movement_concepts?.name?.toLowerCase() :
         movement.movement_concepts?.name?.toLowerCase();
+      
+      console.log('Processing movement:', {
+        amount,
+        currency: movement.currency,
+        parentType,
+        movement_concepts: movement.movement_concepts
+      });
       
       switch (parentType) {
         case 'ingresos':
@@ -206,9 +215,12 @@ export default function Movements() {
         case 'ajustes':
           target.ajustes += amount;
           break;
+        default:
+          console.log('Unknown parent type:', parentType);
       }
     });
     
+    console.log('Final totals:', { pesos, dolares });
     return { pesos, dolares };
   }, [filteredMovements]);
 
