@@ -78,10 +78,36 @@ export function useFeatures() {
     return userWithPlan?.plan?.name as PlanType || null;
   };
 
+  const getPlanLimit = (limitName: string): number => {
+    if (!userWithPlan?.plan?.features) return 0;
+    
+    const features = userWithPlan.plan.features as Record<string, any>;
+    return features[limitName] || 0;
+  };
+
+  const checkLimit = (limitName: string, currentCount: number): { 
+    isLimited: boolean; 
+    limit: number; 
+    remaining: number;
+    planName: string;
+  } => {
+    const limit = getPlanLimit(limitName);
+    const planName = getCurrentPlan() || 'FREE';
+    
+    return {
+      isLimited: currentCount >= limit,
+      limit,
+      remaining: Math.max(0, limit - currentCount),
+      planName,
+    };
+  };
+
   return {
     hasFeature,
     getRequiredPlan,
     getCurrentPlan,
+    getPlanLimit,
+    checkLimit,
     userPlan: userWithPlan?.plan,
     isLoading: !userWithPlan,
   };

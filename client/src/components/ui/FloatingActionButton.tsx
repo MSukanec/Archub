@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useNavigationStore, View } from '@/stores/navigationStore';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { useQuery } from '@tanstack/react-query';
+import { projectsService } from '@/lib/projectsService';
+import { LimitLock } from '@/components/features';
 import { cn } from '@/lib/utils';
 
 // Hook personalizado para manejar modales
@@ -71,6 +75,14 @@ export default function FloatingActionButton() {
   const { currentView } = useNavigationStore();
   const [isHovered, setIsHovered] = useState(false);
   const modalActions = useModalActions();
+  const { organizationId } = useUserContextStore();
+
+  // Obtener conteo de proyectos para verificar límites
+  const { data: projects = [] } = useQuery({
+    queryKey: ['/api/projects', organizationId],
+    queryFn: () => projectsService.getAll(),
+    enabled: !!organizationId,
+  });
 
   // Configuración de acciones por vista
   const viewActions: Record<View, { label: string; action: () => void; isMultiple?: boolean; options?: any[] } | null> = {
@@ -122,8 +134,12 @@ export default function FloatingActionButton() {
       actionConfig.action();
     }
   };
-  
-  return (
+
+  // Verificar si la acción actual es crear proyecto y aplicar restricción
+  const isProjectCreation = actionConfig.label.includes('Proyecto') || 
+    (actionConfig.isMultiple && actionConfig.options?.some(opt => opt.label.includes('Proyecto')));
+
+  const buttonElement = (
     <div 
       className="fixed bottom-6 right-6 z-50"
       onMouseEnter={() => setIsHovered(true)}
