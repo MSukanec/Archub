@@ -142,11 +142,11 @@ export default function ProjectsList() {
           <div className="space-y-4">
             {filteredProjects.map((project: Project) => (
               <Card key={project.id} className="hover:border-border/60 transition-colors">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Building className="text-primary" size={20} />
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Building className="text-primary" size={18} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
@@ -155,23 +155,20 @@ export default function ProjectsList() {
                             {project.status}
                           </Badge>
                         </div>
-                        {project.client_name && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Cliente: {project.client_name}
-                          </p>
-                        )}
-                        {project.address && (
-                          <div className="flex items-center mt-1 text-sm text-muted-foreground">
-                            <MapPin size={14} className="mr-1" />
-                            {project.address}
-                          </div>
-                        )}
-                        {project.description && (
-                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                            {project.description}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-2">
+                        <div className="flex items-center gap-4 mt-1">
+                          {project.client_name && (
+                            <span className="text-sm text-muted-foreground">
+                              Cliente: {project.client_name}
+                            </span>
+                          )}
+                          {project.address && (
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <MapPin size={12} className="mr-1" />
+                              {project.address}
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
                           Creado: {new Date(project.created_at).toLocaleDateString('es-ES')}
                         </p>
                       </div>
