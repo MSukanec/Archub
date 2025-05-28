@@ -66,7 +66,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     resolver: zodResolver(siteLogSchema),
     defaultValues: {
       date: siteLog ? new Date(siteLog.date) : new Date(),
-      comments: siteLog?.comments || '',
+      description: siteLog?.description || '',
       weather: siteLog?.weather || '',
     },
   });
@@ -76,7 +76,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     if (isOpen) {
       form.reset({
         date: siteLog ? new Date(siteLog.date) : new Date(),
-        comments: siteLog?.comments || '',
+        description: siteLog?.description || '',
         weather: siteLog?.weather || '',
       });
       setSelectedTasks([]);
@@ -115,7 +115,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         project_id: projectId,
         date: data.date.toISOString().split('T')[0], // Send only date part
         weather: data.weather === 'none' ? null : data.weather || null,
-        comments: data.comments || null,
+        description: data.description || null,
       };
 
       console.log('Creating site log with data:', siteLogData);
@@ -348,7 +348,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
                     <FormField
                       control={form.control}
-                      name="comments"
+                      name="description"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Comentarios generales</FormLabel>
