@@ -94,6 +94,15 @@ export function useFeatures() {
     const planName = getCurrentPlan() || 'FREE';
     const limit = getPlanLimit(limitName);
     
+    // Debug logs para identificar el problema
+    console.log('CheckLimit Debug:', {
+      limitName,
+      currentCount,
+      planName,
+      limit,
+      userWithPlan: userWithPlan?.plan
+    });
+    
     // Si es plan PRO o ENTERPRISE y el límite es 0 o no existe, significa sin límite
     if ((planName === 'PRO' || planName === 'ENTERPRISE') && (limit === 0 || !limit)) {
       return {
