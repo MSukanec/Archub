@@ -4,6 +4,7 @@ import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText } fr
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
@@ -191,7 +192,7 @@ export default function Movements() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Movimientos de Obra</h1>
+          <h1 className="text-2xl font-bold text-foreground">Movimientos Financieros</h1>
           <p className="text-muted-foreground">
             Registro de ingresos, egresos y ajustes del proyecto
           </p>
@@ -271,67 +272,65 @@ export default function Movements() {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {movements.map((movement) => (
-                <div
-                  key={movement.id}
-                  className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center space-x-4">
-                    {getTypeIcon(movement.type)}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium">{movement.description}</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Categoría</TableHead>
+                  <TableHead>Detalle</TableHead>
+                  <TableHead>Moneda</TableHead>
+                  <TableHead>Cantidad</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {movements.map((movement) => (
+                  <TableRow key={movement.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      {format(new Date(movement.created_at), 'dd/MM/yyyy', { locale: es })}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getTypeIcon(movement.type)}
                         <Badge variant={getTypeBadgeVariant(movement.type)}>
                           {movement.type}
                         </Badge>
-                        {movement.category && (
-                          <Badge variant="outline">{movement.category}</Badge>
-                        )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{format(new Date(movement.date), 'dd/MM/yyyy', { locale: es })}</span>
-                        {movement.contact && (
-                          <span>• {movement.contact.company_name || movement.contact.name}</span>
-                        )}
-                        {movement.task && (
-                          <span>• Tarea: {movement.task.name}</span>
-                        )}
-                        {movement.file_url && (
-                          <span>• 📎 Archivo adjunto</span>
-                        )}
+                    </TableCell>
+                    <TableCell>{movement.category}</TableCell>
+                    <TableCell>{movement.description}</TableCell>
+                    <TableCell>{movement.currency}</TableCell>
+                    <TableCell>
+                      <span className={`font-medium ${
+                        movement.type === 'ingreso' ? 'text-green-600' : 
+                        movement.type === 'egreso' ? 'text-red-600' : 'text-blue-600'
+                      }`}>
+                        {formatCurrency(movement.amount, movement.currency)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(movement)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(movement.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className={`text-lg font-semibold ${
-                      movement.type === 'ingreso' ? 'text-green-600' : 
-                      movement.type === 'egreso' ? 'text-red-600' : 'text-blue-600'
-                    }`}>
-                      {movement.type === 'egreso' ? '-' : ''}
-                      {formatCurrency(movement.amount, movement.currency)}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(movement)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(movement.id)}
-                        disabled={deleteMovementMutation.isPending}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
