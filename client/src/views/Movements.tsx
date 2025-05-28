@@ -236,161 +236,65 @@ export default function Movements() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar movimientos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Tipo de movimiento" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos los tipos</SelectItem>
-            <SelectItem value="ingreso">Ingresos</SelectItem>
-            <SelectItem value="egreso">Egresos</SelectItem>
-            <SelectItem value="ajuste">Ajustes</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Summary Cards - Separated by Currency */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Summary Cards - Compact Format */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Pesos Argentinos */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <span className="text-2xl">🇦🇷</span>
-            Pesos Argentinos (ARS)
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  Ingresos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                  {formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-red-700 dark:text-red-300 flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4" />
-                  Egresos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-red-600 dark:text-red-400">
-                  {formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Ajustes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                  {formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className={`border-2 ${balancePesos >= 0 ? 'bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700' : 'bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700'}`}>
-              <CardHeader className="pb-2">
-                <CardTitle className={`text-sm font-medium flex items-center gap-2 ${balancePesos >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
-                  <DollarSign className="h-4 w-4" />
-                  Balance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-xl font-bold ${balancePesos >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                  {formatCurrency(balancePesos, 'ARS')}
-                </div>
-              </CardContent>
-            </Card>
+        <Card className="p-4">
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <span>🇦🇷</span>
+              Pesos Argentinos (ARS)
+            </h3>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-green-600">Ingreso:</span>
+                <span className="font-medium text-green-600">{formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-red-600">Egreso:</span>
+                <span className="font-medium text-red-600">{formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}</span>
+              </div>
+              <hr className="my-1" />
+              <div className="flex justify-between">
+                <span className={balancePesos >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>Balance:</span>
+                <span className={`font-bold ${balancePesos >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(balancePesos, 'ARS')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-600">Ajuste:</span>
+                <span className="font-medium text-blue-600">{formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </Card>
 
         {/* Dólares */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <span className="text-2xl">🇺🇸</span>
-            Dólares Estadounidenses (USD)
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  Ingresos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                  {formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-red-700 dark:text-red-300 flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4" />
-                  Egresos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-red-600 dark:text-red-400">
-                  {formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Ajustes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                  {formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className={`border-2 ${balanceDolares >= 0 ? 'bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700' : 'bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700'}`}>
-              <CardHeader className="pb-2">
-                <CardTitle className={`text-sm font-medium flex items-center gap-2 ${balanceDolares >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
-                  <DollarSign className="h-4 w-4" />
-                  Balance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-xl font-bold ${balanceDolares >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                  {formatCurrency(balanceDolares, 'USD')}
-                </div>
-              </CardContent>
-            </Card>
+        <Card className="p-4">
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <span>🇺🇸</span>
+              Dólares Estadounidenses (USD)
+            </h3>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-green-600">Ingreso:</span>
+                <span className="font-medium text-green-600">{formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-red-600">Egreso:</span>
+                <span className="font-medium text-red-600">{formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}</span>
+              </div>
+              <hr className="my-1" />
+              <div className="flex justify-between">
+                <span className={balanceDolares >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>Balance:</span>
+                <span className={`font-bold ${balanceDolares >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(balanceDolares, 'USD')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-600">Ajuste:</span>
+                <span className="font-medium text-blue-600">{formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Movements List */}
@@ -402,6 +306,29 @@ export default function Movements() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Filters inside movements list */}
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar movimientos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Tipo de movimiento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los tipos</SelectItem>
+                <SelectItem value="ingreso">Ingresos</SelectItem>
+                <SelectItem value="egreso">Egresos</SelectItem>
+                <SelectItem value="ajuste">Ajustes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
               <p className="text-muted-foreground">Cargando movimientos...</p>
