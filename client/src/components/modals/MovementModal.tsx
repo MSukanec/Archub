@@ -236,241 +236,269 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Editar Movimiento' : 'Nuevo Movimiento'}</DialogTitle>
-          <DialogDescription>
-            {isEditing 
-              ? 'Modifica los datos del movimiento'
-              : 'Registra un nuevo ingreso, egreso o ajuste en el proyecto'
-            }
-          </DialogDescription>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <DialogTitle>{isEditing ? 'Editar Movimiento' : 'Nuevo Movimiento'}</DialogTitle>
+              <DialogDescription>
+                Gestiona ingresos, egresos y ajustes financieros del proyecto
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {/* Tipo */}
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo <span className="text-primary">*</span></FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="ingreso">Ingreso</SelectItem>
-                        <SelectItem value="egreso">Egreso</SelectItem>
-                        <SelectItem value="ajuste">Ajuste</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Fecha */}
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fecha <span className="text-primary">*</span></FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Categoría */}
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Categoría <span className="text-primary">*</span></FormLabel>
-                    <FormControl>
-                      <Input placeholder="ej. Materiales, Mano de obra" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Moneda */}
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Moneda</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
-                        <SelectItem value="USD">USD - Dólar</SelectItem>
-                        <SelectItem value="EUR">EUR - Euro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Descripción */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción <span className="text-primary">*</span></FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Describe el detalle del movimiento..."
-                      className="min-h-[80px]"
-                      {...field} 
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Accordion type="single" collapsible defaultValue="basic" className="w-full">
+              {/* Información Básica */}
+              <AccordionItem value="basic">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-primary" />
+                    <span>Información Básica</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Tipo */}
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo <span className="text-primary">*</span></FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleccionar tipo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="ingreso">Ingreso</SelectItem>
+                              <SelectItem value="egreso">Egreso</SelectItem>
+                              <SelectItem value="ajuste">Ajuste</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            {/* Monto */}
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Monto <span className="text-primary">*</span></FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      placeholder="0.00"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    {/* Fecha */}
+                    <FormField
+                      control={form.control}
+                      name="date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Fecha <span className="text-primary">*</span></FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* Contacto */}
-              <FormField
-                control={form.control}
-                name="related_contact_id"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Contacto (opcional)</FormLabel>
-                    <Popover open={contactOpen} onOpenChange={setContactOpen}>
-                      <PopoverTrigger asChild>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Categoría */}
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Categoría <span className="text-primary">*</span></FormLabel>
+                          <FormControl>
+                            <Input placeholder="ej. Materiales, Mano de obra" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Moneda */}
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Moneda</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
+                              <SelectItem value="USD">USD - Dólar</SelectItem>
+                              <SelectItem value="EUR">EUR - Euro</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Descripción */}
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Descripción <span className="text-primary">*</span></FormLabel>
                         <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "justify-between",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value
-                              ? contactsList.find((contact) => contact.id === field.value)
-                                ? getContactDisplayName(contactsList.find((contact) => contact.id === field.value))
-                                : "Sin contacto"
-                              : "Sin contacto"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
+                          <Textarea 
+                            placeholder="Describe el detalle del movimiento..."
+                            className="min-h-[80px]"
+                            {...field} 
+                          />
                         </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Buscar contacto..." />
-                          <CommandList>
-                            <CommandEmpty>No se encontraron contactos.</CommandEmpty>
-                            <CommandGroup>
-                              <CommandItem
-                                value=""
-                                onSelect={() => {
-                                  field.onChange("");
-                                  setContactOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    !field.value ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                Sin contacto
-                              </CommandItem>
-                              {contactsList.map((contact) => (
-                                <CommandItem
-                                  value={getContactDisplayName(contact)}
-                                  key={contact.id}
-                                  onSelect={() => {
-                                    field.onChange(contact.id);
-                                    setContactOpen(false);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      contact.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {getContactDisplayName(contact)}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Tarea */}
-              <FormField
-                control={form.control}
-                name="related_task_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tarea (opcional)</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sin tarea" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="">Sin tarea</SelectItem>
-                        {/* Aquí irían las tareas del proyecto */}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  {/* Monto */}
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Monto <span className="text-primary">*</span></FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.01" 
+                            placeholder="0.00"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Relaciones */}
+              <AccordionItem value="relations">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-primary" />
+                    <span>Relaciones</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Contacto */}
+                    <FormField
+                      control={form.control}
+                      name="related_contact_id"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Contacto</FormLabel>
+                          <Popover open={contactOpen} onOpenChange={setContactOpen}>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  className={cn(
+                                    "justify-between",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value
+                                    ? contactsList.find((contact) => contact.id === field.value)
+                                      ? getContactDisplayName(contactsList.find((contact) => contact.id === field.value))
+                                      : "Sin contacto"
+                                    : "Sin contacto"}
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[200px] p-0">
+                              <Command>
+                                <CommandInput placeholder="Buscar contacto..." />
+                                <CommandList>
+                                  <CommandEmpty>No se encontraron contactos.</CommandEmpty>
+                                  <CommandGroup>
+                                    <CommandItem
+                                      value="sin-contacto"
+                                      onSelect={() => {
+                                        field.onChange("");
+                                        setContactOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          !field.value ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                      Sin contacto
+                                    </CommandItem>
+                                    {contactsList.map((contact) => (
+                                      <CommandItem
+                                        value={getContactDisplayName(contact)}
+                                        key={contact.id}
+                                        onSelect={() => {
+                                          field.onChange(contact.id);
+                                          setContactOpen(false);
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            contact.id === field.value
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          )}
+                                        />
+                                        {getContactDisplayName(contact)}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Tarea */}
+                    <FormField
+                      control={form.control}
+                      name="related_task_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tarea</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sin tarea" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="sin-tarea">Sin tarea</SelectItem>
+                              {/* Aquí irían las tareas del proyecto */}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button 
