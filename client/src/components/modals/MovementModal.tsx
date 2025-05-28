@@ -11,6 +11,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
   Form,
   FormControl,
   FormField,
@@ -41,7 +47,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Loader2, Check, ChevronsUpDown } from 'lucide-react';
+import { Loader2, Check, ChevronsUpDown, DollarSign, Calendar, FileText, User, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
