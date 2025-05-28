@@ -80,6 +80,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [contactOpen, setContactOpen] = useState(false);
+  const [selectedTypeId, setSelectedTypeId] = useState<string>('');
   const isEditing = !!movement;
 
   // Fetch contacts for selection
@@ -87,6 +88,20 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     queryKey: ['contacts'],
     queryFn: contactsService.getAll,
     enabled: isOpen,
+  });
+
+  // Fetch movement types (parent_id IS NULL)
+  const { data: movementTypes = [] } = useQuery({
+    queryKey: ['movement-types'],
+    queryFn: movementConceptsService.getTypes,
+    enabled: isOpen,
+  });
+
+  // Fetch categories for selected type
+  const { data: movementCategories = [] } = useQuery({
+    queryKey: ['movement-categories', selectedTypeId],
+    queryFn: () => movementConceptsService.getCategoriesByType(selectedTypeId),
+    enabled: isOpen && !!selectedTypeId,
   });
 
   const form = useForm<MovementForm>({
