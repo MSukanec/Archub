@@ -40,6 +40,7 @@ export default function ProjectsOverview() {
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto ha sido eliminado exitosamente.",
+        duration: 2000,
       });
       setIsDeleteDialogOpen(false);
       setSelectedProject(null);
@@ -49,6 +50,7 @@ export default function ProjectsOverview() {
         variant: "destructive",
         title: "Error",
         description: "No se pudo eliminar el proyecto.",
+        duration: 2000,
       });
     }
   });
@@ -74,6 +76,7 @@ export default function ProjectsOverview() {
         toast({
           title: "Proyecto activo cambiado",
           description: `Ahora trabajas en: ${project.name}`,
+          duration: 2000,
         });
         
         // Remover animación después del cambio
@@ -301,47 +304,47 @@ export default function ProjectsOverview() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           setUserContext({ projectId: project.id });
                           setView('budgets-list');
                         }}
-                        className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                         title="Ir a Presupuestos"
                       >
                         <CreditCard className="h-4 w-4" />
                         <span className="sr-only">Ir a presupuestos</span>
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           setUserContext({ projectId: project.id });
                           setView('movements-main');
                         }}
-                        className="h-8 w-8 p-0 text-green-500 hover:text-green-600"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                         title="Ir a Movimientos"
                       >
-                        <TrendingUp className="h-4 w-4" />
+                        <DollarSign className="h-4 w-4" />
                         <span className="sr-only">Ir a movimientos</span>
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(project);
                         }}
-                        className="h-8 w-8 p-0"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                       >
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Editar proyecto</span>
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
