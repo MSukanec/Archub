@@ -90,19 +90,36 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen,
   });
 
-  // Fetch movement types (parent_id IS NULL)
-  const { data: movementTypes = [] } = useQuery({
-    queryKey: ['movement-types'],
-    queryFn: movementConceptsService.getTypes,
-    enabled: isOpen,
-  });
+  // Temporary: Use static types until movement_concepts table is populated
+  const movementTypes = [
+    { id: 'ingreso', name: 'Ingreso' },
+    { id: 'egreso', name: 'Egreso' },
+    { id: 'ajuste', name: 'Ajuste' }
+  ];
 
-  // Fetch categories for selected type
-  const { data: movementCategories = [] } = useQuery({
-    queryKey: ['movement-categories', selectedTypeId],
-    queryFn: () => movementConceptsService.getCategoriesByType(selectedTypeId),
-    enabled: isOpen && !!selectedTypeId,
-  });
+  // Temporary: Use static categories based on type
+  const getMovementCategories = (typeId: string) => {
+    const categories = {
+      'ingreso': [
+        { id: 'cuota', name: 'Cuota' },
+        { id: 'adelanto', name: 'Adelanto' },
+        { id: 'financiamiento', name: 'Financiamiento' }
+      ],
+      'egreso': [
+        { id: 'materiales', name: 'Materiales' },
+        { id: 'mano_obra', name: 'Mano de obra' },
+        { id: 'equipos', name: 'Equipos' },
+        { id: 'servicios', name: 'Servicios' }
+      ],
+      'ajuste': [
+        { id: 'correccion', name: 'Corrección' },
+        { id: 'reclasificacion', name: 'Reclasificación' }
+      ]
+    };
+    return categories[typeId] || [];
+  };
+
+  const movementCategories = getMovementCategories(selectedTypeId);
 
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
@@ -122,8 +139,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   useEffect(() => {
     if (movement && isEditing) {
       form.reset({
-        type_id: movement.type_id || '',
-        concept_id: movement.concept_id || '',
+        type_id: movement.type || '', // Map existing type to type_id
+        concept_id: movement.category || '', // Map existing category to concept_id
         date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
         description: movement.description || '',
         amount: movement.amount || 0,
@@ -131,8 +148,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         related_contact_id: movement.related_contact_id || '',
         related_task_id: movement.related_task_id || '',
       });
-      if (movement.type_id) {
-        setSelectedTypeId(movement.type_id);
+      if (movement.type) {
+        setSelectedTypeId(movement.type); // Use existing type to set selected type
       }
     } else {
       form.reset({
@@ -161,7 +178,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .from('site_movements')
         .insert([{
           project_id: projectId,
-          concept_id: data.concept_id,
+          type: data.type_id, // Using type_id as type for now
+          category: data.concept_id, // Using concept_id as category for now
           date: data.date,
           description: data.description,
           amount: data.amount,
@@ -199,7 +217,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       const { data: result, error } = await supabase
         .from('site_movements')
         .update({
-          concept_id: data.concept_id,
+          type: data.type_id, // Using type_id as type for now
+          category: data.concept_id, // Using concept_id as category for now
           date: data.date,
           description: data.description,
           amount: data.amount,
