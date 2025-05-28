@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { z } from 'zod';
 import { CalendarIcon, Plus, X, Upload, FileText, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -276,7 +277,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                     )}
                                   >
                                     {field.value ? (
-                                      format(field.value, "PPP", { locale: require('date-fns/locale/es') })
+                                      format(field.value, "PPP", { locale: es })
                                     ) : (
                                       <span>Seleccionar fecha</span>
                                     )}
