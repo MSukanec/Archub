@@ -1,0 +1,36 @@
+Quiero que modernices completamente la interfaz de mi app tipo dashboard (Archub), usando TailwindCSS y estética UI moderna.
+
+🎯 Objetivo:
+— Que toda la UI se vea tan refinada, limpia y profesional como la card de precio de $399 que adjunto como referencia (Startup Plan).
+— Usar como color primario el naranja/rojo (#f5502e o similar).
+— Toda la interfaz debe sentirse suave, con aire, jerarquía y coherencia visual.
+
+📐 Estructura general:
+— El layout actual ya está hecho en dark mode. Mantenelo, pero mejoralo.
+— El sidebar debe mantenerse compacto como está, pero usá íconos modernos de lucide-react con mejor alineación y más padding.
+— Los cards deben tener `rounded-2xl`, `shadow-md`, `bg-muted/10` o `bg-neutral-900`, con buen contraste de títulos, métricas y botones.
+— Los títulos deben tener jerarquía clara (`text-xl font-semibold`), los valores destacados en `text-3xl font-bold`, y los labels en `text-sm text-muted`.
+
+🎨 Diseño visual:
+— Color primario: #f5502e (aplicado en botones, etiquetas activas, íconos destacados).
+— Usá íconos como `DollarSign`, `BarChart3`, `CalendarClock`, `Building2`, `FileText`, `ClipboardList` según el contexto.
+— Todos los cards deben verse con aire y buen espaciado: `p-6`, `gap-4`, etc.
+— Botones con variantes redondeadas, animaciones sutiles `hover:scale-105`, `transition-all`.
+
+🧱 Aplicar mejoras en:
+1. El dashboard de **Organización** (Información de la empresa, Proyectos, Presupuesto, Actividad).
+2. El panel de **Resumen de Proyectos** (cards por proyecto, con estado, cliente, botones de acción).
+3. El **formulario modal de nuevo movimiento**, que ya está bien pero necesita:
+   - Mejor separación visual de secciones
+   - Íconos al lado de los títulos
+   - Botón primario naranja redondeado (`bg-[#f5502e] hover:bg-[#e0411f]`)
+
+👁‍🗨 Extras:
+— Asegurate que todos los elementos tengan buena separación visual entre sí.
+— Mantené consistencia tipográfica (font-sans, escala clara, nada demasiado chico).
+— Podés usar componentes de `shadcn/ui` o `@radix-ui/react-*` si mejora la experiencia.
+
+🎁 Resultado esperado:
+— Que la interfaz luzca como una app de nivel profesional.
+— Que se vea visualmente coherente con UI modernas como Linear, Vercel o Tailwind UI.
+— Que aproveche el color naranja como identidad visual fuerte pero elegante.
