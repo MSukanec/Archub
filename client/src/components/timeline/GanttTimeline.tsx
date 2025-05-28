@@ -10,7 +10,7 @@ interface GanttItem {
   title: string;
   startDate: Date;
   endDate: Date;
-  type: 'bitacora' | 'movimientos' | 'tareas' | 'archivos' | 'asistentes';
+  type: 'bitacora' | 'movimientos' | 'tareas';
   color: string;
   data?: any; // Data específica del elemento
 }
@@ -29,25 +29,19 @@ interface GanttTimelineProps {
 const typeColors = {
   bitacora: 'bg-primary/50 border border-primary/30',
   movimientos: 'bg-primary/50 border border-primary/30', 
-  tareas: 'bg-primary/50 border border-primary/30',
-  archivos: 'bg-primary/50 border border-primary/30',
-  asistentes: 'bg-primary/50 border border-primary/30'
+  tareas: 'bg-primary/50 border border-primary/30'
 };
 
 const typeIcons = {
   bitacora: FileText,
   movimientos: DollarSign,
-  tareas: CheckSquare,
-  archivos: Paperclip,
-  asistentes: Users
+  tareas: CheckSquare
 };
 
 const typeLabels = {
   bitacora: 'Bitácora',
   movimientos: 'Movimientos',
-  tareas: 'Tareas',
-  archivos: 'Archivos',
-  asistentes: 'Asistentes'
+  tareas: 'Tareas'
 };
 
 export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays, onItemClick, onDayClick }: GanttTimelineProps) {

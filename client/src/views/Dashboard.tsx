@@ -308,31 +308,20 @@ export default function Dashboard() {
   return (
     <div className="flex-1 p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Dashboard
-            </h1>
-            {activeProject?.name && (
-              <p className="text-sm text-muted-foreground">
-                {activeProject.name}
-              </p>
-            )}
-          </div>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <BarChart3 className="w-5 h-5 text-primary" />
         </div>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={goToToday}
-          className="rounded-xl hover:scale-105 transition-all"
-        >
-          <CalendarClock className="w-4 h-4 mr-2" />
-          Hoy
-        </Button>
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">
+            Dashboard
+          </h1>
+          {activeProject?.name && (
+            <p className="text-sm text-muted-foreground">
+              {activeProject.name}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Vista Gantt */}
