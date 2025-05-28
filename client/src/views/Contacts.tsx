@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Building2, MapPin, Filter } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Mail, Phone, Building2, MapPin, Filter, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
 import { contactTypesService, ContactType } from '@/lib/contactTypesService';
 import ContactModal from '@/components/modals/ContactModal';
+import ContactActionsModal from '@/components/modals/ContactActionsModal';
 
 // Extended contact with types
 interface ContactWithTypes extends Contact {
@@ -24,6 +25,8 @@ export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isContactActionsModalOpen, setIsContactActionsModalOpen] = useState(false);
+  const [contactForActions, setContactForActions] = useState<Contact | null>(null);
   const [contactsWithTypes, setContactsWithTypes] = useState<ContactWithTypes[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -120,17 +123,14 @@ export default function Contacts() {
     setSelectedContact(null);
   };
 
-  const formatPhoneForWhatsApp = (phone: string) => {
-    // Remove all non-numeric characters
-    const cleaned = phone.replace(/\D/g, '');
-    // Return cleaned phone number
-    return cleaned;
+  const handleContactActions = (contact: Contact) => {
+    setContactForActions(contact);
+    setIsContactActionsModalOpen(true);
   };
 
-  const handleWhatsAppClick = (phone: string) => {
-    const formattedPhone = formatPhoneForWhatsApp(phone);
-    const whatsappUrl = `https://wa.me/${formattedPhone}`;
-    window.open(whatsappUrl, '_blank');
+  const handleContactActionsModalClose = () => {
+    setIsContactActionsModalOpen(false);
+    setContactForActions(null);
   };
 
   // Filter contacts based on search term and selected type
@@ -285,16 +285,16 @@ export default function Contacts() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => contact.phone && handleWhatsAppClick(contact.phone)}
-                              disabled={!contact.phone}
+                              onClick={() => handleContactActions(contact)}
+                              disabled={!contact.phone && !contact.email}
                               className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
                             >
-                              <Phone className="h-4 w-4" />
-                              <span className="sr-only">Contactar por WhatsApp</span>
+                              <MessageCircle className="h-4 w-4" />
+                              <span className="sr-only">Contactar</span>
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{contact.phone ? 'Contactar por WhatsApp' : 'Teléfono no disponible'}</p>
+                            <p>{(contact.phone || contact.email) ? 'Contactar' : 'Sin información de contacto'}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -330,6 +330,13 @@ export default function Contacts() {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         contact={selectedContact}
+      />
+
+      {/* Contact Actions Modal */}
+      <ContactActionsModal
+        isOpen={isContactActionsModalOpen}
+        onClose={handleContactActionsModalClose}
+        contact={contactForActions}
       />
 
       {/* Delete Confirmation Dialog */}
