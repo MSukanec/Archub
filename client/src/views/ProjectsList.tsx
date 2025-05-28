@@ -291,8 +291,8 @@ export default function ProjectsOverview() {
                       ? 'opacity-60 cursor-not-allowed' 
                       : 'cursor-pointer hover:border-border/60'
                   } ${
-                    isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
-                  } ${!isActiveProject && !isBlocked ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
+                    isActiveProject ? 'ring-2 ring-orange-500/50 bg-orange-500/5 border-transparent' : 'border-border'
+                  } ${!isActiveProject && !isBlocked ? 'hover:shadow-md hover:ring-1 hover:ring-orange-500/30 hover:bg-orange-500/5' : ''}`}
                   onClick={() => handleProjectClick(project)}
                 >
                   {/* Badge de bloqueo */}

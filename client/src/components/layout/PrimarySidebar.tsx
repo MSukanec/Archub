@@ -86,7 +86,7 @@ export default function PrimarySidebar() {
   });
 
   return (
-    <div className="w-[56px] bg-card border-r border-border flex flex-col shadow-sm">
+    <div className="w-[56px] bg-card flex flex-col shadow-sm">
       {/* Header area - Logo */}
       <div className="h-[56px] flex items-center justify-center border-b border-border">
         <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-sm">
