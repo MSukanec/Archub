@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { z } from 'zod';
 import { CalendarIcon, Plus, X, Upload, FileText, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow, Check } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,7 +31,7 @@ const siteLogSchema = z.object({
   date: z.date({
     required_error: "La fecha es requerida",
   }),
-  description: z.string().optional(),
+  comments: z.string().optional(),
   weather: z.string().optional(),
 });
 
@@ -66,7 +66,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     resolver: zodResolver(siteLogSchema),
     defaultValues: {
       date: siteLog ? new Date(siteLog.date) : new Date(),
-      description: siteLog?.description || '',
+      comments: siteLog?.comments || '',
       weather: siteLog?.weather || '',
     },
   });
@@ -76,7 +76,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     if (isOpen) {
       form.reset({
         date: siteLog ? new Date(siteLog.date) : new Date(),
-        description: siteLog?.description || '',
+        comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
       });
       setSelectedTasks([]);
@@ -115,7 +115,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         project_id: projectId,
         date: data.date.toISOString().split('T')[0], // Send only date part
         weather: data.weather === 'none' ? null : data.weather || null,
-        description: data.description || null,
+        comments: data.comments || null,
       };
 
       console.log('Creating site log with data:', siteLogData);
@@ -230,9 +230,15 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
+          <DialogTitle className="text-xl font-semibold flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <FileText className="h-4 w-4 text-primary" />
+            </div>
             {siteLog ? 'Editar registro de obra' : 'Nuevo registro de obra'}
           </DialogTitle>
+          <DialogDescription>
+            Registra las actividades diarias, tareas completadas y personal presente en obra para mantener un control detallado del progreso del proyecto.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -342,7 +348,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
                     <FormField
                       control={form.control}
-                      name="description"
+                      name="comments"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Comentarios generales</FormLabel>
