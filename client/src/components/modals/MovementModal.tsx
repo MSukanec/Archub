@@ -52,14 +52,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { contactsService } from '@/lib/contactsService';
+import { movementConceptsService } from '@/lib/movementConceptsService';
 import { cn } from '@/lib/utils';
 
 const movementSchema = z.object({
-  type: z.enum(['ingreso', 'egreso', 'ajuste'], {
-    required_error: 'Debes seleccionar un tipo de movimiento',
-  }),
+  type_id: z.string().min(1, 'Debes seleccionar un tipo de movimiento'),
+  concept_id: z.string().min(1, 'Debes seleccionar una categoría'),
   date: z.string().min(1, 'La fecha es requerida'),
-  category: z.string().min(1, 'La categoría es requerida'),
   description: z.string().min(1, 'La descripción es requerida'),
   amount: z.number().min(0.01, 'El monto debe ser mayor a 0'),
   currency: z.string().default('ARS'),

@@ -198,11 +198,11 @@ export default function Movements() {
   const getTypeBadgeVariant = (type: string) => {
     switch (type) {
       case 'ingreso':
-        return 'default';
+        return 'default'; // Will be styled with emerald colors
       case 'egreso':
-        return 'destructive';
+        return 'destructive'; // Will be styled with rose colors
       case 'ajuste':
-        return 'secondary';
+        return 'secondary'; // Will be styled with sky colors
       default:
         return 'outline';
     }
@@ -247,21 +247,21 @@ export default function Movements() {
             </h3>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-green-600">Ingreso:</span>
-                <span className="font-medium text-green-600">{formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}</span>
+                <span className="text-emerald-500">Ingreso:</span>
+                <span className="font-medium text-emerald-500">{formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-red-600">Egreso:</span>
-                <span className="font-medium text-red-600">{formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}</span>
+                <span className="text-rose-500">Egreso:</span>
+                <span className="font-medium text-rose-500">{formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}</span>
               </div>
               <hr className="my-1" />
               <div className="flex justify-between">
-                <span className={balancePesos >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>Balance:</span>
-                <span className={`font-bold ${balancePesos >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(balancePesos, 'ARS')}</span>
+                <span className={balancePesos >= 0 ? 'text-emerald-500 font-medium' : 'text-rose-500 font-medium'}>Balance:</span>
+                <span className={`font-bold ${balancePesos >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{formatCurrency(balancePesos, 'ARS')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-600">Ajuste:</span>
-                <span className="font-medium text-blue-600">{formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}</span>
+                <span className="text-sky-500">Ajuste:</span>
+                <span className="font-medium text-sky-500">{formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}</span>
               </div>
             </div>
           </div>
@@ -276,21 +276,21 @@ export default function Movements() {
             </h3>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-green-600">Ingreso:</span>
-                <span className="font-medium text-green-600">{formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}</span>
+                <span className="text-emerald-500">Ingreso:</span>
+                <span className="font-medium text-emerald-500">{formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-red-600">Egreso:</span>
-                <span className="font-medium text-red-600">{formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}</span>
+                <span className="text-rose-500">Egreso:</span>
+                <span className="font-medium text-rose-500">{formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}</span>
               </div>
               <hr className="my-1" />
               <div className="flex justify-between">
-                <span className={balanceDolares >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>Balance:</span>
-                <span className={`font-bold ${balanceDolares >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(balanceDolares, 'USD')}</span>
+                <span className={balanceDolares >= 0 ? 'text-emerald-500 font-medium' : 'text-rose-500 font-medium'}>Balance:</span>
+                <span className={`font-bold ${balanceDolares >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{formatCurrency(balanceDolares, 'USD')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-600">Ajuste:</span>
-                <span className="font-medium text-blue-600">{formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}</span>
+                <span className="text-sky-500">Ajuste:</span>
+                <span className="font-medium text-sky-500">{formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}</span>
               </div>
             </div>
           </div>
@@ -361,12 +361,17 @@ export default function Movements() {
                       {format(new Date(movement.created_at), 'dd/MM/yyyy', { locale: es })}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(movement.type)}
-                        <Badge variant={getTypeBadgeVariant(movement.type)}>
-                          {movement.type}
-                        </Badge>
-                      </div>
+                      <Badge 
+                        className={
+                          movement.type === 'ingreso' 
+                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
+                            : movement.type === 'egreso'
+                            ? 'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800'
+                            : 'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800'
+                        }
+                      >
+                        {movement.type}
+                      </Badge>
                     </TableCell>
                     <TableCell>{movement.category}</TableCell>
                     <TableCell>{movement.description}</TableCell>
