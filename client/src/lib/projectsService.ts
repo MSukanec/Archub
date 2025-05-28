@@ -10,8 +10,10 @@ export interface Project {
   created_at: string;
   updated_at: string | null;
   address: string | null;
-  contact_phone: string | null;
+  phone: string | null;
+  email: string | null;
   city: string | null;
+  zip_code: string | null;
   organization_id: string | null;
   is_active: boolean;
 }
@@ -22,8 +24,10 @@ export interface CreateProjectData {
   client_name?: string;
   status?: string;
   address?: string;
-  contact_phone?: string;
+  phone?: string;
+  email?: string;
   city?: string;
+  zip_code?: string;
   organization_id?: number;
 }
 

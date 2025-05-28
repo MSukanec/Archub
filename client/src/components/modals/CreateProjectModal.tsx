@@ -54,15 +54,12 @@ const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   description: z.string().optional(),
   client_name: z.string().optional(),
-  status: z.enum(['planning', 'in_progress', 'on_hold', 'completed', 'cancelled']).default('planning'),
+  status: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
-  postal_code: z.string().optional(),
+  zip_code: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
-  project_manager: z.string().optional(),
-  architect: z.string().optional(),
-  contractor: z.string().optional(),
 });
 
 type CreateProjectFormData = z.infer<typeof createProjectSchema>;
@@ -91,27 +88,20 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       status: 'planning',
       address: '',
       city: '',
-      postal_code: '',
+      zip_code: '',
       phone: '',
       email: '',
-      project_manager: '',
-      architect: '',
-      contractor: '',
     },
   });
 
-  // Fetch organization
-  const { data: organizations } = useQuery({
-    queryKey: ['/api/organizations'],
-    enabled: !!organizationId,
-  });
+  // Get organization from store
+  const { organization: orgFromStore } = useUserContextStore();
 
   useEffect(() => {
-    if (organizations && organizationId) {
-      const org = Array.isArray(organizations) ? organizations.find((o: Organization) => o.id === organizationId) : null;
-      setCurrentOrganization(org || null);
+    if (orgFromStore) {
+      setCurrentOrganization(orgFromStore);
     }
-  }, [organizations, organizationId]);
+  }, [orgFromStore]);
 
   // Set form values when editing
   useEffect(() => {
@@ -120,15 +110,12 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: project.name || '',
         description: project.description || '',
         client_name: project.client_name || '',
-        status: (project.status as any) || 'planning',
+        status: project.status || 'planning',
         address: project.address || '',
         city: project.city || '',
-        postal_code: project.postal_code || '',
+        zip_code: project.zip_code || '',
         phone: project.phone || '',
         email: project.email || '',
-        project_manager: project.project_manager || '',
-        architect: project.architect || '',
-        contractor: project.contractor || '',
       });
     } else {
       form.reset({
@@ -138,12 +125,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         status: 'planning',
         address: '',
         city: '',
-        postal_code: '',
+        zip_code: '',
         phone: '',
         email: '',
-        project_manager: '',
-        architect: '',
-        contractor: '',
       });
     }
   }, [project, form]);
@@ -314,28 +298,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           )}
                         />
 
-                        {/* Descripción */}
-                        <FormField
-                          control={form.control}
-                          name="description"
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex items-center gap-3 mb-2">
-                                <FileText className="h-4 w-4 text-muted-foreground" />
-                                <FormLabel>Descripción</FormLabel>
-                              </div>
-                              <FormControl>
-                                <Textarea
-                                  {...field}
-                                  placeholder="Describe brevemente el alcance y características del proyecto..."
-                                  className="min-h-[80px]"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
                         {/* Estado del Proyecto */}
                         <FormField
                           control={form.control}
@@ -364,97 +326,22 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                             </FormItem>
                           )}
                         />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
 
-                  {/* ACORDEÓN: STAKEHOLDERS */}
-                  <AccordionItem value="stakeholders" className="border rounded-lg">
-                    <AccordionTrigger className="px-4 hover:no-underline">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-5 w-5 text-primary" />
-                        <span className="font-semibold">Stakeholders</span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-4 pb-4">
-                      <div className="space-y-4">
-                        {/* Cliente */}
+                        {/* Descripción */}
                         <FormField
                           control={form.control}
-                          name="client_name"
+                          name="description"
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-3 mb-2">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <FormLabel>Cliente</FormLabel>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Descripción</FormLabel>
                               </div>
                               <FormControl>
-                                <Input
+                                <Textarea
                                   {...field}
-                                  placeholder="Ej: Constructora ABC S.A."
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Jefe de Proyecto */}
-                        <FormField
-                          control={form.control}
-                          name="project_manager"
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex items-center gap-3 mb-2">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <FormLabel>Jefe de Proyecto</FormLabel>
-                              </div>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Ej: Ing. María García"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Arquitecto */}
-                        <FormField
-                          control={form.control}
-                          name="architect"
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex items-center gap-3 mb-2">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <FormLabel>Arquitecto</FormLabel>
-                              </div>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Ej: Arq. Carlos Ruiz"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Contratista */}
-                        <FormField
-                          control={form.control}
-                          name="contractor"
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex items-center gap-3 mb-2">
-                                <Building className="h-4 w-4 text-muted-foreground" />
-                                <FormLabel>Contratista</FormLabel>
-                              </div>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Ej: Construcciones del Sur Ltda."
+                                  placeholder="Describe brevemente el alcance y características del proyecto..."
+                                  className="min-h-[80px]"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -520,7 +407,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                         {/* Código Postal */}
                         <FormField
                           control={form.control}
-                          name="postal_code"
+                          name="zip_code"
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-3 mb-2">
@@ -531,6 +418,40 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                                 <Input
                                   {...field}
                                   placeholder="Ej: 1602"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* ACORDEÓN: PARTES INTERESADAS */}
+                  <AccordionItem value="stakeholders" className="border rounded-lg">
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Partes Interesadas</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div className="space-y-4">
+                        {/* Cliente */}
+                        <FormField
+                          control={form.control}
+                          name="client_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Cliente</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: Constructora ABC S.A."
                                 />
                               </FormControl>
                               <FormMessage />
