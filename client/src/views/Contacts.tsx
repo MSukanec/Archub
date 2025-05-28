@@ -20,7 +20,8 @@ interface ContactWithTypes extends Contact {
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string>('all');
+  const [sortOrder, setSortOrder] = useState<string>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -137,19 +138,30 @@ export default function Contacts() {
 
 
 
-  // Filter contacts based on search term and selected type
-  const filteredContacts = contactsWithTypes.filter(contact => {
-    const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
-    const matchesSearch = 
-      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesType = selectedType === '' || selectedType === 'all' || 
-      (contact.contact_types && contact.contact_types.some(type => type.id === selectedType));
-    
-    return matchesSearch && matchesType;
-  });
+  // Filter and sort contacts based on search term, selected type, and alphabetical order
+  const filteredContacts = contactsWithTypes
+    .filter(contact => {
+      const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
+      const matchesSearch = 
+        fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesType = selectedType === '' || selectedType === 'all' || 
+        (contact.contact_types && contact.contact_types.some(type => type.id === selectedType));
+      
+      return matchesSearch && matchesType;
+    })
+    .sort((a, b) => {
+      const nameA = `${a.first_name} ${a.last_name || ''}`.trim().toLowerCase();
+      const nameB = `${b.first_name} ${b.last_name || ''}`.trim().toLowerCase();
+      
+      if (sortOrder === 'asc') {
+        return nameA.localeCompare(nameB);
+      } else {
+        return nameB.localeCompare(nameA);
+      }
+    });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
@@ -195,7 +207,7 @@ export default function Contacts() {
         </div>
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por tipo" />
+            <SelectValue placeholder="Todos los tipos" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los tipos</SelectItem>
@@ -204,6 +216,15 @@ export default function Contacts() {
                 {type.name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        <Select value={sortOrder} onValueChange={setSortOrder}>
+          <SelectTrigger className="w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="asc">A - Z</SelectItem>
+            <SelectItem value="desc">Z - A</SelectItem>
           </SelectContent>
         </Select>
       </div>

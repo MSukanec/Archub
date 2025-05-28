@@ -133,9 +133,24 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       queryClient.refetchQueries({ queryKey: ['contact-types'] });
       
       // Complete state cleanup to prevent issues with subsequent creations
-      form.reset();
+      form.reset({
+        first_name: '',
+        last_name: '',
+        company_name: '',
+        email: '',
+        phone: '',
+        location: '',
+        notes: '',
+        contact_types: [],
+      });
       setSelectedTypes([]);
       setOpen(false);
+      
+      // Reset mutations to clean state
+      setTimeout(() => {
+        createMutation.reset();
+        updateMutation.reset();
+      }, 100);
       
       toast({
         title: "Contacto creado",
