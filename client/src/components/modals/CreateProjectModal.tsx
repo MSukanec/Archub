@@ -72,7 +72,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       name: '',
       description: '',
       client_name: '',
-      contact_id: undefined,
       status: 'Planificación',
       address: '',
       contact_phone: '',
@@ -226,7 +225,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
         <Form {...form}>
           <form 
-            onSubmit={form.handleSubmit(onSubmit)} 
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6"
           >
             {/* Campos básicos - siempre visibles */}

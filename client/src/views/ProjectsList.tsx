@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
 export default function ProjectsList() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -30,7 +31,10 @@ export default function ProjectsList() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => projectsService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/projects', organizationId] });
+      // Invalidate both the specific project query and all projects queries
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.removeQueries({ queryKey: ['/api/projects', organizationId] });
+      
       toast({
         title: "Proyecto eliminado",
         description: "El proyecto ha sido eliminado exitosamente.",
@@ -86,7 +90,11 @@ export default function ProjectsList() {
       project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.address?.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
 
   return (
     <>
@@ -111,6 +119,15 @@ export default function ProjectsList() {
             />
             <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
+            className="flex items-center gap-2"
+          >
+            <ArrowUpDown size={16} />
+            {sortOrder === 'newest' ? 'Más recientes' : 'Más antiguos'}
+          </Button>
         </div>
 
         {/* Projects List */}
