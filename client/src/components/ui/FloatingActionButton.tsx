@@ -211,4 +211,20 @@ export default function FloatingActionButton() {
       </div>
     </div>
   );
+
+  // Si es creación de proyecto, aplicar restricción de límite
+  if (isProjectCreation) {
+    return (
+      <LimitLock
+        limitName="max_projects"
+        currentCount={projects.length}
+        featureName="proyecto"
+        description="Has alcanzado el límite de proyectos para tu plan actual. Actualiza a PRO para crear proyectos ilimitados."
+      >
+        {buttonElement}
+      </LimitLock>
+    );
+  }
+
+  return buttonElement;
 }
