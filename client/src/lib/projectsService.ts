@@ -128,6 +128,9 @@ export const projectsService = {
       throw new Error('Error al actualizar el proyecto');
     }
     
+    // Refresh the cached data after updating
+    useUserContextStore.getState().refreshData();
+    
     return data;
   },
 

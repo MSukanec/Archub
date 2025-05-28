@@ -162,9 +162,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       }
     },
     onSuccess: async (createdProject) => {
-      // Invalidate all project-related queries
-      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // Invalidate all project-related queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.removeQueries({ queryKey: ['/api/projects'] });
       
       // Force refresh of the user context data
       const { organizationId } = useUserContextStore.getState();

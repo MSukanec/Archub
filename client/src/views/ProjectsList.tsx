@@ -109,8 +109,8 @@ export default function ProjectsList() {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center space-x-4">
-          <div className="relative flex-1 max-w-md">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
             <Input
               placeholder="Buscar proyectos..."
               value={searchQuery}
@@ -123,7 +123,7 @@ export default function ProjectsList() {
             variant="outline"
             size="sm"
             onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 whitespace-nowrap"
           >
             <ArrowUpDown size={16} />
             {sortOrder === 'newest' ? 'Más recientes' : 'Más antiguos'}
