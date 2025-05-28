@@ -52,13 +52,22 @@
 /* Custom animations */
 @keyframes wiggle {
   0%, 100% { 
-    transform: rotate(0deg); 
+    transform: rotate(0deg) scale(1); 
   }
-  25% { 
+  10%, 30% { 
+    transform: rotate(2deg) scale(1.03); 
+  }
+  20%, 40% { 
+    transform: rotate(-2deg) scale(1.03); 
+  }
+  50%, 70% { 
     transform: rotate(1deg) scale(1.02); 
   }
-  75% { 
+  60%, 80% { 
     transform: rotate(-1deg) scale(1.02); 
+  }
+  90% { 
+    transform: rotate(0deg) scale(1); 
   }
 }
 

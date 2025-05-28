@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity } from 'lucide-react';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,11 +65,22 @@ export default function ProjectsOverview() {
 
   const handleProjectClick = (project: Project) => {
     if (project.id !== projectId) {
-      setUserContext({ projectId: project.id });
-      toast({
-        title: "Proyecto activo cambiado",
-        description: `Ahora trabajas en: ${project.name}`,
-      });
+      // Agregar clase de animación antes del cambio
+      const cards = document.querySelectorAll('[data-project-card]');
+      cards.forEach(card => card.classList.add('animate-pulse'));
+      
+      setTimeout(() => {
+        setUserContext({ projectId: project.id });
+        toast({
+          title: "Proyecto activo cambiado",
+          description: `Ahora trabajas en: ${project.name}`,
+        });
+        
+        // Remover animación después del cambio
+        setTimeout(() => {
+          cards.forEach(card => card.classList.remove('animate-pulse'));
+        }, 300);
+      }, 150);
     }
   };
 
@@ -188,36 +199,7 @@ export default function ProjectsOverview() {
           </Card>
         </div>
 
-        {/* Acciones Rápidas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all" onClick={() => setView('budgets-list')}>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                  <DollarSign className="text-blue-500" size={20} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">Ir a Presupuestos</h3>
-                  <p className="text-sm text-muted-foreground">Gestiona costos y presupuestos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all" onClick={() => setView('movements-main')}>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
-                  <Activity className="text-green-500" size={20} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">Ir a Movimientos</h3>
-                  <p className="text-sm text-muted-foreground">Registro de ingresos y egresos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Search and Filters */}
         <div className="flex items-center gap-4">
@@ -272,8 +254,9 @@ export default function ProjectsOverview() {
               const isActiveProject = project.id === projectId;
               return (
                 <Card 
-                  key={project.id} 
-                  className={`hover:border-border/60 transition-all cursor-pointer ${
+                  key={project.id}
+                  data-project-card
+                  className={`hover:border-border/60 transition-all duration-300 cursor-pointer ${
                     isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
                   } ${!isActiveProject ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
                   onClick={() => handleProjectClick(project)}
@@ -317,6 +300,34 @@ export default function ProjectsOverview() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setUserContext({ projectId: project.id });
+                          setView('budgets-list');
+                        }}
+                        className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600"
+                        title="Ir a Presupuestos"
+                      >
+                        <CreditCard className="h-4 w-4" />
+                        <span className="sr-only">Ir a presupuestos</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setUserContext({ projectId: project.id });
+                          setView('movements-main');
+                        }}
+                        className="h-8 w-8 p-0 text-green-500 hover:text-green-600"
+                        title="Ir a Movimientos"
+                      >
+                        <TrendingUp className="h-4 w-4" />
+                        <span className="sr-only">Ir a movimientos</span>
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
