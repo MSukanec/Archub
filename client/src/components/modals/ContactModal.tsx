@@ -119,8 +119,11 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       return newContact;
     },
     onSuccess: () => {
+      // Force immediate refresh of all contact-related data
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['contact-types'] });
+      queryClient.refetchQueries({ queryKey: ['contacts'] });
+      queryClient.refetchQueries({ queryKey: ['contact-types'] });
       form.reset();
       toast({
         title: "Contacto creado",
@@ -152,8 +155,11 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       }
     },
     onSuccess: () => {
+      // Force immediate refresh of all contact-related data
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['contact-types'] });
+      queryClient.refetchQueries({ queryKey: ['contacts'] });
+      queryClient.refetchQueries({ queryKey: ['contact-types'] });
       form.reset();
       toast({
         title: "Contacto actualizado",
@@ -175,6 +181,12 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
 
   const onSubmit = (data: ContactForm) => {
     console.log('Form data received:', data);
+    
+    // Check if form is already being submitted
+    if (createMutation.isPending || updateMutation.isPending) {
+      console.log('Form already being submitted, ignoring...');
+      return;
+    }
     
     const contactData: CreateContactData = {
       first_name: data.first_name,
