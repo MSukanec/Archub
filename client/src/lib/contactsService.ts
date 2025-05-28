@@ -82,6 +82,9 @@ export const contactsService = {
   },
 
   async update(id: number, contactData: Partial<CreateContactData>): Promise<Contact> {
+    console.log('Updating contact with ID:', id);
+    console.log('Update data:', contactData);
+    
     const { data, error } = await supabase
       .from('contacts')
       .update(contactData)
@@ -94,6 +97,7 @@ export const contactsService = {
       throw new Error('Error al actualizar el contacto');
     }
     
+    console.log('Contact updated successfully:', data);
     return data;
   },
 

@@ -44,17 +44,13 @@ export default function Contacts() {
   // Fetch contacts
   const { data: contacts = [], isLoading, error } = useQuery({
     queryKey: ['contacts'],
-    queryFn: async () => {
-      console.log('Fetching contacts...');
-      const result = await contactsService.getAll();
-      console.log('Contacts fetched:', result);
-      return result;
-    },
+    queryFn: contactsService.getAll,
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos
     refetchOnWindowFocus: false,
-    retry: 1, // Solo 1 reintento
-    retryDelay: 1000, // 1 segundo entre reintentos
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    retry: false, // No reintentos para evitar bucles
   });
 
   // Log error if any
