@@ -79,7 +79,17 @@ export function useFeatures() {
   };
 
   const getPlanLimit = (limitName: string): number => {
-    if (!userWithPlan?.plan?.features) return 0;
+    const planName = getCurrentPlan() || 'FREE';
+    
+    // Si no hay plan cargado desde la BD, usar límites por defecto
+    if (!userWithPlan?.plan?.features) {
+      const defaultLimits: Record<string, Record<string, number>> = {
+        'FREE': { 'max_projects': 2 },
+        'PRO': { 'max_projects': -1 }, // -1 = ilimitado
+        'ENTERPRISE': { 'max_projects': -1 }
+      };
+      return defaultLimits[planName]?.[limitName] || 0;
+    }
     
     const features = userWithPlan.plan.features as Record<string, any>;
     return features[limitName] || 0;
@@ -103,16 +113,17 @@ export function useFeatures() {
       userWithPlan: userWithPlan?.plan
     });
     
-    // Si es plan PRO o ENTERPRISE y el límite es 0 o no existe, significa sin límite
-    if ((planName === 'PRO' || planName === 'ENTERPRISE') && (limit === 0 || !limit)) {
+    // Si el límite es -1, significa ilimitado (PRO/ENTERPRISE)
+    if (limit === -1) {
       return {
         isLimited: false,
-        limit: -1, // -1 indica ilimitado
+        limit: -1,
         remaining: -1,
         planName,
       };
     }
     
+    // Para planes FREE con límites específicos
     return {
       isLimited: limit > 0 && currentCount >= limit,
       limit,
