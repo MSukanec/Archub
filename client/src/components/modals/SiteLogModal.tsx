@@ -92,13 +92,12 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         throw new Error('No se pudo encontrar el usuario interno');
       }
       
-      // Create the site log data with required fields (using correct column names)
+      // Create the site log data with required fields
       const siteLogData = {
         project_id: projectId,
-        log_date: data.date.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
-        weather: data.weather || '',
-        description: data.comments || '',
-        author_id: internalUser.id,
+        date: data.date,
+        weather: data.weather || null,
+        comments: data.comments || null,
       };
 
       let createdSiteLog: SiteLog;
@@ -237,8 +236,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     if (isOpen) {
       if (siteLog) {
         form.reset({
-          date: siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date(),
-          comments: siteLog.description || '',
+          date: siteLog.date ? new Date(siteLog.date) : new Date(),
+          comments: siteLog.comments || '',
           weather: siteLog.weather || '',
         });
       } else {
