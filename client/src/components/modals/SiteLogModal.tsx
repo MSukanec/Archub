@@ -75,7 +75,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   useEffect(() => {
     if (isOpen) {
       form.reset({
-        date: siteLog ? new Date(siteLog.date) : new Date(),
+        date: siteLog ? new Date(siteLog.log_date) : new Date(),
         comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
       });
@@ -116,7 +116,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         log_date: data.date.toISOString().split('T')[0], // Send only date part
         weather: data.weather === 'none' ? null : data.weather || null,
         comments: data.comments || null,
-        author_id: user?.id, // Add the current user as author
+        author_id: user?.auth_id, // Add the current user as author
       };
 
       console.log('Creating site log with data:', siteLogData);
