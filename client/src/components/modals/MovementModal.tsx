@@ -223,17 +223,32 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   // Function to upload file to Supabase Storage
   const uploadFile = async (file: File, movementId: string) => {
+    console.log('Starting file upload:', file.name, 'Size:', file.size);
+    
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      throw new Error('El archivo es demasiado grande. Máximo 10MB permitido.');
+    }
+    
     const fileExtension = file.name.split('.').pop();
     const fileName = `${Date.now()}-${file.name}`;
     const filePath = `${organizationId}/${movementId}/${fileName}`;
 
+    console.log('Uploading to path:', filePath);
+
     const { data, error } = await supabase.storage
       .from('movement-files')
       .upload(filePath, file, {
-        upsert: true
+        upsert: true,
+        cacheControl: '3600'
       });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Upload error:', error);
+      throw new Error(`Error al subir archivo: ${error.message}`);
+    }
+    
+    console.log('File uploaded successfully:', data);
     return filePath;
   };
 
