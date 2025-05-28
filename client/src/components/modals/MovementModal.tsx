@@ -107,9 +107,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
     defaultValues: {
-      type: 'egreso',
+      type_id: '',
+      concept_id: '',
       date: new Date().toISOString().split('T')[0],
-      category: '',
       description: '',
       amount: 0,
       currency: 'ARS',
@@ -122,26 +122,30 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   useEffect(() => {
     if (movement && isEditing) {
       form.reset({
-        type: movement.type,
+        type_id: movement.type_id || '',
+        concept_id: movement.concept_id || '',
         date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
-        category: movement.category || '',
         description: movement.description || '',
         amount: movement.amount || 0,
         currency: movement.currency || 'ARS',
         related_contact_id: movement.related_contact_id || '',
         related_task_id: movement.related_task_id || '',
       });
+      if (movement.type_id) {
+        setSelectedTypeId(movement.type_id);
+      }
     } else {
       form.reset({
-        type: 'egreso',
+        type_id: '',
+        concept_id: '',
         date: new Date().toISOString().split('T')[0],
-        category: '',
         description: '',
         amount: 0,
         currency: 'ARS',
         related_contact_id: '',
         related_task_id: '',
       });
+      setSelectedTypeId('');
     }
   }, [movement, isEditing, form, isOpen]);
 
@@ -279,20 +283,26 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     {/* Tipo */}
                     <FormField
                       control={form.control}
-                      name="type"
+                      name="type_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Tipo <span className="text-primary">*</span></FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={(value) => {
+                            field.onChange(value);
+                            setSelectedTypeId(value);
+                            form.setValue('concept_id', ''); // Reset category when type changes
+                          }} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Seleccionar tipo" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="ingreso">Ingreso</SelectItem>
-                              <SelectItem value="egreso">Egreso</SelectItem>
-                              <SelectItem value="ajuste">Ajuste</SelectItem>
+                              {movementTypes.map((type) => (
+                                <SelectItem key={type.id} value={type.id}>
+                                  {type.name}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -320,13 +330,24 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     {/* Categoría */}
                     <FormField
                       control={form.control}
-                      name="category"
+                      name="concept_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Categoría <span className="text-primary">*</span></FormLabel>
-                          <FormControl>
-                            <Input placeholder="ej. Materiales, Mano de obra" {...field} />
-                          </FormControl>
+                          <Select onValueChange={field.onChange} value={field.value} disabled={!selectedTypeId}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={selectedTypeId ? "Seleccionar categoría" : "Primero selecciona un tipo"} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {movementCategories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
