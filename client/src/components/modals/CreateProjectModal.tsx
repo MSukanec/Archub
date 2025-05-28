@@ -199,6 +199,18 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const onSubmit = (data: CreateProjectFormData) => {
     console.log('Form submission triggered with data:', data);
     console.log('Form errors:', form.formState.errors);
+    console.log('Form validation state:', form.formState.isValid);
+    
+    // Add loading state and better error handling
+    if (!data.name) {
+      toast({
+        title: "Error",
+        description: "El nombre del proyecto es requerido",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     createProjectMutation.mutate(data);
   };
 
@@ -417,14 +429,33 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                 Cancelar
               </Button>
               <Button
-                type="submit"
+                type="button"
+                onClick={() => {
+                  console.log('DEBUG: Button clicked');
+                  console.log('DEBUG: Form values:', form.getValues());
+                  console.log('DEBUG: Form errors:', form.formState.errors);
+                  console.log('DEBUG: Form valid:', form.formState.isValid);
+                  
+                  const formData = form.getValues();
+                  if (formData.name) {
+                    console.log('DEBUG: Triggering mutation manually');
+                    createProjectMutation.mutate(formData);
+                  } else {
+                    console.log('DEBUG: Name is missing');
+                    toast({
+                      title: "Error",
+                      description: "El nombre del proyecto es requerido",
+                      variant: "destructive",
+                    });
+                  }
+                }}
                 className="bg-primary hover:bg-primary/90"
                 disabled={createProjectMutation.isPending}
               >
                 {createProjectMutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-{project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
+                {project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
               </Button>
             </div>
           </form>
