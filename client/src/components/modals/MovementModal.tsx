@@ -210,8 +210,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .from('site_movements')
           .insert([{
             project_id: projectId,
-            type: data.type_id,
-            category: data.concept_id,
+            concept_id: data.concept_id,
             date: data.date,
             description: data.description,
             amount: data.amount,
@@ -266,8 +265,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       setIsUploadingFile(true);
       try {
         let updateData: any = {
-          type: data.type_id,
-          category: data.concept_id,
+          concept_id: data.concept_id,
           date: data.date,
           description: data.description,
           amount: data.amount,
@@ -499,91 +497,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Archivo */}
-              <AccordionItem value="file">
-                <AccordionTrigger className="hover:no-underline">
-                  <div className="flex items-center gap-2">
-                    <Upload className="w-4 h-4 text-primary" />
-                    <span>Archivo Adjunto</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 pt-4">
-                  <div className="space-y-4">
-                    {/* File Upload */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Adjuntar archivo (opcional)</label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
-                        <input
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              setSelectedFile(file);
-                            }
-                          }}
-                          className="hidden"
-                          id="file-upload"
-                        />
-                        <label htmlFor="file-upload" className="cursor-pointer">
-                          <div className="flex flex-col items-center space-y-2">
-                            <Upload className="w-8 h-8 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              Haz clic para seleccionar un archivo
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              PDF, JPG, PNG, DOC hasta 10MB
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-                      
-                      {selectedFile && (
-                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <File className="w-4 h-4 text-blue-500" />
-                            <span className="text-sm font-medium">{selectedFile.name}</span>
-                            <span className="text-xs text-gray-500">
-                              ({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)
-                            </span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedFile(null)}
-                          >
-                            ×
-                          </Button>
-                        </div>
-                      )}
-
-                      {movement?.file_url && !selectedFile && (
-                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <File className="w-4 h-4 text-blue-500" />
-                            <span className="text-sm font-medium">Archivo actual</span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const { data } = supabase.storage
-                                .from('movement-files')
-                                .getPublicUrl(movement.file_url);
-                              window.open(data.publicUrl, '_blank');
-                            }}
-                          >
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
               {/* Relaciones */}
               <AccordionItem value="relations">
                 <AccordionTrigger className="hover:no-underline">
@@ -694,6 +607,91 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </FormItem>
                       )}
                     />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Archivo */}
+              <AccordionItem value="file">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Upload className="w-4 h-4 text-primary" />
+                    <span>Archivo Adjunto</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <div className="space-y-4">
+                    {/* File Upload */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Adjuntar archivo (opcional)</label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
+                        <input
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setSelectedFile(file);
+                            }
+                          }}
+                          className="hidden"
+                          id="file-upload"
+                        />
+                        <label htmlFor="file-upload" className="cursor-pointer">
+                          <div className="flex flex-col items-center space-y-2">
+                            <Upload className="w-8 h-8 text-gray-400" />
+                            <span className="text-sm text-gray-600">
+                              Haz clic para seleccionar un archivo
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              PDF, JPG, PNG, DOC hasta 10MB
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                      
+                      {selectedFile && (
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <File className="w-4 h-4 text-blue-500" />
+                            <span className="text-sm font-medium">{selectedFile.name}</span>
+                            <span className="text-xs text-gray-500">
+                              ({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedFile(null)}
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      )}
+
+                      {movement?.file_url && !selectedFile && (
+                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <File className="w-4 h-4 text-blue-500" />
+                            <span className="text-sm font-medium">Archivo actual</span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const { data } = supabase.storage
+                                .from('movement-files')
+                                .getPublicUrl(movement.file_url);
+                              window.open(data.publicUrl, '_blank');
+                            }}
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>

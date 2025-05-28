@@ -270,9 +270,8 @@ export const insertSiteLogFileSchema = createInsertSchema(siteLogFiles).pick({
 
 export const insertSiteMovementSchema = createInsertSchema(siteMovements).pick({
   project_id: true,
-  type: true,
+  concept_id: true,
   date: true,
-  category: true,
   description: true,
   amount: true,
   currency: true,
