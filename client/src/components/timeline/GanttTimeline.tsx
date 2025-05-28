@@ -3,6 +3,7 @@ import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, 
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLocation } from 'wouter';
 
 interface GanttItem {
   id: string;
@@ -54,6 +55,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const timelineContentRef = useRef<HTMLDivElement>(null);
   const [showLeftNav, setShowLeftNav] = useState(false);
   const [showRightNav, setShowRightNav] = useState(false);
+  const [, setLocation] = useLocation();
   
   // Centrar el día actual - mostrar 3 días antes y 3 después (7 días total)
   const [currentWeekStart, setCurrentWeekStart] = useState(
@@ -288,6 +290,18 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     window.dispatchEvent(new CustomEvent(eventMap[type]));
   };
 
+  const handleTitleClick = (type: keyof typeof typeLabels) => {
+    const routeMap = {
+      bitacora: '/sitelog',
+      movimientos: '/movements',
+      tareas: '/budgets', // Las tareas están en la vista de presupuestos
+      archivos: '/sitelog', // Los archivos están en bitácora
+      asistentes: '/sitelog' // Los asistentes están en bitácora
+    };
+    
+    setLocation(routeMap[type]);
+  };
+
   return (
     <div>
       <div className="mb-6">
@@ -381,13 +395,17 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
             <div key={type} className="grid grid-cols-[200px_1fr] gap-4 items-center min-h-[30px]">
               {/* Etiqueta del tipo */}
               <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleTitleClick(type as keyof typeof typeLabels)}
+                  className="flex items-center gap-3 hover:bg-accent/50 rounded-md p-1 -ml-1 transition-colors cursor-pointer flex-1"
+                  title={`Ir a ${label}`}
+                >
                   <Icon size={16} className="text-muted-foreground" />
                   <span className="font-medium text-sm">{label}</span>
                   <span className="text-xs text-muted-foreground">
                     ({typeItems.length})
                   </span>
-                </div>
+                </button>
                 <button
                   onClick={() => handleCreateAction(type as keyof typeof typeLabels)}
                   className="p-1 hover:bg-accent rounded-md transition-colors"
