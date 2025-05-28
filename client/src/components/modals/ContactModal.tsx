@@ -118,9 +118,14 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
 
   const updateMutation = useMutation({
     mutationFn: async (data: { id: string; contactData: Partial<CreateContactData>; typeIds: string[] }) => {
-      const updatedContact = await contactsService.update(data.id, data.contactData);
-      await contactTypesService.updateContactTypes(data.id, data.typeIds);
-      return updatedContact;
+      try {
+        const updatedContact = await contactsService.update(data.id, data.contactData);
+        await contactTypesService.updateContactTypes(data.id, data.typeIds);
+        return updatedContact;
+      } catch (error) {
+        console.error('Error in update mutation:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
@@ -139,6 +144,8 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
         description: "No se pudieron guardar los cambios. Inténtalo de nuevo.",
         variant: "destructive",
       });
+      // Force close modal even on error to prevent getting stuck
+      onClose();
     },
   });
 
