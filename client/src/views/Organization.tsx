@@ -1,4 +1,4 @@
-import { Activity, BarChart3, Calendar, TrendingUp } from 'lucide-react';
+import { Activity, BarChart3, Calendar, TrendingUp, Building2 } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -94,62 +94,85 @@ export default function Organization() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Organización</h1>
-          <p className="text-muted-foreground">{organization?.name}</p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Organización
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {organization?.name}
+            </p>
+          </div>
         </div>
       </div>
       
       {/* Organization Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Proyectos Totales</p>
-              <p className="text-2xl font-bold text-foreground">{stats?.totalProjects || 0}</p>
+              <p className="text-sm text-muted-foreground">Proyectos Totales</p>
+              <p className="text-3xl font-bold text-foreground">{stats?.totalProjects || 0}</p>
             </div>
-            <BarChart3 className="h-8 w-8 text-primary" />
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-primary" />
+            </div>
           </div>
         </div>
         
-        <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Presupuesto Total</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-sm text-muted-foreground">Presupuesto Total</p>
+              <p className="text-3xl font-bold text-foreground">
                 ${stats?.totalBudget ? (stats.totalBudget / 1000000).toFixed(1) + 'M' : '0'}
               </p>
             </div>
-            <TrendingUp className="h-8 w-8 text-primary" />
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-primary" />
+            </div>
           </div>
         </div>
         
-        <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Actividad Mensual</p>
-              <p className="text-2xl font-bold text-foreground">{stats?.monthlyActivity || 0}</p>
+              <p className="text-sm text-muted-foreground">Actividad Mensual</p>
+              <p className="text-3xl font-bold text-foreground">{stats?.monthlyActivity || 0}</p>
             </div>
-            <Activity className="h-8 w-8 text-primary" />
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Activity className="h-5 w-5 text-primary" />
+            </div>
           </div>
         </div>
         
-        <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Días Activos</p>
-              <p className="text-2xl font-bold text-foreground">{stats?.activeDays || 0}</p>
+              <p className="text-sm text-muted-foreground">Días Activos</p>
+              <p className="text-3xl font-bold text-foreground">{stats?.activeDays || 0}</p>
             </div>
-            <Calendar className="h-8 w-8 text-primary" />
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-primary" />
+            </div>
           </div>
         </div>
       </div>
       
       {/* Organization Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Información de la Organización</h3>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground">Información de la Organización</h3>
+          </div>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Nombre</label>

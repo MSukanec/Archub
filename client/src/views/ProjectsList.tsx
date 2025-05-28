@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp, Lock } from 'lucide-react';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp, Lock, FolderKanban } from 'lucide-react';
 import { useFeatures } from '@/hooks/useFeatures';
 import { LimitLock } from '@/components/features';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

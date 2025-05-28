@@ -182,16 +182,7 @@ export default function SiteLogs() {
             </p>
           </div>
         </div>
-        <Button 
-          onClick={() => {
-            setSelectedSiteLog(null);
-            setIsModalOpen(true);
-          }}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl hover:scale-105 transition-all shadow-sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva Bitácora
-        </Button>
+
       </div>
 
       {/* Content */}

@@ -319,13 +319,7 @@ export default function Movements() {
             </p>
           </div>
         </div>
-        <Button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl hover:scale-105 transition-all shadow-sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Movimiento
-        </Button>
+
       </div>
 
       {/* Summary Cards - Modern Professional Style */}

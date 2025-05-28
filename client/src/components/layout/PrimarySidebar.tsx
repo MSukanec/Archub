@@ -88,7 +88,7 @@ export default function PrimarySidebar() {
   return (
     <div className="w-[56px] bg-card border-r border-border flex flex-col shadow-sm">
       {/* Header area - Logo */}
-      <div className="h-[56px] flex items-center justify-center border-b border-border/50">
+      <div className="h-[56px] flex items-center justify-center border-b border-border">
         <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-sm">
           <span className="text-white font-bold text-sm">M</span>
         </div>
@@ -134,7 +134,7 @@ export default function PrimarySidebar() {
         </button>
         
         {/* Separator */}
-        <div className="w-6 h-px bg-border/50 my-2"></div>
+        <div className="w-8 h-px bg-border my-2"></div>
         
         {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
           // Hide admin section for non-admin users
