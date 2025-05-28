@@ -63,6 +63,7 @@ export default function SiteLogs() {
           .order('log_date', { ascending: false });
         
         if (error) throw error;
+        console.log('Site logs fetched:', data);
         return data || [];
       } catch (error) {
         console.error('Error fetching site logs:', error);
@@ -70,6 +71,10 @@ export default function SiteLogs() {
       }
     },
     enabled: !!projectId,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    gcTime: 0,
   });
 
   // Delete mutation
