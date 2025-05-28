@@ -18,12 +18,12 @@ export interface Contact {
 
 export interface CreateContactData {
   first_name: string;
-  last_name?: string;
-  email?: string;
-  phone?: string;
-  company_name?: string;
-  location?: string;
-  notes?: string;
+  last_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  company_name?: string | null;
+  location?: string | null;
+  notes?: string | null;
   contact_type: string;
 }
 

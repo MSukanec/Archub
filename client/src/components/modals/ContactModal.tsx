@@ -19,9 +19,9 @@ const contactSchema = z.object({
   last_name: z.string().optional(),
   contact_type: z.string().min(1, "El tipo de contacto es requerido"),
   company_name: z.string().optional(),
-  email: z.string().refine((val) => !val || z.string().email().safeParse(val).success, {
+  email: z.string().optional().refine((val) => !val || val === "" || z.string().email().safeParse(val).success, {
     message: "Email inválido"
-  }).optional(),
+  }),
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
@@ -81,6 +81,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
     mutationFn: contactsService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
+      form.reset();
       toast({
         title: "Contacto creado",
         description: "El contacto se ha guardado correctamente.",
@@ -88,6 +89,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       onClose();
     },
     onError: (error) => {
+      console.error('Error creating contact:', error);
       toast({
         title: "Error",
         description: "No se pudo guardar el contacto. Inténtalo de nuevo.",
@@ -101,6 +103,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       contactsService.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
+      form.reset();
       toast({
         title: "Contacto actualizado",
         description: "Los cambios se han guardado correctamente.",
@@ -108,6 +111,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
       onClose();
     },
     onError: (error) => {
+      console.error('Error updating contact:', error);
       toast({
         title: "Error",
         description: "No se pudieron guardar los cambios. Inténtalo de nuevo.",
@@ -119,13 +123,13 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   const onSubmit = (data: ContactForm) => {
     const contactData: CreateContactData = {
       first_name: data.first_name,
-      last_name: data.last_name || null,
+      last_name: data.last_name || undefined,
       contact_type: data.contact_type,
-      company_name: data.company_name || null,
-      email: data.email || null,
-      phone: data.phone || null,
-      location: data.location || null,
-      notes: data.notes || null,
+      company_name: data.company_name || undefined,
+      email: data.email || undefined,
+      phone: data.phone || undefined,
+      location: data.location || undefined,
+      notes: data.notes || undefined,
     };
 
     console.log('Submitting contact data:', contactData);
@@ -173,9 +177,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                       <h3 className="font-medium">Información Personal</h3>
                       <p className="text-sm text-muted-foreground">Nombre, apellido y tipo de contacto</p>
                     </div>
-                    {form.watch('first_name') && form.watch('contact_type') && (
-                      <Check className="h-4 w-4 text-green-500 ml-auto mr-2" />
-                    )}
+
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
