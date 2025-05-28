@@ -185,9 +185,13 @@ export default function Movements() {
     filteredMovements.forEach(movement => {
       const amount = movement.amount;
       const target = movement.currency === 'USD' ? dolares : pesos;
-      const movementType = movement.movement_concepts?.movement_concepts?.name?.toLowerCase();
       
-      switch (movementType) {
+      // Obtener el tipo padre (Ingresos/Egresos/Ajustes)
+      const parentType = movement.movement_concepts?.parent_id ? 
+        movement.movement_concepts?.movement_concepts?.name?.toLowerCase() :
+        movement.movement_concepts?.name?.toLowerCase();
+      
+      switch (parentType) {
         case 'ingresos':
           target.ingresos += amount;
           break;
@@ -385,23 +389,9 @@ export default function Movements() {
                       {format(new Date(movement.created_at), 'dd/MM/yyyy', { locale: es })}
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        className={(() => {
-                          const parentName = movement.movement_concepts?.parent_id ? 
-                            movement.movement_concepts.movement_concepts?.name : 
-                            movement.movement_concepts?.name;
-                          
-                          return parentName === 'Ingresos' 
-                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
-                            : parentName === 'Egresos'
-                            ? 'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800'
-                            : 'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800';
-                        })()}
-                      >
-{movement.movement_concepts?.parent_id ? 
-                          movement.movement_concepts.movement_concepts?.name || 'Sin tipo'
-                          : movement.movement_concepts?.name || 'Sin tipo'}
-                      </Badge>
+                      {movement.movement_concepts?.parent_id ? 
+                        movement.movement_concepts.movement_concepts?.name || 'Sin tipo'
+                        : movement.movement_concepts?.name || 'Sin tipo'}
                     </TableCell>
                     <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>
                     <TableCell>{movement.description}</TableCell>
@@ -431,18 +421,22 @@ export default function Movements() {
                           </Button>
                         )}
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => handleEdit(movement)}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                         >
                           <Edit className="h-4 w-4" />
+                          <span className="sr-only">Editar movimiento</span>
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDelete(movement)}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Eliminar movimiento</span>
                         </Button>
                       </div>
                     </TableCell>

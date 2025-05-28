@@ -223,12 +223,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   // Function to upload file to Supabase Storage
   const uploadFile = async (file: File, movementId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user?.id) throw new Error('Usuario no autenticado');
-
     const fileExtension = file.name.split('.').pop();
-    const fileName = `${file.name}`;
-    const filePath = `${user.id}/${movementId}/${fileName}`;
+    const fileName = `${Date.now()}-${file.name}`;
+    const filePath = `${organizationId}/${movementId}/${fileName}`;
 
     const { data, error } = await supabase.storage
       .from('movement-files')
