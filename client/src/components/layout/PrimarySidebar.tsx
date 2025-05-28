@@ -46,9 +46,9 @@ export default function PrimarySidebar() {
       case 'free':
         return Zap;
       case 'pro':
-        return Star;
+        return Crown;
       case 'enterprise':
-        return Diamond;
+        return Rocket;
       default:
         return Zap; // Default to Zap for free
     }
