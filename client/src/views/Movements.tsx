@@ -18,8 +18,6 @@ import DeleteMovementModal from '@/components/modals/DeleteMovementModal';
 interface Movement {
   id: string;
   date: string;
-  type: 'ingreso' | 'egreso' | 'ajuste';
-  category: string;
   description: string;
   amount: number;
   currency: string;
@@ -27,9 +25,19 @@ interface Movement {
   related_task_id?: string;
   file_url?: string;
   project_id: string;
+  concept_id: string;
   created_at: string;
   updated_at: string;
-  // Joined data
+  // Joined data from movement_concepts
+  movement_concepts?: {
+    id: string;
+    name: string;
+    parent_id: string;
+    movement_concepts?: {
+      id: string;
+      name: string;
+    };
+  };
   contact?: {
     id: string;
     name: string;
@@ -151,12 +159,16 @@ export default function Movements() {
     let filtered = movements.filter(movement => {
       const searchTermLower = searchTerm.toLowerCase();
       const matchesSearch = 
-        movement.description.toLowerCase().includes(searchTermLower) ||
-        movement.category.toLowerCase().includes(searchTermLower) ||
-        movement.type.toLowerCase().includes(searchTermLower) ||
+        movement.description?.toLowerCase().includes(searchTermLower) ||
+        movement.movement_concepts?.name?.toLowerCase().includes(searchTermLower) ||
+        movement.movement_concepts?.movement_concepts?.name?.toLowerCase().includes(searchTermLower) ||
         movement.amount.toString().includes(searchTermLower);
       
-      const matchesType = typeFilter === 'all' || movement.type === typeFilter;
+      const movementType = movement.movement_concepts?.movement_concepts?.name?.toLowerCase();
+      const matchesType = typeFilter === 'all' || 
+        (typeFilter === 'ingreso' && movementType === 'ingresos') ||
+        (typeFilter === 'egreso' && movementType === 'egresos') ||
+        (typeFilter === 'ajuste' && movementType === 'ajustes');
       
       return matchesSearch && matchesType;
     });
@@ -173,15 +185,16 @@ export default function Movements() {
     filteredMovements.forEach(movement => {
       const amount = movement.amount;
       const target = movement.currency === 'USD' ? dolares : pesos;
+      const movementType = movement.movement_concepts?.movement_concepts?.name?.toLowerCase();
       
-      switch (movement.type) {
-        case 'ingreso':
+      switch (movementType) {
+        case 'ingresos':
           target.ingresos += amount;
           break;
-        case 'egreso':
+        case 'egresos':
           target.egresos += amount;
           break;
-        case 'ajuste':
+        case 'ajustes':
           target.ajustes += amount;
           break;
       }
@@ -374,9 +387,9 @@ export default function Movements() {
                     <TableCell>
                       <Badge 
                         className={
-                          movement.type === 'ingreso' 
+                          movement.movement_concepts?.movement_concepts?.name === 'Ingresos' 
                             ? 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
-                            : movement.type === 'egreso'
+                            : movement.movement_concepts?.movement_concepts?.name === 'Egresos'
                             ? 'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800'
                             : 'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800'
                         }
