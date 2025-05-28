@@ -159,21 +159,48 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Reset form when movement changes
   useEffect(() => {
     if (movement && isEditing) {
-      // Get the parent type ID from the concept's parent_id
-      const typeId = movement.movement_concepts?.parent_id || '';
-      const conceptId = movement.concept_id || '';
+      const loadData = async () => {
+        let typeId = '';
+        let conceptId = movement.concept_id || '';
+        
+        // Si tenemos movement_concepts completos, usar esos datos
+        if (movement.movement_concepts?.parent_id) {
+          typeId = movement.movement_concepts.parent_id;
+        } else if (movement.concept_id) {
+          // Si no, buscar el parent_id en la base de datos
+          try {
+            const { data: conceptData, error } = await supabase
+              .from('movement_concepts')
+              .select('parent_id')
+              .eq('id', movement.concept_id)
+              .single();
+            
+            if (!error && conceptData?.parent_id) {
+              typeId = conceptData.parent_id;
+            } else {
+              // Si no tiene parent_id, es un tipo padre
+              typeId = movement.concept_id;
+            }
+          } catch (err) {
+            console.log('Error fetching concept data:', err);
+            typeId = movement.concept_id;
+          }
+        }
+        
+        form.reset({
+          type_id: typeId,
+          concept_id: conceptId,
+          date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
+          description: movement.description || '',
+          amount: movement.amount || 0,
+          currency: movement.currency || 'ARS',
+          related_contact_id: movement.related_contact_id || '',
+          related_task_id: movement.related_task_id || '',
+        });
+        setSelectedTypeId(typeId);
+      };
       
-      form.reset({
-        type_id: typeId,
-        concept_id: conceptId,
-        date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
-        description: movement.description || '',
-        amount: movement.amount || 0,
-        currency: movement.currency || 'ARS',
-        related_contact_id: movement.related_contact_id || '',
-        related_task_id: movement.related_task_id || '',
-      });
-      setSelectedTypeId(typeId);
+      loadData();
     } else {
       form.reset({
         type_id: '',
