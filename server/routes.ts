@@ -367,6 +367,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Movement concepts routes (for Supabase integration)
+  app.get("/api/movement-types", async (req, res) => {
+    try {
+      // Since this is using Supabase directly, we'll return a success response
+      // The actual data fetching happens in the frontend via Supabase client
+      res.json({ message: "Movement types endpoint available" });
+    } catch (error) {
+      res.status(500).json({ message: "Error with movement types" });
+    }
+  });
+
+  app.get("/api/movement-categories/:typeId", async (req, res) => {
+    try {
+      // Since this is using Supabase directly, we'll return a success response
+      // The actual data fetching happens in the frontend via Supabase client
+      res.json({ message: "Movement categories endpoint available" });
+    } catch (error) {
+      res.status(500).json({ message: "Error with movement categories" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

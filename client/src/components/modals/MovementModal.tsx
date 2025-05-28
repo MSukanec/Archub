@@ -93,14 +93,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   });
 
   // Fetch movement types from movement_concepts table (parent_id IS NULL)
-  const { data: movementTypes = [] } = useQuery({
+  const { data: movementTypes = [], isLoading: typesLoading } = useQuery({
     queryKey: ['movement-types'],
     queryFn: movementConceptsService.getTypes,
     enabled: isOpen,
   });
 
   // Fetch categories for selected type from movement_concepts table
-  const { data: movementCategories = [] } = useQuery({
+  const { data: movementCategories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ['movement-categories', selectedTypeId],
     queryFn: () => movementConceptsService.getCategoriesByType(selectedTypeId),
     enabled: isOpen && !!selectedTypeId,
