@@ -46,6 +46,8 @@ export default function SiteLogs() {
     queryFn: () => projectsService.getAll(),
     retry: 1,
     refetchOnWindowFocus: false,
+    staleTime: 10 * 60 * 1000, // 10 minutos
+    gcTime: 30 * 60 * 1000, // 30 minutos
   });
 
   const currentProject = projects.find((p: any) => p.id === projectId);
@@ -60,7 +62,8 @@ export default function SiteLogs() {
           .from('site_logs')
           .select('*')
           .eq('project_id', String(projectId))
-          .order('log_date', { ascending: false });
+          .order('log_date', { ascending: false })
+          .limit(50);
         
         if (error) throw error;
         console.log('Site logs fetched:', data);
@@ -71,10 +74,10 @@ export default function SiteLogs() {
       }
     },
     enabled: !!projectId,
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000, // 5 minutos
     refetchOnWindowFocus: false,
     retry: 1,
-    gcTime: 0,
+    gcTime: 10 * 60 * 1000, // 10 minutos
   });
 
   // Delete mutation

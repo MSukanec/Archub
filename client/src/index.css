@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 16%; /* #282828 */
+  --background: 0 0% 15%; /* #262626 */
   --foreground: 0 0% 98%; /* #fafafa */
   --muted: 0 0% 20%; /* #333333 */
   --muted-foreground: 240 4% 64%; /* #a3a3a3 */
@@ -13,7 +13,7 @@
   --card-foreground: 0 0% 98%; /* #fafafa */
   --border: 0 0% 30%; /* #4d4d4d */
   --input: 0 0% 30%; /* #4d4d4d */
-  --primary: 72 91% 40%; /* #a6cc0f */
+  --primary: 214 100% 66%; /* #4f9eff */
   --primary-foreground: 0 0% 100%; /* #ffffff */
   --secondary: 0 0% 30%; /* #4d4d4d */
   --secondary-foreground: 0 0% 98%; /* #fafafa */
@@ -21,7 +21,7 @@
   --accent-foreground: 0 0% 98%; /* #fafafa */
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 98%; /* #fafafa */
-  --ring: 72 91% 40%; /* #a6cc0f */
+  --ring: 214 100% 66%; /* #4f9eff */
   --radius: 0.5rem;
   
   /* Surface variations for better hierarchy */
