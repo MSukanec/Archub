@@ -257,14 +257,12 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                       <h3 className="font-medium">Información General</h3>
                       <p className="text-sm text-muted-foreground">Fecha, clima y comentarios del día</p>
                     </div>
-                    {form.watch('date') && (
-                      <Check className="h-4 w-4 text-green-500 ml-auto mr-2" />
-                    )}
+
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                       <FormField
                         control={form.control}
                         name="date"
