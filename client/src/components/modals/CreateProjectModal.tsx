@@ -58,7 +58,7 @@ const createProjectSchema = z.object({
   address: z.string().optional(),
   city: z.string().optional(),
   zip_code: z.string().optional(),
-  phone: z.string().optional(),
+  contact_phone: z.string().optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
 });
 
@@ -74,7 +74,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { organizationId } = useUserContextStore();
+  const { organizationId: currentOrgId } = useUserContextStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [nameValidation, setNameValidation] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
   const [nameExists, setNameExists] = useState(false);
@@ -89,19 +89,22 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       address: '',
       city: '',
       zip_code: '',
-      phone: '',
+      contact_phone: '',
       email: '',
     },
   });
 
   // Get organization from store
-  const { organization: orgFromStore } = useUserContextStore();
+  const { organization: orgFromStore, refreshData } = useUserContextStore();
 
   useEffect(() => {
     if (orgFromStore) {
       setCurrentOrganization(orgFromStore);
+    } else if (currentOrgId && !orgFromStore) {
+      // If we have an organizationId but no organization data, refresh it
+      refreshData();
     }
-  }, [orgFromStore]);
+  }, [orgFromStore, currentOrgId, refreshData]);
 
   // Set form values when editing
   useEffect(() => {
@@ -114,7 +117,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         address: project.address || '',
         city: project.city || '',
         zip_code: project.zip_code || '',
-        phone: project.phone || '',
+        contact_phone: project.contact_phone || '',
         email: project.email || '',
       });
     } else {
@@ -126,7 +129,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         address: '',
         city: '',
         zip_code: '',
-        phone: '',
+        contact_phone: '',
         email: '',
       });
     }
@@ -145,7 +148,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       const { data: existingProjects } = await supabase
         .from('projects')
         .select('name')
-        .eq('organization_id', organizationId)
+        .eq('organization_id', currentOrgId)
         .eq('is_active', true)
         .ilike('name', name);
 
@@ -475,7 +478,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                         {/* Teléfono */}
                         <FormField
                           control={form.control}
-                          name="phone"
+                          name="contact_phone"
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center gap-3 mb-2">
