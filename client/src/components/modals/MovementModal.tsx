@@ -47,7 +47,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Loader2, Check, ChevronsUpDown, DollarSign, Calendar, FileText, User, Briefcase } from 'lucide-react';
+import { Loader2, Check, ChevronsUpDown, DollarSign, Calendar, FileText, User, Briefcase, Upload, File, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
@@ -81,6 +81,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const queryClient = useQueryClient();
   const [contactOpen, setContactOpen] = useState(false);
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
   const isEditing = !!movement;
 
   // Fetch contacts for selection
@@ -90,36 +92,19 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen,
   });
 
-  // Temporary: Use static types until movement_concepts table is populated
-  const movementTypes = [
-    { id: 'ingreso', name: 'Ingreso' },
-    { id: 'egreso', name: 'Egreso' },
-    { id: 'ajuste', name: 'Ajuste' }
-  ];
+  // Fetch movement types from movement_concepts table (parent_id IS NULL)
+  const { data: movementTypes = [] } = useQuery({
+    queryKey: ['movement-types'],
+    queryFn: movementConceptsService.getTypes,
+    enabled: isOpen,
+  });
 
-  // Temporary: Use static categories based on type
-  const getMovementCategories = (typeId: string) => {
-    const categories = {
-      'ingreso': [
-        { id: 'cuota', name: 'Cuota' },
-        { id: 'adelanto', name: 'Adelanto' },
-        { id: 'financiamiento', name: 'Financiamiento' }
-      ],
-      'egreso': [
-        { id: 'materiales', name: 'Materiales' },
-        { id: 'mano_obra', name: 'Mano de obra' },
-        { id: 'equipos', name: 'Equipos' },
-        { id: 'servicios', name: 'Servicios' }
-      ],
-      'ajuste': [
-        { id: 'correccion', name: 'Corrección' },
-        { id: 'reclasificacion', name: 'Reclasificación' }
-      ]
-    };
-    return categories[typeId] || [];
-  };
-
-  const movementCategories = getMovementCategories(selectedTypeId);
+  // Fetch categories for selected type from movement_concepts table
+  const { data: movementCategories = [] } = useQuery({
+    queryKey: ['movement-categories', selectedTypeId],
+    queryFn: () => movementConceptsService.getCategoriesByType(selectedTypeId),
+    enabled: isOpen && !!selectedTypeId,
+  });
 
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
@@ -171,27 +156,66 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     return `${contact.first_name} ${contact.last_name || ''}`.trim() || contact.company_name || 'Sin nombre';
   };
 
+  // Function to upload file to Supabase Storage
+  const uploadFile = async (file: File, movementId: string) => {
+    const { user } = useAuth();
+    if (!user?.id) throw new Error('Usuario no autenticado');
+
+    const fileExtension = file.name.split('.').pop();
+    const fileName = `${file.name}`;
+    const filePath = `${user.id}/${movementId}/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('movement-files')
+      .upload(filePath, file, {
+        upsert: true
+      });
+
+    if (error) throw error;
+    return filePath;
+  };
+
   // Create movement mutation
   const createMovementMutation = useMutation({
     mutationFn: async (data: MovementForm) => {
-      const { data: result, error } = await supabase
-        .from('site_movements')
-        .insert([{
-          project_id: projectId,
-          type: data.type_id,
-          category: data.concept_id,
-          date: data.date,
-          description: data.description,
-          amount: data.amount,
-          currency: data.currency,
-          related_contact_id: data.related_contact_id || null,
-          related_task_id: data.related_task_id || null,
-        }])
-        .select()
-        .single();
+      setIsUploadingFile(true);
+      try {
+        // First create the movement
+        const { data: result, error } = await supabase
+          .from('site_movements')
+          .insert([{
+            project_id: projectId,
+            type: data.type_id,
+            category: data.concept_id,
+            date: data.date,
+            description: data.description,
+            amount: data.amount,
+            currency: data.currency,
+            related_contact_id: data.related_contact_id || null,
+            related_task_id: data.related_task_id || null,
+          }])
+          .select()
+          .single();
 
-      if (error) throw error;
-      return result;
+        if (error) throw error;
+
+        // If there's a file, upload it and update the movement
+        if (selectedFile && result) {
+          const filePath = await uploadFile(selectedFile, result.id);
+          
+          const { error: updateError } = await supabase
+            .from('site_movements')
+            .update({ file_url: filePath })
+            .eq('id', result.id);
+
+          if (updateError) throw updateError;
+          result.file_url = filePath;
+        }
+
+        return result;
+      } finally {
+        setIsUploadingFile(false);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
