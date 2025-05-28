@@ -84,9 +84,9 @@ export default function Dashboard() {
 
   // Fetch todos los eventos para el período visible
   const { data: timelineEvents = [], isLoading } = useQuery({
-    queryKey: ['/api/timeline-events', projectId, format(viewStartDate, 'yyyy-MM-dd')],
+    queryKey: ['/api/timeline-events', projectId, format(viewStartDate, 'yyyy-MM-dd'), user?.id],
     queryFn: async () => {
-      if (!projectId) return [];
+      if (!projectId || !user?.id) return [];
       
       // Usar el mismo rango que el GanttTimeline (60 días centrados en hoy)
       const today = new Date();
@@ -95,14 +95,28 @@ export default function Dashboard() {
       
 
 
-      // Fetch site logs con información del autor
+      // Primero obtener la organización del usuario actual
+      const { data: currentUser } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (!currentUser?.organization_id) {
+        console.error('No se pudo obtener la organización del usuario');
+        return [];
+      }
+
+      // Fetch site logs con información del autor, solo de tu organización
       const { data: siteLogs, error: siteLogsError } = await supabase
         .from('site_logs')
         .select(`
           *,
-          author:users(first_name, last_name)
+          author:users(first_name, last_name),
+          projects!inner(organization_id)
         `)
         .eq('project_id', projectId)
+        .eq('projects.organization_id', currentUser.organization_id)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
         
@@ -112,11 +126,15 @@ export default function Dashboard() {
         console.log('Site logs fetched:', siteLogs);
       }
 
-      // Fetch site movements
+      // Fetch site movements, solo de tu organización
       const { data: movements, error: movementsError } = await supabase
         .from('site_movements')
-        .select('*')
+        .select(`
+          *,
+          projects!inner(organization_id)
+        `)
         .eq('project_id', projectId)
+        .eq('projects.organization_id', currentUser.organization_id)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
         
