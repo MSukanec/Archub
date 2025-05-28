@@ -106,6 +106,26 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     }
   }, [orgFromStore, currentOrgId, refreshData]);
 
+  // Refresh data when modal opens for editing
+  useEffect(() => {
+    if (isOpen && project) {
+      refreshData();
+    }
+  }, [isOpen, project, refreshData]);
+
+  // Map database status to form values
+  const mapStatusFromDB = (dbStatus: string) => {
+    const statusMap: { [key: string]: string } = {
+      'Activo': 'in_progress',
+      'En Progreso': 'in_progress',
+      'Planificación': 'planning',
+      'En Pausa': 'on_hold',
+      'Completado': 'completed',
+      'Cancelado': 'cancelled'
+    };
+    return statusMap[dbStatus] || 'planning';
+  };
+
   // Set form values when editing
   useEffect(() => {
     if (project) {
@@ -113,7 +133,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: project.name || '',
         description: project.description || '',
         client_name: project.client_name || '',
-        status: project.status || 'planning',
+        status: mapStatusFromDB(project.status || ''),
         address: project.address || '',
         city: project.city || '',
         zip_code: project.zip_code || '',
@@ -189,6 +209,18 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     },
   });
 
+  // Map form status back to database format
+  const mapStatusToDB = (formStatus: string) => {
+    const statusMap: { [key: string]: string } = {
+      'planning': 'Planificación',
+      'in_progress': 'En Progreso',
+      'on_hold': 'En Pausa',
+      'completed': 'Completado',
+      'cancelled': 'Cancelado'
+    };
+    return statusMap[formStatus] || 'Planificación';
+  };
+
   const onSubmit = (data: CreateProjectFormData) => {
     if (!data.name) {
       toast({
@@ -199,7 +231,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       return;
     }
     
-    createProjectMutation.mutate(data);
+    // Convert status back to database format
+    const dbData = {
+      ...data,
+      status: mapStatusToDB(data.status || 'planning')
+    };
+    
+    createProjectMutation.mutate(dbData);
   };
 
   return (
