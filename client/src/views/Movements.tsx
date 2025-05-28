@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -391,10 +391,12 @@ export default function Movements() {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              const { data } = supabase.storage
-                                .from('movement-files')
-                                .getPublicUrl(movement.file_url);
-                              window.open(data.publicUrl, '_blank');
+                              if (movement.file_url) {
+                                const { data } = supabase.storage
+                                  .from('movement-files')
+                                  .getPublicUrl(movement.file_url);
+                                window.open(data.publicUrl, '_blank');
+                              }
                             }}
                             title="Descargar archivo"
                           >
