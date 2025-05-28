@@ -386,6 +386,21 @@ export default function Movements() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {movement.file_url && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const { data } = supabase.storage
+                                .from('movement-files')
+                                .getPublicUrl(movement.file_url);
+                              window.open(data.publicUrl, '_blank');
+                            }}
+                            title="Descargar archivo"
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
