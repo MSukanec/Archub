@@ -99,7 +99,7 @@ export const contactsService = {
     return data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const { error } = await supabase
       .from('contacts')
       .delete()

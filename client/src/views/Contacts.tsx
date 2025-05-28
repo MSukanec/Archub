@@ -141,7 +141,7 @@ export default function Contacts() {
       (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesType = selectedType === '' || 
+    const matchesType = selectedType === '' || selectedType === 'all' || 
       (contact.contact_types && contact.contact_types.some(type => type.id === selectedType));
     
     return matchesSearch && matchesType;
@@ -194,7 +194,7 @@ export default function Contacts() {
             <SelectValue placeholder="Filtrar por tipo" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos los tipos</SelectItem>
+            <SelectItem value="all">Todos los tipos</SelectItem>
             {availableTypes.map((type) => (
               <SelectItem key={type.id} value={type.id}>
                 {type.name}
