@@ -8,7 +8,8 @@ import SiteLogModal from '@/components/modals/SiteLogModal';
 import MovementModal from '@/components/modals/MovementModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Calendar, FolderKanban, Plus, BarChart3, Building2, CalendarClock } from 'lucide-react';
+import { MetricCard } from '@/components/ui/MetricCard';
+import { ChevronLeft, ChevronRight, Calendar, FolderKanban, Plus, BarChart3, Building2, CalendarClock, DollarSign, Users } from 'lucide-react';
 import { format, addDays, subDays, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 

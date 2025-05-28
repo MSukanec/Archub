@@ -1,7 +1,8 @@
-import { Activity, BarChart3, Calendar, TrendingUp, Building2 } from 'lucide-react';
+import { Activity, BarChart3, Calendar, TrendingUp, Building2, DollarSign } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { MetricCard } from '@/components/ui/MetricCard';
 
 export default function Organization() {
   const { organizationId } = useUserContextStore();
