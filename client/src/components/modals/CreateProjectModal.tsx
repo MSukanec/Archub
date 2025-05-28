@@ -42,7 +42,6 @@ const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   description: z.string().optional(),
   client_name: z.string().optional(),
-  contact_id: z.number().optional(),
   status: z.string().optional(),
   address: z.string().optional(),
   contact_phone: z.string().optional(),
@@ -127,7 +126,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: project.name,
         description: project.description || '',
         client_name: project.client_name || '',
-        contact_id: project.contact_id || undefined,
+
         status: project.status,
         address: project.address || '',
         contact_phone: project.contact_phone || '',
@@ -138,7 +137,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: '',
         description: '',
         client_name: '',
-        contact_id: undefined,
+
         status: 'Planificación',
         address: '',
         contact_phone: '',
@@ -151,7 +150,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const handleContactSelect = (contact: Contact) => {
     setSelectedContact(contact);
     form.setValue('client_name', contact.name);
-    form.setValue('contact_id', contact.id);
+    // Contact ID removed from schema
     setIsContactDialogOpen(false);
   };
 
