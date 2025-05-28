@@ -134,7 +134,7 @@ export default function PrimarySidebar() {
         </button>
         
         {/* Separator */}
-        <div className="w-8 h-px bg-border my-2"></div>
+        <div className="w-6 h-px bg-border my-3"></div>
         
         {bottomNavigationItems.map(({ section, icon: Icon, label }) => {
           // Hide admin section for non-admin users
