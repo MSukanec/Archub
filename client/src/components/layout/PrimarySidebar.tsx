@@ -86,7 +86,7 @@ export default function PrimarySidebar() {
   });
 
   return (
-    <div className="w-[45px] bg-surface flex flex-col">
+    <div className="w-[45px] bg-surface border-r border-border flex flex-col">
       {/* Header area - 45px alto para coincidir con TopBar */}
       <div className="h-[45px] flex items-center justify-center border-b border-border">
         <div className="w-[30px] h-[30px] bg-primary rounded-lg flex items-center justify-center">
