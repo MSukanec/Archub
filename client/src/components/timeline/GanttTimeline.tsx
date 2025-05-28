@@ -3,7 +3,7 @@ import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, 
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLocation } from 'wouter';
+import { useNavigationStore } from '@/stores/navigationStore';
 
 interface GanttItem {
   id: string;
@@ -55,7 +55,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   const timelineContentRef = useRef<HTMLDivElement>(null);
   const [showLeftNav, setShowLeftNav] = useState(false);
   const [showRightNav, setShowRightNav] = useState(false);
-  const [, setLocation] = useLocation();
+  const { setView } = useNavigationStore();
   
   // Centrar el día actual - mostrar 3 días antes y 3 después (7 días total)
   const [currentWeekStart, setCurrentWeekStart] = useState(
@@ -291,15 +291,15 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   };
 
   const handleTitleClick = (type: keyof typeof typeLabels) => {
-    const routeMap = {
-      bitacora: '/sitelog',
-      movimientos: '/movements',
-      tareas: '/budgets', // Las tareas están en la vista de presupuestos
-      archivos: '/sitelog', // Los archivos están en bitácora
-      asistentes: '/sitelog' // Los asistentes están en bitácora
+    const viewMap = {
+      bitacora: 'sitelog-main',
+      movimientos: 'movements-main',
+      tareas: 'budgets-list', // Las tareas están en la vista de presupuestos
+      archivos: 'sitelog-main', // Los archivos están en bitácora
+      asistentes: 'sitelog-main' // Los asistentes están en bitácora
     };
     
-    setLocation(routeMap[type]);
+    setView(viewMap[type]);
   };
 
   return (
