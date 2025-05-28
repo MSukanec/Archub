@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import DayDetailModal from '@/components/timeline/DayDetailModal';
 import GanttTimeline from '@/components/timeline/GanttTimeline';
@@ -23,6 +24,7 @@ interface DayEvent {
 
 export default function Dashboard() {
   const { projectId } = useUserContextStore();
+  const { user } = useAuthStore();
 
   // Obtener datos del proyecto activo
   const { data: activeProject } = useQuery({
@@ -91,16 +93,30 @@ export default function Dashboard() {
       const periodStart = startOfDay(addDays(today, -30));
       const periodEnd = endOfDay(addDays(today, 30));
       
-      // Fetch site logs con información del autor
+      // Obtener la organización del usuario para filtrar correctamente
+      const { data: userOrg } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user?.id)
+        .single();
+
+      if (!userOrg?.organization_id) {
+        console.error('No se pudo obtener la organización del usuario');
+        return [];
+      }
+
+      // Fetch site logs con información del autor, filtrando por organización
       const { data: siteLogs, error: siteLogsError } = await supabase
         .from('site_logs')
         .select(`
           *,
-          author:users(first_name, last_name)
+          author:users(first_name, last_name),
+          project:projects!inner(organization_id)
         `)
         .eq('project_id', projectId)
-        .gte('log_date', format(periodStart, 'yyyy-MM-dd'))
-        .lte('log_date', format(periodEnd, 'yyyy-MM-dd'));
+        .eq('project.organization_id', userOrg.organization_id)
+        .gte('date', format(periodStart, 'yyyy-MM-dd'))
+        .lte('date', format(periodEnd, 'yyyy-MM-dd'));
         
       if (siteLogsError) {
         console.error('Error fetching site logs:', siteLogsError);
@@ -108,11 +124,15 @@ export default function Dashboard() {
         console.log('Site logs fetched:', siteLogs);
       }
 
-      // Fetch site movements (sin relación por ahora hasta que se cree la tabla)
+      // Fetch site movements, filtrando por organización
       const { data: movements, error: movementsError } = await supabase
         .from('site_movements')
-        .select('*')
+        .select(`
+          *,
+          project:projects!inner(organization_id)
+        `)
         .eq('project_id', projectId)
+        .eq('project.organization_id', userOrg.organization_id)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
         
@@ -142,7 +162,7 @@ export default function Dashboard() {
       // Agregar site logs
       siteLogs?.forEach(log => {
         // Usar directamente la fecha string sin crear Date object para evitar desfases de zona horaria
-        const logDate = log.log_date; // Ya está en formato 'yyyy-MM-dd'
+        const logDate = format(new Date(log.date), 'yyyy-MM-dd'); // Convertir a formato correcto
         if (eventsByDate[logDate]) {
           eventsByDate[logDate].siteLogs.push(log);
         }
