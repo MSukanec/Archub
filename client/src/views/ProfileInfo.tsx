@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Mail, Calendar, Save, LogOut, AlertTriangle } from 'lucide-react';
+import { User, Mail, Calendar, Save, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -39,8 +39,7 @@ export default function ProfileInfo() {
   const [, setLocation] = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [confirmationText, setConfirmationText] = useState('');
+
 
   // Obtener la organización del usuario
   const { data: organization } = useQuery({
@@ -84,44 +83,7 @@ export default function ProfileInfo() {
     }
   };
 
-  const handleDeleteClick = () => {
-    setConfirmationText('');
-    setShowDeleteModal(true);
-  };
 
-  const handleConfirmDelete = async () => {
-    if (!organization || confirmationText !== organization.name) {
-      toast({
-        title: "Error",
-        description: "Debes escribir exactamente el nombre de tu organización para confirmar.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      // TODO: Implement account deletion logic
-      toast({
-        title: "Cuenta eliminada",
-        description: "Tu cuenta ha sido eliminada permanentemente.",
-        variant: "destructive",
-      });
-      setShowDeleteModal(false);
-      setConfirmationText('');
-      await authService.signOut();
-      logout();
-      setLocation('/'); // Redirigir a la página de landing
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error al eliminar la cuenta.",
-        variant: "destructive",
-      });
-      setShowDeleteModal(false);
-    }
-  };
-
-  const isDeleteConfirmationValid = organization && confirmationText === organization.name;
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -305,14 +267,7 @@ export default function ProfileInfo() {
                 Cerrar Sesión
               </Button>
               
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={handleDeleteClick}
-              >
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Eliminar Cuenta
-              </Button>
+
             </div>
           </div>
         </CardContent>
@@ -342,60 +297,7 @@ export default function ProfileInfo() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Modal de confirmación para eliminar cuenta */}
-      <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
-              <AlertTriangle className="h-6 w-6" />
-              ⚠️ PELIGRO: Eliminar Cuenta
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="space-y-3">
-                <div className="font-semibold text-red-700 dark:text-red-400">
-                  Esta acción NO se puede deshacer.
-                </div>
-                <div>
-                  Al eliminar tu cuenta se borrarán <strong>permanentemente</strong>:
-                </div>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  <li>Todos tus proyectos y presupuestos</li>
-                  <li>Toda la información de tu organización</li>
-                  <li>Todos los archivos y documentos</li>
-                  <li>Todo el historial de actividades</li>
-                  <li>Tu perfil y configuraciones</li>
-                </ul>
-                <div className="font-medium text-red-700 dark:text-red-400">
-                  Esta acción es IRREVERSIBLE. ¿Estás completamente seguro?
-                </div>
-                {organization && (
-                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border">
-                    <div className="text-sm font-medium mb-2">
-                      Para confirmar, escribe el nombre de tu organización: <span className="font-mono bg-gray-200 dark:bg-gray-700 px-1 rounded">{organization.name}</span>
-                    </div>
-                    <Input
-                      value={confirmationText}
-                      onChange={(e) => setConfirmationText(e.target.value)}
-                      placeholder="Nombre de la organización"
-                      className="mt-2"
-                    />
-                  </div>
-                )}
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmationText('')}>No, mantener mi cuenta</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleConfirmDelete}
-              disabled={!isDeleteConfirmationValid}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Sí, eliminar permanentemente
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
     </div>
   );
 }
