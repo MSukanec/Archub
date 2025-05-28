@@ -80,7 +80,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   const createMutation = useMutation({
     mutationFn: contactsService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       form.reset();
       toast({
         title: "Contacto creado",
@@ -102,7 +102,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
     mutationFn: ({ id, data }: { id: number; data: Partial<CreateContactData> }) =>
       contactsService.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       form.reset();
       toast({
         title: "Contacto actualizado",
@@ -164,7 +164,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Accordion type="multiple" defaultValue={["personal", "company"]} className="w-full">
+            <Accordion type="single" defaultValue="personal" className="w-full">
               
               {/* Información Personal */}
               <AccordionItem value="personal" className="border border-border rounded-lg">
