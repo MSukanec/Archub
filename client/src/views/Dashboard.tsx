@@ -334,6 +334,77 @@ export default function Dashboard() {
         onDayClick={handleDayClick}
       />
 
+      {/* Cards con información relevante */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total de Bitácoras */}
+        <Card className="rounded-2xl shadow-md bg-muted/10 border-0">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Bitácoras</p>
+                <p className="text-3xl font-bold text-foreground">
+                  {timelineEvents.reduce((total, event) => total + (event.siteLogs?.length || 0), 0)}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Total de Movimientos */}
+        <Card className="rounded-2xl shadow-md bg-muted/10 border-0">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Movimientos</p>
+                <p className="text-3xl font-bold text-foreground">
+                  {timelineEvents.reduce((total, event) => total + (event.movements?.length || 0), 0)}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Total de Tareas */}
+        <Card className="rounded-2xl shadow-md bg-muted/10 border-0">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Tareas</p>
+                <p className="text-3xl font-bold text-foreground">
+                  {timelineEvents.reduce((total, event) => total + (event.tasks?.length || 0), 0)}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                <FolderKanban className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Proyecto Activo */}
+        <Card className="rounded-2xl shadow-md bg-muted/10 border-0">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Proyecto Activo</p>
+                <p className="text-lg font-bold text-foreground truncate">
+                  {activeProject?.name || 'Sin proyecto'}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Building2 className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Detail Modal */}
       <DayDetailModal
         isOpen={isModalOpen}

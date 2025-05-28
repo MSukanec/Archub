@@ -158,31 +158,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
         });
       });
 
-      // Agregar archivos
-      dayEvent.files?.forEach((file: any) => {
-        ganttItems.push({
-          id: `file-${file.id}`,
-          title: file.name || 'Archivo',
-          startDate: eventDate,
-          endDate: eventDate,
-          type: 'archivos',
-          color: typeColors.archivos,
-          data: file
-        });
-      });
 
-      // Agregar asistentes
-      dayEvent.attendees?.forEach((attendee: any) => {
-        ganttItems.push({
-          id: `attendee-${attendee.id}`,
-          title: attendee.name || 'Asistente',
-          startDate: eventDate,
-          endDate: eventDate,
-          type: 'asistentes',
-          color: typeColors.asistentes,
-          data: attendee
-        });
-      });
     });
 
     return ganttItems;
@@ -195,9 +171,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const grouped: Record<string, GanttItem[]> = {
       bitacora: [],
       movimientos: [],
-      tareas: [],
-      archivos: [],
-      asistentes: []
+      tareas: []
     };
 
     displayItems.forEach(item => {
@@ -276,9 +250,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const eventMap = {
       bitacora: 'openCreateSiteLogModal',
       movimientos: 'openCreateMovementModal', 
-      tareas: 'openCreateTaskModal',
-      archivos: 'openCreateFileModal',
-      asistentes: 'openCreateAttendeeModal'
+      tareas: 'openCreateTaskModal'
     };
     
     window.dispatchEvent(new CustomEvent(eventMap[type]));
@@ -288,9 +260,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
     const navigationMap = {
       bitacora: { view: 'sitelog-main' as const, section: 'sitelog' as const },
       movimientos: { view: 'movements-main' as const, section: 'movements' as const },
-      tareas: { view: 'budgets-list' as const, section: 'budgets' as const },
-      archivos: { view: 'sitelog-main' as const, section: 'sitelog' as const },
-      asistentes: { view: 'sitelog-main' as const, section: 'sitelog' as const }
+      tareas: { view: 'budgets-list' as const, section: 'budgets' as const }
     };
     
     const nav = navigationMap[type];
@@ -320,7 +290,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                   // Centrar en el día actual
                   setCurrentWeekStart(subDays(new Date(), 3));
                 }}
-                className="px-3 py-1 text-sm font-medium text-white bg-accent hover:bg-accent/80 rounded transition-colors"
+                className="px-3 py-1 text-sm font-medium text-white bg-primary hover:bg-primary/80 rounded transition-colors"
               >
                 Hoy
               </button>
@@ -407,10 +377,10 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                 </button>
                 <button
                   onClick={() => handleCreateAction(type as keyof typeof typeLabels)}
-                  className="p-1 hover:bg-accent rounded-md transition-colors"
+                  className="p-1 bg-primary hover:bg-primary/80 rounded-md transition-colors"
                   title={`Crear ${label}`}
                 >
-                  <Plus size={14} className="text-muted-foreground hover:text-foreground" />
+                  <Plus size={14} className="text-white" />
                 </button>
               </div>
 
@@ -453,9 +423,10 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                         <div
                           key={`${type}-${dayKey}`}
                           className={cn(
-                            "h-8 mt-2 rounded-lg shadow-sm cursor-pointer transition-all hover:shadow-lg hover:scale-105",
+                            "h-8 rounded-lg shadow-sm cursor-pointer transition-all hover:shadow-lg hover:scale-105",
                             firstItem.color,
-                            "flex items-center gap-2 px-3 text-foreground text-xs font-medium backdrop-blur-sm"
+                            "flex items-center gap-2 px-3 text-foreground text-xs font-medium backdrop-blur-sm",
+                            "absolute top-1/2 transform -translate-y-1/2"
                           )}
                           style={position}
                           title={hasMultipleItems 
