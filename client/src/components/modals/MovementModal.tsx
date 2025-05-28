@@ -413,9 +413,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {movementCategories.map((category, index) => (
-                                <SelectItem key={index} value={category}>
-                                  {category}
+                              {movementCategories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
