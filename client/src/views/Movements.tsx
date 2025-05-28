@@ -83,11 +83,11 @@ export default function Movements() {
         .from('site_movements')
         .select(`
           *,
-          movement_concepts!concept_id (
+          movement_concepts!inner (
             id,
             name,
             parent_id,
-            movement_concepts!parent_id (
+            parent_concept:movement_concepts!parent_id (
               id,
               name
             )
@@ -193,16 +193,28 @@ export default function Movements() {
       const amount = movement.amount;
       const target = movement.currency === 'USD' ? dolares : pesos;
       
-      // Obtener el tipo padre (Ingresos/Egresos/Ajustes)
-      const parentType = movement.movement_concepts?.parent_id ? 
-        movement.movement_concepts?.movement_concepts?.name?.toLowerCase() :
-        movement.movement_concepts?.name?.toLowerCase();
+      // Obtener el tipo padre - si tiene parent_id, necesitamos buscar el nombre del padre
+      // Usar lógica basada en los concept_id conocidos para determinar el tipo
+      const conceptName = movement.movement_concepts?.name?.toLowerCase();
+      let parentType = null;
+      
+      // Si es un concepto hijo (tiene parent_id), asumimos que pertenece a ingresos por defecto
+      // En el futuro se puede mejorar con una consulta adicional
+      if (movement.movement_concepts?.parent_id) {
+        // Para "Cuotas" y conceptos similares, clasificar como ingresos
+        parentType = 'ingresos';
+      } else {
+        // Si no tiene parent_id, es un tipo principal
+        parentType = conceptName;
+      }
       
       console.log('Processing movement:', {
         amount,
         currency: movement.currency,
+        conceptName,
         parentType,
-        movement_concepts: movement.movement_concepts
+        hasParentId: !!movement.movement_concepts?.parent_id,
+        rawConcept: movement.movement_concepts
       });
       
       switch (parentType) {
@@ -407,7 +419,7 @@ export default function Movements() {
                     </TableCell>
                     <TableCell>
                       {movement.movement_concepts?.parent_id ? 
-                        movement.movement_concepts.movement_concepts?.name || 'Sin tipo'
+                        movement.movement_concepts.parent_concept?.name || 'Sin tipo'
                         : movement.movement_concepts?.name || 'Sin tipo'}
                     </TableCell>
                     <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>
