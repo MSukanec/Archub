@@ -49,6 +49,19 @@
   border-radius: 4px;
 }
 
+/* Custom animations */
+@keyframes wiggle {
+  0%, 100% { 
+    transform: rotate(0deg); 
+  }
+  25% { 
+    transform: rotate(1deg) scale(1.02); 
+  }
+  75% { 
+    transform: rotate(-1deg) scale(1.02); 
+  }
+}
+
 *::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
 }

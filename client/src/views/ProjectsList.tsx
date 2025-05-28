@@ -188,6 +188,37 @@ export default function ProjectsOverview() {
           </Card>
         </div>
 
+        {/* Acciones Rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all" onClick={() => setView('budgets-list')}>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                  <DollarSign className="text-blue-500" size={20} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Ir a Presupuestos</h3>
+                  <p className="text-sm text-muted-foreground">Gestiona costos y presupuestos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all" onClick={() => setView('movements-main')}>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
+                  <Activity className="text-green-500" size={20} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Ir a Movimientos</h3>
+                  <p className="text-sm text-muted-foreground">Registro de ingresos y egresos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Search and Filters */}
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
@@ -289,7 +320,10 @@ export default function ProjectsOverview() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEdit(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(project);
+                        }}
                         className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
@@ -298,7 +332,10 @@ export default function ProjectsOverview() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(project)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(project);
+                        }}
                         className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
