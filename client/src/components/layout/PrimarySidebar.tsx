@@ -22,8 +22,22 @@ const bottomNavigationItems = [
 ];
 
 export default function PrimarySidebar() {
-  const { currentSection, setSection, setHoveredSection } = useNavigationStore();
+  const { currentSection, setSection, setHoveredSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
+
+  // Escuchar eventos de navegación desde el timeline
+  useEffect(() => {
+    const handleTimelineNavigation = (event: CustomEvent) => {
+      const { section, view } = event.detail;
+      setSection(section);
+      setView(view);
+    };
+
+    window.addEventListener('navigate-to-section', handleTimelineNavigation as EventListener);
+    return () => {
+      window.removeEventListener('navigate-to-section', handleTimelineNavigation as EventListener);
+    };
+  }, [setSection, setView]);
 
   // Function to get the plan icon based on plan name
   const getPlanIcon = (planName: string) => {
