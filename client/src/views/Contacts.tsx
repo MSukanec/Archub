@@ -42,17 +42,25 @@ export default function Contacts() {
   }, []);
 
   // Fetch contacts
-  const { data: contacts = [], isLoading } = useQuery({
+  const { data: contacts = [], isLoading, error } = useQuery({
     queryKey: ['contacts'],
-    queryFn: contactsService.getAll,
-    staleTime: 10 * 60 * 1000, // 10 minutos
-    gcTime: 15 * 60 * 1000, // 15 minutos
+    queryFn: async () => {
+      console.log('Fetching contacts...');
+      const result = await contactsService.getAll();
+      console.log('Contacts fetched:', result);
+      return result;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
     refetchOnWindowFocus: false,
-    refetchOnMount: false, // Solo cargar una vez por sesión
-    refetchOnReconnect: false,
     retry: 1, // Solo 1 reintento
-    retryDelay: 3000, // 3 segundos entre reintentos
+    retryDelay: 1000, // 1 segundo entre reintentos
   });
+
+  // Log error if any
+  if (error) {
+    console.error('Error fetching contacts:', error);
+  }
 
   // Delete contact mutation
   const deleteMutation = useMutation({
