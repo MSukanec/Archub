@@ -244,7 +244,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Accordion type="multiple" defaultValue={["general"]} className="w-full">
+            <Accordion type="single" collapsible defaultValue="general" className="w-full">
               
               {/* Información General */}
               <AccordionItem value="general" className="border border-border rounded-lg">

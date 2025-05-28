@@ -65,17 +65,13 @@ export default function Movements() {
 
   // Fetch movements for current project
   const { data: movements = [], isLoading } = useQuery({
-    queryKey: ['/api/movements', projectId],
+    queryKey: ['movements', projectId],
     queryFn: async () => {
       if (!projectId) return [];
       
       const { data, error } = await supabase
         .from('site_movements')
-        .select(`
-          *,
-          contacts:related_contact_id(id, name, company_name),
-          tasks:related_task_id(id, name)
-        `)
+        .select('*')
         .eq('project_id', projectId)
         .order('date', { ascending: false });
       
