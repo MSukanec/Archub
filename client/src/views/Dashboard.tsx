@@ -93,28 +93,16 @@ export default function Dashboard() {
       const periodStart = startOfDay(addDays(today, -30));
       const periodEnd = endOfDay(addDays(today, 30));
       
-      // Obtener la organización del usuario para filtrar correctamente
-      const { data: userOrg } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('auth_id', user?.id)
-        .single();
 
-      if (!userOrg?.organization_id) {
-        console.error('No se pudo obtener la organización del usuario');
-        return [];
-      }
 
-      // Fetch site logs con información del autor, filtrando por organización
+      // Fetch site logs con información del autor
       const { data: siteLogs, error: siteLogsError } = await supabase
         .from('site_logs')
         .select(`
           *,
-          author:users(first_name, last_name),
-          project:projects!inner(organization_id)
+          author:users(first_name, last_name)
         `)
         .eq('project_id', projectId)
-        .eq('project.organization_id', userOrg.organization_id)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
         
@@ -124,15 +112,11 @@ export default function Dashboard() {
         console.log('Site logs fetched:', siteLogs);
       }
 
-      // Fetch site movements, filtrando por organización
+      // Fetch site movements
       const { data: movements, error: movementsError } = await supabase
         .from('site_movements')
-        .select(`
-          *,
-          project:projects!inner(organization_id)
-        `)
+        .select('*')
         .eq('project_id', projectId)
-        .eq('project.organization_id', userOrg.organization_id)
         .gte('date', format(periodStart, 'yyyy-MM-dd'))
         .lte('date', format(periodEnd, 'yyyy-MM-dd'));
         
