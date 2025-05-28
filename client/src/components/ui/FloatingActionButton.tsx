@@ -139,7 +139,7 @@ export default function FloatingActionButton() {
   const isProjectCreation = actionConfig.label.includes('Proyecto') || 
     (actionConfig.isMultiple && actionConfig.options?.some(opt => opt.label.includes('Proyecto')));
 
-  const buttonElement = (
+  return (
     <div 
       className="fixed bottom-6 right-6 z-50"
       onMouseEnter={() => setIsHovered(true)}
@@ -209,22 +209,16 @@ export default function FloatingActionButton() {
           </>
         )}
       </div>
+      
+      {/* Badge de restricción para creación de proyectos */}
+      {isProjectCreation && (
+        <LimitLock
+          limitName="max_projects"
+          currentCount={projects.length}
+          featureName="proyecto"
+          description="Has alcanzado el límite de proyectos para tu plan actual. Actualiza a PRO para crear proyectos ilimitados."
+        />
+      )}
     </div>
   );
-
-  // Si es creación de proyecto, aplicar restricción de límite
-  if (isProjectCreation) {
-    return (
-      <LimitLock
-        limitName="max_projects"
-        currentCount={projects.length}
-        featureName="proyecto"
-        description="Has alcanzado el límite de proyectos para tu plan actual. Actualiza a PRO para crear proyectos ilimitados."
-      >
-        {buttonElement}
-      </LimitLock>
-    );
-  }
-
-  return buttonElement;
 }

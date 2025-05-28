@@ -91,11 +91,21 @@ export function useFeatures() {
     remaining: number;
     planName: string;
   } => {
-    const limit = getPlanLimit(limitName);
     const planName = getCurrentPlan() || 'FREE';
+    const limit = getPlanLimit(limitName);
+    
+    // Si es plan PRO o ENTERPRISE y el límite es 0 o no existe, significa sin límite
+    if ((planName === 'PRO' || planName === 'ENTERPRISE') && (limit === 0 || !limit)) {
+      return {
+        isLimited: false,
+        limit: -1, // -1 indica ilimitado
+        remaining: -1,
+        planName,
+      };
+    }
     
     return {
-      isLimited: currentCount >= limit,
+      isLimited: limit > 0 && currentCount >= limit,
       limit,
       remaining: Math.max(0, limit - currentCount),
       planName,
