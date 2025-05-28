@@ -259,7 +259,6 @@ export default function Contacts() {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         contact={selectedContact}
-        contactTypes={CONTACT_TYPES}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -268,7 +267,7 @@ export default function Contacts() {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El contacto "{selectedContact?.name}" será eliminado permanentemente.
+              Esta acción no se puede deshacer. El contacto "{selectedContact ? `${selectedContact.first_name} ${selectedContact.last_name || ''}`.trim() : ''}" será eliminado permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
