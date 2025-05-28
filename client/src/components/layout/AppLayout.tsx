@@ -9,7 +9,6 @@ import SecondarySidebar from './SecondarySidebar';
 import Dashboard from '@/views/Dashboard';
 import Organization from '@/views/Organization';
 import OrganizationTeam from '@/views/OrganizationTeam';
-import ProjectsOverview from '@/views/ProjectsOverview';
 import ProjectsList from '@/views/ProjectsList';
 import SiteLogs from '@/views/SiteLogs';
 import Budgets from '@/views/Budgets';
@@ -40,7 +39,7 @@ const viewComponents = {
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
   'organization-activity': Organization,
-  'projects-overview': ProjectsOverview,
+  'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
   'budgets-list': Budgets,
   'budgets-tasks': Budgets,

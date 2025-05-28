@@ -53,10 +53,9 @@ const sectionConfig = {
   },
   projects: {
     title: 'Proyectos',
-    description: 'Gestión de proyectos de construcción',
+    description: 'Dashboard de proyectos de construcción',
     items: [
-      { view: 'projects-overview' as View, icon: ChartBar, label: 'Resumen' },
-      { view: 'projects-list' as View, icon: List, label: 'Lista de Proyectos' },
+      { view: 'projects-overview' as View, icon: ChartBar, label: 'Resumen de Proyectos' },
     ],
   },
   budgets: {
