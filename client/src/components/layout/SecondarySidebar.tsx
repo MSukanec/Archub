@@ -150,11 +150,11 @@ export default function SecondarySidebar() {
 
   return (
     <div className={cn(
-      "fixed left-[45px] top-0 h-screen bg-[#282828] border-r border-border flex flex-col z-50",
+      "fixed left-[56px] top-0 h-screen bg-[#282828] border-r border-border flex flex-col z-50",
       isSecondarySidebarVisible ? "w-60" : "w-0 overflow-hidden"
     )}>
       {/* Header */}
-      <div className="h-[45px] flex items-center px-4 border-b border-border">
+      <div className="h-[56px] flex items-center px-4 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">{config.title}</h2>
         
         {/* Organization Display - Only show in dashboard section */}
