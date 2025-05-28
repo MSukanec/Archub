@@ -92,19 +92,44 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen,
   });
 
-  // Fetch movement types from movement_concepts table (parent_id IS NULL)
-  const { data: movementTypes = [], isLoading: typesLoading } = useQuery({
-    queryKey: ['movement-types'],
-    queryFn: movementConceptsService.getTypes,
-    enabled: isOpen,
-  });
+  // Static movement types that match the database constraints
+  const movementTypes = [
+    { id: 'ingreso', name: 'Ingreso' },
+    { id: 'egreso', name: 'Egreso' },
+    { id: 'ajuste', name: 'Ajuste' }
+  ];
 
-  // Fetch categories for selected type from movement_concepts table
-  const { data: movementCategories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['movement-categories', selectedTypeId],
-    queryFn: () => movementConceptsService.getCategoriesByType(selectedTypeId),
-    enabled: isOpen && !!selectedTypeId,
-  });
+  // Static categories based on movement type
+  const getCategoriesForType = (type: string) => {
+    switch (type) {
+      case 'ingreso':
+        return [
+          'Pago de Cliente',
+          'Anticipo',
+          'Certificación',
+          'Otros Ingresos'
+        ];
+      case 'egreso':
+        return [
+          'Materiales',
+          'Mano de Obra',
+          'Herramientas',
+          'Transporte',
+          'Gastos Administrativos',
+          'Otros Gastos'
+        ];
+      case 'ajuste':
+        return [
+          'Corrección de Valor',
+          'Ajuste por Inflación',
+          'Reclasificación'
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const movementCategories = getCategoriesForType(selectedTypeId);
 
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
@@ -186,7 +211,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .insert([{
             project_id: projectId,
             type: data.type_id,
-            concept_id: data.concept_id,
+            category: data.concept_id,
             date: data.date,
             description: data.description,
             amount: data.amount,
@@ -242,7 +267,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       try {
         let updateData: any = {
           type: data.type_id,
-          concept_id: data.concept_id,
+          category: data.concept_id,
           date: data.date,
           description: data.description,
           amount: data.amount,
@@ -395,9 +420,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {movementCategories.map((category) => (
-                                <SelectItem key={category.id} value={category.id}>
-                                  {category.name}
+                              {movementCategories.map((category, index) => (
+                                <SelectItem key={index} value={category}>
+                                  {category}
                                 </SelectItem>
                               ))}
                             </SelectContent>
