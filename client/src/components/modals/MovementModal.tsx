@@ -191,7 +191,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         form.reset({
           type_id: typeId,
           concept_id: conceptId,
-          date: movement.date ? (movement.date.includes('T') ? movement.date.split('T')[0] : movement.date) : new Date().toISOString().split('T')[0],
+          date: movement.created_at ? movement.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
           description: movement.description || '',
           amount: movement.amount || 0,
           currency: movement.currency || 'ARS',
@@ -272,7 +272,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .insert([{
             project_id: projectId,
             concept_id: data.concept_id,
-            date: data.date,
+            created_at: data.date + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,
@@ -327,7 +327,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       try {
         let updateData: any = {
           concept_id: data.concept_id,
-          date: data.date,
+          created_at: data.date + 'T00:00:00.000Z',
           description: data.description,
           amount: data.amount,
           currency: data.currency,
