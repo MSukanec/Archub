@@ -61,8 +61,8 @@ const plans = [
 export default function Subscription() {
   const { getCurrentPlan, userPlan, isLoading } = useFeatures();
   
-  // Fetch all available plans
-  const { data: availablePlans = [], isLoading: plansLoading } = useQuery({
+  // Fetch all available plans with error handling
+  const { data: availablePlans = [], isLoading: plansLoading, error } = useQuery({
     queryKey: ['/api/plans'],
     queryFn: () => plansService.getAll(),
     staleTime: 10 * 60 * 1000, // 10 minutos de cache
@@ -86,8 +86,19 @@ export default function Subscription() {
   const currentPlanName = getCurrentPlan() || 'FREE';
   const currentPlan = userPlan || { name: 'FREE', price: '0' };
 
-  if (isLoading) {
+  if (isLoading || plansLoading) {
     return <div className="p-4">Cargando información del plan...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <h3 className="text-lg font-medium text-foreground mb-2">Suscripción</h3>
+        <p className="text-muted-foreground">
+          No se pudieron cargar los planes. Mostrando información básica.
+        </p>
+      </div>
+    );
   }
 
   return (

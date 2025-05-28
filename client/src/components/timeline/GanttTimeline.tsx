@@ -291,15 +291,20 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   };
 
   const handleTitleClick = (type: keyof typeof typeLabels) => {
-    const viewMap = {
-      bitacora: 'sitelog-main',
-      movimientos: 'movements-main',
-      tareas: 'budgets-list', // Las tareas están en la vista de presupuestos
-      archivos: 'sitelog-main', // Los archivos están en bitácora
-      asistentes: 'sitelog-main' // Los asistentes están en bitácora
+    const navigationMap = {
+      bitacora: { view: 'sitelog-main' as const, section: 'sitelog' as const },
+      movimientos: { view: 'movements-main' as const, section: 'movements' as const },
+      tareas: { view: 'budgets-list' as const, section: 'budgets' as const },
+      archivos: { view: 'sitelog-main' as const, section: 'sitelog' as const },
+      asistentes: { view: 'sitelog-main' as const, section: 'sitelog' as const }
     };
     
-    setView(viewMap[type]);
+    const nav = navigationMap[type];
+    setView(nav.view);
+    // También actualizar la sección para que el sidebar se actualice correctamente
+    window.dispatchEvent(new CustomEvent('navigate-to-section', { 
+      detail: { section: nav.section, view: nav.view } 
+    }));
   };
 
   return (

@@ -40,15 +40,17 @@ export default function SiteLogs() {
     };
   }, []);
 
-  // Get projects to find current project name
-  const { data: projects = [] } = useQuery({
+  // Get projects to find current project name with error handling
+  const { data: projects = [], error: projectsError } = useQuery({
     queryKey: ['/api/projects'],
     queryFn: () => projectsService.getAll(),
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   const currentProject = projects.find((p: any) => p.id === projectId);
 
-  const { data: siteLogs = [], isLoading } = useQuery({
+  const { data: siteLogs = [], isLoading, error: siteLogsError } = useQuery({
     queryKey: ['/api/site-logs', projectId],
     queryFn: async () => {
       if (!projectId) return [];
@@ -135,6 +137,20 @@ export default function SiteLogs() {
           <h3 className="text-lg font-medium text-foreground mb-2">Sin proyecto activo</h3>
           <p className="text-muted-foreground">
             Selecciona un proyecto para ver su bitácora de obra
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (siteLogsError || projectsError) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center">
+          <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">Bitácora de Obra</h3>
+          <p className="text-muted-foreground">
+            No se pudieron cargar los registros. Intenta nuevamente más tarde.
           </p>
         </div>
       </div>
