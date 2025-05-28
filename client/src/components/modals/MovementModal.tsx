@@ -456,7 +456,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         <FormItem>
                           <FormLabel>Fecha <span className="text-primary">*</span></FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} />
+                            <Input 
+                              type="date" 
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              className="bg-background text-foreground"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
