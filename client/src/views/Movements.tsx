@@ -386,15 +386,21 @@ export default function Movements() {
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        className={
-                          movement.movement_concepts?.movement_concepts?.name === 'Ingresos' 
+                        className={(() => {
+                          const parentName = movement.movement_concepts?.parent_id ? 
+                            movement.movement_concepts.movement_concepts?.name : 
+                            movement.movement_concepts?.name;
+                          
+                          return parentName === 'Ingresos' 
                             ? 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
-                            : movement.movement_concepts?.movement_concepts?.name === 'Egresos'
+                            : parentName === 'Egresos'
                             ? 'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800'
-                            : 'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800'
-                        }
+                            : 'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800';
+                        })()}
                       >
-{movement.movement_concepts?.movement_concepts?.name || 'Sin tipo'}
+{movement.movement_concepts?.parent_id ? 
+                          movement.movement_concepts.movement_concepts?.name || 'Sin tipo'
+                          : movement.movement_concepts?.name || 'Sin tipo'}
                       </Badge>
                     </TableCell>
                     <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>

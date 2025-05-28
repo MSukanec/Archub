@@ -477,15 +477,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         <FormLabel>Cantidad <span className="text-primary">*</span></FormLabel>
                         <FormControl>
                           <Input 
-                            type="text" 
-                            placeholder="0,00"
+                            type="number" 
+                            step="0.01" 
+                            placeholder="0.00"
                             className="bg-background text-foreground"
                             {...field}
-                            value={formatNumberInput(field.value)}
-                            onChange={(e) => {
-                              const numericValue = parseFormattedNumber(e.target.value);
-                              field.onChange(numericValue);
-                            }}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </FormControl>
                         <FormMessage />
