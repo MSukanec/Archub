@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
 
 export interface Contact {
-  id: number;
+  id: string;
   first_name: string;
   last_name: string | null;
   email: string | null;
@@ -10,7 +10,6 @@ export interface Contact {
   company_name: string | null;
   location: string | null;
   notes: string | null;
-  contact_type: string;
   organization_id: string;
   created_at: string;
   updated_at: string;
@@ -24,7 +23,6 @@ export interface CreateContactData {
   company_name?: string | null;
   location?: string | null;
   notes?: string | null;
-  contact_type: string;
 }
 
 export const contactsService = {

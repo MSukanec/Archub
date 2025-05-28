@@ -2,40 +2,33 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Building2, Mail, Phone, MapPin, FileText, Check } from 'lucide-react';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { User, Building2, Mail, Phone, MapPin, FileText, Check, X, Tags, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact, CreateContactData } from '@/lib/contactsService';
+import { contactTypesService, ContactType } from '@/lib/contactTypesService';
 
 const contactSchema = z.object({
   first_name: z.string().min(1, "El nombre es requerido"),
   last_name: z.string().optional(),
-  contact_type: z.string().min(1, "El tipo de contacto es requerido"),
   company_name: z.string().optional(),
-  email: z.string().optional().refine((val) => !val || val === "" || z.string().email().safeParse(val).success, {
-    message: "Email inválido"
-  }),
+  email: z.string().email("Email inválido").optional().or(z.literal("")),
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
+  contact_types: z.array(z.string()).min(1, "Debe seleccionar al menos un tipo de contacto"),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
-
-const CONTACT_TYPES = [
-  { value: 'proveedor', label: 'Proveedor' },
-  { value: 'contratista', label: 'Contratista' },
-  { value: 'tecnico', label: 'Técnico' },
-  { value: 'cliente', label: 'Cliente' },
-  { value: 'otro', label: 'Otro' }
-];
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -46,41 +39,66 @@ interface ContactModalProps {
 export default function ContactModal({ isOpen, onClose, contact }: ContactModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+
+  // Fetch available contact types
+  const { data: availableTypes = [] } = useQuery({
+    queryKey: ['contact-types'],
+    queryFn: contactTypesService.getAll,
+  });
+
+  // Fetch current contact types if editing
+  const { data: currentContactTypes = [] } = useQuery({
+    queryKey: ['contact-types', contact?.id],
+    queryFn: () => contact?.id ? contactTypesService.getContactTypes(contact.id) : Promise.resolve([]),
+    enabled: !!contact?.id,
+  });
 
   const form = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
-      first_name: contact?.first_name || '',
-      last_name: contact?.last_name || '',
-      contact_type: contact?.contact_type || '',
-      company_name: contact?.company_name || '',
-      email: contact?.email || '',
-      phone: contact?.phone || '',
-      location: contact?.location || '',
-      notes: contact?.notes || '',
+      first_name: '',
+      last_name: '',
+      company_name: '',
+      email: '',
+      phone: '',
+      location: '',
+      notes: '',
+      contact_types: [],
     },
   });
 
   // Reset form when modal opens/closes or contact changes
   useEffect(() => {
     if (isOpen) {
+      const typeIds = currentContactTypes.map(type => type.id);
+      setSelectedTypes(typeIds);
+      
       form.reset({
         first_name: contact?.first_name || '',
         last_name: contact?.last_name || '',
-        contact_type: contact?.contact_type || '',
         company_name: contact?.company_name || '',
         email: contact?.email || '',
         phone: contact?.phone || '',
         location: contact?.location || '',
         notes: contact?.notes || '',
+        contact_types: typeIds,
       });
     }
-  }, [isOpen, contact, form]);
+  }, [isOpen, contact, currentContactTypes, form]);
 
   const createMutation = useMutation({
-    mutationFn: contactsService.create,
+    mutationFn: async (data: { contactData: CreateContactData; typeIds: string[] }) => {
+      const newContact = await contactsService.create(data.contactData);
+      if (data.typeIds.length > 0) {
+        await contactTypesService.updateContactTypes(newContact.id, data.typeIds);
+      }
+      return newContact;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-types'] });
       form.reset();
       toast({
         title: "Contacto creado",
@@ -99,10 +117,14 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<CreateContactData> }) =>
-      contactsService.update(id, data),
+    mutationFn: async (data: { id: string; contactData: Partial<CreateContactData>; typeIds: string[] }) => {
+      const updatedContact = await contactsService.update(data.id, data.contactData);
+      await contactTypesService.updateContactTypes(data.id, data.typeIds);
+      return updatedContact;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-types'] });
       form.reset();
       toast({
         title: "Contacto actualizado",
@@ -126,7 +148,6 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
     const contactData: CreateContactData = {
       first_name: data.first_name,
       last_name: data.last_name || null,
-      contact_type: data.contact_type,
       company_name: data.company_name || null,
       email: data.email || null,
       phone: data.phone || null,
@@ -135,12 +156,29 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
     };
 
     console.log('Submitting contact data:', contactData);
+    console.log('Selected type IDs:', data.contact_types);
 
     if (contact?.id) {
-      updateMutation.mutate({ id: contact.id, data: contactData });
+      updateMutation.mutate({ 
+        id: contact.id, 
+        contactData, 
+        typeIds: data.contact_types 
+      });
     } else {
-      createMutation.mutate(contactData);
+      createMutation.mutate({ 
+        contactData, 
+        typeIds: data.contact_types 
+      });
     }
+  };
+
+  const handleTypeToggle = (typeId: string) => {
+    const newSelectedTypes = selectedTypes.includes(typeId)
+      ? selectedTypes.filter(id => id !== typeId)
+      : [...selectedTypes, typeId];
+    
+    setSelectedTypes(newSelectedTypes);
+    form.setValue('contact_types', newSelectedTypes);
   };
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
@@ -177,14 +215,13 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                     </div>
                     <div className="text-left">
                       <h3 className="font-medium">Información Personal</h3>
-                      <p className="text-sm text-muted-foreground">Nombre, apellido y tipo de contacto</p>
+                      <p className="text-sm text-muted-foreground">Nombre y datos básicos</p>
                     </div>
-
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="first_name"
@@ -192,6 +229,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
                               Nombre <span className="text-primary">*</span>
+                              {form.watch('first_name') && <Check className="h-4 w-4 text-green-500" />}
                             </FormLabel>
                             <FormControl>
                               <Input 
@@ -226,26 +264,67 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
 
                     <FormField
                       control={form.control}
-                      name="contact_type"
+                      name="contact_types"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            Tipo de contacto <span className="text-primary">*</span>
+                            <Tags className="h-4 w-4" />
+                            Tipos de contacto <span className="text-primary">*</span>
+                            {selectedTypes.length > 0 && <Check className="h-4 w-4 text-green-500" />}
                           </FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-background">
-                                <SelectValue placeholder="Seleccionar tipo" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {CONTACT_TYPES.map((type) => (
-                                <SelectItem key={type.value} value={type.value}>
-                                  {type.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <Popover open={open} onOpenChange={setOpen}>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={open}
+                                  className="w-full justify-between bg-background"
+                                >
+                                  {selectedTypes.length === 0
+                                    ? "Seleccionar tipos..."
+                                    : `${selectedTypes.length} tipo${selectedTypes.length > 1 ? 's' : ''} seleccionado${selectedTypes.length > 1 ? 's' : ''}`
+                                  }
+                                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-full p-0">
+                                <Command>
+                                  <CommandInput placeholder="Buscar tipos..." />
+                                  <CommandEmpty>No se encontraron tipos.</CommandEmpty>
+                                  <CommandGroup>
+                                    {availableTypes.map((type) => (
+                                      <CommandItem
+                                        key={type.id}
+                                        onSelect={() => handleTypeToggle(type.id)}
+                                      >
+                                        <Check
+                                          className={`mr-2 h-4 w-4 ${
+                                            selectedTypes.includes(type.id) ? "opacity-100" : "opacity-0"
+                                          }`}
+                                        />
+                                        {type.name}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </FormControl>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {selectedTypes.map((typeId) => {
+                              const type = availableTypes.find(t => t.id === typeId);
+                              return type ? (
+                                <Badge key={type.id} variant="secondary" className="flex items-center gap-1">
+                                  {type.name}
+                                  <X 
+                                    className="h-3 w-3 cursor-pointer" 
+                                    onClick={() => handleTypeToggle(type.id)}
+                                  />
+                                </Badge>
+                              ) : null;
+                            })}
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -263,7 +342,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                     </div>
                     <div className="text-left">
                       <h3 className="font-medium">Información de Empresa</h3>
-                      <p className="text-sm text-muted-foreground">Datos de la empresa u organización</p>
+                      <p className="text-sm text-muted-foreground">Datos comerciales y empresa</p>
                     </div>
                   </div>
                 </AccordionTrigger>
@@ -274,11 +353,14 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                       name="company_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nombre de la empresa</FormLabel>
+                          <FormLabel className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            Empresa
+                          </FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
-                              placeholder="ej. Constructora ABC S.A."
+                              placeholder="ej. Constructora ABC"
                               className="bg-background"
                             />
                           </FormControl>
@@ -299,7 +381,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                           <FormControl>
                             <Input 
                               {...field} 
-                              placeholder="ej. Ciudad Autónoma de Buenos Aires"
+                              placeholder="ej. Buenos Aires, Argentina"
                               className="bg-background"
                             />
                           </FormControl>
@@ -320,33 +402,12 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                     </div>
                     <div className="text-left">
                       <h3 className="font-medium">Información de Contacto</h3>
-                      <p className="text-sm text-muted-foreground">Teléfono y email de contacto</p>
+                      <p className="text-sm text-muted-foreground">Medios de comunicación</p>
                     </div>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <Phone className="h-4 w-4" />
-                            Teléfono
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="ej. +54 11 1234-5678"
-                              className="bg-background"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     <FormField
                       control={form.control}
                       name="email"
@@ -368,11 +429,32 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Phone className="h-4 w-4" />
+                            Teléfono
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="ej. +54 11 1234-5678"
+                              className="bg-background"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Notas Adicionales */}
+              {/* Notas */}
               <AccordionItem value="notes" className="border border-border rounded-lg">
                 <AccordionTrigger className="px-4 hover:no-underline">
                   <div className="flex items-center gap-3">
@@ -381,7 +463,7 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                     </div>
                     <div className="text-left">
                       <h3 className="font-medium">Notas Adicionales</h3>
-                      <p className="text-sm text-muted-foreground">Información adicional y observaciones</p>
+                      <p className="text-sm text-muted-foreground">Observaciones y comentarios</p>
                     </div>
                   </div>
                 </AccordionTrigger>
@@ -391,12 +473,12 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Notas y observaciones</FormLabel>
+                        <FormLabel>Notas</FormLabel>
                         <FormControl>
                           <Textarea 
-                            {...field}
-                            placeholder="Información adicional sobre el contacto, horarios de atención, especialidades, etc."
-                            className="bg-background min-h-[80px] resize-none"
+                            {...field} 
+                            placeholder="Información adicional sobre el contacto..."
+                            className="bg-background min-h-[100px]"
                           />
                         </FormControl>
                         <FormMessage />
@@ -405,7 +487,6 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                   />
                 </AccordionContent>
               </AccordionItem>
-
             </Accordion>
 
             <div className="flex justify-end gap-3 pt-4 border-t">
@@ -417,12 +498,8 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
               >
                 Cancelar
               </Button>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="min-w-[100px]"
-              >
-                {isLoading ? "Guardando..." : (contact ? "Actualizar" : "Guardar")}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Guardando...' : contact ? 'Actualizar' : 'Crear'} Contacto
               </Button>
             </div>
           </form>
