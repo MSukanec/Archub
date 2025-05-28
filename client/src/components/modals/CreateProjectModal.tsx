@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Loader2, 
@@ -60,7 +60,6 @@ const createProjectSchema = z.object({
   postal_code: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
-  budget: z.number().optional(),
   project_manager: z.string().optional(),
   architect: z.string().optional(),
   contractor: z.string().optional(),
@@ -80,7 +79,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const { user } = useAuthStore();
   const { organizationId } = useUserContextStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
-  const [activeTab, setActiveTab] = useState('general');
   const [nameValidation, setNameValidation] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
   const [nameExists, setNameExists] = useState(false);
 
@@ -96,7 +94,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       postal_code: '',
       phone: '',
       email: '',
-      budget: undefined,
       project_manager: '',
       architect: '',
       contractor: '',
@@ -111,7 +108,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
   useEffect(() => {
     if (organizations && organizationId) {
-      const org = organizations.find((o: Organization) => o.id === organizationId);
+      const org = Array.isArray(organizations) ? organizations.find((o: Organization) => o.id === organizationId) : null;
       setCurrentOrganization(org || null);
     }
   }, [organizations, organizationId]);
@@ -123,13 +120,12 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         name: project.name || '',
         description: project.description || '',
         client_name: project.client_name || '',
-        status: project.status || 'planning',
+        status: (project.status as any) || 'planning',
         address: project.address || '',
         city: project.city || '',
         postal_code: project.postal_code || '',
         phone: project.phone || '',
         email: project.email || '',
-        budget: project.budget || undefined,
         project_manager: project.project_manager || '',
         architect: project.architect || '',
         contractor: project.contractor || '',
@@ -145,7 +141,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         postal_code: '',
         phone: '',
         email: '',
-        budget: undefined,
         project_manager: '',
         architect: '',
         contractor: '',
@@ -175,7 +170,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         (!project || p.name !== project.name)
       );
 
-      setNameExists(exists);
+      setNameExists(!!exists);
       setNameValidation(exists ? 'invalid' : 'valid');
     } catch (error) {
       setNameValidation('idle');
@@ -185,9 +180,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const createProjectMutation = useMutation({
     mutationFn: async (data: CreateProjectFormData) => {
       if (project) {
-        return await projectsService.updateProject(project.id, data);
+        return await projectsService.update(project.id, data);
       } else {
-        return await projectsService.createProject(data);
+        return await projectsService.create(data);
       }
     },
     onSuccess: () => {
@@ -222,7 +217,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building className="h-5 w-5 text-primary" />
@@ -239,60 +234,43 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-6"
             >
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="general" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    General
-                  </TabsTrigger>
-                  <TabsTrigger value="stakeholders" className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Stakeholders
-                  </TabsTrigger>
-                  <TabsTrigger value="location" className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    Ubicación
-                  </TabsTrigger>
-                  <TabsTrigger value="contact" className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    Contacto
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="mt-6 max-h-[50vh] overflow-y-auto pr-2">
-                  {/* PESTAÑA: INFORMACIÓN GENERAL */}
-                  <TabsContent value="general" className="space-y-6">
-                    <div className="space-y-1 mb-6">
-                      <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Accordion 
+                type="single" 
+                collapsible 
+                defaultValue="general"
+                className="w-full"
+              >
+                <div className="max-h-[50vh] overflow-y-auto pr-2 space-y-2">
+                  {/* ACORDEÓN: INFORMACIÓN GENERAL */}
+                  <AccordionItem value="general" className="border rounded-lg">
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <div className="flex items-center gap-2">
                         <FileText className="h-5 w-5 text-primary" />
-                        Información General
-                      </h3>
-                      <p className="text-sm text-muted-foreground">Datos básicos del proyecto de construcción</p>
-                      <div className="h-px bg-border mt-3"></div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Organización */}
-                      <div className="md:col-span-2">
-                        <div className="flex items-center gap-3">
-                          <Building className="h-4 w-4 text-muted-foreground" />
-                          <label className="text-sm font-medium">Organización</label>
-                        </div>
-                        <Input 
-                          value={currentOrganization?.name || "Cargando..."}
-                          disabled
-                          className="bg-muted text-muted-foreground mt-2"
-                        />
+                        <span className="font-semibold">Información General</span>
                       </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div className="space-y-4">
+                        {/* Organización */}
+                        <div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <Building className="h-4 w-4 text-muted-foreground" />
+                            <label className="text-sm font-medium">Organización</label>
+                          </div>
+                          <Input 
+                            value={currentOrganization?.name || "Cargando..."}
+                            disabled
+                            className="bg-muted text-muted-foreground"
+                          />
+                        </div>
 
-                      {/* Nombre del Proyecto con validación en tiempo real */}
-                      <div className="md:col-span-2">
+                        {/* Nombre del Proyecto */}
                         <FormField
                           control={form.control}
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 mb-2">
                                 <Building className="h-4 w-4 text-muted-foreground" />
                                 <FormLabel className="flex items-center gap-2">
                                   Nombre del Proyecto
@@ -319,7 +297,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                                 <Input
                                   {...field}
                                   placeholder="Ej: Torre Norte – Etapa 2"
-                                  className="mt-2"
                                   onChange={(e) => {
                                     field.onChange(e);
                                     validateProjectName(e.target.value);
@@ -336,16 +313,14 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                             </FormItem>
                           )}
                         />
-                      </div>
 
-                      {/* Descripción */}
-                      <div className="md:col-span-2">
+                        {/* Descripción */}
                         <FormField
                           control={form.control}
                           name="description"
                           render={({ field }) => (
                             <FormItem>
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 mb-2">
                                 <FileText className="h-4 w-4 text-muted-foreground" />
                                 <FormLabel>Descripción</FormLabel>
                               </div>
@@ -353,7 +328,133 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                                 <Textarea
                                   {...field}
                                   placeholder="Describe brevemente el alcance y características del proyecto..."
-                                  className="mt-2 min-h-[100px]"
+                                  className="min-h-[80px]"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Estado del Proyecto */}
+                        <FormField
+                          control={form.control}
+                          name="status"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Estado del Proyecto</FormLabel>
+                              </div>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona el estado" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="planning">Planificación</SelectItem>
+                                  <SelectItem value="in_progress">En Progreso</SelectItem>
+                                  <SelectItem value="on_hold">En Pausa</SelectItem>
+                                  <SelectItem value="completed">Completado</SelectItem>
+                                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* ACORDEÓN: STAKEHOLDERS */}
+                  <AccordionItem value="stakeholders" className="border rounded-lg">
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">Stakeholders</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div className="space-y-4">
+                        {/* Cliente */}
+                        <FormField
+                          control={form.control}
+                          name="client_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Cliente</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: Constructora ABC S.A."
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Jefe de Proyecto */}
+                        <FormField
+                          control={form.control}
+                          name="project_manager"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Jefe de Proyecto</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: Ing. María García"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Arquitecto */}
+                        <FormField
+                          control={form.control}
+                          name="architect"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Arquitecto</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: Arq. Carlos Ruiz"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Contratista */}
+                        <FormField
+                          control={form.control}
+                          name="contractor"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <Building className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Contratista</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: Construcciones del Sur Ltda."
                                 />
                               </FormControl>
                               <FormMessage />
@@ -361,194 +462,26 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           )}
                         />
                       </div>
+                    </AccordionContent>
+                  </AccordionItem>
 
-                      {/* Estado del Proyecto */}
-                      <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Estado del Proyecto</FormLabel>
-                            </div>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="mt-2">
-                                  <SelectValue placeholder="Selecciona el estado" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="planning">Planificación</SelectItem>
-                                <SelectItem value="in_progress">En Progreso</SelectItem>
-                                <SelectItem value="on_hold">En Pausa</SelectItem>
-                                <SelectItem value="completed">Completado</SelectItem>
-                                <SelectItem value="cancelled">Cancelado</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Presupuesto */}
-                      <FormField
-                        control={form.control}
-                        name="budget"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <span className="text-muted-foreground">$</span>
-                              <FormLabel className="flex items-center gap-2">
-                                Presupuesto
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <Info className="h-3 w-3 text-muted-foreground" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Presupuesto total estimado del proyecto</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                placeholder="Ej: 1500000"
-                                className="mt-2"
-                                onChange={(e) => field.onChange(Number(e.target.value))}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
-
-                  {/* PESTAÑA: STAKEHOLDERS */}
-                  <TabsContent value="stakeholders" className="space-y-6">
-                    <div className="space-y-1 mb-6">
-                      <h3 className="text-lg font-semibold flex items-center gap-2">
-                        <Users className="h-5 w-5 text-primary" />
-                        Stakeholders
-                      </h3>
-                      <p className="text-sm text-muted-foreground">Personas y empresas involucradas en el proyecto</p>
-                      <div className="h-px bg-border mt-3"></div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Cliente */}
-                      <FormField
-                        control={form.control}
-                        name="client_name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Cliente</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Constructora ABC S.A."
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Jefe de Proyecto */}
-                      <FormField
-                        control={form.control}
-                        name="project_manager"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Jefe de Proyecto</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Ing. María García"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Arquitecto */}
-                      <FormField
-                        control={form.control}
-                        name="architect"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Arquitecto</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Arq. Carlos Ruiz"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Contratista */}
-                      <FormField
-                        control={form.control}
-                        name="contractor"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <Building className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Contratista</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Construcciones del Sur Ltda."
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
-
-                  {/* PESTAÑA: UBICACIÓN */}
-                  <TabsContent value="location" className="space-y-6">
-                    <div className="space-y-1 mb-6">
-                      <h3 className="text-lg font-semibold flex items-center gap-2">
+                  {/* ACORDEÓN: UBICACIÓN */}
+                  <AccordionItem value="location" className="border rounded-lg">
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <div className="flex items-center gap-2">
                         <MapPin className="h-5 w-5 text-primary" />
-                        Ubicación
-                      </h3>
-                      <p className="text-sm text-muted-foreground">Dirección y ubicación física del proyecto</p>
-                      <div className="h-px bg-border mt-3"></div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Dirección */}
-                      <div className="md:col-span-2">
+                        <span className="font-semibold">Ubicación</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div className="space-y-4">
+                        {/* Dirección */}
                         <FormField
                           control={form.control}
                           name="address"
                           render={({ field }) => (
                             <FormItem>
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 mb-2">
                                 <MapPin className="h-4 w-4 text-muted-foreground" />
                                 <FormLabel>Dirección</FormLabel>
                               </div>
@@ -556,7 +489,48 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                                 <Input
                                   {...field}
                                   placeholder="Ej: Av. Libertador 1234, Piso 15"
-                                  className="mt-2"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Ciudad */}
+                        <FormField
+                          control={form.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <Building className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Ciudad</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: San Isidro"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Código Postal */}
+                        <FormField
+                          control={form.control}
+                          name="postal_code"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Código Postal</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: 1602"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -564,141 +538,94 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           )}
                         />
                       </div>
+                    </AccordionContent>
+                  </AccordionItem>
 
-                      {/* Ciudad */}
-                      <FormField
-                        control={form.control}
-                        name="city"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <Building className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Ciudad</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: San Isidro"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Código Postal */}
-                      <FormField
-                        control={form.control}
-                        name="postal_code"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <MapPin className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Código Postal</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: 1602"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
-
-                  {/* PESTAÑA: CONTACTO */}
-                  <TabsContent value="contact" className="space-y-6">
-                    <div className="space-y-1 mb-6">
-                      <h3 className="text-lg font-semibold flex items-center gap-2">
+                  {/* ACORDEÓN: CONTACTO */}
+                  <AccordionItem value="contact" className="border rounded-lg">
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <div className="flex items-center gap-2">
                         <Phone className="h-5 w-5 text-primary" />
-                        Contacto y Comunicación
-                      </h3>
-                      <p className="text-sm text-muted-foreground">Información de contacto principal del proyecto</p>
-                      <div className="h-px bg-border mt-3"></div>
-                    </div>
+                        <span className="font-semibold">Contacto y Comunicación</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div className="space-y-4">
+                        {/* Teléfono */}
+                        <FormField
+                          control={form.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Teléfono</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: 01171643000"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Teléfono */}
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <Phone className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Teléfono</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: 01171643000"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Email */}
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <Mail className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Email</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="Ej: proyecto@empresa.com"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
+                        {/* Email */}
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center gap-3 mb-2">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <FormLabel>Email</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="email"
+                                  placeholder="Ej: proyecto@empresa.com"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 </div>
+              </Accordion>
 
-                {/* Botones de acción */}
-                <div className="flex justify-between pt-6 border-t">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onClose}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={createProjectMutation.isPending || (nameValidation === 'invalid')}
-                    className="flex items-center gap-2"
-                  >
-                    {createProjectMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        {project ? 'Actualizando...' : 'Creando...'}
-                      </>
-                    ) : (
-                      <>
-                        <Building className="h-4 w-4" />
-                        {project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </Tabs>
+              {/* Botones de acción */}
+              <div className="flex justify-between pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={createProjectMutation.isPending || (nameValidation === 'invalid')}
+                  className="flex items-center gap-2"
+                >
+                  {createProjectMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {project ? 'Actualizando...' : 'Creando...'}
+                    </>
+                  ) : (
+                    <>
+                      <Building className="h-4 w-4" />
+                      {project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
         </TooltipProvider>
