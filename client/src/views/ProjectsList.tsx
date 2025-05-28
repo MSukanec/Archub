@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService, Project } from '@/lib/projectsService';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
@@ -20,7 +21,8 @@ export default function ProjectsOverview() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { organizationId, projectId } = useUserContextStore();
+  const { organizationId, projectId, setUserContext } = useUserContextStore();
+  const { setView } = useNavigationStore();
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['/api/projects', organizationId],
@@ -61,6 +63,16 @@ export default function ProjectsOverview() {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleProjectClick = (project: Project) => {
+    if (project.id !== projectId) {
+      setUserContext({ projectId: project.id });
+      toast({
+        title: "Proyecto activo cambiado",
+        description: `Ahora trabajas en: ${project.name}`,
+      });
+    }
+  };
+
   const confirmDelete = () => {
     if (selectedProject) {
       deleteMutation.mutate(selectedProject.id);
@@ -91,6 +103,11 @@ export default function ProjectsOverview() {
       project.address?.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
+      // First, sort by active project (active project comes first)
+      if (a.id === projectId && b.id !== projectId) return -1;
+      if (b.id === projectId && a.id !== projectId) return 1;
+      
+      // Then sort by date
       const dateA = new Date(a.created_at).getTime();
       const dateB = new Date(b.created_at).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
@@ -105,22 +122,13 @@ export default function ProjectsOverview() {
   return (
     <>
       <div className="space-y-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Resumen de Proyectos
-            </h1>
-            <p className="text-muted-foreground">
-              Dashboard general de tus proyectos de construcción.
-            </p>
-          </div>
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Nuevo Proyecto
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            Resumen de Proyectos
+          </h1>
+          <p className="text-muted-foreground">
+            Dashboard general de tus proyectos de construcción.
+          </p>
         </div>
 
         {/* Cards de Estadísticas */}
@@ -234,9 +242,10 @@ export default function ProjectsOverview() {
               return (
                 <Card 
                   key={project.id} 
-                  className={`hover:border-border/60 transition-colors ${
+                  className={`hover:border-border/60 transition-all cursor-pointer ${
                     isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
-                  }`}
+                  } ${!isActiveProject ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
+                  onClick={() => handleProjectClick(project)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
