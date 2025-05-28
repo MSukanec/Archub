@@ -72,21 +72,43 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   // Reset form when modal opens/closes or contact changes
   useEffect(() => {
     if (isOpen) {
+      if (contact) {
+        // Load existing contact data
+        form.reset({
+          first_name: contact.first_name || '',
+          last_name: contact.last_name || '',
+          company_name: contact.company_name || '',
+          email: contact.email || '',
+          phone: contact.phone || '',
+          location: contact.location || '',
+          notes: contact.notes || '',
+          contact_types: [],
+        });
+      } else {
+        // Reset to empty form for new contact
+        form.reset({
+          first_name: '',
+          last_name: '',
+          company_name: '',
+          email: '',
+          phone: '',
+          location: '',
+          notes: '',
+          contact_types: [],
+        });
+        setSelectedTypes([]);
+      }
+    }
+  }, [isOpen, contact?.id]);
+
+  // Load contact types separately to avoid form reset loop
+  useEffect(() => {
+    if (contact?.id && currentContactTypes.length > 0) {
       const typeIds = currentContactTypes.map(type => type.id);
       setSelectedTypes(typeIds);
-      
-      form.reset({
-        first_name: contact?.first_name || '',
-        last_name: contact?.last_name || '',
-        company_name: contact?.company_name || '',
-        email: contact?.email || '',
-        phone: contact?.phone || '',
-        location: contact?.location || '',
-        notes: contact?.notes || '',
-        contact_types: typeIds,
-      });
+      form.setValue('contact_types', typeIds);
     }
-  }, [isOpen, contact, currentContactTypes, form]);
+  }, [currentContactTypes, contact?.id]);
 
   const createMutation = useMutation({
     mutationFn: async (data: { contactData: CreateContactData; typeIds: string[] }) => {
