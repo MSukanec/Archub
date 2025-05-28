@@ -186,7 +186,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .insert([{
             project_id: projectId,
             type: data.type_id,
-            category: data.concept_id,
+            concept_id: data.concept_id,
             date: data.date,
             description: data.description,
             amount: data.amount,
@@ -242,7 +242,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       try {
         let updateData: any = {
           type: data.type_id,
-          category: data.concept_id,
+          concept_id: data.concept_id,
           date: data.date,
           description: data.description,
           amount: data.amount,
