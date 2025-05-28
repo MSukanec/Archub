@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -11,6 +12,7 @@ import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import MovementModal from '@/components/modals/MovementModal';
+import DeleteMovementModal from '@/components/modals/DeleteMovementModal';
 
 interface Movement {
   id: string;

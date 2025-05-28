@@ -317,7 +317,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     <FormItem>
                       <div className="flex items-center gap-4">
                         <FormLabel className="w-32 text-left flex-shrink-0">Estado del Proyecto</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl className="flex-1">
                             <SelectTrigger>
                               <SelectValue placeholder="Selecciona un estado" />
@@ -429,26 +429,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                 Cancelar
               </Button>
               <Button
-                type="button"
-                onClick={() => {
-                  console.log('DEBUG: Button clicked');
-                  console.log('DEBUG: Form values:', form.getValues());
-                  console.log('DEBUG: Form errors:', form.formState.errors);
-                  console.log('DEBUG: Form valid:', form.formState.isValid);
-                  
-                  const formData = form.getValues();
-                  if (formData.name) {
-                    console.log('DEBUG: Triggering mutation manually');
-                    createProjectMutation.mutate(formData);
-                  } else {
-                    console.log('DEBUG: Name is missing');
-                    toast({
-                      title: "Error",
-                      description: "El nombre del proyecto es requerido",
-                      variant: "destructive",
-                    });
-                  }
-                }}
+                type="submit"
                 className="bg-primary hover:bg-primary/90"
                 disabled={createProjectMutation.isPending}
               >
