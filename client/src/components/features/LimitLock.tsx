@@ -78,28 +78,28 @@ export function LimitLock({
     <Popover>
       <PopoverTrigger asChild>
         <div 
-          className={`absolute -top-1 -right-1 bg-red-500 border-2 border-background rounded-full p-1 shadow-lg cursor-help hover:bg-red-600 transition-colors z-10 ${className}`}
-          onMouseEnter={(e) => {
-            // Trigger popover on hover
-            e.currentTarget.click();
-          }}
+          className={`absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-blue-600 border-2 border-background rounded-full p-1 shadow-lg cursor-help hover:from-blue-600 hover:to-blue-700 transition-all duration-300 z-10 ${className}`}
         >
           <Lock className="h-3 w-3 text-white" />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" side="top">
-        <div className="p-4 border-b border-border bg-yellow-500/10 border-yellow-500/20">
+      <PopoverContent 
+        className="w-80 p-0 border-0 shadow-xl" 
+        side="top"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-t-lg">
           <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-yellow-400" />
-            <h3 className="font-semibold text-sm">Actualización Requerida</h3>
+            <Crown className="h-5 w-5 text-white" />
+            <h3 className="font-semibold text-sm text-white">Actualización Premium</h3>
           </div>
         </div>
-        <div className="p-4 space-y-3">
-          <p className="text-sm text-muted-foreground">
+        <div className="bg-white p-4 space-y-3 rounded-b-lg">
+          <p className="text-sm text-gray-600">
             {upgradeMessage}
           </p>
           <Button 
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
             onClick={() => {
               window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
             }}

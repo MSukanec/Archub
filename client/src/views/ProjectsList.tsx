@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp } from 'lucide-react';
+import { useFeatures } from '@/hooks/useFeatures';
+import { LimitLock } from '@/components/features';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,12 +25,17 @@ export default function ProjectsOverview() {
   const queryClient = useQueryClient();
   const { organizationId, projectId, setUserContext } = useUserContextStore();
   const { setView } = useNavigationStore();
+  const { checkLimit } = useFeatures();
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['/api/projects', organizationId],
     queryFn: () => projectsService.getAll(),
     enabled: !!organizationId,
   });
+
+  // Verificar límites y ordenar proyectos
+  const limitCheck = checkLimit('max_projects', projects.length);
+  const allowedProjectsCount = limitCheck.limit > 0 ? limitCheck.limit : projects.length;
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => projectsService.delete(id),
@@ -66,6 +73,19 @@ export default function ProjectsOverview() {
   };
 
   const handleProjectClick = (project: Project) => {
+    // Verificar si el proyecto está bloqueado por límites del plan
+    const projectIndex = filteredProjects.findIndex(p => p.id === project.id);
+    const isBlocked = limitCheck.isLimited && projectIndex >= allowedProjectsCount;
+    
+    if (isBlocked) {
+      toast({
+        title: "Proyecto bloqueado",
+        description: "Actualiza tu plan para acceder a todos tus proyectos",
+        duration: 3000,
+      });
+      return;
+    }
+
     if (project.id !== projectId) {
       // Agregar clase de animación antes del cambio
       const cards = document.querySelectorAll('[data-project-card]');
@@ -253,15 +273,20 @@ export default function ProjectsOverview() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {filteredProjects.map((project: Project) => {
+            {filteredProjects.map((project: Project, index: number) => {
               const isActiveProject = project.id === projectId;
+              const isBlocked = limitCheck.isLimited && index >= allowedProjectsCount;
               return (
                 <Card 
                   key={project.id}
                   data-project-card
-                  className={`hover:border-border/60 transition-all duration-300 cursor-pointer ${
+                  className={`transition-all duration-300 relative ${
+                    isBlocked 
+                      ? 'opacity-60 cursor-not-allowed' 
+                      : 'cursor-pointer hover:border-border/60'
+                  } ${
                     isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
-                  } ${!isActiveProject ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
+                  } ${!isActiveProject && !isBlocked ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
                   onClick={() => handleProjectClick(project)}
                 >
                   <CardContent className="p-4">
