@@ -25,8 +25,7 @@ export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isContactActionsModalOpen, setIsContactActionsModalOpen] = useState(false);
-  const [contactForActions, setContactForActions] = useState<Contact | null>(null);
+
   const [contactsWithTypes, setContactsWithTypes] = useState<ContactWithTypes[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -81,6 +80,18 @@ export default function Contacts() {
     }
   }, [contacts]);
 
+  // Force refresh when contact types change
+  useEffect(() => {
+    if (contacts.length > 0) {
+      Promise.all(
+        contacts.map(async (contact) => {
+          const types = await contactTypesService.getContactTypes(contact.id);
+          return { ...contact, contact_types: types };
+        })
+      ).then(setContactsWithTypes);
+    }
+  }, [availableTypes, contacts]);
+
   // Delete contact mutation
   const deleteMutation = useMutation({
     mutationFn: (id: string) => contactsService.delete(id),
@@ -102,9 +113,11 @@ export default function Contacts() {
     },
   });
 
-  const handleEdit = (contact: Contact) => {
+  const handleEdit = async (contact: Contact) => {
     setSelectedContact(contact);
     setIsModalOpen(true);
+    // Force reload of contact types to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ['contact-types'] });
   };
 
   const handleDelete = (contact: Contact) => {
@@ -123,15 +136,7 @@ export default function Contacts() {
     setSelectedContact(null);
   };
 
-  const handleContactActions = (contact: Contact) => {
-    setContactForActions(contact);
-    setIsContactActionsModalOpen(true);
-  };
 
-  const handleContactActionsModalClose = () => {
-    setIsContactActionsModalOpen(false);
-    setContactForActions(null);
-  };
 
   // Filter contacts based on search term and selected type
   const filteredContacts = contactsWithTypes.filter(contact => {
@@ -211,24 +216,21 @@ export default function Contacts() {
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Apellido</TableHead>
-              <TableHead>Tipos</TableHead>
-              <TableHead>Empresa</TableHead>
+              <TableHead>Tipo</TableHead>
               <TableHead>Contacto</TableHead>
-              <TableHead>Ubicación</TableHead>
-              <TableHead>Creado</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   Cargando contactos...
                 </TableCell>
               </TableRow>
             ) : filteredContacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   {contactsWithTypes.length === 0 ? 'No hay contactos registrados.' : 'No se encontraron contactos que coincidan con los filtros.'}
                 </TableCell>
               </TableRow>
@@ -246,58 +248,66 @@ export default function Contacts() {
                           </Badge>
                         ))
                       ) : (
-                        <span className="text-muted-foreground text-sm">Sin tipos</span>
+                        <span className="text-muted-foreground text-sm">Sin tipo</span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>{contact.company_name || '-'}</TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1">
-                      {contact.email && (
-                        <div className="flex items-center gap-1 text-sm">
-                          <Mail className="h-3 w-3" />
-                          <span className="truncate max-w-[150px]">{contact.email}</span>
-                        </div>
-                      )}
+                    <div className="flex items-center gap-2">
                       {contact.phone && (
-                        <div className="flex items-center gap-1 text-sm">
-                          <Phone className="h-3 w-3" />
-                          <span>{contact.phone}</span>
-                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const formattedPhone = contact.phone!.replace(/\D/g, '');
+                                  const whatsappUrl = `https://wa.me/${formattedPhone}`;
+                                  window.open(whatsappUrl, '_blank');
+                                }}
+                                className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                                <span className="sr-only">WhatsApp</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Contactar por WhatsApp</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
-                      {!contact.email && !contact.phone && '-'}
+                      {contact.email && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const mailtoUrl = `mailto:${contact.email}`;
+                                  window.location.href = mailtoUrl;
+                                }}
+                                className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              >
+                                <Mail className="h-4 w-4" />
+                                <span className="sr-only">Email</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Enviar email</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {!contact.phone && !contact.email && (
+                        <span className="text-muted-foreground text-sm">Sin contacto</span>
+                      )}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    {contact.location ? (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate max-w-[100px]">{contact.location}</span>
-                      </div>
-                    ) : '-'}
-                  </TableCell>
-                  <TableCell>{formatDate(contact.created_at)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleContactActions(contact)}
-                              disabled={!contact.phone && !contact.email}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
-                            >
-                              <MessageCircle className="h-4 w-4" />
-                              <span className="sr-only">Contactar</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{(contact.phone || contact.email) ? 'Contactar' : 'Sin información de contacto'}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                       <Button
                         variant="outline"
                         size="sm"
@@ -332,12 +342,7 @@ export default function Contacts() {
         contact={selectedContact}
       />
 
-      {/* Contact Actions Modal */}
-      <ContactActionsModal
-        isOpen={isContactActionsModalOpen}
-        onClose={handleContactActionsModalClose}
-        contact={contactForActions}
-      />
+
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
