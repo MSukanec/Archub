@@ -121,15 +121,17 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   });
 
   const onSubmit = (data: ContactForm) => {
+    console.log('Form data received:', data);
+    
     const contactData: CreateContactData = {
       first_name: data.first_name,
-      last_name: data.last_name || undefined,
+      last_name: data.last_name || null,
       contact_type: data.contact_type,
-      company_name: data.company_name || undefined,
-      email: data.email || undefined,
-      phone: data.phone || undefined,
-      location: data.location || undefined,
-      notes: data.notes || undefined,
+      company_name: data.company_name || null,
+      email: data.email || null,
+      phone: data.phone || null,
+      location: data.location || null,
+      notes: data.notes || null,
     };
 
     console.log('Submitting contact data:', contactData);
