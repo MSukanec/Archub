@@ -96,7 +96,12 @@ export default function Movements() {
         .eq('project_id', projectId)
         .order('date', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching movements:', error);
+        throw error;
+      }
+      
+      console.log('Movements fetched:', data);
       return data as Movement[];
     },
     enabled: !!projectId,
