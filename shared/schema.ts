@@ -78,7 +78,8 @@ export const units = pgTable("units", {
 
 export const contacts = pgTable("contacts", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+  first_name: varchar("first_name", { length: 255 }).notNull(),
+  last_name: varchar("last_name", { length: 255 }),
   email: varchar("email", { length: 255 }),
   phone: varchar("phone", { length: 50 }),
   company_name: varchar("company_name", { length: 255 }),
@@ -207,7 +208,8 @@ export const insertActionSchema = createInsertSchema(actions).pick({
 });
 
 export const insertContactSchema = createInsertSchema(contacts).pick({
-  name: true,
+  first_name: true,
+  last_name: true,
   email: true,
   phone: true,
   company_name: true,

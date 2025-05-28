@@ -102,8 +102,9 @@ export default function Contacts() {
 
   // Filter contacts based on search term and selected type
   const filteredContacts = contacts.filter(contact => {
+    const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
     const matchesSearch = 
-      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
@@ -193,7 +194,7 @@ export default function Contacts() {
                 const typeInfo = getContactTypeInfo(contact.contact_type);
                 return (
                   <TableRow key={contact.id}>
-                    <TableCell className="font-medium">{contact.name}</TableCell>
+                    <TableCell className="font-medium">{`${contact.first_name} ${contact.last_name || ''}`.trim()}</TableCell>
                     <TableCell>
                       <Badge className={typeInfo.color}>
                         {typeInfo.label}

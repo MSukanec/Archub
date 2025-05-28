@@ -3,7 +3,8 @@ import { useUserContextStore } from '@/stores/userContextStore';
 
 export interface Contact {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string | null;
   email: string | null;
   phone: string | null;
   company_name: string | null;
@@ -16,7 +17,8 @@ export interface Contact {
 }
 
 export interface CreateContactData {
-  name: string;
+  first_name: string;
+  last_name?: string;
   email?: string;
   phone?: string;
   company_name?: string;

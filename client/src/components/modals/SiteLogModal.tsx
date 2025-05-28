@@ -471,7 +471,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                         <SelectContent>
                           {contacts.filter(contact => !selectedAttendees.find(sa => sa.contact.id === contact.id)).map(contact => (
                             <SelectItem key={contact.id} value={contact.id.toString()}>
-                              {contact.name} - {contact.company_name || 'Sin empresa'}
+                              {`${contact.first_name} ${contact.last_name || ''}`.trim()} - {contact.company_name || 'Sin empresa'}
                             </SelectItem>
                           ))}
                         </SelectContent>
