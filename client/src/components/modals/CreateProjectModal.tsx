@@ -459,8 +459,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                               <FormControl>
                                 <Input
                                   {...field}
-                                  value={field.value || ''}
-                                  onChange={(e) => field.onChange(e.target.value)}
                                   placeholder="Ej: 1602"
                                 />
                               </FormControl>
