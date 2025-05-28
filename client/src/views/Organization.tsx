@@ -175,16 +175,16 @@ export default function Organization() {
           </div>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Nombre</label>
-              <p className="text-foreground">{organization?.name || 'Cargando...'}</p>
+              <label className="text-sm text-muted-foreground">Nombre</label>
+              <p className="text-foreground font-medium">{organization?.name || 'Cargando...'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Descripción</label>
-              <p className="text-foreground">{organization?.description || 'Sin descripción'}</p>
+              <label className="text-sm text-muted-foreground">Descripción</label>
+              <p className="text-foreground font-medium">{organization?.description || 'Sin descripción'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Fecha de Creación</label>
-              <p className="text-foreground">
+              <label className="text-sm text-muted-foreground">Fecha de Creación</label>
+              <p className="text-foreground font-medium">
                 {organization?.created_at 
                   ? new Date(organization.created_at).toLocaleDateString('es-ES')
                   : 'Cargando...'
