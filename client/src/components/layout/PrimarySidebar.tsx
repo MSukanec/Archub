@@ -176,7 +176,7 @@ export default function PrimarySidebar() {
             "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 border-2",
             currentSection === 'profile'
               ? "bg-primary border-primary text-white"
-              : "bg-gray-600 border-gray-500 text-white hover:bg-gray-500 hover:border-gray-400"
+              : "bg-primary/80 border-primary/60 text-white hover:bg-primary hover:border-primary"
           )}
           title="Perfil"
         >

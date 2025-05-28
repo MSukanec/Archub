@@ -33,7 +33,7 @@ interface Movement {
     id: string;
     name: string;
     parent_id: string;
-    movement_concepts?: {
+    parent_concept?: {
       id: string;
       name: string;
     };
@@ -86,15 +86,37 @@ export default function Movements() {
           movement_concepts!inner (
             id,
             name,
-            parent_id,
-            parent_concept:movement_concepts!parent_id (
-              id,
-              name
-            )
+            parent_id
           )
         `)
         .eq('project_id', projectId)
         .order('date', { ascending: false });
+        
+      // Obtener información de los conceptos padre para cada movimiento
+      if (data && data.length > 0) {
+        const parentIds = data
+          .map(movement => movement.movement_concepts?.parent_id)
+          .filter(Boolean);
+        
+        if (parentIds.length > 0) {
+          const { data: parentConcepts } = await supabase
+            .from('movement_concepts')
+            .select('id, name')
+            .in('id', parentIds);
+          
+          // Agregar información del concepto padre a cada movimiento
+          data.forEach(movement => {
+            if (movement.movement_concepts?.parent_id) {
+              const parentConcept = parentConcepts?.find(
+                p => p.id === movement.movement_concepts.parent_id
+              );
+              if (parentConcept) {
+                movement.movement_concepts.parent_concept = parentConcept;
+              }
+            }
+          });
+        }
+      }
       
       if (error) {
         console.error('Error fetching movements:', error);
@@ -193,37 +215,36 @@ export default function Movements() {
       const amount = movement.amount;
       const target = movement.currency === 'USD' ? dolares : pesos;
       
-      // Obtener el tipo padre - si tiene parent_id, necesitamos buscar el nombre del padre
-      // Usar lógica basada en los concept_id conocidos para determinar el tipo
-      const conceptName = movement.movement_concepts?.name?.toLowerCase();
+      // Obtener el tipo padre correctamente
       let parentType = null;
       
-      // Si es un concepto hijo (tiene parent_id), asumimos que pertenece a ingresos por defecto
-      // En el futuro se puede mejorar con una consulta adicional
-      if (movement.movement_concepts?.parent_id) {
-        // Para "Cuotas" y conceptos similares, clasificar como ingresos
-        parentType = 'ingresos';
-      } else {
+      if (movement.movement_concepts?.parent_id && movement.movement_concepts?.parent_concept) {
+        // Si tiene parent_id y tenemos la info del padre, usar el nombre del padre
+        parentType = movement.movement_concepts.parent_concept.name?.toLowerCase();
+      } else if (!movement.movement_concepts?.parent_id) {
         // Si no tiene parent_id, es un tipo principal
-        parentType = conceptName;
+        parentType = movement.movement_concepts?.name?.toLowerCase();
       }
       
       console.log('Processing movement:', {
         amount,
         currency: movement.currency,
-        conceptName,
+        conceptName: movement.movement_concepts?.name,
         parentType,
         hasParentId: !!movement.movement_concepts?.parent_id,
-        rawConcept: movement.movement_concepts
+        parentConcept: movement.movement_concepts?.parent_concept
       });
       
       switch (parentType) {
+        case 'ingreso':
         case 'ingresos':
           target.ingresos += amount;
           break;
+        case 'egreso':
         case 'egresos':
           target.egresos += amount;
           break;
+        case 'ajuste':
         case 'ajustes':
           target.ajustes += amount;
           break;
