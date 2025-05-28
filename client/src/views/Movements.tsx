@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
@@ -47,6 +48,7 @@ export default function Movements() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [movementToDelete, setMovementToDelete] = useState<Movement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -137,39 +139,48 @@ export default function Movements() {
     
     let filtered = movements.filter(movement => {
       const searchTermLower = searchTerm.toLowerCase();
-      return (
+      const matchesSearch = 
         movement.description.toLowerCase().includes(searchTermLower) ||
         movement.category.toLowerCase().includes(searchTermLower) ||
         movement.type.toLowerCase().includes(searchTermLower) ||
-        movement.amount.toString().includes(searchTermLower)
-      );
+        movement.amount.toString().includes(searchTermLower);
+      
+      const matchesType = typeFilter === 'all' || movement.type === typeFilter;
+      
+      return matchesSearch && matchesType;
     });
 
     // Sort by date (newest first) - data is already sorted from query
     return filtered;
-  }, [movements, searchTerm]);
+  }, [movements, searchTerm, typeFilter]);
 
-  // Calculate totals
-  const totals = filteredMovements.reduce(
-    (acc, movement) => {
+  // Calculate totals by currency
+  const totalsByCurrency = useMemo(() => {
+    const pesos = { ingresos: 0, egresos: 0, ajustes: 0 };
+    const dolares = { ingresos: 0, egresos: 0, ajustes: 0 };
+    
+    filteredMovements.forEach(movement => {
       const amount = movement.amount;
+      const target = movement.currency === 'USD' ? dolares : pesos;
+      
       switch (movement.type) {
         case 'ingreso':
-          acc.ingresos += amount;
+          target.ingresos += amount;
           break;
         case 'egreso':
-          acc.egresos += amount;
+          target.egresos += amount;
           break;
         case 'ajuste':
-          acc.ajustes += amount;
+          target.ajustes += amount;
           break;
       }
-      return acc;
-    },
-    { ingresos: 0, egresos: 0, ajustes: 0 }
-  );
+    });
+    
+    return { pesos, dolares };
+  }, [filteredMovements]);
 
-  const balance = totals.ingresos - totals.egresos + totals.ajustes;
+  const balancePesos = totalsByCurrency.pesos.ingresos - totalsByCurrency.pesos.egresos + totalsByCurrency.pesos.ajustes;
+  const balanceDolares = totalsByCurrency.dolares.ingresos - totalsByCurrency.dolares.egresos + totalsByCurrency.dolares.ajustes;
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -225,8 +236,8 @@ export default function Movements() {
         </div>
       </div>
 
-      {/* Search Filter */}
-      <div className="flex items-center space-x-2">
+      {/* Filters */}
+      <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -236,57 +247,150 @@ export default function Movements() {
             className="pl-8"
           />
         </div>
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Tipo de movimiento" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los tipos</SelectItem>
+            <SelectItem value="ingreso">Ingresos</SelectItem>
+            <SelectItem value="egreso">Egresos</SelectItem>
+            <SelectItem value="ajuste">Ajustes</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {formatCurrency(totals.ingresos, 'ARS')}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Summary Cards - Separated by Currency */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Pesos Argentinos */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <span className="text-2xl">🇦🇷</span>
+            Pesos Argentinos (ARS)
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Ingresos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                  {formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Egresos</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {formatCurrency(totals.egresos, 'ARS')}
-            </div>
-          </CardContent>
-        </Card>
+            <Card className="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-red-700 dark:text-red-300 flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4" />
+                  Egresos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-red-600 dark:text-red-400">
+                  {formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ajustes</CardTitle>
-            <DollarSign className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              {formatCurrency(totals.ajustes, 'ARS')}
-            </div>
-          </CardContent>
-        </Card>
+            <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Ajustes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                  {formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Balance</CardTitle>
-            <DollarSign className="h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatCurrency(balance, 'ARS')}
-            </div>
-          </CardContent>
-        </Card>
+            <Card className={`border-2 ${balancePesos >= 0 ? 'bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700' : 'bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700'}`}>
+              <CardHeader className="pb-2">
+                <CardTitle className={`text-sm font-medium flex items-center gap-2 ${balancePesos >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                  <DollarSign className="h-4 w-4" />
+                  Balance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-xl font-bold ${balancePesos >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {formatCurrency(balancePesos, 'ARS')}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Dólares */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <span className="text-2xl">🇺🇸</span>
+            Dólares Estadounidenses (USD)
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Ingresos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                  {formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-red-700 dark:text-red-300 flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4" />
+                  Egresos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-red-600 dark:text-red-400">
+                  {formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Ajustes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                  {formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className={`border-2 ${balanceDolares >= 0 ? 'bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700' : 'bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700'}`}>
+              <CardHeader className="pb-2">
+                <CardTitle className={`text-sm font-medium flex items-center gap-2 ${balanceDolares >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                  <DollarSign className="h-4 w-4" />
+                  Balance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-xl font-bold ${balanceDolares >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {formatCurrency(balanceDolares, 'USD')}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
 
       {/* Movements List */}
@@ -302,7 +406,7 @@ export default function Movements() {
             <div className="flex items-center justify-center h-32">
               <p className="text-muted-foreground">Cargando movimientos...</p>
             </div>
-          ) : movements.length === 0 ? (
+          ) : filteredMovements.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 space-y-2">
               <FileText className="h-8 w-8 text-muted-foreground" />
               <p className="text-muted-foreground">No hay movimientos registrados</p>
@@ -324,7 +428,7 @@ export default function Movements() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {movements.map((movement) => (
+                {filteredMovements.map((movement) => (
                   <TableRow key={movement.id} className="hover:bg-muted/50">
                     <TableCell>
                       {format(new Date(movement.created_at), 'dd/MM/yyyy', { locale: es })}
