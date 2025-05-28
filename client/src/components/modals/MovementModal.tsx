@@ -161,9 +161,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .from('site_movements')
         .insert([{
           project_id: projectId,
-          type: data.type,
+          concept_id: data.concept_id,
           date: data.date,
-          category: data.category,
           description: data.description,
           amount: data.amount,
           currency: data.currency,
@@ -200,9 +199,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       const { data: result, error } = await supabase
         .from('site_movements')
         .update({
-          type: data.type,
+          concept_id: data.concept_id,
           date: data.date,
-          category: data.category,
           description: data.description,
           amount: data.amount,
           currency: data.currency,
