@@ -114,55 +114,30 @@ export default function Organization() {
       
       {/* Organization Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Proyectos Totales</p>
-              <p className="text-3xl font-bold text-foreground">{stats?.totalProjects || 0}</p>
-            </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <BarChart3 className="h-5 w-5 text-primary" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Presupuesto Total</p>
-              <p className="text-3xl font-bold text-foreground">
-                ${stats?.totalBudget ? (stats.totalBudget / 1000000).toFixed(1) + 'M' : '0'}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-primary" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Actividad Mensual</p>
-              <p className="text-3xl font-bold text-foreground">{stats?.monthlyActivity || 0}</p>
-            </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <Activity className="h-5 w-5 text-primary" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Días Activos</p>
-              <p className="text-3xl font-bold text-foreground">{stats?.activeDays || 0}</p>
-            </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-primary" />
-            </div>
-          </div>
-        </div>
+        <MetricCard
+          title="Proyectos Totales"
+          value={stats?.totalProjects || 0}
+          icon={<BarChart3 className="h-6 w-6" />}
+          iconColor="orange"
+        />
+        <MetricCard
+          title="Presupuesto Total"
+          value={`$${stats?.totalBudget ? (stats.totalBudget / 1000000).toFixed(1) + 'M' : '0'}`}
+          icon={<DollarSign className="h-6 w-6" />}
+          iconColor="green"
+        />
+        <MetricCard
+          title="Actividad Mensual"
+          value={stats?.monthlyActivity || 0}
+          icon={<Activity className="h-6 w-6" />}
+          iconColor="blue"
+        />
+        <MetricCard
+          title="Días Activos"
+          value={stats?.activeDays || 0}
+          icon={<Calendar className="h-6 w-6" />}
+          iconColor="orange"
+        />
       </div>
       
       {/* Organization Details */}
