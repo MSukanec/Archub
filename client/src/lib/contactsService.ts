@@ -79,7 +79,7 @@ export const contactsService = {
     return data;
   },
 
-  async update(id: number, contactData: Partial<CreateContactData>): Promise<Contact> {
+  async update(id: string, contactData: Partial<CreateContactData>): Promise<Contact> {
     console.log('Updating contact with ID:', id);
     console.log('Update data:', contactData);
     

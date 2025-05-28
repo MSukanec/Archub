@@ -229,7 +229,6 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                           <FormItem>
                             <FormLabel className="flex items-center gap-2">
                               Nombre <span className="text-primary">*</span>
-                              {form.watch('first_name') && <Check className="h-4 w-4 text-green-500" />}
                             </FormLabel>
                             <FormControl>
                               <Input 
@@ -270,7 +269,6 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                           <FormLabel className="flex items-center gap-2">
                             <Tags className="h-4 w-4" />
                             Tipos de contacto <span className="text-primary">*</span>
-                            {selectedTypes.length > 0 && <Check className="h-4 w-4 text-green-500" />}
                           </FormLabel>
                           <FormControl>
                             <Popover open={open} onOpenChange={setOpen}>

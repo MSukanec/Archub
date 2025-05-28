@@ -10,15 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
+import { contactTypesService, ContactType } from '@/lib/contactTypesService';
 import ContactModal from '@/components/modals/ContactModal';
 
-const CONTACT_TYPES = [
-  { value: 'proveedor', label: 'Proveedor', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
-  { value: 'contratista', label: 'Contratista', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
-  { value: 'tecnico', label: 'Técnico', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' },
-  { value: 'cliente', label: 'Cliente', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300' },
-  { value: 'otro', label: 'Otro', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300' }
-];
+// Extended contact with types
+interface ContactWithTypes extends Contact {
+  contact_types?: ContactType[];
+}
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,6 +24,7 @@ export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [contactsWithTypes, setContactsWithTypes] = useState<ContactWithTypes[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -54,14 +53,34 @@ export default function Contacts() {
     retry: false, // No reintentos para evitar bucles
   });
 
+  // Fetch available contact types for filtering
+  const { data: availableTypes = [] } = useQuery({
+    queryKey: ['contact-types'],
+    queryFn: contactTypesService.getAll,
+  });
+
   // Log error if any
   if (error) {
     console.error('Error fetching contacts:', error);
   }
 
+  // Load contact types for each contact
+  useEffect(() => {
+    if (contacts.length > 0) {
+      Promise.all(
+        contacts.map(async (contact) => {
+          const types = await contactTypesService.getContactTypes(contact.id);
+          return { ...contact, contact_types: types };
+        })
+      ).then(setContactsWithTypes);
+    } else {
+      setContactsWithTypes([]);
+    }
+  }, [contacts]);
+
   // Delete contact mutation
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => contactsService.delete(id),
+    mutationFn: (id: string) => contactsService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       toast({

@@ -50,10 +50,7 @@ export const contactTypesService = {
         return [];
       }
       
-      return data?.map(link => ({
-        id: link.contact_types.id,
-        name: link.contact_types.name
-      })) || [];
+      return data?.map(link => link.contact_types).filter(Boolean) || [];
     } catch (error) {
       console.error('Network error fetching contact types for contact:', error);
       return [];
