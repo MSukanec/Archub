@@ -178,8 +178,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .from('site_movements')
         .insert([{
           project_id: projectId,
-          type: data.type_id, // Using type_id as type for now
-          category: data.concept_id, // Using concept_id as category for now
+          type: data.type_id,
+          category: data.concept_id,
           date: data.date,
           description: data.description,
           amount: data.amount,
@@ -217,8 +217,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       const { data: result, error } = await supabase
         .from('site_movements')
         .update({
-          type: data.type_id, // Using type_id as type for now
-          category: data.concept_id, // Using concept_id as category for now
+          type: data.type_id,
+          category: data.concept_id,
           date: data.date,
           description: data.description,
           amount: data.amount,
