@@ -88,45 +88,45 @@ export function LimitLock({
         </div>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-96 p-0 border-0 shadow-2xl backdrop-blur-sm" 
+        className="w-80 p-0 border border-border/20 shadow-xl bg-background" 
         side="top"
         onOpenAutoFocus={(e) => e.preventDefault()}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
         {/* Header premium con gradiente */}
-        <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 p-6 rounded-t-lg relative overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 p-4 rounded-t-lg relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 animate-pulse"></div>
-          <div className="relative flex items-center gap-3">
-            <div className="bg-white/20 rounded-full p-2">
-              <Crown className="h-6 w-6 text-yellow-300" />
+          <div className="relative flex items-center gap-2">
+            <div className="bg-white/20 rounded-full p-1.5">
+              <Crown className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-white">¡Desbloquea Premium!</h3>
-              <p className="text-blue-100 text-sm opacity-90">Accede a proyectos ilimitados</p>
+              <h3 className="font-bold text-sm text-white">¡Desbloquea Premium!</h3>
+              <p className="text-blue-100 text-xs opacity-90">Accede a proyectos ilimitados</p>
             </div>
           </div>
           <div className="absolute top-2 right-2">
-            <Sparkles className="h-5 w-5 text-yellow-300 animate-pulse" />
+            <Sparkles className="h-4 w-4 text-white animate-pulse" />
           </div>
         </div>
 
         {/* Contenido */}
-        <div className="bg-gradient-to-b from-slate-50 to-white p-6 space-y-4 rounded-b-lg">
-          <div className="flex items-start gap-3">
-            <div className="bg-blue-100 rounded-full p-2 mt-1">
-              <Zap className="h-4 w-4 text-blue-600" />
+        <div className="bg-background p-4 space-y-3 rounded-b-lg">
+          <div className="flex items-start gap-2">
+            <div className="bg-primary/10 rounded-full p-1.5 mt-0.5">
+              <Zap className="h-3 w-3 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-slate-700 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {upgradeMessage}
               </p>
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-3 border border-blue-200">
-            <p className="text-xs text-blue-700 font-medium">✨ Con PRO obtienes:</p>
-            <ul className="text-xs text-blue-600 mt-1 space-y-1">
+          <div className="bg-primary/5 rounded-lg p-2 border border-primary/20">
+            <p className="text-xs text-primary font-medium">✨ Con PRO obtienes:</p>
+            <ul className="text-xs text-muted-foreground mt-1 space-y-0.5">
               <li>• Proyectos ilimitados</li>
               <li>• Reportes avanzados</li>
               <li>• Soporte prioritario</li>
@@ -134,14 +134,14 @@ export function LimitLock({
           </div>
           
           <Button 
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 text-xs h-8"
             onClick={() => {
               window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
             }}
           >
-            <Crown className="h-4 w-4 mr-2" />
+            <Crown className="h-3 w-3 mr-1" />
             Actualizar a PRO ahora
-            <Sparkles className="h-4 w-4 ml-2" />
+            <Sparkles className="h-3 w-3 ml-1" />
           </Button>
         </div>
       </PopoverContent>

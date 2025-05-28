@@ -293,18 +293,12 @@ export default function ProjectsOverview() {
                 >
                   {/* Badge de bloqueo */}
                   {isBlocked && (
-                    <div className="absolute -top-1 -right-1 z-10">
-                      <LimitLock
-                        limitName="max_projects"
-                        currentCount={index + 1}
-                        featureName="Acceso al proyecto"
-                        description="Actualiza tu plan para acceder a todos tus proyectos"
-                      >
-                        <div className="bg-blue-600 rounded-full p-1.5 shadow-lg">
-                          <Lock className="h-3 w-3 text-white" />
-                        </div>
-                      </LimitLock>
-                    </div>
+                    <LimitLock
+                      limitName="max_projects"
+                      currentCount={originalIndex + 1}
+                      featureName="Acceso al proyecto"
+                      description="Actualiza tu plan para acceder a todos tus proyectos"
+                    />
                   )}
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
