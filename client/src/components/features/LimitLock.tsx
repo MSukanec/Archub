@@ -77,8 +77,14 @@ export function LimitLock({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className={`absolute top-2 right-2 bg-background border border-border rounded-full p-1 shadow-lg cursor-help hover:bg-muted transition-colors ${className}`}>
-          <Lock className="h-3 w-3 text-muted-foreground" />
+        <div 
+          className={`absolute -top-1 -right-1 bg-red-500 border-2 border-background rounded-full p-1 shadow-lg cursor-help hover:bg-red-600 transition-colors z-10 ${className}`}
+          onMouseEnter={(e) => {
+            // Trigger popover on hover
+            e.currentTarget.click();
+          }}
+        >
+          <Lock className="h-3 w-3 text-white" />
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" side="top">

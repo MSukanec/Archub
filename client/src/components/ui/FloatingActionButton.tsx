@@ -5,6 +5,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { projectsService } from '@/lib/projectsService';
 import { LimitLock } from '@/components/features';
+import { useFeatures } from '@/hooks/useFeatures';
 import { cn } from '@/lib/utils';
 
 // Hook personalizado para manejar modales
@@ -76,6 +77,7 @@ export default function FloatingActionButton() {
   const [isHovered, setIsHovered] = useState(false);
   const modalActions = useModalActions();
   const { organizationId } = useUserContextStore();
+  const { checkLimit: checkProjectLimit } = useFeatures();
 
   // Obtener conteo de proyectos para verificar límites
   const { data: projects = [] } = useQuery({
@@ -139,26 +141,33 @@ export default function FloatingActionButton() {
   const isProjectCreation = actionConfig.label.includes('Proyecto') || 
     (actionConfig.isMultiple && actionConfig.options?.some(opt => opt.label.includes('Proyecto')));
 
+  // Verificar si está bloqueado
+  const { checkLimit: checkFeatureLimit } = useFeatures();
+  const isBlocked = isProjectCreation && checkFeatureLimit('max_projects', projects.length).isLimited;
+
   return (
     <div 
       className="fixed bottom-6 right-6 z-50"
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => !isBlocked && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        onClick={handleClick}
+        onClick={!isBlocked ? handleClick : undefined}
         className={cn(
-          "bg-primary hover:bg-primary/90 text-primary-foreground",
-          "shadow-lg hover:shadow-xl rounded-xl",
-          "flex items-center justify-center cursor-pointer",
+          "bg-primary text-primary-foreground",
+          "shadow-lg rounded-xl",
+          "flex items-center justify-center",
           "transition-all duration-300 ease-in-out",
           "border border-primary/20",
           "relative overflow-hidden",
-          actionConfig.isMultiple && isHovered 
+          isBlocked 
+            ? "opacity-75 cursor-not-allowed" 
+            : "hover:bg-primary/90 hover:shadow-xl cursor-pointer",
+          actionConfig.isMultiple && isHovered && !isBlocked
             ? "h-auto py-3 px-4 min-w-48 flex-col" 
             : actionConfig.isMultiple 
               ? "h-14 w-14" 
-              : isHovered 
+              : isHovered && !isBlocked
                 ? "h-14 justify-start pl-4 pr-6" 
                 : "h-14 w-14"
         )}
@@ -211,7 +220,7 @@ export default function FloatingActionButton() {
       </div>
       
       {/* Badge de restricción para creación de proyectos */}
-      {isProjectCreation && (
+      {isProjectCreation && isBlocked && (
         <LimitLock
           limitName="max_projects"
           currentCount={projects.length}
