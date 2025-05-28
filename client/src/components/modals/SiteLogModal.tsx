@@ -113,8 +113,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
       const siteLogData = {
         project_id: projectId,
-        date: data.date.toISOString(),
-        weather: data.weather || null,
+        date: data.date.toISOString().split('T')[0], // Send only date part
+        weather: data.weather === 'none' ? null : data.weather || null,
         description: data.description || null,
       };
 
@@ -320,7 +320,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="">Sin especificar</SelectItem>
+                                <SelectItem value="none">Sin especificar</SelectItem>
                                 {weatherOptions.map((option) => {
                                   const Icon = option.icon;
                                   return (
