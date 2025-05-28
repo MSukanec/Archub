@@ -452,25 +452,33 @@ export default function Movements() {
           {/* Filters inside movements list */}
           <div className="flex items-center justify-between gap-4 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar movimientos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8"
+                className="pl-10 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
               />
             </div>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-48 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
                 <SelectValue placeholder="Tipo de movimiento" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 <SelectItem value="all">Todos los tipos</SelectItem>
                 <SelectItem value="ingreso">Ingresos</SelectItem>
                 <SelectItem value="egreso">Egresos</SelectItem>
                 <SelectItem value="ajuste">Ajustes</SelectItem>
               </SelectContent>
             </Select>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="rounded-xl hover:scale-105 transition-all"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar
+            </Button>
           </div>
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
