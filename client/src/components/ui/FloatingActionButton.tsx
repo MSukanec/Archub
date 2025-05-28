@@ -196,7 +196,7 @@ export default function FloatingActionButton() {
             </div>
           ) : (
             // Mostrar solo el ícono + centrado con efecto de temblequeo
-            <div className="w-14 h-14 flex items-center justify-center animate-[wiggle_3s_ease-in-out_infinite]">
+            <div className="w-full h-full flex items-center justify-center animate-[wiggle_3s_ease-in-out_infinite]">
               <Plus size={20} className="flex-shrink-0" />
             </div>
           )

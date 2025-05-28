@@ -191,7 +191,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         form.reset({
           type_id: typeId,
           concept_id: conceptId,
-          date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
+          date: movement.date ? (movement.date.includes('T') ? movement.date.split('T')[0] : movement.date) : new Date().toISOString().split('T')[0],
           description: movement.description || '',
           amount: movement.amount || 0,
           currency: movement.currency || 'ARS',
