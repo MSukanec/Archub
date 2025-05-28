@@ -53,9 +53,9 @@ export function useUserPlan() {
       return data;
     },
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // 5 minutos de cache
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    staleTime: 0, // Sin cache para detectar cambios de plan inmediatamente
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 1,
   });
 }
@@ -75,7 +75,11 @@ export function useFeatures() {
   };
 
   const getCurrentPlan = (): PlanType | null => {
-    return userWithPlan?.plan?.name as PlanType || null;
+    const planName = userWithPlan?.plan?.name;
+    if (!planName) return null;
+    
+    // Convertir a uppercase para coincidir con los tipos esperados
+    return planName.toUpperCase() as PlanType;
   };
 
   const getPlanLimit = (limitName: string): number => {
@@ -110,7 +114,8 @@ export function useFeatures() {
       currentCount,
       planName,
       limit,
-      userWithPlan: userWithPlan?.plan
+      userWithPlan: userWithPlan?.plan,
+      fullUserData: userWithPlan
     });
     
     // Si el límite es -1, significa ilimitado (PRO/ENTERPRISE)
