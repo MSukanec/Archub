@@ -55,11 +55,27 @@ import { contactsService } from '@/lib/contactsService';
 import { movementConceptsService } from '@/lib/movementConceptsService';
 import { cn } from '@/lib/utils';
 
+// Helper functions for number formatting
+const formatNumberInput = (value: number): string => {
+  if (!value || value === 0) return '';
+  return new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};
+
+const parseFormattedNumber = (value: string): number => {
+  if (!value) return 0;
+  // Remove dots (thousands separator) and replace comma with dot for parsing
+  const cleanValue = value.replace(/\./g, '').replace(',', '.');
+  return parseFloat(cleanValue) || 0;
+};
+
 const movementSchema = z.object({
   type_id: z.string().min(1, 'Debes seleccionar un tipo de movimiento'),
   concept_id: z.string().min(1, 'Debes seleccionar una categoría'),
   date: z.string().min(1, 'La fecha es requerida'),
-  description: z.string().min(1, 'La descripción es requerida'),
+  description: z.string().optional(),
   amount: z.number().min(0.01, 'El monto debe ser mayor a 0'),
   currency: z.string().default('ARS'),
   related_contact_id: z.string().optional(),
@@ -452,18 +468,24 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     />
                   </div>
 
-                  {/* Descripción */}
+                  {/* Cantidad */}
                   <FormField
                     control={form.control}
-                    name="description"
+                    name="amount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Descripción <span className="text-primary">*</span></FormLabel>
+                        <FormLabel>Cantidad <span className="text-primary">*</span></FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Describe el detalle del movimiento..."
-                            className="min-h-[80px]"
-                            {...field} 
+                          <Input 
+                            type="text" 
+                            placeholder="0,00"
+                            className="bg-background text-foreground"
+                            {...field}
+                            value={formatNumberInput(field.value)}
+                            onChange={(e) => {
+                              const numericValue = parseFormattedNumber(e.target.value);
+                              field.onChange(numericValue);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -471,20 +493,18 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     )}
                   />
 
-                  {/* Monto */}
+                  {/* Descripción */}
                   <FormField
                     control={form.control}
-                    name="amount"
+                    name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Monto <span className="text-primary">*</span></FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            step="0.01" 
-                            placeholder="0.00"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          <Textarea 
+                            placeholder="Describe el detalle del movimiento... (opcional)"
+                            className="min-h-[80px]"
+                            {...field} 
                           />
                         </FormControl>
                         <FormMessage />

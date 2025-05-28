@@ -388,10 +388,7 @@ export default function Movements() {
                     <TableCell>{movement.description}</TableCell>
                     <TableCell>{movement.currency}</TableCell>
                     <TableCell>
-                      <span className={`font-medium ${
-                        movement.type === 'ingreso' ? 'text-green-600' : 
-                        movement.type === 'egreso' ? 'text-red-600' : 'text-blue-600'
-                      }`}>
+                      <span className="font-medium text-foreground">
                         {formatCurrency(movement.amount, movement.currency)}
                       </span>
                     </TableCell>
