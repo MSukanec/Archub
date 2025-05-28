@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
 import { contactTypesService, ContactType } from '@/lib/contactTypesService';
 import ContactModal from '@/components/modals/ContactModal';
-import ContactActionsModal from '@/components/modals/ContactActionsModal';
 
 // Extended contact with types
 interface ContactWithTypes extends Contact {
