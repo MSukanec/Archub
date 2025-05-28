@@ -142,8 +142,7 @@ export default function FloatingActionButton() {
     (actionConfig.isMultiple && actionConfig.options?.some(opt => opt.label.includes('Proyecto')));
 
   // Verificar si está bloqueado
-  const { checkLimit: checkFeatureLimit } = useFeatures();
-  const isBlocked = isProjectCreation && checkFeatureLimit('max_projects', projects.length).isLimited;
+  const isBlocked = isProjectCreation && checkProjectLimit('max_projects', projects.length).isLimited;
 
   return (
     <div 
