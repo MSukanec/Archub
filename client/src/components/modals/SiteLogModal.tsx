@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { z } from 'zod';
-import { CalendarIcon, Plus, X, Upload, FileText, Image, Video, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow, ChevronUp, ChevronDown } from 'lucide-react';
+import { CalendarIcon, Plus, X, Upload, FileText, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,18 +15,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { siteLogsService } from '@/lib/siteLogsService';
 import { supabase } from '@/lib/supabase';
 import { tasksService } from '@/lib/tasksService';
 import { contactsService } from '@/lib/contactsService';
 import { useAuthStore } from '@/stores/authStore';
+import { cn } from '@/lib/utils';
 import type { SiteLog, Task, Contact, InsertSiteLogTask, InsertSiteLogAttendee } from '@shared/schema';
 
 const siteLogSchema = z.object({
-  date: z.date(),
-  comments: z.string().optional(),
+  date: z.date({
+    required_error: "La fecha es requerida",
+  }),
+  description: z.string().optional(),
   weather: z.string().optional(),
 });
 
@@ -36,15 +40,21 @@ interface SiteLogModalProps {
   isOpen: boolean;
   onClose: () => void;
   siteLog?: SiteLog | null;
-  projectId?: number;
+  projectId?: string;
 }
+
+const weatherOptions = [
+  { value: 'Soleado', label: 'Soleado', icon: Sun },
+  { value: 'Nublado', label: 'Nublado', icon: Cloud },
+  { value: 'Lluvia', label: 'Lluvia', icon: CloudRain },
+  { value: 'Tormenta', label: 'Tormenta', icon: CloudSnow },
+];
 
 export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: SiteLogModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   
-  const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<Array<{ task: Task; quantity: string; notes: string }>>([]);
   const [selectedAttendees, setSelectedAttendees] = useState<Array<{ contact: Contact; role: string }>>([]);
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ file: File; description: string }>>([]);
@@ -54,106 +64,96 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
     defaultValues: {
-      date: new Date(),
-      comments: '',
-      weather: '',
+      date: siteLog ? new Date(siteLog.date) : new Date(),
+      description: siteLog?.description || '',
+      weather: siteLog?.weather || '',
     },
   });
 
-  // Fetch tasks and contacts with error handling
-  const { data: tasks = [], error: tasksError, isLoading: tasksLoading } = useQuery({
+  // Reset form when modal opens/closes or siteLog changes
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        date: siteLog ? new Date(siteLog.date) : new Date(),
+        description: siteLog?.description || '',
+        weather: siteLog?.weather || '',
+      });
+      setSelectedTasks([]);
+      setSelectedAttendees([]);
+      setUploadedFiles([]);
+      setTaskSelectValue("");
+      setAttendeeSelectValue("");
+    }
+  }, [isOpen, siteLog, form]);
+
+  // Get tasks with error handling
+  const { data: tasks = [], isLoading: tasksLoading } = useQuery({
     queryKey: ['/api/tasks'],
     queryFn: () => tasksService.getAll(),
-    enabled: isOpen,
-    retry: false,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
-  const { data: contacts = [], error: contactsError, isLoading: contactsLoading } = useQuery({
+  // Get contacts with error handling
+  const { data: contacts = [], isLoading: contactsLoading } = useQuery({
     queryKey: ['/api/contacts'],
     queryFn: () => contactsService.getAll(),
-    enabled: isOpen,
-    retry: false,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   // Create/Update mutation
-  const createMutation = useMutation({
+  const mutation = useMutation({
     mutationFn: async (data: SiteLogForm) => {
-      if (!projectId) throw new Error('No hay proyecto seleccionado');
-      if (!user?.id) throw new Error('Usuario no encontrado');
-      
-      // Get the internal user ID from the database
-      const { data: internalUser, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
-      
-      if (userError || !internalUser) {
-        throw new Error('No se pudo encontrar el usuario interno');
-      }
-      
-      // Create the site log data with required fields
+      console.log('Form data being submitted:', data);
+      console.log('Selected tasks:', selectedTasks);
+      console.log('Selected attendees:', selectedAttendees);
+      console.log('Active project ID:', projectId);
+
       const siteLogData = {
         project_id: projectId,
-        date: data.date,
+        date: data.date.toISOString(),
         weather: data.weather || null,
-        comments: data.comments || null,
+        description: data.description || null,
       };
 
-      let createdSiteLog: SiteLog;
-      
-      if (siteLog) {
-        createdSiteLog = await siteLogsService.updateSiteLog(siteLog.id, siteLogData);
+      console.log('Creating site log with data:', siteLogData);
+
+      if (siteLog?.id) {
+        // Update existing
+        return siteLogsService.updateSiteLog(siteLog.id, siteLogData);
       } else {
-        createdSiteLog = await siteLogsService.createSiteLog(siteLogData);
-      }
+        // Create new
+        try {
+          const { data: result, error } = await supabase
+            .from('site_logs')
+            .insert([siteLogData])
+            .select()
+            .single();
 
-      // Create tasks
-      for (const taskData of selectedTasks) {
-        await siteLogsService.createSiteLogTask({
-          site_log_id: createdSiteLog.id,
-          task_id: taskData.task.id,
-          quantity: parseFloat(taskData.quantity) || 0,
-          notes: taskData.notes,
-        });
-      }
+          if (error) {
+            console.error('Supabase error creating site log:', error);
+            throw error;
+          }
 
-      // Create attendees
-      for (const attendeeData of selectedAttendees) {
-        await siteLogsService.createSiteLogAttendee({
-          site_log_id: createdSiteLog.id,
-          contact_id: attendeeData.contact.id,
-          role: attendeeData.role,
-        });
+          return result;
+        } catch (error) {
+          console.error('Error al guardar registro:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          throw error;
+        }
       }
-
-      // Upload files
-      for (const fileData of uploadedFiles) {
-        const fileUrl = await siteLogsService.uploadFile(fileData.file, createdSiteLog.id);
-        await siteLogsService.createSiteLogFile({
-          site_log_id: createdSiteLog.id,
-          file_name: fileData.file.name,
-          file_url: fileUrl,
-          file_type: fileData.file.type.startsWith('image/') ? 'image' : 
-                    fileData.file.type.startsWith('video/') ? 'video' : 'document',
-          file_size: fileData.file.size,
-          description: fileData.description,
-        });
-      }
-
-      return createdSiteLog;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-logs'] });
       toast({
         title: siteLog ? 'Registro actualizado' : 'Registro creado',
-        description: siteLog ? 'El registro de obra ha sido actualizado.' : 'Se ha creado un nuevo registro de obra.',
+        description: `El registro de obra ha sido ${siteLog ? 'actualizado' : 'creado'} correctamente.`,
       });
       onClose();
     },
-    onError: (error) => {
-      console.error('Error al guardar registro:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
+    onError: (error: any) => {
+      console.error('Error saving site log:', error);
       toast({
         title: 'Error',
         description: 'No se pudo guardar el registro de obra.',
@@ -163,53 +163,36 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   });
 
   const onSubmit = (data: SiteLogForm) => {
-    console.log('Form data being submitted:', data);
-    console.log('Selected tasks:', selectedTasks);
-    console.log('Selected attendees:', selectedAttendees);
-    console.log('Active project ID:', projectId);
-    createMutation.mutate(data);
+    mutation.mutate(data);
   };
 
-  const addTask = (task: Task) => {
-    if (!selectedTasks.find(t => t.task.id === task.id)) {
+  const addTask = (taskId: string) => {
+    const task = tasks.find(t => t.id === Number(taskId));
+    if (task && !selectedTasks.find(st => st.task.id === task.id)) {
       setSelectedTasks([...selectedTasks, { task, quantity: '1', notes: '' }]);
+      setTaskSelectValue("");
     }
   };
 
   const removeTask = (taskId: number) => {
-    setSelectedTasks(selectedTasks.filter(t => t.task.id !== taskId));
+    setSelectedTasks(selectedTasks.filter(st => st.task.id !== taskId));
   };
 
-  const updateTask = (taskId: number, field: 'quantity' | 'notes', value: string) => {
-    setSelectedTasks(selectedTasks.map(t => 
-      t.task.id === taskId ? { ...t, [field]: value } : t
-    ));
-  };
-
-  const addAttendee = (contact: Contact) => {
-    if (!selectedAttendees.find(a => a.contact.id === contact.id)) {
-      setSelectedAttendees([...selectedAttendees, { contact, role: 'Trabajador' }]);
+  const addAttendee = (contactId: string) => {
+    const contact = contacts.find(c => c.id === Number(contactId));
+    if (contact && !selectedAttendees.find(sa => sa.contact.id === contact.id)) {
+      setSelectedAttendees([...selectedAttendees, { contact, role: 'Obrero' }]);
+      setAttendeeSelectValue("");
     }
   };
 
   const removeAttendee = (contactId: number) => {
-    setSelectedAttendees(selectedAttendees.filter(a => a.contact.id !== contactId));
+    setSelectedAttendees(selectedAttendees.filter(sa => sa.contact.id !== contactId));
   };
 
-  const updateAttendeeRole = (contactId: number, role: string) => {
-    setSelectedAttendees(selectedAttendees.map(a => 
-      a.contact.id === contactId ? { ...a, role } : a
-    ));
-  };
-
-  const handleFileUpload = (files: FileList | null) => {
-    if (!files) return;
-    
-    const newFiles = Array.from(files).map(file => ({
-      file,
-      description: '',
-    }));
-    
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const newFiles = files.map(file => ({ file, description: '' }));
     setUploadedFiles([...uploadedFiles, ...newFiles]);
   };
 
@@ -218,64 +201,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   };
 
   const updateFileDescription = (index: number, description: string) => {
-    setUploadedFiles(uploadedFiles.map((file, i) => 
-      i === index ? { ...file, description } : file
-    ));
+    const updated = [...uploadedFiles];
+    updated[index].description = description;
+    setUploadedFiles(updated);
   };
-
-  const weatherOptions = [
-    { value: 'Soleado', icon: Sun, emoji: '☀️' },
-    { value: 'Parcialmente nublado', icon: Cloud, emoji: '⛅' },
-    { value: 'Nublado', icon: Cloud, emoji: '☁️' },
-    { value: 'Lluvia', icon: CloudRain, emoji: '🌧️' },
-    { value: 'Tormenta', icon: CloudRain, emoji: '⛈️' },
-  ];
-
-  // Reset form when modal opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      if (siteLog) {
-        form.reset({
-          date: siteLog.date ? new Date(siteLog.date) : new Date(),
-          comments: siteLog.comments || '',
-          weather: siteLog.weather || '',
-        });
-      } else {
-        form.reset({
-          date: new Date(),
-          comments: '',
-          weather: '',
-        });
-      }
-      setSelectedTasks([]);
-      setSelectedAttendees([]);
-      setUploadedFiles([]);
-    }
-  }, [isOpen, siteLog, form]);
-
-  // Show error state if data loading fails
-  if (tasksError || contactsError) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Información</DialogTitle>
-          </DialogHeader>
-          <div className="text-center py-8">
-            <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">Servicio temporalmente no disponible</h3>
-            <p className="text-muted-foreground mb-4">
-              Los servicios de tareas y contactos no están disponibles en este momento. 
-              Por favor, inténtalo de nuevo más tarde.
-            </p>
-            <Button onClick={onClose} variant="outline">
-              Cerrar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
 
   // Show loading state
   if (tasksLoading || contactsLoading) {
@@ -298,331 +227,377 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
             {siteLog ? 'Editar registro de obra' : 'Nuevo registro de obra'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Date */}
-            <div className="space-y-2">
-              <Label htmlFor="date">Fecha <span className="text-red-400">*</span></Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {form.watch('date') ? format(form.watch('date'), 'dd/MM/yyyy') : 'Seleccionar fecha'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={form.watch('date')}
-                    onSelect={(date) => date && form.setValue('date', date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Weather */}
-            <div className="space-y-2">
-              <Label htmlFor="weather">Clima <span className="text-gray-400">(opcional)</span></Label>
-              <Select 
-                value={form.getValues('weather') || 'sin_especificar'} 
-                onValueChange={(value) => form.setValue('weather', value === 'sin_especificar' ? '' : value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar clima" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sin_especificar">Sin especificar</SelectItem>
-                  {weatherOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <div className="flex items-center gap-2">
-                        <span>{option.emoji}</span>
-                        <span>{option.value}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Comments */}
-          <div className="space-y-2">
-            <Label htmlFor="comments">Comentarios generales</Label>
-            <Textarea
-              {...form.register('comments')}
-              placeholder="Describe las actividades del día, observaciones, incidentes, etc."
-              rows={4}
-            />
-          </div>
-
-          {/* More Details Button */}
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowMoreDetails(!showMoreDetails)}
-              className="gap-2"
-            >
-              {showMoreDetails ? (
-                <>
-                  <ChevronUp className="h-4 w-4" />
-                  Menos Detalles
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-4 w-4" />
-                  Más Detalles
-                </>
-              )}
-            </Button>
-          </div>
-
-          {/* Additional Details - Only show when expanded */}
-          {showMoreDetails && (
-            <>
-              {/* Tasks */}
-              <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckSquare className="h-5 w-5" />
-                Tareas realizadas
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Add task */}
-              <div className="space-y-2">
-                <Label>Agregar tarea <span className="text-gray-400">(opcional)</span></Label>
-                <Select 
-                  value={taskSelectValue} 
-                  onValueChange={(value) => {
-                    const task = tasks.find(t => t.id === parseInt(value));
-                    if (task) {
-                      addTask(task);
-                      setTaskSelectValue(""); // Limpiar el select después de agregar
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar tarea" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {tasks.filter(task => !selectedTasks.find(t => t.task.id === task.id)).map((task) => (
-                      <SelectItem key={task.id} value={task.id.toString()}>
-                        {task.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Selected tasks */}
-              <div className="space-y-3">
-                {selectedTasks.map((taskData) => (
-                  <div key={taskData.task.id} className="border rounded-lg p-3 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">{taskData.task.name}</h4>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeTask(taskData.task.id)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Accordion type="multiple" defaultValue={["general"]} className="w-full">
+              
+              {/* Información General */}
+              <AccordionItem value="general" className="border border-border rounded-lg">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <FileText className="h-4 w-4 text-primary" />
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label className="text-xs">Cantidad</Label>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          value={taskData.quantity}
-                          onChange={(e) => updateTask(taskData.task.id, 'quantity', e.target.value)}
-                          placeholder="1.0"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Notas</Label>
-                        <Input
-                          value={taskData.notes}
-                          onChange={(e) => updateTask(taskData.task.id, 'notes', e.target.value)}
-                          placeholder="Observaciones..."
-                        />
-                      </div>
+                    <div className="text-left">
+                      <h3 className="font-medium">Información General</h3>
+                      <p className="text-sm text-muted-foreground">Fecha, clima y comentarios del día</p>
                     </div>
+                    {form.watch('date') && (
+                      <Check className="h-4 w-4 text-green-500 ml-auto mr-2" />
+                    )}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              Fecha <span className="text-primary">*</span>
+                            </FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "PPP", { locale: require('date-fns/locale/es') })
+                                    ) : (
+                                      <span>Seleccionar fecha</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-          {/* Attendees */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Asistentes
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Add attendee */}
-              <div className="space-y-2">
-                <Label>Agregar asistente <span className="text-gray-400">(opcional)</span></Label>
-                <Select 
-                  value={attendeeSelectValue}
-                  onValueChange={(value) => {
-                    const contact = contacts.find(c => c.id === parseInt(value));
-                    if (contact) {
-                      addAttendee(contact);
-                      setAttendeeSelectValue(""); // Limpiar el select después de agregar
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar contacto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {contacts.filter(contact => !selectedAttendees.find(a => a.contact.id === contact.id)).map((contact) => (
-                      <SelectItem key={contact.id} value={contact.id.toString()}>
-                        {contact.name} - {contact.company_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Selected attendees */}
-              <div className="space-y-3">
-                {selectedAttendees.map((attendeeData) => (
-                  <div key={attendeeData.contact.id} className="border rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium">{attendeeData.contact.name}</h4>
-                        <p className="text-sm text-muted-foreground">{attendeeData.contact.company_name}</p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeAttendee(attendeeData.contact.id)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                      <FormField
+                        control={form.control}
+                        name="weather"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Clima (opcional)</FormLabel>
+                            <Select 
+                              value={field.value || ''} 
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                              }}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Sin especificar" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="">Sin especificar</SelectItem>
+                                {weatherOptions.map((option) => {
+                                  const Icon = option.icon;
+                                  return (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      <div className="flex items-center gap-2">
+                                        <Icon className="h-4 w-4" />
+                                        {option.label}
+                                      </div>
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                    <div>
-                      <Label className="text-xs">Rol</Label>
-                      <Select 
-                        value={attendeeData.role} 
-                        onValueChange={(value) => updateAttendeeRole(attendeeData.contact.id, value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
+
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Comentarios generales</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Describe las actividades del día, observaciones, incidentes, etc."
+                              className="resize-none"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Tareas Completadas */}
+              <AccordionItem value="tasks" className="border border-border rounded-lg">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <CheckSquare className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-medium">Tareas Completadas</h3>
+                      <p className="text-sm text-muted-foreground">Registra las tareas realizadas en el día</p>
+                    </div>
+                    {selectedTasks.length > 0 && (
+                      <Badge variant="secondary" className="ml-auto mr-2">
+                        {selectedTasks.length}
+                      </Badge>
+                    )}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <Select value={taskSelectValue} onValueChange={addTask}>
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Seleccionar tarea" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Supervisor">Supervisor</SelectItem>
-                          <SelectItem value="Trabajador">Trabajador</SelectItem>
-                          <SelectItem value="Inspector">Inspector</SelectItem>
-                          <SelectItem value="Técnico">Técnico</SelectItem>
-                          <SelectItem value="Contratista">Contratista</SelectItem>
+                          {tasks.filter(task => !selectedTasks.find(st => st.task.id === task.id)).map(task => (
+                            <SelectItem key={task.id} value={task.id.toString()}>
+                              {task.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Files */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Archivos multimedia
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* File upload */}
-              <div>
-                <Label htmlFor="files">Subir archivos <span className="text-gray-400">(opcional)</span></Label>
-                <Input
-                  id="files"
-                  type="file"
-                  multiple
-                  accept="image/*,video/*,.pdf,.doc,.docx"
-                  onChange={(e) => handleFileUpload(e.target.files)}
-                  className="mt-1"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Formatos soportados: imágenes, videos, PDF, documentos
-                </p>
-              </div>
-
-              {/* Uploaded files */}
-              <div className="space-y-3">
-                {uploadedFiles.map((fileData, index) => (
-                  <div key={index} className="border rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        {fileData.file.type.startsWith('image/') ? (
-                          <Image className="h-4 w-4" />
-                        ) : fileData.file.type.startsWith('video/') ? (
-                          <Video className="h-4 w-4" />
-                        ) : (
-                          <FileText className="h-4 w-4" />
-                        )}
-                        <span className="font-medium">{fileData.file.name}</span>
-                        <Badge variant="secondary">
-                          {(fileData.file.size / 1024 / 1024).toFixed(1)} MB
-                        </Badge>
+                    {selectedTasks.map(({ task, quantity, notes }, index) => (
+                      <div key={task.id} className="p-3 border border-border rounded-lg">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-medium">{task.name}</h4>
+                            <p className="text-sm text-muted-foreground">{task.description}</p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeTask(task.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Cantidad"
+                            value={quantity}
+                            onChange={(e) => {
+                              const updated = [...selectedTasks];
+                              updated[index].quantity = e.target.value;
+                              setSelectedTasks(updated);
+                            }}
+                          />
+                          <Input
+                            placeholder="Notas"
+                            value={notes}
+                            onChange={(e) => {
+                              const updated = [...selectedTasks];
+                              updated[index].notes = e.target.value;
+                              setSelectedTasks(updated);
+                            }}
+                          />
+                        </div>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div>
-                      <Label className="text-xs">Descripción</Label>
-                      <Input
-                        value={fileData.description}
-                        onChange={(e) => updateFileDescription(index, e.target.value)}
-                        placeholder="Descripción del archivo..."
-                      />
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-            </>
-          )}
+                </AccordionContent>
+              </AccordionItem>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Guardando...' : (siteLog ? 'Actualizar' : 'Crear registro')}
-            </Button>
-          </div>
-        </form>
+              {/* Asistentes */}
+              <AccordionItem value="attendees" className="border border-border rounded-lg">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Users className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-medium">Asistentes</h3>
+                      <p className="text-sm text-muted-foreground">Personal presente en obra</p>
+                    </div>
+                    {selectedAttendees.length > 0 && (
+                      <Badge variant="secondary" className="ml-auto mr-2">
+                        {selectedAttendees.length}
+                      </Badge>
+                    )}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <Select value={attendeeSelectValue} onValueChange={addAttendee}>
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Seleccionar contacto" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {contacts.filter(contact => !selectedAttendees.find(sa => sa.contact.id === contact.id)).map(contact => (
+                            <SelectItem key={contact.id} value={contact.id.toString()}>
+                              {contact.name} - {contact.company_name || 'Sin empresa'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {selectedAttendees.map(({ contact, role }, index) => (
+                      <div key={contact.id} className="p-3 border border-border rounded-lg">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-medium">{contact.name}</h4>
+                            <p className="text-sm text-muted-foreground">{contact.company_name || 'Sin empresa'}</p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeAttendee(contact.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Select
+                          value={role}
+                          onValueChange={(value) => {
+                            const updated = [...selectedAttendees];
+                            updated[index].role = value;
+                            setSelectedAttendees(updated);
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Obrero">Obrero</SelectItem>
+                            <SelectItem value="Supervisor">Supervisor</SelectItem>
+                            <SelectItem value="Ingeniero">Ingeniero</SelectItem>
+                            <SelectItem value="Arquitecto">Arquitecto</SelectItem>
+                            <SelectItem value="Cliente">Cliente</SelectItem>
+                            <SelectItem value="Proveedor">Proveedor</SelectItem>
+                            <SelectItem value="Otro">Otro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Archivos Multimedia */}
+              <AccordionItem value="files" className="border border-border rounded-lg">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Upload className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-medium">Archivos multimedia</h3>
+                      <p className="text-sm text-muted-foreground">Imágenes, videos, PDF, documentos</p>
+                    </div>
+                    {uploadedFiles.length > 0 && (
+                      <Badge variant="secondary" className="ml-auto mr-2">
+                        {uploadedFiles.length}
+                      </Badge>
+                    )}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-4">
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                      <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*,video/*,.pdf,.doc,.docx"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <label htmlFor="file-upload" className="cursor-pointer">
+                        <Button type="button" variant="outline" asChild>
+                          <span>Elegir archivos</span>
+                        </Button>
+                      </label>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Formatos soportados: imágenes, videos, PDF, documentos
+                      </p>
+                    </div>
+
+                    {uploadedFiles.map((fileData, index) => (
+                      <div key={index} className="p-3 border border-border rounded-lg">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-medium">{fileData.file.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {(fileData.file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Input
+                          placeholder="Descripción del archivo"
+                          value={fileData.description}
+                          onChange={(e) => updateFileDescription(index, e.target.value)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+            </Accordion>
+
+            <Separator />
+
+            <div className="flex justify-end gap-3">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={mutation.isPending}>
+                {mutation.isPending ? 'Guardando...' : (siteLog ? 'Actualizar registro' : 'Crear registro')}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

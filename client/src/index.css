@@ -162,3 +162,8 @@
     background: hsl(var(--muted-foreground));
   }
 }
+
+/* Global styling for required field asterisks */
+.text-red-500 {
+  color: hsl(var(--primary)) !important;
+}
