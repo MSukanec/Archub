@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
 import ContactModal from '@/components/modals/ContactModal';
@@ -102,6 +103,19 @@ export default function Contacts() {
 
   const getContactTypeInfo = (type: string) => {
     return CONTACT_TYPES.find(t => t.value === type) || CONTACT_TYPES[4]; // Default to 'otro'
+  };
+
+  const formatPhoneForWhatsApp = (phone: string) => {
+    // Remove all non-numeric characters
+    const cleaned = phone.replace(/\D/g, '');
+    // Return cleaned phone number
+    return cleaned;
+  };
+
+  const handleWhatsAppClick = (phone: string) => {
+    const formattedPhone = formatPhoneForWhatsApp(phone);
+    const whatsappUrl = `https://wa.me/${formattedPhone}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   // Filter contacts based on search term and selected type
@@ -235,6 +249,25 @@ export default function Contacts() {
                     <TableCell>{formatDate(contact.created_at)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => contact.phone && handleWhatsAppClick(contact.phone)}
+                                disabled={!contact.phone}
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
+                              >
+                                <Phone className="h-4 w-4" />
+                                <span className="sr-only">Contactar por WhatsApp</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{contact.phone ? 'Contactar por WhatsApp' : 'Teléfono no disponible'}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <Button
                           variant="outline"
                           size="sm"
