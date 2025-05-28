@@ -4,7 +4,6 @@ import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calen
 import { useFeatures } from '@/hooks/useFeatures';
 import { LimitLock } from '@/components/features';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MetricCard } from '@/components/ui/MetricCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -181,30 +180,52 @@ export default function ProjectsOverview() {
 
       {/* Cards de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard
-          title="Total Proyectos"
-          value={totalProjects}
-          icon={<Building className="h-6 w-6" />}
-          iconColor="orange"
-        />
-        <MetricCard
-          title="Proyectos Activos"
-          value={activeProjects}
-          icon={<Activity className="h-6 w-6" />}
-          iconColor="green"
-        />
-        <MetricCard
-          title="Completados"
-          value={completedProjects}
-          icon={<TrendingUp className="h-6 w-6" />}
-          iconColor="blue"
-        />
-        <MetricCard
-          title="Proyecto Activo"
-          value={currentProject?.name || 'Ninguno'}
-          icon={<Users className="h-6 w-6" />}
-          iconColor="orange"
-        />
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Proyectos</p>
+              <p className="text-3xl font-bold text-foreground">{totalProjects}</p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Building className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Proyectos Activos</p>
+              <p className="text-3xl font-bold text-emerald-500">{activeProjects}</p>
+            </div>
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+              <Activity className="h-5 w-5 text-emerald-500" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Completados</p>
+              <p className="text-3xl font-bold text-blue-500">{completedProjects}</p>
+            </div>
+            <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-blue-500" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Proyecto Activo</p>
+              <p className="text-xl font-bold text-primary truncate">
+                {currentProject?.name || 'Ninguno'}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Search and Filters */}
