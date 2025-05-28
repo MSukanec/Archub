@@ -135,6 +135,8 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
         description: "No se pudo guardar el contacto. Inténtalo de nuevo.",
         variant: "destructive",
       });
+      // Force close modal to prevent getting stuck
+      onClose();
     },
   });
 
