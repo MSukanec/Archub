@@ -174,6 +174,7 @@ export default function Contacts() {
           <TableHeader>
             <TableRow>
               <TableHead>Nombre</TableHead>
+              <TableHead>Apellido</TableHead>
               <TableHead>Tipo</TableHead>
               <TableHead>Empresa</TableHead>
               <TableHead>Contacto</TableHead>
@@ -185,7 +186,7 @@ export default function Contacts() {
           <TableBody>
             {filteredContacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   {searchTerm || selectedType ? 'No se encontraron contactos con los filtros aplicados' : 'No hay contactos registrados'}
                 </TableCell>
               </TableRow>
@@ -194,7 +195,8 @@ export default function Contacts() {
                 const typeInfo = getContactTypeInfo(contact.contact_type);
                 return (
                   <TableRow key={contact.id}>
-                    <TableCell className="font-medium">{`${contact.first_name} ${contact.last_name || ''}`.trim()}</TableCell>
+                    <TableCell className="font-medium">{contact.first_name}</TableCell>
+                    <TableCell>{contact.last_name || '-'}</TableCell>
                     <TableCell>
                       <Badge className={typeInfo.color}>
                         {typeInfo.label}

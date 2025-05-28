@@ -19,7 +19,9 @@ const contactSchema = z.object({
   last_name: z.string().optional(),
   contact_type: z.string().min(1, "El tipo de contacto es requerido"),
   company_name: z.string().optional(),
-  email: z.string().email("Email inválido").optional().or(z.literal("")),
+  email: z.string().refine((val) => !val || z.string().email().safeParse(val).success, {
+    message: "Email inválido"
+  }).optional(),
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
@@ -117,14 +119,16 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
   const onSubmit = (data: ContactForm) => {
     const contactData: CreateContactData = {
       first_name: data.first_name,
-      last_name: data.last_name || undefined,
+      last_name: data.last_name || null,
       contact_type: data.contact_type,
-      company_name: data.company_name || undefined,
-      email: data.email || undefined,
-      phone: data.phone || undefined,
-      location: data.location || undefined,
-      notes: data.notes || undefined,
+      company_name: data.company_name || null,
+      email: data.email || null,
+      phone: data.phone || null,
+      location: data.location || null,
+      notes: data.notes || null,
     };
+
+    console.log('Submitting contact data:', contactData);
 
     if (contact?.id) {
       updateMutation.mutate({ id: contact.id, data: contactData });
@@ -318,50 +322,48 @@ export default function ContactModal({ isOpen, onClose, contact }: ContactModalP
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center gap-2">
-                              <Phone className="h-4 w-4" />
-                              Teléfono
-                            </FormLabel>
-                            <FormControl>
-                              <Input 
-                                {...field} 
-                                placeholder="ej. +54 11 1234-5678"
-                                className="bg-background"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Phone className="h-4 w-4" />
+                            Teléfono
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="ej. +54 11 1234-5678"
+                              className="bg-background"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="flex items-center gap-2">
-                              <Mail className="h-4 w-4" />
-                              Email
-                            </FormLabel>
-                            <FormControl>
-                              <Input 
-                                {...field} 
-                                type="email"
-                                placeholder="ej. contacto@empresa.com"
-                                className="bg-background"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Mail className="h-4 w-4" />
+                            Email
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="email"
+                              placeholder="ej. contacto@empresa.com"
+                              className="bg-background"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </AccordionContent>
               </AccordionItem>
