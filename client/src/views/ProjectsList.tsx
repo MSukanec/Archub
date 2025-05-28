@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { projectsService, Project } from '@/lib/projectsService';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 
-export default function ProjectsList() {
+export default function ProjectsOverview() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -20,7 +20,7 @@ export default function ProjectsList() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { organizationId } = useUserContextStore();
+  const { organizationId, projectId } = useUserContextStore();
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['/api/projects', organizationId],
@@ -96,16 +96,88 @@ export default function ProjectsList() {
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
+  // Calcular estadísticas del dashboard
+  const totalProjects = projects.length;
+  const activeProjects = projects.filter(p => p.status === 'Activo' || p.status === 'En Progreso').length;
+  const completedProjects = projects.filter(p => p.status === 'Completado').length;
+  const currentProject = projects.find(p => p.id === projectId);
+
   return (
     <>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">
-            Lista de Proyectos
-          </h1>
-          <p className="text-muted-foreground">
-            Gestiona todos tus proyectos de construcción desde aquí.
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">
+              Resumen de Proyectos
+            </h1>
+            <p className="text-muted-foreground">
+              Dashboard general de tus proyectos de construcción.
+            </p>
+          </div>
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Nuevo Proyecto
+          </Button>
+        </div>
+
+        {/* Cards de Estadísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Proyectos</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">{totalProjects}</div>
+              <p className="text-xs text-muted-foreground">
+                Proyectos en tu organización
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Proyectos Activos</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{activeProjects}</div>
+              <p className="text-xs text-muted-foreground">
+                En progreso o planificación
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completados</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{completedProjects}</div>
+              <p className="text-xs text-muted-foreground">
+                Proyectos finalizados
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Proyecto Activo</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-bold text-primary truncate">
+                {currentProject?.name || 'Ninguno'}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Proyecto seleccionado
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Search and Filters */}
@@ -157,22 +229,36 @@ export default function ProjectsList() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {filteredProjects.map((project: Project) => (
-              <Card key={project.id} className="hover:border-border/60 transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Building className="text-primary" size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground">{project.name}</h3>
-                          <Badge variant={getStatusVariant(project.status)} className="text-xs">
-                            {project.status}
-                          </Badge>
+            {filteredProjects.map((project: Project) => {
+              const isActiveProject = project.id === projectId;
+              return (
+                <Card 
+                  key={project.id} 
+                  className={`hover:border-border/60 transition-colors ${
+                    isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
+                  }`}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          isActiveProject ? 'bg-primary/20' : 'bg-primary/10'
+                        }`}>
+                          <Building className="text-primary" size={18} />
                         </div>
-                        <div className="flex items-center gap-4 mt-1">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-foreground">{project.name}</h3>
+                            {isActiveProject && (
+                              <Badge variant="default" className="text-xs bg-primary">
+                                Activo
+                              </Badge>
+                            )}
+                            <Badge variant={getStatusVariant(project.status)} className="text-xs">
+                              {project.status}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-4 mt-1">
                           {project.client_name && (
                             <span className="text-sm text-muted-foreground">
                               Cliente: {project.client_name}
@@ -213,7 +299,8 @@ export default function ProjectsList() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>
