@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp } from 'lucide-react';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp, Lock } from 'lucide-react';
 import { useFeatures } from '@/hooks/useFeatures';
 import { LimitLock } from '@/components/features';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -154,8 +154,7 @@ export default function ProjectsOverview() {
   const currentProject = projects.find(p => p.id === projectId);
 
   return (
-    <>
-      <div className="space-y-8">
+    <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">
             Resumen de Proyectos
@@ -277,18 +276,33 @@ export default function ProjectsOverview() {
               const isActiveProject = project.id === projectId;
               const isBlocked = limitCheck.isLimited && index >= allowedProjectsCount;
               return (
-                <Card 
-                  key={project.id}
-                  data-project-card
-                  className={`transition-all duration-300 relative ${
-                    isBlocked 
-                      ? 'opacity-60 cursor-not-allowed' 
-                      : 'cursor-pointer hover:border-border/60'
-                  } ${
-                    isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
-                  } ${!isActiveProject && !isBlocked ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
-                  onClick={() => handleProjectClick(project)}
-                >
+                <div key={project.id} className="relative">
+                  <Card 
+                    data-project-card
+                    className={`transition-all duration-300 relative ${
+                      isBlocked 
+                        ? 'opacity-60 cursor-not-allowed' 
+                        : 'cursor-pointer hover:border-border/60'
+                    } ${
+                      isActiveProject ? 'ring-2 ring-primary/20 border-primary/30 bg-primary/5' : ''
+                    } ${!isActiveProject && !isBlocked ? 'hover:shadow-md hover:ring-1 hover:ring-primary/10' : ''}`}
+                    onClick={() => handleProjectClick(project)}
+                  >
+                    {/* Badge de bloqueo */}
+                    {isBlocked && (
+                      <div className="absolute -top-1 -right-1 z-10">
+                        <LimitLock
+                          limitName="max_projects"
+                          currentCount={index + 1}
+                          featureName="Acceso al proyecto"
+                          description="Actualiza tu plan para acceder a todos tus proyectos"
+                        >
+                          <div className="bg-blue-600 rounded-full p-1.5 shadow-lg">
+                            <Lock className="h-3 w-3 text-white" />
+                          </div>
+                        </LimitLock>
+                      </div>
+                    )}
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
@@ -384,13 +398,13 @@ export default function ProjectsOverview() {
                   </div>
                 </CardContent>
               </Card>
+                </div>
             );
             })}
           </div>
         )}
-      </div>
 
-      <CreateProjectModal 
+        <CreateProjectModal 
         isOpen={isCreateModalOpen}
         onClose={() => {
           setIsCreateModalOpen(false);
@@ -420,7 +434,7 @@ export default function ProjectsOverview() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
 
