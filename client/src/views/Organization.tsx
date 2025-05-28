@@ -194,13 +194,17 @@ export default function Organization() {
           </div>
         </div>
         
-        <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Actividad Reciente</h3>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Activity className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground">Actividad Reciente</h3>
+          </div>
           <div className="space-y-4">
             <p className="text-muted-foreground">
               Aquí se mostrará la actividad reciente de la organización.
             </p>
-            {/* Aquí se pueden agregar elementos de actividad reciente */}
           </div>
         </div>
       </div>

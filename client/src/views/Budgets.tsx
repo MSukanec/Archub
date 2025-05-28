@@ -128,13 +128,21 @@ export default function Budgets() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-6 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Presupuestos</h2>
-          <p className="text-muted-foreground">
-            Gestión de presupuestos para el proyecto: <span className="font-medium">{currentProject?.name}</span>
-          </p>
+    <div className="flex-1 space-y-6 p-4 md:p-6 pt-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Presupuestos
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Gestión de presupuestos para el proyecto: <span className="font-medium">{currentProject?.name}</span>
+            </p>
+          </div>
         </div>
       </div>
 

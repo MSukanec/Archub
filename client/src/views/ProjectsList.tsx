@@ -160,68 +160,72 @@ export default function ProjectsOverview() {
   const currentProject = projects.find(p => p.id === projectId);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Resumen de Proyectos
-        </h1>
-        <p className="text-muted-foreground">
-          Dashboard general de tus proyectos de construcción.
-        </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <FolderKanban className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Proyectos
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Dashboard general de tus proyectos de construcción
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Cards de Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Proyectos</CardTitle>
-            <Building className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalProjects}</div>
-            <p className="text-xs text-muted-foreground">
-              Proyectos registrados
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Proyectos Activos</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{activeProjects}</div>
-            <p className="text-xs text-muted-foreground">
-              En progreso actualmente
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completados</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{completedProjects}</div>
-            <p className="text-xs text-muted-foreground">
-              Proyectos finalizados
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Proyecto Activo</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold text-primary truncate">
-              {currentProject?.name || 'Ninguno'}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Proyectos</p>
+              <p className="text-3xl font-bold text-foreground">{totalProjects}</p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Proyecto seleccionado
-            </p>
-          </CardContent>
-        </Card>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Building className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Proyectos Activos</p>
+              <p className="text-3xl font-bold text-emerald-500">{activeProjects}</p>
+            </div>
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+              <Activity className="h-5 w-5 text-emerald-500" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Completados</p>
+              <p className="text-3xl font-bold text-blue-500">{completedProjects}</p>
+            </div>
+            <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-blue-500" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Proyecto Activo</p>
+              <p className="text-xl font-bold text-primary truncate">
+                {currentProject?.name || 'Ninguno'}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Search and Filters */}

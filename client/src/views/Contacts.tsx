@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Building2, MapPin, Filter, MessageCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Mail, Phone, Building2, MapPin, Filter, MessageCircle, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -186,11 +186,16 @@ export default function Contacts() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Agenda</h1>
-          <p className="text-muted-foreground">
-            Gestiona los contactos de proveedores, contratistas y otros colaboradores del proyecto.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Users className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Agenda</h1>
+            <p className="text-sm text-muted-foreground">
+              Gestiona los contactos de proveedores, contratistas y otros colaboradores del proyecto
+            </p>
+          </div>
         </div>
       </div>
 
