@@ -92,44 +92,39 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen,
   });
 
-  // Static movement types that match the database constraints
-  const movementTypes = [
-    { id: 'ingreso', name: 'Ingreso' },
-    { id: 'egreso', name: 'Egreso' },
-    { id: 'ajuste', name: 'Ajuste' }
-  ];
+  // Fetch movement types from movement_concepts table (parent_id IS NULL)
+  const { data: movementTypes = [], isLoading: typesLoading } = useQuery({
+    queryKey: ['movement-types'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('movement_concepts')
+        .select('*')
+        .is('parent_id', null)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
 
-  // Static categories based on movement type
-  const getCategoriesForType = (type: string) => {
-    switch (type) {
-      case 'ingreso':
-        return [
-          'Pago de Cliente',
-          'Anticipo',
-          'Certificación',
-          'Otros Ingresos'
-        ];
-      case 'egreso':
-        return [
-          'Materiales',
-          'Mano de Obra',
-          'Herramientas',
-          'Transporte',
-          'Gastos Administrativos',
-          'Otros Gastos'
-        ];
-      case 'ajuste':
-        return [
-          'Corrección de Valor',
-          'Ajuste por Inflación',
-          'Reclasificación'
-        ];
-      default:
-        return [];
-    }
-  };
-
-  const movementCategories = getCategoriesForType(selectedTypeId);
+  // Fetch categories for selected type from movement_concepts table
+  const { data: movementCategories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['movement-categories', selectedTypeId],
+    queryFn: async () => {
+      if (!selectedTypeId) return [];
+      
+      const { data, error } = await supabase
+        .from('movement_concepts')
+        .select('*')
+        .eq('parent_id', selectedTypeId)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen && !!selectedTypeId,
+  });
 
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
@@ -506,7 +501,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4 items-start">
                     {/* Contacto */}
                     <FormField
                       control={form.control}
@@ -535,10 +530,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent className="w-[200px] p-0">
-                              <Command>
-                                <CommandInput placeholder="Buscar contacto..." />
+                              <Command
+                                filter={(value, search) => {
+                                  if (search.length < 3) return 0;
+                                  return value.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+                                }}
+                              >
+                                <CommandInput placeholder="Buscar contacto (min 3 chars)..." />
                                 <CommandList>
-                                  <CommandEmpty>No se encontraron contactos.</CommandEmpty>
+                                  <CommandEmpty>Escribe al menos 3 caracteres para buscar.</CommandEmpty>
                                   <CommandGroup>
                                     <CommandItem
                                       value="sin-contacto"
@@ -590,7 +590,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       control={form.control}
                       name="related_task_id"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col">
                           <FormLabel>Tarea</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
