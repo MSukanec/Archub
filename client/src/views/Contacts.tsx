@@ -120,10 +120,6 @@ export default function Contacts() {
     setSelectedContact(null);
   };
 
-  const getContactTypeInfo = (type: string) => {
-    return CONTACT_TYPES.find(t => t.value === type) || CONTACT_TYPES[4]; // Default to 'otro'
-  };
-
   const formatPhoneForWhatsApp = (phone: string) => {
     // Remove all non-numeric characters
     const cleaned = phone.replace(/\D/g, '');
@@ -138,71 +134,74 @@ export default function Contacts() {
   };
 
   // Filter contacts based on search term and selected type
-  const filteredContacts = contacts.filter(contact => {
+  const filteredContacts = contactsWithTypes.filter(contact => {
     const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
     const matchesSearch = 
       fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesType = !selectedType || selectedType === 'all' || contact.contact_type === selectedType;
+    const matchesType = selectedType === '' || 
+      (contact.contact_types && contact.contact_types.some(type => type.id === selectedType));
     
     return matchesSearch && matchesType;
   });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Cargando contactos...</div>
-      </div>
-    );
-  }
+  const getTypeColor = (index: number) => {
+    const colors = [
+      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
+      'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
+    ];
+    return colors[index % colors.length];
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Agenda de Contactos</h1>
-          <p className="text-muted-foreground">Gestiona proveedores, contratistas y otros contactos</p>
+          <h1 className="text-2xl font-bold text-foreground">Agenda</h1>
+          <p className="text-muted-foreground">
+            Gestiona los contactos de proveedores, contratistas y otros colaboradores del proyecto.
+          </p>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nombre, email o empresa..."
+            placeholder="Buscar contactos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full"
+            className="pl-9"
           />
+          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
         </div>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Filtrar por tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los tipos</SelectItem>
-              {CONTACT_TYPES.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={selectedType} onValueChange={setSelectedType}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Filtrar por tipo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Todos los tipos</SelectItem>
+            {availableTypes.map((type) => (
+              <SelectItem key={type.id} value={type.id}>
+                {type.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Contacts Table */}
@@ -212,104 +211,115 @@ export default function Contacts() {
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Apellido</TableHead>
-              <TableHead>Tipo</TableHead>
+              <TableHead>Tipos</TableHead>
               <TableHead>Empresa</TableHead>
               <TableHead>Contacto</TableHead>
               <TableHead>Ubicación</TableHead>
-              <TableHead>Fecha de registro</TableHead>
+              <TableHead>Creado</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredContacts.length === 0 ? (
+            {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                  {searchTerm || selectedType ? 'No se encontraron contactos con los filtros aplicados' : 'No hay contactos registrados'}
+                <TableCell colSpan={8} className="h-24 text-center">
+                  Cargando contactos...
+                </TableCell>
+              </TableRow>
+            ) : filteredContacts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center">
+                  {contactsWithTypes.length === 0 ? 'No hay contactos registrados.' : 'No se encontraron contactos que coincidan con los filtros.'}
                 </TableCell>
               </TableRow>
             ) : (
-              filteredContacts.map((contact) => {
-                const typeInfo = getContactTypeInfo(contact.contact_type);
-                return (
-                  <TableRow key={contact.id}>
-                    <TableCell className="font-medium">{contact.first_name}</TableCell>
-                    <TableCell>{contact.last_name || '-'}</TableCell>
-                    <TableCell>
-                      <Badge className={typeInfo.color}>
-                        {typeInfo.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{contact.company_name || '-'}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {contact.email && (
-                          <div className="flex items-center gap-1 text-sm">
-                            <Mail className="h-3 w-3" />
-                            <span className="truncate max-w-[150px]">{contact.email}</span>
-                          </div>
-                        )}
-                        {contact.phone && (
-                          <div className="flex items-center gap-1 text-sm">
-                            <Phone className="h-3 w-3" />
-                            <span>{contact.phone}</span>
-                          </div>
-                        )}
-                        {!contact.email && !contact.phone && '-'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {contact.location ? (
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          <span className="truncate max-w-[100px]">{contact.location}</span>
+              filteredContacts.map((contact) => (
+                <TableRow key={contact.id}>
+                  <TableCell className="font-medium">{contact.first_name}</TableCell>
+                  <TableCell>{contact.last_name || '-'}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {contact.contact_types && contact.contact_types.length > 0 ? (
+                        contact.contact_types.map((type, index) => (
+                          <Badge key={type.id} className={getTypeColor(index)}>
+                            {type.name}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-muted-foreground text-sm">Sin tipos</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>{contact.company_name || '-'}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {contact.email && (
+                        <div className="flex items-center gap-1 text-sm">
+                          <Mail className="h-3 w-3" />
+                          <span className="truncate max-w-[150px]">{contact.email}</span>
                         </div>
-                      ) : '-'}
-                    </TableCell>
-                    <TableCell>{formatDate(contact.created_at)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => contact.phone && handleWhatsAppClick(contact.phone)}
-                                disabled={!contact.phone}
-                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
-                              >
-                                <Phone className="h-4 w-4" />
-                                <span className="sr-only">Contactar por WhatsApp</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{contact.phone ? 'Contactar por WhatsApp' : 'Teléfono no disponible'}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEdit(contact)}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                        >
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Editar contacto</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDelete(contact)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Eliminar contacto</span>
-                        </Button>
+                      )}
+                      {contact.phone && (
+                        <div className="flex items-center gap-1 text-sm">
+                          <Phone className="h-3 w-3" />
+                          <span>{contact.phone}</span>
+                        </div>
+                      )}
+                      {!contact.email && !contact.phone && '-'}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {contact.location ? (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span className="truncate max-w-[100px]">{contact.location}</span>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
+                    ) : '-'}
+                  </TableCell>
+                  <TableCell>{formatDate(contact.created_at)}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => contact.phone && handleWhatsAppClick(contact.phone)}
+                              disabled={!contact.phone}
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
+                            >
+                              <Phone className="h-4 w-4" />
+                              <span className="sr-only">Contactar por WhatsApp</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{contact.phone ? 'Contactar por WhatsApp' : 'Teléfono no disponible'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(contact)}
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Editar contacto</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(contact)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Eliminar contacto</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
@@ -326,16 +336,17 @@ export default function Contacts() {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El contacto "{selectedContact ? `${selectedContact.first_name} ${selectedContact.last_name || ''}`.trim() : ''}" será eliminado permanentemente.
+              Esta acción no se puede deshacer. El contacto será eliminado permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-destructive hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
             </AlertDialogAction>
