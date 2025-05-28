@@ -25,13 +25,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, Check, ChevronsUpDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
+import { contactsService } from '@/lib/contactsService';
+import { cn } from '@/lib/utils';
 
 const movementSchema = z.object({
   type: z.enum(['ingreso', 'egreso', 'ajuste'], {
@@ -61,7 +76,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const queryClient = useQueryClient();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const isEditing = !!movement;
+
+  // Fetch contacts for selection
+  const { data: contacts = [] } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: contactsService.getAll,
+    enabled: isOpen,
+  });
 
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
