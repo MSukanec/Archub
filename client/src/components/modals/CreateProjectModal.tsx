@@ -298,7 +298,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="mt-6">
+                <div className="mt-6 max-h-[60vh] overflow-y-auto">
                   {/* PESTAÑA: INFORMACIÓN GENERAL */}
                   <TabsContent value="general" className="space-y-6">
                     <div className="space-y-1 mb-6">
@@ -429,40 +429,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           </FormItem>
                         )}
                       />
-
-                      {/* Presupuesto */}
-                      <FormField
-                        control={form.control}
-                        name="budget"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <span className="text-muted-foreground">$</span>
-                              <FormLabel className="flex items-center gap-2">
-                                Presupuesto
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <Info className="h-3 w-3 text-muted-foreground" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Presupuesto total estimado del proyecto</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                placeholder="Ej: 1500000"
-                                className="mt-2"
-                                onChange={(e) => field.onChange(Number(e.target.value))}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                   </TabsContent>
 
@@ -492,72 +458,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                               <Input
                                 {...field}
                                 placeholder="Ej: Constructora ABC S.A."
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Jefe de Proyecto */}
-                      <FormField
-                        control={form.control}
-                        name="project_manager"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Jefe de Proyecto</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Ing. María García"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Arquitecto */}
-                      <FormField
-                        control={form.control}
-                        name="architect"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Arquitecto</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Arq. Carlos Ruiz"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Contratista */}
-                      <FormField
-                        control={form.control}
-                        name="contractor"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <Building className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Contratista</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: Construcciones del Sur Ltda."
                                 className="mt-2"
                               />
                             </FormControl>
@@ -625,28 +525,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           </FormItem>
                         )}
                       />
-
-                      {/* Código Postal */}
-                      <FormField
-                        control={form.control}
-                        name="postal_code"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <MapPin className="h-4 w-4 text-muted-foreground" />
-                              <FormLabel>Código Postal</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ej: 1602"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
                   </TabsContent>
 
@@ -665,7 +543,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                       {/* Teléfono */}
                       <FormField
                         control={form.control}
-                        name="phone"
+                        name="contact_phone"
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center gap-3">
@@ -676,29 +554,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                               <Input
                                 {...field}
                                 placeholder="Ej: 01171643000"
-                                className="mt-2"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Email */}
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-3">
-                              <span className="text-muted-foreground">@</span>
-                              <FormLabel>Email</FormLabel>
-                            </div>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="Ej: proyecto@empresa.com"
                                 className="mt-2"
                               />
                             </FormControl>
@@ -745,30 +600,6 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     </Dialog>
   );
 }
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl className="flex-1">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona un estado" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Planificación">Planificación</SelectItem>
-                            <SelectItem value="Activo">Activo</SelectItem>
-                            <SelectItem value="Completado">Completado</SelectItem>
-                            <SelectItem value="En Pausa">En Pausa</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <FormMessage className="ml-36" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Descripción */}
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
                     <FormItem>
                       <div className="flex items-start gap-4">
                         <FormLabel className="w-32 text-left flex-shrink-0 pt-2">Descripción</FormLabel>
