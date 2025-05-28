@@ -80,11 +80,13 @@ export default function ProjectsList() {
     return <ProjectsListSkeleton />;
   }
 
-  const filteredProjects = projects.filter((project: Project) =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.address?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProjects = projects
+    .filter((project: Project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.address?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <>

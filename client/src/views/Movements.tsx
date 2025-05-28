@@ -44,6 +44,9 @@ export default function Movements() {
   const { projectId } = useUserContextStore();
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [editingMovement, setEditingMovement] = useState<Movement | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [movementToDelete, setMovementToDelete] = useState<Movement | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -114,9 +117,16 @@ export default function Movements() {
     setIsMovementModalOpen(true);
   };
 
-  const handleDelete = (movementId: string) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este movimiento?')) {
-      deleteMovementMutation.mutate(movementId);
+  const handleDelete = (movement: Movement) => {
+    setMovementToDelete(movement);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (movementToDelete) {
+      deleteMovementMutation.mutate(movementToDelete.id);
+      setIsDeleteModalOpen(false);
+      setMovementToDelete(null);
     }
   };
 
@@ -125,8 +135,26 @@ export default function Movements() {
     setEditingMovement(null);
   };
 
+  // Filter and sort movements
+  const filteredMovements = useMemo(() => {
+    if (!movements) return [];
+    
+    let filtered = movements.filter(movement => {
+      const searchTermLower = searchTerm.toLowerCase();
+      return (
+        movement.description.toLowerCase().includes(searchTermLower) ||
+        movement.category.toLowerCase().includes(searchTermLower) ||
+        movement.type.toLowerCase().includes(searchTermLower) ||
+        movement.amount.toString().includes(searchTermLower)
+      );
+    });
+
+    // Sort by date (newest first) - data is already sorted from query
+    return filtered;
+  }, [movements, searchTerm]);
+
   // Calculate totals
-  const totals = movements.reduce(
+  const totals = filteredMovements.reduce(
     (acc, movement) => {
       const amount = movement.amount;
       switch (movement.type) {
@@ -198,6 +226,19 @@ export default function Movements() {
           <p className="text-muted-foreground">
             Registro de ingresos, egresos y ajustes del proyecto
           </p>
+        </div>
+      </div>
+
+      {/* Search Filter */}
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar movimientos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8"
+          />
         </div>
       </div>
 
@@ -323,7 +364,7 @@ export default function Movements() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(movement.id)}
+                          onClick={() => handleDelete(movement)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -343,6 +384,14 @@ export default function Movements() {
         onClose={handleCloseModal}
         movement={editingMovement}
         projectId={projectId}
+      />
+
+      {/* Delete Movement Modal */}
+      <DeleteMovementModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        movement={movementToDelete}
+        onConfirm={confirmDelete}
       />
     </div>
   );
