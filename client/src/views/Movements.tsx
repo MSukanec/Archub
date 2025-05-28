@@ -73,7 +73,18 @@ export default function Movements() {
       
       const { data, error } = await supabase
         .from('site_movements')
-        .select('*')
+        .select(`
+          *,
+          movement_concepts!concept_id (
+            id,
+            name,
+            parent_id,
+            movement_concepts!parent_id (
+              id,
+              name
+            )
+          )
+        `)
         .eq('project_id', projectId)
         .order('date', { ascending: false });
       
@@ -370,10 +381,10 @@ export default function Movements() {
                             : 'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800'
                         }
                       >
-                        {movement.type}
+{movement.movement_concepts?.movement_concepts?.name || 'Sin tipo'}
                       </Badge>
                     </TableCell>
-                    <TableCell>{movement.category}</TableCell>
+                    <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>
                     <TableCell>{movement.description}</TableCell>
                     <TableCell>{movement.currency}</TableCell>
                     <TableCell>

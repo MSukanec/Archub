@@ -143,9 +143,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Reset form when movement changes
   useEffect(() => {
     if (movement && isEditing) {
+      // Get the parent type ID from the concept's parent_id
+      const typeId = movement.movement_concepts?.parent_id || '';
+      const conceptId = movement.concept_id || '';
+      
       form.reset({
-        type_id: movement.type || '', // Map existing type to type_id
-        concept_id: movement.category || '', // Map existing category to concept_id
+        type_id: typeId,
+        concept_id: conceptId,
         date: movement.date ? movement.date.split('T')[0] : new Date().toISOString().split('T')[0],
         description: movement.description || '',
         amount: movement.amount || 0,
@@ -153,9 +157,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         related_contact_id: movement.related_contact_id || '',
         related_task_id: movement.related_task_id || '',
       });
-      if (movement.type) {
-        setSelectedTypeId(movement.type); // Use existing type to set selected type
-      }
+      setSelectedTypeId(typeId);
     } else {
       form.reset({
         type_id: '',
