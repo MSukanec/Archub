@@ -118,6 +118,7 @@ export default function PrimarySidebar() {
           isActive={currentSection === 'profile'}
           onClick={() => setSection('profile')}
           section="profile"
+          label="Perfil"
         />
       </div>
     </div>
