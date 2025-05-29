@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, FolderOpen } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, FolderOpen, Contact } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -33,7 +33,7 @@ export default function DashboardTimeline() {
   const timelineRef = useRef<HTMLDivElement>(null);
   
   const { projectId, organizationId } = useUserContextStore();
-  const { setView } = useNavigationStore();
+  const { setView, setSection } = useNavigationStore();
 
   // Fetch timeline data
   const { data: timelineData = [] } = useQuery({
@@ -231,13 +231,13 @@ export default function DashboardTimeline() {
 
   return (
     <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden z-0">
-      {/* Projects button at top */}
+      {/* Agenda button at top */}
       <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
         <CircularButton
-          icon={FolderOpen}
+          icon={Contact}
           isActive={false}
-          onClick={() => setView('projects-overview')}
-          label="Proyectos"
+          onClick={() => setSection('contacts')}
+          label="Agenda"
         />
       </div>
 
@@ -398,13 +398,13 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
-      {/* Five horizontal timeline lines - one aligned with each sidebar button */}
+      {/* Five horizontal timeline lines - one aligned with each sidebar button center */}
       {/* Line 1 - Organization */}
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 120px)', // Organization button position
-          borderTop: '2px dashed #d1d5db'
+          top: 'calc(50% - 96px)', // Organization button center
+          borderTop: '2px dashed white'
         }}
       ></div>
       
@@ -412,17 +412,17 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 60px)', // Bitácora button position
-          borderTop: '2px dashed #d1d5db'
+          top: 'calc(50% - 48px)', // Bitácora button center
+          borderTop: '2px dashed white'
         }}
       ></div>
       
-      {/* Line 3 - Agenda (Center) */}
+      {/* Line 3 - Proyectos (Center) */}
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: '50%', // Center line - Agenda button
-          borderTop: '2px dashed #d1d5db'
+          top: '50%', // Center line - Proyectos button
+          borderTop: '2px dashed white'
         }}
       ></div>
       
@@ -430,8 +430,8 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 60px)', // Finanzas button position
-          borderTop: '2px dashed #d1d5db'
+          top: 'calc(50% + 48px)', // Finanzas button center
+          borderTop: '2px dashed white'
         }}
       ></div>
       
@@ -439,8 +439,8 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 120px)', // Presupuestos button position
-          borderTop: '2px dashed #d1d5db'
+          top: 'calc(50% + 96px)', // Presupuestos button center
+          borderTop: '2px dashed white'
         }}
       ></div>
 
