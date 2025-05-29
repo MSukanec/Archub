@@ -362,12 +362,48 @@ export default function DashboardTimelineSidebar() {
 
   const timelineNodes = generateTimelineNodes();
 
-  // Center timeline on today when component mounts
+  // Center timeline on TODAY when component mounts
   useEffect(() => {
-    if (timelineRef.current) {
-      const centerPosition = timelineRef.current.scrollWidth / 2 - timelineRef.current.clientWidth / 2;
-      timelineRef.current.scrollLeft = centerPosition;
-      setScrollPosition(centerPosition);
+    if (timelineRef.current && timelineNodes.length > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Find the node that represents today
+      const todayNodeIndex = timelineNodes.findIndex(node => {
+        const nodeDate = new Date(node.date);
+        nodeDate.setHours(0, 0, 0, 0);
+        
+        switch (timelineMode) {
+          case 'days':
+            return nodeDate.getTime() === today.getTime();
+          case 'weeks':
+            const weekStart = new Date(today);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            return nodeDate >= weekStart && nodeDate <= weekEnd;
+          case 'months':
+            return nodeDate.getMonth() === today.getMonth() && 
+                   nodeDate.getFullYear() === today.getFullYear();
+          case 'hours':
+            return nodeDate.getTime() === today.getTime();
+          default:
+            return false;
+        }
+      });
+      
+      if (todayNodeIndex >= 0) {
+        // Center on today's position
+        const todayPosition = timelineNodes[todayNodeIndex].position;
+        const centerPosition = todayPosition - timelineRef.current.clientWidth / 2;
+        timelineRef.current.scrollLeft = Math.max(0, centerPosition);
+        setScrollPosition(Math.max(0, centerPosition));
+      } else {
+        // Fallback: center on middle
+        const centerPosition = timelineRef.current.scrollWidth / 2 - timelineRef.current.clientWidth / 2;
+        timelineRef.current.scrollLeft = centerPosition;
+        setScrollPosition(centerPosition);
+      }
     }
   }, [timelineNodes, timelineMode]);
 
@@ -555,12 +591,13 @@ export default function DashboardTimelineSidebar() {
           <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
             {/* Línea vertical del "AHORA" - línea roja prominente */}
             <div 
-              className="absolute top-0 bottom-0 z-30"
+              className="absolute top-0 bottom-0 z-40"
               style={{ 
                 left: '50%',
-                width: '3px',
+                width: '4px',
                 background: '#FF0000',
-                transform: 'translateX(-50%)'
+                transform: 'translateX(-50%)',
+                boxShadow: '0 0 8px rgba(255, 0, 0, 0.3)'
               }}
             />
 
