@@ -285,8 +285,23 @@ export default function DashboardTimeline() {
 
       {/* Timeline controls at bottom */}
       <div className="fixed bottom-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
-        <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
-          <div className="flex items-center gap-4">
+        <div className="bg-card/80 backdrop-blur-sm rounded-full px-3 py-1 border border-border/50 shadow-lg">
+          <div className="flex items-center gap-2">
+            {/* Zoom out button */}
+            <button
+              onClick={() => {
+                const modes: TimelineMode[] = ['hours', 'days', 'weeks', 'months'];
+                const currentIndex = modes.indexOf(timelineMode);
+                if (currentIndex < modes.length - 1) {
+                  setTimelineMode(modes[currentIndex + 1]);
+                }
+              }}
+              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
+            >
+              <span className="text-lg font-bold text-[#919191] group-hover:text-white">-</span>
+            </button>
+            
+            {/* HOY button */}
             <button
               onClick={() => {
                 const today = new Date();
@@ -310,9 +325,23 @@ export default function DashboardTimeline() {
                   }
                 }
               }}
-              className="px-4 py-2 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group"
+              className="px-3 py-1 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group"
             >
               <span className="text-sm font-medium text-[#919191] group-hover:text-white">HOY</span>
+            </button>
+            
+            {/* Zoom in button */}
+            <button
+              onClick={() => {
+                const modes: TimelineMode[] = ['hours', 'days', 'weeks', 'months'];
+                const currentIndex = modes.indexOf(timelineMode);
+                if (currentIndex > 0) {
+                  setTimelineMode(modes[currentIndex - 1]);
+                }
+              }}
+              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
+            >
+              <span className="text-lg font-bold text-[#919191] group-hover:text-white">+</span>
             </button>
           </div>
         </div>
