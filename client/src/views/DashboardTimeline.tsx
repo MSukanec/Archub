@@ -240,9 +240,9 @@ export default function DashboardTimeline() {
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden z-0">
+    <div className="timeline-container relative h-screen w-full bg-background overflow-hidden">
       {/* Proyectos button at top */}
-      <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
+      <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
         <CircularButton
           icon={FolderKanban}
           isActive={currentSection === 'projects'}
@@ -252,7 +252,7 @@ export default function DashboardTimeline() {
       </div>
 
       {/* Timeline controls at bottom */}
-      <div className="fixed bottom-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
+      <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-3 py-1 border border-border/50 shadow-lg">
           <div className="flex items-center gap-2">
             {/* Zoom out button */}
@@ -337,7 +337,7 @@ export default function DashboardTimeline() {
         }).slice(0, 3);
         
         return (
-          <div className="fixed bottom-4 right-4 z-[9999]">
+          <div className="absolute bottom-4 right-4 z-[60]">
             <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
               {todayEvents.length > 0 ? (
                 <>
@@ -441,7 +441,7 @@ export default function DashboardTimeline() {
             >
               {/* Date labels - aligned with dashboard and profile buttons */}
               <div 
-                className="fixed text-xs font-medium text-foreground/25"
+                className="absolute text-xs font-medium text-foreground/25 z-30"
                 style={{
                   top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard + 30}px` : '60px',
                   left: `calc(50% + ${node.position}px)`,
@@ -451,10 +451,9 @@ export default function DashboardTimeline() {
                 {formatDate(node.date)}
               </div>
               <div 
-                className="fixed text-xs font-medium text-foreground/25"
+                className="absolute text-xs font-medium text-foreground/25 z-30"
                 style={{
-                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile - 20}px` : 'auto',
-                  bottom: sidebarButtonPositions.profile ? 'auto' : '60px',
+                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile - 20}px` : 'calc(100% - 60px)',
                   left: `calc(50% + ${node.position}px)`,
                   transform: 'translateX(-50%)'
                 }}
@@ -551,9 +550,11 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="absolute left-1/2 transform -translate-x-1/2"
+                        className="absolute"
                         style={{
-                          top: getEventTop(),
+                          left: `calc(50% + ${node.position}px)`,
+                          top: `${getEventPosition(type)}px`,
+                          transform: 'translate(-50%, -50%)',
                           zIndex: 50
                         }}
                       >
@@ -632,7 +633,7 @@ export default function DashboardTimeline() {
           {/* Line 1 - Organization */}
           {sidebarButtonPositions.organization && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
+              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.organization}px`
               }}
@@ -642,7 +643,7 @@ export default function DashboardTimeline() {
           {/* Line 2 - Bitácora */}
           {sidebarButtonPositions.sitelog && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
+              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.sitelog}px`
               }}
@@ -652,7 +653,7 @@ export default function DashboardTimeline() {
           {/* Line 3 - Agenda */}
           {sidebarButtonPositions.contacts && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
+              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.contacts}px`
               }}
@@ -662,7 +663,7 @@ export default function DashboardTimeline() {
           {/* Line 4 - Finanzas */}
           {sidebarButtonPositions.movements && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
+              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.movements}px`
               }}
@@ -672,7 +673,7 @@ export default function DashboardTimeline() {
           {/* Line 5 - Presupuestos */}
           {sidebarButtonPositions.budgets && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
+              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.budgets}px`
               }}
@@ -681,16 +682,16 @@ export default function DashboardTimeline() {
         </>
       )}
 
-      {/* Fixed "HOY" marker - perfectly centered vertical line only */}
+      {/* "HOY" marker - perfectly centered vertical line */}
       <div 
-        className="fixed z-40 pointer-events-none"
+        className="absolute z-40 pointer-events-none"
         style={{
           left: '50%',
           top: '0',
           width: '1px',
-          height: '100vh',
+          height: '100%',
           backgroundColor: 'black',
-          transform: 'translateX(-50%)' // Perfect centering
+          transform: 'translateX(-50%)'
         }}
       ></div>
 
