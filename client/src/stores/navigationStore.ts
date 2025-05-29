@@ -14,6 +14,7 @@ export type View =
   | 'budgets-materials'
   | 'sitelog-main'
   | 'movements-main'
+  | 'transactions'
   | 'contacts'
   | 'admin-organizations'
   | 'admin-users'
@@ -55,9 +56,19 @@ export const useNavigationStore = create<NavigationState>((set) => ({
   currentView: 'dashboard-timeline',
   hoveredSection: null,
   setSection: (section) =>
-    set({
-      currentSection: section,
-      currentView: sectionViewMap[section],
+    set((state) => {
+      let view = sectionViewMap[section];
+      // Para movements, usar la vista 'transactions' que corresponde al header
+      if (section === 'movements') {
+        return {
+          currentSection: section,
+          currentView: 'transactions' as View,
+        };
+      }
+      return {
+        currentSection: section,
+        currentView: view,
+      };
     }),
   setView: (view) => set({ currentView: view }),
   setHoveredSection: (section) => set({ hoveredSection: section }),

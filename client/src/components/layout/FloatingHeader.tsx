@@ -28,9 +28,7 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'schedule', label: 'Agenda' }
   ],
   movements: [
-    { id: 'transactions', label: 'Movimientos' },
-    { id: 'budgets', label: 'Presupuestos' },
-    { id: 'reports', label: 'Reportes' }
+    { id: 'transactions', label: 'Movimientos' }
   ],
   budgets: [
     { id: 'active', label: 'Activos' },

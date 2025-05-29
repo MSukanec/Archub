@@ -137,27 +137,29 @@ export default function SecondarySidebar() {
             </div>
           )}
         </div>
+        
+        {/* Additional buttons section */}
+        <div className="flex flex-col items-center space-y-2 pt-2">
+          {/* Dashboard button */}
+          <CircularButton
+            icon={Calendar}
+            isActive={false}
+            onClick={() => setView('dashboard-main')}
+          />
+          
+          {/* Admin button - only for admin users */}
+          {user?.role === 'admin' && (
+            <CircularButton
+              icon={Shield}
+              isActive={false}
+              onClick={() => setView('admin-organizations')}
+            />
+          )}
+        </div>
       </div>
 
-      {/* Bottom buttons section */}
+      {/* Empty bottom section */}
       <div className="flex flex-col items-center space-y-2 pb-2.5 pr-2.5">
-        {/* Dashboard button */}
-        <CircularButton
-          icon={Calendar}
-          isActive={false}
-          onClick={() => setView('dashboard-main')}
-          label="Dashboard"
-        />
-        
-        {/* Admin button - only for admin users */}
-        {user?.role === 'admin' && (
-          <CircularButton
-            icon={Shield}
-            isActive={false}
-            onClick={() => setView('admin-organizations')}
-            label="Administración"
-          />
-        )}
       </div>
     </div>
   );

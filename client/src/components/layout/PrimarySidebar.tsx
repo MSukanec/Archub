@@ -104,6 +104,7 @@ export default function PrimarySidebar() {
             isActive={currentSection === section}
             onClick={() => setSection(section)}
             section={section}
+            label={label}
           />
         ))}
 

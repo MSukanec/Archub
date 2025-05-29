@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LucideIcon, Plus } from 'lucide-react';
 
 interface CircularButtonProps {
@@ -18,9 +18,13 @@ export default function CircularButton({
   onClick, 
   className = '',
   size = 'md',
-  section
+  section,
+  label
 }: CircularButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-11 h-11',
@@ -33,31 +37,79 @@ export default function CircularButton({
     lg: 'w-6 h-6'
   };
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (label) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        setShowTooltip(true);
+      }, 500);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setShowTooltip(false);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div
-      data-section={section}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
-      className={`
-        ${sizeClasses[size]}
-        rounded-full 
-        flex items-center justify-center 
-        transition-all duration-300
-        shadow-lg
-        hover:shadow-xl
-        cursor-pointer
-        ${isActive 
-          ? 'bg-black' 
-          : 'bg-[#e1e1e1]'
-        }
-        ${className}
-        ${isHovered ? 'pressed' : ''}
-      `}
-    >
-      <Icon 
-        className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
-      />
+    <div className="relative">
+      <div
+        data-section={section}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={onClick}
+        className={`
+          ${sizeClasses[size]}
+          rounded-full 
+          flex items-center justify-center 
+          transition-all duration-300
+          shadow-lg
+          hover:shadow-xl
+          cursor-pointer
+          ${isActive 
+            ? 'bg-black' 
+            : 'bg-[#e1e1e1]'
+          }
+          ${className}
+          ${isHovered ? 'pressed' : ''}
+        `}
+      >
+        <Icon 
+          className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
+        />
+      </div>
+      
+      {/* Tooltip */}
+      {showTooltip && label && (
+        <div className={`
+          absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2
+          px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap
+          shadow-lg z-50 pointer-events-none
+          ${isActive 
+            ? 'bg-black text-white' 
+            : 'bg-[#e1e1e1] text-[#919191]'
+          }
+        `}>
+          {label}
+          {/* Arrow */}
+          <div className={`
+            absolute top-full left-1/2 transform -translate-x-1/2
+            w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent
+            ${isActive ? 'border-t-black' : 'border-t-[#e1e1e1]'}
+          `} />
+        </div>
+      )}
     </div>
   );
 }
