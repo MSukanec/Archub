@@ -132,6 +132,11 @@ export default function AppLayout() {
 
   const ViewComponent = viewComponents[currentView] || Dashboard;
 
+  // Si es la vista independiente del timeline con sidebar, renderizar sin layout
+  if (currentView === 'dashboard-timeline-sidebar') {
+    return <ViewComponent />;
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div 

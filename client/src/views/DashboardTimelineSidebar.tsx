@@ -397,7 +397,7 @@ export default function DashboardTimelineSidebar() {
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden flex" style={{ backgroundColor: '#d1d1d1' }}>
       {/* Left Sidebar */}
-      <div className="w-20 flex flex-col justify-center relative z-10">
+      <div className="w-20 flex flex-col justify-center relative z-10 pl-2">
         <div className="flex flex-col items-center space-y-12">
           {SIDEBAR_BUTTONS.map((button) => {
             const isActive = activeCategory === button.id;
@@ -410,7 +410,7 @@ export default function DashboardTimelineSidebar() {
                   className="relative w-12 h-12 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
                   style={{ 
                     backgroundColor: isActive ? '#000000' : '#e0e0e0',
-                    color: isActive ? '#ffffff' : '#000000'
+                    color: isActive ? '#ffffff' : '#919191'
                   }}
                 >
                   <Icon className="w-5 h-5" />
@@ -434,7 +434,7 @@ export default function DashboardTimelineSidebar() {
       <div className="flex-1 flex flex-col">
         {/* Top controls */}
         <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-10">
-          <div className="bg-white/90 backdrop-blur-sm rounded-full px-6 py-2 border border-gray-300 shadow-lg">
+          <div className="rounded-full px-6 py-2 border border-gray-300 shadow-lg" style={{ backgroundColor: '#e0e0e0' }}>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setTimelineMode(prev => {
@@ -496,7 +496,7 @@ export default function DashboardTimelineSidebar() {
                 key={`line-${button.id}`}
                 className="absolute left-0 right-0 h-px z-10"
                 style={{ 
-                  top: `calc(50% + ${button.offsetPercent}vh)`,
+                  top: `calc(50% + ${button.offsetPercent * 0.8}vh)`, // Ajuste para coincidir con botones
                   background: button.id === 'proyectos' 
                     ? '#000000' // Línea sólida para el timeline principal
                     : `repeating-linear-gradient(
@@ -554,7 +554,7 @@ export default function DashboardTimelineSidebar() {
                         <div
                           key={button.id}
                           className="absolute left-1/2 transform -translate-x-1/2"
-                          style={{ top: `${button.offsetPercent}vh` }}
+                          style={{ top: `${button.offsetPercent * 0.8}vh` }}
                         >
                           <div className="group relative">
                             {/* Event indicator */}
