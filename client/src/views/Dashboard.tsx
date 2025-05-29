@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
-import DayDetailModal from '@/components/timeline/DayDetailModal';
-import GanttTimeline from '@/components/timeline/GanttTimeline';
+import HorizontalTimeline from '@/components/timeline/HorizontalTimeline';
 import SiteLogModal from '@/components/modals/SiteLogModal';
 import MovementModal from '@/components/modals/MovementModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Calendar, FolderKanban, Plus, BarChart3, Building2, CalendarClock } from 'lucide-react';
+import { Calendar, FolderKanban, BarChart3, Building2, Plus } from 'lucide-react';
 import { format, addDays, subDays, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -324,14 +323,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Vista Gantt */}
-      <GanttTimeline 
-        timelineEvents={timelineEvents}
-        weekDays={visibleDays} // 7 días centrados en hoy
-        startDate={subDays(new Date(), 3)}
-        endDate={addDays(new Date(), 3)}
-        onItemClick={handleItemClick}
-        onDayClick={handleDayClick}
+      {/* Línea de Tiempo Horizontal */}
+      <HorizontalTimeline 
+        events={convertToTimelineEvents(timelineEvents)}
+        onEventClick={handleEventClick}
+        onCreateEvent={handleCreateEvent}
       />
 
       {/* Cards con información relevante */}
