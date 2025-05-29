@@ -29,6 +29,25 @@
   --surface-light: 0 0% 95%; /* #f2f2f2 */
 }
 
+/* Custom vibration animation */
+@keyframes vibrate {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-1px, -1px); }
+  20% { transform: translate(1px, 1px); }
+  30% { transform: translate(-1px, 1px); }
+  40% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, -1px); }
+  60% { transform: translate(1px, 1px); }
+  70% { transform: translate(-1px, 1px); }
+  80% { transform: translate(1px, -1px); }
+  90% { transform: translate(-1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+.vibrate {
+  animation: vibrate 0.3s ease-in-out infinite;
+}
+
 /* Custom scrollbar styles */
 * {
   scrollbar-width: thin;

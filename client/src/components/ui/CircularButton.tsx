@@ -59,6 +59,7 @@ export default function CircularButton({
           z-50
           overflow-visible
           transform-gpu
+          ${isHovered ? 'vibrate' : ''}
         `}
         style={{
           width: isHovered && label && onPlusClick ? '185px' : '44px'
