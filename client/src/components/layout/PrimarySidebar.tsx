@@ -106,6 +106,11 @@ export default function PrimarySidebar() {
             icon={icon}
             isActive={currentSection === section}
             onClick={() => setSection(section)}
+            onPlusClick={() => {
+              if (section === 'projects') {
+                window.dispatchEvent(new CustomEvent('openCreateProjectModal'));
+              }
+            }}
             label={label}
           />
         ))}
