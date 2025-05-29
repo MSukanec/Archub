@@ -317,7 +317,7 @@ export default function OrganizationTeam() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-8">
       {/* Header with icon */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -335,43 +335,43 @@ export default function OrganizationTeam() {
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-white dark:bg-gray-900 border shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-blue-50 dark:bg-blue-900/20">
-                <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <div className="p-3 rounded-full bg-green-50">
+                <Users className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Miembros</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{teamMembers.length}</p>
+                <p className="text-sm font-medium text-gray-600">Total Miembros</p>
+                <p className="text-2xl font-bold text-gray-900">{teamMembers.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-green-50 dark:bg-green-900/20">
-                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="p-3 rounded-full bg-green-50">
+                <CheckCircle className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Activos</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{teamMembers.length}</p>
+                <p className="text-sm font-medium text-gray-600">Activos</p>
+                <p className="text-2xl font-bold text-gray-900">{teamMembers.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-amber-50 dark:bg-amber-900/20">
-                <Crown className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <div className="p-3 rounded-full bg-green-50">
+                <Crown className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Administradores</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600">Administradores</p>
+                <p className="text-2xl font-bold text-gray-900">
                   {teamMembers.filter(m => ['owner', 'admin'].includes(m.role)).length}
                 </p>
               </div>
@@ -379,15 +379,15 @@ export default function OrganizationTeam() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-purple-50 dark:bg-purple-900/20">
-                <Shield className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              <div className="p-3 rounded-full bg-green-50">
+                <Shield className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Con Permisos</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{teamMembers.length}</p>
+                <p className="text-sm font-medium text-gray-600">Con Permisos</p>
+                <p className="text-2xl font-bold text-gray-900">{teamMembers.length}</p>
               </div>
             </div>
           </CardContent>
@@ -402,20 +402,20 @@ export default function OrganizationTeam() {
           const isExpanded = expandedMember === member.id;
 
           return (
-            <Card key={member.id} className="bg-white dark:bg-gray-900 border shadow-sm hover:shadow-md transition-shadow">
+            <Card key={member.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${member.firstName} ${member.lastName}`} />
-                      <AvatarFallback className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium">
+                      <AvatarFallback className="bg-green-50 text-primary font-medium">
                         {getInitials(member.firstName, member.lastName)}
                       </AvatarFallback>
                     </Avatar>
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                        <h3 className="font-semibold text-gray-900">
                           {member.firstName} {member.lastName}
                         </h3>
                         <Badge className={`${roleConfig.bgColor} ${roleConfig.color} border-0`}>
@@ -423,7 +423,7 @@ export default function OrganizationTeam() {
                           {roleConfig.label}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {member.email}
