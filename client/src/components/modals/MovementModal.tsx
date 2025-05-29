@@ -172,7 +172,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       form.reset({
         type_id: typeId,
         concept_id: conceptId,
-        created_at: movement.created_at ? movement.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         description: movement.description || '',
         amount: movement.amount || 0,
         currency: movement.currency || 'ARS',
@@ -206,7 +206,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .from('site_movements')
           .update({
             concept_id: data.concept_id,
-            created_at: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
+            created_at_local: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,
@@ -227,8 +227,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .insert([{
             project_id: projectId,
             concept_id: data.concept_id,
-            created_at: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
-            created_at_local: new Date().toISOString(),
+            created_at_local: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,

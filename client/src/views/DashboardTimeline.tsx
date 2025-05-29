@@ -237,18 +237,46 @@ function DashboardTimeline() {
 
   return (
     <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden">
-      {/* Proyectos button at top */}
+      {/* HOY button at top */}
       <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
-        <CircularButton
-          icon={FolderKanban}
-          isActive={currentSection === 'projects'}
-          onClick={() => setSection('projects')}
-          label="Proyectos"
-        />
+        <button
+          onClick={() => {
+            const today = new Date();
+            setCurrentDate(today);
+            
+            // Find and center on today's position
+            if (timelineRef.current && timelineNodes.length > 0) {
+              const todayNode = timelineNodes.find(node => {
+                const nodeDate = new Date(node.date);
+                return nodeDate.toDateString() === today.toDateString();
+              });
+
+              if (todayNode) {
+                const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
+                timelineRef.current.scrollLeft = centerPosition;
+              } else {
+                const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
+                timelineRef.current.scrollLeft = centerPosition;
+              }
+            }
+          }}
+          className="h-[60px] w-[60px] rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group shadow-lg hover:shadow-xl flex items-center justify-center"
+        >
+          <span className="text-sm font-medium text-[#919191] group-hover:text-white">HOY</span>
+        </button>
+      </div>
+      
+      {/* Dynamic time view text */}
+      <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
+        <div className="bg-card/80 backdrop-blur-sm rounded-full px-4 py-2 border border-border/50 shadow-lg">
+          <span className="text-sm font-medium text-[#919191]">
+            Viendo: {getTimelineModeLabel()}
+          </span>
+        </div>
       </div>
 
-      {/* Timeline controls at bottom */}
-      <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
+      {/* Timeline zoom controls */}
+      <div className="absolute bottom-2.5 left-4 z-[60]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-3 py-1 border border-border/50 shadow-lg">
           <div className="flex items-center gap-2">
             {/* Zoom out button */}
@@ -263,33 +291,6 @@ function DashboardTimeline() {
               className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
             >
               <span className="text-lg font-bold text-[#919191] group-hover:text-white">-</span>
-            </button>
-            
-            {/* HOY button */}
-            <button
-              onClick={() => {
-                const today = new Date();
-                setCurrentDate(today);
-                
-                // Find and center on today's position
-                if (timelineRef.current && timelineNodes.length > 0) {
-                  const todayNode = timelineNodes.find(node => {
-                    const nodeDate = new Date(node.date);
-                    return nodeDate.toDateString() === today.toDateString();
-                  });
-                  
-                  if (todayNode) {
-                    const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
-                    timelineRef.current.scrollLeft = centerPosition;
-                  } else {
-                    const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
-                    timelineRef.current.scrollLeft = centerPosition;
-                  }
-                }
-              }}
-              className="px-3 py-1 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group"
-            >
-              <span className="text-sm font-medium text-[#919191] group-hover:text-white">HOY</span>
             </button>
             
             {/* Zoom in button */}
