@@ -11,7 +11,7 @@ const SIDEBAR_BUTTONS = [
   { id: 'ejecucion', label: 'Ejecución', icon: Wrench, offsetVh: 15 }
 ];
 
-export default function DashboardTimelineSidebar() {
+export default function DashboardTimelineSimple() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
   const [activeCategory, setActiveCategory] = useState<string>('proyectos');
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -205,18 +205,6 @@ export default function DashboardTimelineSidebar() {
               e.preventDefault();
             }
           }}
-          onKeyDown={(e) => {
-            if (timelineRef.current) {
-              if (e.key === 'ArrowLeft') {
-                timelineRef.current.scrollLeft -= 100;
-                e.preventDefault();
-              } else if (e.key === 'ArrowRight') {
-                timelineRef.current.scrollLeft += 100;
-                e.preventDefault();
-              }
-            }
-          }}
-          tabIndex={0}
         >
           {/* Contenedor interno amplio */}
           <div className="relative h-full" style={{ width: '3000px' }}>
