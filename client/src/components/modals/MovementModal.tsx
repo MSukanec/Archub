@@ -197,38 +197,61 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Create movement mutation
   const createMovementMutation = useMutation({
     mutationFn: async (data: MovementForm) => {
-      const { data: result, error } = await supabase
-        .from('site_movements')
-        .insert([{
-          project_id: projectId,
-          concept_id: data.concept_id,
-          created_at: data.date + 'T00:00:00.000Z',
-          description: data.description,
-          amount: data.amount,
-          currency: data.currency,
-          wallet_id: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
-          related_contact_id: data.related_contact_id || null,
-          related_task_id: data.related_task_id || null,
-        }])
-        .select()
-        .single();
+      if (isEditing && movement?.id) {
+        // Update existing movement
+        const { data: result, error } = await supabase
+          .from('site_movements')
+          .update({
+            concept_id: data.concept_id,
+            date: data.date,
+            description: data.description,
+            amount: data.amount,
+            currency: data.currency,
+            wallet_id: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
+            related_contact_id: data.related_contact_id || null,
+            related_task_id: data.related_task_id || null,
+          })
+          .eq('id', movement.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return result;
+        if (error) throw error;
+        return result;
+      } else {
+        // Create new movement
+        const { data: result, error } = await supabase
+          .from('site_movements')
+          .insert([{
+            project_id: projectId,
+            concept_id: data.concept_id,
+            date: data.date,
+            description: data.description,
+            amount: data.amount,
+            currency: data.currency,
+            wallet_id: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
+            related_contact_id: data.related_contact_id || null,
+            related_task_id: data.related_task_id || null,
+          }])
+          .select()
+          .single();
+
+        if (error) throw error;
+        return result;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
       toast({
-        title: "Movimiento creado",
-        description: "El movimiento se ha guardado correctamente.",
+        title: isEditing ? "Movimiento actualizado" : "Movimiento creado",
+        description: isEditing ? "El movimiento se ha actualizado correctamente." : "El movimiento se ha guardado correctamente.",
       });
       onClose();
     },
     onError: (error) => {
-      console.error('Error creating movement:', error);
+      console.error('Error with movement:', error);
       toast({
         title: "Error",
-        description: "No se pudo crear el movimiento. Intenta nuevamente.",
+        description: isEditing ? "No se pudo actualizar el movimiento." : "No se pudo crear el movimiento. Intenta nuevamente.",
         variant: "destructive",
       });
     },
@@ -628,23 +651,35 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
             {/* Footer with navigation */}
             <div className="flex justify-between items-center pt-4 border-t border-[#cccccc]">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                className="bg-[#d2d2d2] border-[#cccccc]"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Anterior
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClose}
+                  className="bg-[#d2d2d2] border-[#cccccc]"
+                >
+                  Cancelar
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrev}
+                  disabled={currentStep === 0}
+                  className="bg-[#d2d2d2] border-[#cccccc]"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Anterior
+                </Button>
+              </div>
 
               <div className="flex gap-2">
                 {currentStep < steps.length - 1 && (
                   <Button
                     type="button"
+                    variant="outline"
                     onClick={handleNext}
-                    className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
+                    className="bg-[#d2d2d2] border-[#cccccc]"
                   >
                     Siguiente
                     <ChevronRight className="w-4 h-4 ml-2" />
