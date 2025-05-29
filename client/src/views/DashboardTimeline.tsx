@@ -576,14 +576,14 @@ function DashboardTimeline() {
                           left: '0',
                           top: `${getEventPosition(type)}px`,
                           transform: 'translate(-50%, -50%)',
-                          zIndex: 100
+                          zIndex: 150
                         }}
                       >
-                        <div className="group relative" style={{ zIndex: 100 }}>
+                        <div className="group relative" style={{ zIndex: 150 }}>
                           {/* Event indicator */}
                           <div 
                             className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative opacity-100"
-                            style={{ zIndex: 100, backgroundColor: '#e1e1e1' }}
+                            style={{ zIndex: 150, backgroundColor: '#e1e1e1' }}
                           >
                             <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
                             
@@ -598,7 +598,7 @@ function DashboardTimeline() {
                           </div>
 
                           {/* Hover cards */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto" style={{ zIndex: 200 }}>
                             {/* Invisible bridge to prevent hover loss */}
                             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full h-2"></div>
                             <div className="flex flex-col gap-2">
