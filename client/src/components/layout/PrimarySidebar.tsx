@@ -88,9 +88,18 @@ export default function PrimarySidebar() {
 
   return (
     <div className="w-[56px] bg-[#d2d2d2] flex flex-col">
-      {/* Top Navigation Icons */}
-      <div className="flex flex-col items-center pt-6 space-y-4">
-        {topNavigationItems.map(({ section, icon, label }) => (
+      {/* Dashboard button - fixed at top */}
+      <div className="flex items-center justify-center pt-6">
+        <CircularButton
+          icon={Home}
+          isActive={currentSection === 'dashboard'}
+          onClick={() => setSection('dashboard')}
+        />
+      </div>
+      
+      {/* Center navigation buttons */}
+      <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+        {topNavigationItems.slice(1).map(({ section, icon, label }) => (
           <CircularButton
             key={section}
             icon={icon}
@@ -98,12 +107,7 @@ export default function PrimarySidebar() {
             onClick={() => setSection(section)}
           />
         ))}
-      </div>
-      
-      <div className="flex-1" />
-      
-      {/* Bottom Navigation Icons */}
-      <div className="flex flex-col items-center pb-6 space-y-4">
+        
         {bottomNavigationItems.map(({ section, icon }) => {
           // Hide admin section for non-admin users
           if (section === 'admin' && user?.role !== 'admin') {
@@ -119,8 +123,10 @@ export default function PrimarySidebar() {
             />
           );
         })}
-        
-        {/* Profile Avatar */}
+      </div>
+      
+      {/* Profile button - fixed at bottom */}
+      <div className="flex items-center justify-center pb-6">
         <CircularButton
           icon={User}
           isActive={currentSection === 'profile'}
