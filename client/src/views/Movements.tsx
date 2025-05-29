@@ -29,6 +29,7 @@ interface Movement {
   project_id: string;
   concept_id: string;
   created_at: string;
+  created_at_local?: string;
   updated_at: string;
   // Joined data from movement_concepts
   movement_concepts?: {
