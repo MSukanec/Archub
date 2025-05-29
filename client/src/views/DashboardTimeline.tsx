@@ -550,7 +550,7 @@ export default function DashboardTimeline() {
       <div 
         className="fixed z-40 pointer-events-none"
         style={{
-          left: 'calc(50% + 28px)', // Center of viewport + half sidebar width (56px/2)
+          left: '50%',
           top: '0',
           width: '1px',
           height: '100vh',
