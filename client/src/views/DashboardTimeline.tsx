@@ -83,6 +83,50 @@ export default function DashboardTimeline() {
         });
       });
 
+      // Add some demo events around today for visualization
+      const today = new Date();
+      events.push({
+        id: 'demo-1',
+        date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        type: 'sitelog',
+        title: 'Inicio de Obra',
+        description: 'Comienzo de trabajos de demolición',
+        icon: FileText,
+        color: '#FF4D1C'
+      });
+
+      events.push({
+        id: 'demo-2',
+        date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000), // Yesterday
+        type: 'task',
+        title: 'Instalación Eléctrica',
+        description: 'Finalización de canalizaciones',
+        icon: Target,
+        color: '#8B5CF6'
+      });
+
+      events.push({
+        id: 'demo-3',
+        date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
+        type: 'movement',
+        title: 'Pago Materiales',
+        description: 'Compra de cemento y arena',
+        amount: 150000,
+        currency: 'ARS',
+        icon: DollarSign,
+        color: '#10B981'
+      });
+
+      events.push({
+        id: 'demo-4',
+        date: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+        type: 'milestone',
+        title: 'Revisión Cliente',
+        description: 'Inspección de avance de obra',
+        icon: Users,
+        color: '#F59E0B'
+      });
+
       return events.sort((a, b) => a.date.getTime() - b.date.getTime());
     },
     enabled: !!projectId && !!organizationId,
@@ -91,24 +135,24 @@ export default function DashboardTimeline() {
   // Generate timeline nodes based on mode
   const generateTimelineNodes = useCallback((): TimelineNode[] => {
     const nodes: TimelineNode[] = [];
-    const startDate = new Date(currentDate);
-    startDate.setDate(startDate.getDate() - 30); // Show 30 units before current date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset to start of day
     
-    for (let i = -30; i <= 60; i++) { // 90 total units
-      const nodeDate = new Date(startDate);
+    for (let i = -60; i <= 60; i++) { // 120 total units, centered on today
+      const nodeDate = new Date(today);
       
       switch (timelineMode) {
         case 'hours':
-          nodeDate.setHours(nodeDate.getHours() + i);
+          nodeDate.setHours(today.getHours() + i);
           break;
         case 'days':
-          nodeDate.setDate(nodeDate.getDate() + i);
+          nodeDate.setDate(today.getDate() + i);
           break;
         case 'weeks':
-          nodeDate.setDate(nodeDate.getDate() + (i * 7));
+          nodeDate.setDate(today.getDate() + (i * 7));
           break;
         case 'months':
-          nodeDate.setMonth(nodeDate.getMonth() + i);
+          nodeDate.setMonth(today.getMonth() + i);
           break;
       }
 
@@ -138,28 +182,36 @@ export default function DashboardTimeline() {
       nodes.push({
         date: nodeDate,
         events: nodeEvents,
-        position: i * 120 // 120px spacing between nodes
+        position: i * 150 // 150px spacing between nodes for better spacing
       });
     }
 
     return nodes;
-  }, [timelineData, currentDate, timelineMode]);
+  }, [timelineData, timelineMode]);
 
   const timelineNodes = generateTimelineNodes();
+
+  // Center timeline on today when component mounts
+  useEffect(() => {
+    if (timelineRef.current) {
+      // Center the timeline on "today" (position 0 in our coordinate system)
+      const centerPosition = timelineRef.current.scrollWidth / 2 - timelineRef.current.clientWidth / 2;
+      timelineRef.current.scrollLeft = centerPosition;
+      setScrollPosition(centerPosition);
+    }
+  }, [timelineNodes, timelineMode]);
 
   // Auto-scroll when mouse is near edges
   useEffect(() => {
     if (!isMouseNearEdge) return;
 
     const scroll = () => {
-      const scrollAmount = isMouseNearEdge === 'right' ? 5 : -5;
-      setScrollPosition(prev => {
-        const newPosition = prev + scrollAmount;
-        if (timelineRef.current) {
-          timelineRef.current.scrollLeft = newPosition;
-        }
-        return newPosition;
-      });
+      const scrollAmount = isMouseNearEdge === 'right' ? 8 : -8; // Increased speed
+      if (timelineRef.current) {
+        const newPosition = timelineRef.current.scrollLeft + scrollAmount;
+        timelineRef.current.scrollLeft = newPosition;
+        setScrollPosition(newPosition);
+      }
       animationRef.current = requestAnimationFrame(scroll);
     };
 
@@ -262,11 +314,11 @@ export default function DashboardTimeline() {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ 
-          scrollBehavior: 'smooth',
+          scrollBehavior: 'auto',
           cursor: isMouseNearEdge ? (isMouseNearEdge === 'right' ? 'e-resize' : 'w-resize') : 'default'
         }}
       >
-        <div className="relative h-full" style={{ width: '10000px', minWidth: '100vw' }}>
+        <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
           {/* Vertical current date line */}
           <div 
             className="absolute top-0 bottom-0 w-px bg-primary z-20"
