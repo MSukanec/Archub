@@ -403,8 +403,8 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 144px)', // Centered with first button (4 buttons * 36px spacing = 144px above center)
-          borderTop: '1px dashed #d1d5db'
+          top: 'calc(50% - 120px)', // Organization button position
+          borderTop: '2px dashed #d1d5db'
         }}
       ></div>
       
@@ -412,17 +412,17 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 72px)', // 2 buttons * 36px = 72px above center
-          borderTop: '1px dashed #d1d5db'
+          top: 'calc(50% - 60px)', // Bitácora button position
+          borderTop: '2px dashed #d1d5db'
         }}
       ></div>
       
-      {/* Line 3 - Agenda */}
+      {/* Line 3 - Agenda (Center) */}
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: '50%', // Center line
-          borderTop: '1px dashed #d1d5db'
+          top: '50%', // Center line - Agenda button
+          borderTop: '2px dashed #d1d5db'
         }}
       ></div>
       
@@ -430,8 +430,8 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 72px)', // 2 buttons * 36px = 72px below center
-          borderTop: '1px dashed #d1d5db'
+          top: 'calc(50% + 60px)', // Finanzas button position
+          borderTop: '2px dashed #d1d5db'
         }}
       ></div>
       
@@ -439,8 +439,8 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 144px)', // 4 buttons * 36px = 144px below center
-          borderTop: '1px dashed #d1d5db'
+          top: 'calc(50% + 120px)', // Presupuestos button position
+          borderTop: '2px dashed #d1d5db'
         }}
       ></div>
 
