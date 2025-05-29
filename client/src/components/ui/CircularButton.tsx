@@ -34,12 +34,12 @@ export default function CircularButton({
   };
 
   return (
-    <div className="relative z-50">
+    <div className="relative z-50 w-11 h-11">
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          absolute left-0
+          absolute left-0 top-0
           flex items-center
           transition-all duration-500 ease-out
           h-11
