@@ -55,7 +55,7 @@ export default function FloatingHeader() {
   const views = sectionViews[currentSection];
 
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-40" style={{ height: '44px' }}>
+    <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-40" style={{ height: '44px' }}>
       <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-full px-2 py-1 shadow-lg h-full">
         <div className="flex items-center space-x-1 h-full">
           {views.map((view) => (

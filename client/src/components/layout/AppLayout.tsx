@@ -144,7 +144,7 @@ export default function AppLayout() {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto relative">
-          <div className="p-[75px]">
+          <div className="max-w-none mx-auto p-[75px]" style={{ marginLeft: '75px', marginRight: '75px' }}>
             <ViewComponent />
           </div>
         </main>
