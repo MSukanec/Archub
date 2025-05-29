@@ -144,10 +144,7 @@ export default function SecondarySidebar() {
     logout();
   };
 
-  // No mostrar sidebar secundario para dashboard
-  if (currentSection === 'dashboard') {
-    return null;
-  }
+
 
   return (
     <div className={cn(
