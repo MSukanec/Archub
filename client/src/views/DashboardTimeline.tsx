@@ -379,7 +379,7 @@ export default function DashboardTimeline() {
               <div 
                 className="fixed text-xs font-medium text-foreground/25"
                 style={{
-                  top: '60px', // Aligned with dashboard button
+                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard + 30}px` : '60px',
                   left: `calc(50% + ${node.position}px)`,
                   transform: 'translateX(-50%)'
                 }}
@@ -389,7 +389,8 @@ export default function DashboardTimeline() {
               <div 
                 className="fixed text-xs font-medium text-foreground/25"
                 style={{
-                  bottom: '60px', // Aligned with profile button
+                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile - 20}px` : 'auto',
+                  bottom: sidebarButtonPositions.profile ? 'auto' : '60px',
                   left: `calc(50% + ${node.position}px)`,
                   transform: 'translateX(-50%)'
                 }}

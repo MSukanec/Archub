@@ -92,6 +92,7 @@ export default function PrimarySidebar() {
           isActive={currentSection === 'dashboard'}
           onClick={() => setSection('dashboard')}
           section="dashboard"
+          label="Dashboard"
         />
       </div>
       

@@ -93,7 +93,7 @@ export default function CircularButton({
       {/* Tooltip */}
       {showTooltip && label && (
         <div className={`
-          absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2
+          absolute left-full ml-2 top-1/2 transform -translate-y-1/2
           px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap
           shadow-lg z-50 pointer-events-none
           ${isActive 
@@ -104,9 +104,9 @@ export default function CircularButton({
           {label}
           {/* Arrow */}
           <div className={`
-            absolute top-full left-1/2 transform -translate-x-1/2
-            w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent
-            ${isActive ? 'border-t-black' : 'border-t-[#e1e1e1]'}
+            absolute right-full top-1/2 transform -translate-y-1/2
+            w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent
+            ${isActive ? 'border-r-black' : 'border-r-[#e1e1e1]'}
           `} />
         </div>
       )}
