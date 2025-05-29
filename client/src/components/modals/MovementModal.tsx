@@ -91,14 +91,21 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const { data: movementTypes = [] } = useQuery({
     queryKey: ['movement-types'],
     queryFn: async () => {
+      console.log('Fetching movement types...');
       const { data, error } = await supabase
         .from('movement_concepts')
         .select('*')
         .is('parent_id', null)
         .order('name');
       
-      if (error) throw error;
-      return data;
+      console.log('Movement types result:', { data, error });
+      console.log('Number of types found:', data?.length || 0);
+      
+      if (error) {
+        console.error('Error fetching movement types:', error);
+        throw error;
+      }
+      return data || [];
     },
     enabled: isOpen,
   });
