@@ -9,6 +9,7 @@ interface CircularButtonProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   label?: string;
+  section?: string;
 }
 
 export default function CircularButton({ 
@@ -18,7 +19,8 @@ export default function CircularButton({
   onPlusClick,
   className = '',
   size = 'md',
-  label = ''
+  label = '',
+  section
 }: CircularButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const sizeClasses = {
@@ -36,6 +38,7 @@ export default function CircularButton({
   return (
     <div className="relative z-50 w-11 h-11">
       <div
+        data-section={section}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick}

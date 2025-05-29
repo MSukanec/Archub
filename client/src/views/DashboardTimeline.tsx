@@ -30,6 +30,7 @@ export default function DashboardTimeline() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [sidebarButtonPositions, setSidebarButtonPositions] = useState<Record<string, number>>({});
   const timelineRef = useRef<HTMLDivElement>(null);
   
   const { projectId, organizationId } = useUserContextStore();
@@ -191,6 +192,33 @@ export default function DashboardTimeline() {
   }, [timelineData, timelineMode]);
 
   const timelineNodes = generateTimelineNodes();
+
+  // Measure sidebar button positions
+  useEffect(() => {
+    const measureButtonPositions = () => {
+      const positions: Record<string, number> = {};
+      
+      // Find all sidebar buttons by their data attributes or classes
+      const sidebarButtons = document.querySelectorAll('[data-section]');
+      
+      sidebarButtons.forEach((button) => {
+        const section = button.getAttribute('data-section');
+        if (section) {
+          const rect = button.getBoundingClientRect();
+          const centerY = rect.top + rect.height / 2;
+          positions[section] = centerY;
+        }
+      });
+      
+      setSidebarButtonPositions(positions);
+    };
+
+    // Measure on mount and resize
+    measureButtonPositions();
+    window.addEventListener('resize', measureButtonPositions);
+    
+    return () => window.removeEventListener('resize', measureButtonPositions);
+  }, []);
 
   // Center timeline on today when component mounts
   useEffect(() => {
@@ -423,55 +451,60 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
-      {/* Five horizontal timeline lines - perfectly aligned with sidebar button centers */}
-      {/* 
-        Sidebar calculation:
-        - Dashboard button at top (outside flex-1 container)
-        - 5 center buttons in flex-1 container with space-y-6 (24px gap)
-        - Button size: 40px (w-10 h-10)
-        - Button center offset: 20px
-        - Total spacing between button centers: 64px (40px button + 24px gap)
-      */}
-      
-      {/* Line 1 - Organization (first button in center group) */}
-      <div 
-        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
-        style={{ 
-          top: 'calc(50% - 128px)' // Two buttons up from center: 2 * 64px = 128px
-        }}
-      ></div>
-      
-      {/* Line 2 - Bitácora (second button in center group) */}
-      <div 
-        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
-        style={{ 
-          top: 'calc(50% - 64px)' // One button up from center: 1 * 64px = 64px
-        }}
-      ></div>
-      
-      {/* Line 3 - Proyectos (third button - center of center group) */}
-      <div 
-        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
-        style={{ 
-          top: '50%' // Center line
-        }}
-      ></div>
-      
-      {/* Line 4 - Finanzas (fourth button in center group) */}
-      <div 
-        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
-        style={{ 
-          top: 'calc(50% + 64px)' // One button down from center: 1 * 64px = 64px
-        }}
-      ></div>
-      
-      {/* Line 5 - Presupuestos (fifth button in center group) */}
-      <div 
-        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
-        style={{ 
-          top: 'calc(50% + 128px)' // Two buttons down from center: 2 * 64px = 128px
-        }}
-      ></div>
+      {/* Five horizontal timeline lines - dynamically positioned based on sidebar button measurements */}
+      {Object.keys(sidebarButtonPositions).length > 0 && (
+        <>
+          {/* Line 1 - Organization */}
+          {sidebarButtonPositions.organization && (
+            <div 
+              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              style={{ 
+                top: `${sidebarButtonPositions.organization}px`
+              }}
+            />
+          )}
+          
+          {/* Line 2 - Bitácora */}
+          {sidebarButtonPositions.sitelog && (
+            <div 
+              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              style={{ 
+                top: `${sidebarButtonPositions.sitelog}px`
+              }}
+            />
+          )}
+          
+          {/* Line 3 - Proyectos */}
+          {sidebarButtonPositions.projects && (
+            <div 
+              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              style={{ 
+                top: `${sidebarButtonPositions.projects}px`
+              }}
+            />
+          )}
+          
+          {/* Line 4 - Finanzas */}
+          {sidebarButtonPositions.movements && (
+            <div 
+              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              style={{ 
+                top: `${sidebarButtonPositions.movements}px`
+              }}
+            />
+          )}
+          
+          {/* Line 5 - Presupuestos */}
+          {sidebarButtonPositions.budgets && (
+            <div 
+              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              style={{ 
+                top: `${sidebarButtonPositions.budgets}px`
+              }}
+            />
+          )}
+        </>
+      )}
 
       {/* Fixed "HOY" marker - perfectly centered vertical line only */}
       <div 

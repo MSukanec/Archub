@@ -92,6 +92,7 @@ export default function PrimarySidebar() {
           isActive={currentSection === 'dashboard'}
           onClick={() => setSection('dashboard')}
           label="Dashboard"
+          section="dashboard"
         />
       </div>
       
@@ -109,6 +110,7 @@ export default function PrimarySidebar() {
               }
             }}
             label={label}
+            section={section}
           />
         ))}
 
@@ -122,6 +124,7 @@ export default function PrimarySidebar() {
           isActive={currentSection === 'profile'}
           onClick={() => setSection('profile')}
           label="Perfil"
+          section="profile"
         />
       </div>
     </div>
