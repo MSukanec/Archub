@@ -5,6 +5,7 @@ import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
+import FloatingHeader from './FloatingHeader';
 
 import Dashboard from '@/views/Dashboard';
 import DashboardTimeline from '@/views/DashboardTimeline';
@@ -137,6 +138,9 @@ export default function AppLayout() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <PrimarySidebar />
+      
+      {/* Floating Header */}
+      <FloatingHeader />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-6 relative">
