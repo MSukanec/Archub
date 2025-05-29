@@ -137,6 +137,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     }
   }, [isOpen, movement, isEditing, form]);
 
+  // Reset category when type changes (except during initial load)
+  useEffect(() => {
+    const currentTypeId = form.getValues('type_id');
+    if (currentTypeId && currentTypeId !== selectedTypeId && !isEditing) {
+      form.setValue('concept_id', '');
+    }
+  }, [selectedTypeId, form, isEditing]);
+
   const steps = [
     { title: 'Información Básica', icon: FileText },
     { title: 'Relaciones', icon: User },
@@ -165,11 +173,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   });
 
   // Fetch categories for selected type
-  const { data: movementCategories = [] } = useQuery({
+  const { data: movementCategories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ['movement-categories', selectedTypeId],
     queryFn: async () => {
       if (!selectedTypeId) return [];
       
+      console.log('Fetching categories for type:', selectedTypeId);
       const { data, error } = await supabase
         .from('movement_concepts')
         .select('*')
@@ -177,6 +186,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .order('name');
       
       if (error) throw error;
+      console.log('Categories fetched:', data);
       return data || [];
     },
     enabled: isOpen && !!selectedTypeId,
