@@ -23,9 +23,9 @@ export default function CircularButton({
   };
 
   const iconSizes = {
-    sm: 'w-4 h-4',
-    md: 'w-5.5 h-5.5', 
-    lg: 'w-8 h-8'
+    sm: 'w-3 h-3',
+    md: 'w-4.5 h-4.5', 
+    lg: 'w-6 h-6'
   };
 
   return (
