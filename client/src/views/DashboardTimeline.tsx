@@ -550,12 +550,12 @@ export default function DashboardTimeline() {
       <div 
         className="fixed z-40 pointer-events-none"
         style={{
-          left: '50vw',
+          left: '50%',
           top: '0',
           width: '1px',
           height: '100vh',
           backgroundColor: 'black',
-          transform: 'translateX(-0.5px)' // Perfect centering
+          transform: 'translateX(-50%)' // Perfect centering
         }}
       ></div>
 
