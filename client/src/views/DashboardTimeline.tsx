@@ -582,8 +582,8 @@ function DashboardTimeline() {
                         <div className="group relative" style={{ zIndex: 100 }}>
                           {/* Event indicator */}
                           <div 
-                            className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
-                            style={{ zIndex: 100 }}
+                            className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative opacity-100"
+                            style={{ zIndex: 100, backgroundColor: '#e1e1e1' }}
                           >
                             <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
                             
