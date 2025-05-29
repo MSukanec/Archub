@@ -110,7 +110,7 @@ export default function Organization() {
       
       {/* Organization Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Proyectos Totales</p>
@@ -122,7 +122,7 @@ export default function Organization() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Presupuesto Total</p>
@@ -136,7 +136,7 @@ export default function Organization() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Actividad Mensual</p>
@@ -148,7 +148,7 @@ export default function Organization() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Días Activos</p>
@@ -163,7 +163,7 @@ export default function Organization() {
       
       {/* Organization Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <Building2 className="w-4 h-4 text-primary" />
@@ -195,7 +195,7 @@ export default function Organization() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <Activity className="w-4 h-4 text-primary" />
