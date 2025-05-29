@@ -108,14 +108,18 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     queryFn: async () => {
       if (!selectedTypeId) return [];
       
+      console.log('Fetching categories for selectedTypeId:', selectedTypeId);
+      
       const { data, error } = await supabase
         .from('movement_concepts')
         .select('*')
         .eq('parent_id', selectedTypeId)
         .order('name');
       
+      console.log('Categories result:', { data, error });
+      
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: isOpen && !!selectedTypeId,
   });
@@ -282,7 +286,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
-              <div key={index} className="flex items-center gap-2">
+              <div 
+                key={index} 
+                className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setCurrentStep(index)}
+              >
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                   index === currentStep ? 'bg-[#8fc700] text-white' : 
                   index < currentStep ? 'bg-[#d2d2d2] text-[#666666]' : 
@@ -443,7 +451,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
-                                <SelectValue placeholder="Seleccionar billetera" />
+                                <SelectValue placeholder="Seleccionar billetera (opcional)" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>

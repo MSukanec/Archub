@@ -145,7 +145,7 @@ export default function FloatingActionButton() {
         onClick={!isBlocked ? handleClick : undefined}
         className={cn(
           "w-12 h-12 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
-          "transition-all duration-200",
+          "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#8fc700] focus:ring-offset-2",
           isBlocked 
             ? "opacity-75 cursor-not-allowed" 
             : "hover:shadow-xl cursor-pointer active:shadow-md active:scale-95",
