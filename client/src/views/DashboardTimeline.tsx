@@ -398,24 +398,64 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
-      {/* Fixed horizontal dotted line - aligned with sidebar buttons */}
+      {/* Five horizontal timeline lines - one aligned with each sidebar button */}
+      {/* Line 1 - Organization */}
       <div 
         className="fixed left-0 right-0 h-px z-20 pointer-events-none"
         style={{ 
-          top: '50%',
+          top: 'calc(50% - 144px)', // Centered with first button (4 buttons * 36px spacing = 144px above center)
+          borderTop: '1px dashed #d1d5db'
+        }}
+      ></div>
+      
+      {/* Line 2 - Bitácora */}
+      <div 
+        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        style={{ 
+          top: 'calc(50% - 72px)', // 2 buttons * 36px = 72px above center
+          borderTop: '1px dashed #d1d5db'
+        }}
+      ></div>
+      
+      {/* Line 3 - Agenda */}
+      <div 
+        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        style={{ 
+          top: '50%', // Center line
+          borderTop: '1px dashed #d1d5db'
+        }}
+      ></div>
+      
+      {/* Line 4 - Finanzas */}
+      <div 
+        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        style={{ 
+          top: 'calc(50% + 72px)', // 2 buttons * 36px = 72px below center
+          borderTop: '1px dashed #d1d5db'
+        }}
+      ></div>
+      
+      {/* Line 5 - Presupuestos */}
+      <div 
+        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        style={{ 
+          top: 'calc(50% + 144px)', // 4 buttons * 36px = 144px below center
           borderTop: '1px dashed #d1d5db'
         }}
       ></div>
 
-      {/* Fixed "HOY" marker - always centered */}
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
-        {/* Vertical line */}
-        <div className="absolute top-0 bottom-0 w-px bg-black transform -translate-x-1/2" style={{ height: '100vh', top: '-50vh' }}></div>
-        {/* Today indicator */}
-        <div className="w-6 h-6 rounded-full bg-primary border-4 border-background shadow-lg flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-white" />
-        </div>
-      </div>
+      {/* Fixed "HOY" marker - perfectly centered vertical line only */}
+      <div 
+        className="fixed z-30 pointer-events-none"
+        style={{
+          left: '50vw',
+          top: '0',
+          width: '1px',
+          height: '100vh',
+          backgroundColor: 'black',
+          transform: 'translateX(-0.5px)' // Perfect centering
+        }}
+      ></div>
 
     </div>
   );
