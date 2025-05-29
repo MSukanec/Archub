@@ -70,7 +70,7 @@ export default function SecondarySidebar() {
           onMouseLeave={handleMouseLeave}
         >
           {/* Project button using CircularButton style but with custom content */}
-          <div className="w-11 h-11 rounded-full bg-[#e1e1e1] hover:bg-[#d1d1d1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer hover:animate-pulse-x text-[#919191] font-medium text-sm">
+          <div className={`w-11 h-11 rounded-full bg-[#e1e1e1] hover:bg-[#d1d1d1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer text-[#919191] font-medium text-sm ${showProjectMenu ? 'pressed' : ''}`}>
             {getProjectInitials(currentProject)}
           </div>
 
