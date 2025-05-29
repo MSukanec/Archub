@@ -37,19 +37,16 @@ export default function Organization() {
 
       console.log('Projects count:', projectsCount, 'Error:', countError);
 
-      // Get total budget from all projects
+      // Get projects data without budget field (since it doesn't exist)
       const { data: projects, error: projectsError } = await supabase
         .from('projects')
-        .select('budget')
+        .select('id, name')
         .eq('organization_id', organizationId);
 
       console.log('Projects data:', projects, 'Error:', projectsError);
 
-      const totalBudget = projects?.reduce((sum, project) => {
-        const budgetValue = parseFloat(project.budget) || 0;
-        console.log('Project budget:', project.budget, 'Parsed:', budgetValue);
-        return sum + budgetValue;
-      }, 0) || 0;
+      // For now, set budget to 0 since the column doesn't exist
+      const totalBudget = 0;
 
       // Get monthly activity (site logs from this month for projects in this organization)
       const startOfMonth = new Date();
@@ -187,9 +184,13 @@ export default function Organization() {
               <p className="text-foreground font-medium">
                 {organization?.created_at 
                   ? new Date(organization.created_at).toLocaleDateString('es-ES')
-                  : 'Cargando...'
+                  : 'Sin fecha disponible'
                 }
               </p>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground">Miembros</label>
+              <p className="text-foreground font-medium">1 miembro activo</p>
             </div>
           </div>
         </div>
