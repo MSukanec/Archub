@@ -48,8 +48,8 @@ export default function CircularButton({
           transition-all duration-500 ease-out
           h-11
           rounded-full 
-          shadow-lg
-          hover:shadow-xl
+          shadow-sm
+          hover:shadow-lg
           cursor-pointer
           ${isActive 
             ? 'bg-black' 
