@@ -91,20 +91,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const { data: movementTypes = [] } = useQuery({
     queryKey: ['movement-types'],
     queryFn: async () => {
-      console.log('Fetching movement types...');
       const { data, error } = await supabase
         .from('movement_concepts')
         .select('*')
         .is('parent_id', null)
         .order('name');
       
-      console.log('Movement types result:', { data, error });
-      console.log('Number of types found:', data?.length || 0);
-      
-      if (error) {
-        console.error('Error fetching movement types:', error);
-        throw error;
-      }
+      if (error) throw error;
       return data || [];
     },
     enabled: isOpen,
@@ -116,22 +109,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     queryFn: async () => {
       if (!selectedTypeId) return [];
       
-      console.log('Fetching categories for selectedTypeId:', selectedTypeId);
-      
       const { data, error } = await supabase
         .from('movement_concepts')
         .select('*')
         .eq('parent_id', selectedTypeId)
         .order('name');
       
-      console.log('Categories result:', { data, error });
-      console.log('Number of categories found:', data?.length || 0);
-      console.log('Raw categories data:', data);
-      
-      if (error) {
-        console.error('Error fetching categories:', error);
-        throw error;
-      }
+      if (error) throw error;
       return data || [];
     },
     enabled: isOpen && !!selectedTypeId,
@@ -469,21 +453,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {(() => {
-                                console.log('Rendering categories. selectedTypeId:', selectedTypeId);
-                                console.log('movementCategories length:', movementCategories.length);
-                                console.log('movementCategories data:', movementCategories);
-                                
-                                if (movementCategories.length === 0) {
-                                  return <div className="p-2 text-sm text-gray-500">No hay categorías disponibles</div>;
-                                }
-                                
-                                return movementCategories.map((category) => (
+                              {movementCategories.length === 0 ? (
+                                <div className="p-2 text-sm text-gray-500">No hay categorías disponibles</div>
+                              ) : (
+                                movementCategories.map((category) => (
                                   <SelectItem key={category.id} value={category.id}>
                                     {category.name}
                                   </SelectItem>
-                                ));
-                              })()}
+                                ))
+                              )}
                             </SelectContent>
                           </Select>
                           <FormMessage />

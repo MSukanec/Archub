@@ -61,42 +61,48 @@ async function seedMovementConcepts() {
 
   // Insert expense categories
   const expenseCategories = [
-    { id: 'material-construccion', name: 'Materiales de Construcción', parent_id: 'egreso-type' },
-    { id: 'mano-obra', name: 'Mano de Obra', parent_id: 'egreso-type' },
-    { id: 'herramientas', name: 'Herramientas y Equipos', parent_id: 'egreso-type' },
-    { id: 'transporte', name: 'Transporte', parent_id: 'egreso-type' },
-    { id: 'servicios', name: 'Servicios Profesionales', parent_id: 'egreso-type' },
-    { id: 'gastos-generales', name: 'Gastos Generales', parent_id: 'egreso-type' }
+    { name: 'Materiales de Construcción', parent_id: insertedTypes['Egresos'] },
+    { name: 'Mano de Obra', parent_id: insertedTypes['Egresos'] },
+    { name: 'Herramientas y Equipos', parent_id: insertedTypes['Egresos'] },
+    { name: 'Transporte', parent_id: insertedTypes['Egresos'] },
+    { name: 'Servicios Profesionales', parent_id: insertedTypes['Egresos'] },
+    { name: 'Gastos Generales', parent_id: insertedTypes['Egresos'] }
   ];
 
   for (const category of expenseCategories) {
-    const { data, error } = await supabase
-      .from('movement_concepts')
-      .upsert(category, { onConflict: 'id' });
-    
-    if (error) {
-      console.error(`Error inserting expense category ${category.name}:`, error);
-    } else {
-      console.log(`✓ Inserted expense category: ${category.name}`);
+    if (category.parent_id) {
+      const { data, error } = await supabase
+        .from('movement_concepts')
+        .insert([category])
+        .select();
+      
+      if (error) {
+        console.error(`Error inserting expense category ${category.name}:`, error);
+      } else {
+        console.log(`✓ Inserted expense category: ${category.name}`);
+      }
     }
   }
 
   // Insert adjustment categories
   const adjustmentCategories = [
-    { id: 'correccion-error', name: 'Corrección de Error', parent_id: 'ajuste-type' },
-    { id: 'ajuste-inventario', name: 'Ajuste de Inventario', parent_id: 'ajuste-type' },
-    { id: 'diferencia-cambio', name: 'Diferencia de Cambio', parent_id: 'ajuste-type' }
+    { name: 'Corrección de Error', parent_id: insertedTypes['Ajustes'] },
+    { name: 'Ajuste de Inventario', parent_id: insertedTypes['Ajustes'] },
+    { name: 'Diferencia de Cambio', parent_id: insertedTypes['Ajustes'] }
   ];
 
   for (const category of adjustmentCategories) {
-    const { data, error } = await supabase
-      .from('movement_concepts')
-      .upsert(category, { onConflict: 'id' });
-    
-    if (error) {
-      console.error(`Error inserting adjustment category ${category.name}:`, error);
-    } else {
-      console.log(`✓ Inserted adjustment category: ${category.name}`);
+    if (category.parent_id) {
+      const { data, error } = await supabase
+        .from('movement_concepts')
+        .insert([category])
+        .select();
+      
+      if (error) {
+        console.error(`Error inserting adjustment category ${category.name}:`, error);
+      } else {
+        console.log(`✓ Inserted adjustment category: ${category.name}`);
+      }
     }
   }
 
