@@ -355,6 +355,106 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
+      {/* Events card in bottom right */}
+      {(() => {
+        const today = new Date();
+        const todayStr = today.toDateString();
+        
+        // Get today's events
+        const todayEvents = timelineData.filter(event => 
+          new Date(event.date).toDateString() === todayStr
+        );
+        
+        // Get upcoming events in next 2 days
+        const upcomingEvents = timelineData.filter(event => {
+          const eventDate = new Date(event.date);
+          const daysDiff = Math.ceil((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          return daysDiff > 0 && daysDiff <= 2;
+        }).slice(0, 3);
+        
+        return (
+          <div className="fixed bottom-4 right-4 z-[9999]">
+            <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
+              {todayEvents.length > 0 ? (
+                <>
+                  <h3 className="text-sm font-semibold text-[#919191] mb-3">EVENTOS DE HOY</h3>
+                  <div className="space-y-2">
+                    {todayEvents.slice(0, 3).map((event, index) => (
+                      <button
+                        key={event.id}
+                        onClick={() => console.log('Today event clicked:', event)}
+                        className="w-full bg-white/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <event.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-[#919191]">{event.title}</div>
+                            <div className="text-xs text-[#919191]/70">
+                              {event.description && event.description.length > 30 
+                                ? `${event.description.substring(0, 30)}...` 
+                                : event.description}
+                            </div>
+                            {event.amount && (
+                              <div className="text-xs text-[#919191]/70 mt-1">
+                                ${event.amount.toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                    {todayEvents.length > 3 && (
+                      <div className="text-xs text-[#919191]/70 text-center pt-2">
+                        +{todayEvents.length - 3} eventos más
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-sm font-semibold text-[#919191] mb-3">PRÓXIMOS EVENTOS</h3>
+                  {upcomingEvents.length > 0 ? (
+                    <div className="space-y-2">
+                      {upcomingEvents.map((event, index) => (
+                        <button
+                          key={event.id}
+                          onClick={() => console.log('Upcoming event clicked:', event)}
+                          className="w-full bg-white/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-2">
+                            <event.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-[#919191]">{event.title}</div>
+                              <div className="text-xs text-[#919191]/70">
+                                {new Date(event.date).toLocaleDateString('es-ES')}
+                              </div>
+                              <div className="text-xs text-[#919191]/70">
+                                {event.description && event.description.length > 25 
+                                  ? `${event.description.substring(0, 25)}...` 
+                                  : event.description}
+                              </div>
+                              {event.amount && (
+                                <div className="text-xs text-[#919191]/70 mt-1">
+                                  ${event.amount.toLocaleString()}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-[#919191]/70 text-center py-4">
+                      No hay eventos próximos
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Infinite horizontal timeline */}
       <div 
         ref={timelineRef}
@@ -528,7 +628,11 @@ export default function DashboardTimeline() {
                                     <event.icon className="w-4 h-4 text-[#919191]" />
                                     <div className="flex-1 text-left">
                                       <div className="text-xs font-medium text-[#919191]">{event.title}</div>
-                                      <div className="text-xs text-[#919191]/70 truncate">{event.description}</div>
+                                      <div className="text-xs text-[#919191]/70 truncate">
+                                        {event.description && event.description.length > 20 
+                                          ? `${event.description.substring(0, 20)}...` 
+                                          : event.description}
+                                      </div>
                                       {event.amount && (
                                         <div className="text-xs text-[#919191]/70">
                                           ${event.amount.toLocaleString()}
