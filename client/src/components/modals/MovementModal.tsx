@@ -69,7 +69,7 @@ interface MovementModalProps {
   projectId: string;
 }
 
-export default function MovementModalNew({ isOpen, onClose, movement, projectId }: MovementModalProps) {
+export default function MovementModal({ isOpen, onClose, movement, projectId }: MovementModalProps) {
   const { organizationId } = useUserContextStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();

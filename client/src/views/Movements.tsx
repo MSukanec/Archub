@@ -12,7 +12,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import MovementModal from '@/components/modals/MovementModalNew';
+import MovementModal from '@/components/modals/MovementModal';
 import DeleteMovementModal from '@/components/modals/DeleteMovementModal';
 
 interface Movement {
