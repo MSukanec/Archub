@@ -88,18 +88,8 @@ export default function FloatingActionButton() {
 
   // Configuración de acciones por vista
   const viewActions: Record<View, { label: string; action: () => void; isMultiple?: boolean; options?: any[] } | null> = {
-    'dashboard-main': { 
-      label: 'Crear', 
-      action: () => {}, 
-      isMultiple: true,
-      options: [
-        { label: 'Nueva Bitácora', action: modalActions.openCreateSiteLogModal },
-        { label: 'Nuevo Movimiento', action: modalActions.openCreateMovementModal },
-        { label: 'Crear Presupuesto', action: modalActions.openCreateBudgetModal },
-        { label: 'Nueva Tarea', action: modalActions.openCreateTaskModal },
-        { label: 'Nuevo Contacto', action: modalActions.openCreateContactModal }
-      ]
-    },
+    'dashboard-main': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
+    'dashboard-timeline': null,
     'organization-overview': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
     'organization-team': { label: 'Agregar Compañero', action: modalActions.openInviteTeamMemberModal },
     'organization-activity': null,
@@ -110,6 +100,7 @@ export default function FloatingActionButton() {
     'budgets-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
     'sitelog-main': { label: 'Crear Entrada', action: modalActions.openCreateSiteLogModal },
     'movements-main': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
+    'transactions': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
     'contacts': { label: 'Crear Contacto', action: modalActions.openCreateContactModal },
     'admin-organizations': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
     'admin-users': { label: 'Crear Usuario', action: modalActions.openCreateUserModal },
@@ -153,68 +144,21 @@ export default function FloatingActionButton() {
       <div
         onClick={!isBlocked ? handleClick : undefined}
         className={cn(
-          "bg-primary text-primary-foreground",
-          "shadow-lg rounded-xl",
-          "flex items-center justify-center",
-          "transition-all duration-300 ease-in-out",
-          "border border-primary/20",
-          "relative overflow-hidden",
+          "w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
+          "transition-all duration-200",
           isBlocked 
             ? "opacity-75 cursor-not-allowed" 
-            : "hover:bg-primary/90 hover:shadow-xl cursor-pointer",
-          actionConfig.isMultiple && isHovered && !isBlocked
-            ? "h-auto py-3 px-4 min-w-48 flex-col" 
-            : actionConfig.isMultiple 
-              ? "h-14 w-14" 
-              : isHovered && !isBlocked
-                ? "h-14 justify-start pl-4 pr-6" 
-                : "h-14 w-14"
+            : "hover:shadow-xl cursor-pointer hover:scale-105 active:scale-95",
+          actionConfig.isMultiple && isHovered && !isBlocked && "bg-[#8fc700]"
         )}
-        style={{
-          width: actionConfig.isMultiple 
-            ? (isHovered ? '192px' : '56px')
-            : (isHovered ? `${56 + (actionConfig.label.length * 8) + 32}px` : '56px')
-        }}
       >
-        {actionConfig.isMultiple ? (
-          isHovered ? (
-            // Mostrar opciones verticalmente dentro del botón
-            <div className="space-y-2 w-full">
-              {actionConfig.options?.map((option, index) => (
-                <div
-                  key={index}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    option.action();
-                  }}
-                  className="flex items-center text-sm hover:bg-primary-foreground/10 rounded px-2 py-1 cursor-pointer transition-colors w-full text-left"
-                >
-                  <Plus size={14} className="mr-2 flex-shrink-0" />
-                  <span className="whitespace-nowrap">{option.label}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            // Mostrar solo el ícono + centrado con efecto de temblequeo
-            <div className="w-full h-full flex items-center justify-center animate-[wiggle_3s_ease-in-out_infinite]">
-              <Plus size={20} className="flex-shrink-0" />
-            </div>
-          )
-        ) : (
-          // Botón simple para otras vistas
-          <>
-            <Plus size={20} className="flex-shrink-0" />
-            <span 
-              className={cn(
-                "font-medium text-sm whitespace-nowrap transition-all duration-300 ease-in-out ml-2",
-                isHovered 
-                  ? "opacity-100 translate-x-0" 
-                  : "opacity-0 translate-x-4"
-              )}
-            >
-              {isHovered ? actionConfig.label : ''}
-            </span>
-          </>
+        <Plus className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
+        
+        {/* Tooltip cuando hover */}
+        {isHovered && !isBlocked && (
+          <div className="absolute bottom-full right-0 mb-2 bg-[#e1e1e1] text-[#919191] px-2 py-1 rounded-lg text-sm whitespace-nowrap shadow-lg border border-[#919191]/20">
+            {actionConfig.label}
+          </div>
         )}
       </div>
       

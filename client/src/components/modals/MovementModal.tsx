@@ -100,7 +100,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const isEditing = !!movement;
+
+  const steps = [
+    { title: 'Información Básica', icon: FileText },
+    { title: 'Relaciones', icon: Users },
+    { title: 'Archivo Adjunto', icon: Paperclip }
+  ];
 
   // Fetch contacts for selection
   const { data: contactsList = [] } = useQuery({

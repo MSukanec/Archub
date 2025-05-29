@@ -51,6 +51,7 @@ const viewComponents = {
   'budgets-materials': Budgets,
   'sitelog-main': SiteLogs,
   'movements-main': Movements,
+  'transactions': Movements,
   'contacts': Contacts,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
