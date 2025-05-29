@@ -285,12 +285,6 @@ export default function DashboardTimeline() {
         }}
       >
         <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
-          {/* Vertical current date line */}
-          <div 
-            className="absolute top-0 bottom-0 w-px bg-black z-20"
-            style={{ left: '50%' }}
-          />
-          
           {/* Horizontal timeline line */}
           <div 
             className="absolute left-0 right-0 h-px bg-border z-10"
@@ -400,18 +394,19 @@ export default function DashboardTimeline() {
             </div>
           ))}
 
-          {/* Today indicator */}
-          <div 
-            className="absolute top-1/2 transform -translate-y-1/2 z-20"
-            style={{ left: '50%' }}
-          >
-            <div className="w-6 h-6 rounded-full bg-primary border-4 border-background shadow-lg flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-white" />
-            </div>
-          </div>
+
         </div>
       </div>
 
+      {/* Fixed "HOY" marker - always centered */}
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
+        {/* Vertical line */}
+        <div className="absolute top-0 bottom-0 w-px bg-black transform -translate-x-1/2" style={{ height: '100vh', top: '-50vh' }}></div>
+        {/* Today indicator */}
+        <div className="w-6 h-6 rounded-full bg-primary border-4 border-background shadow-lg flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-white" />
+        </div>
+      </div>
 
     </div>
   );
