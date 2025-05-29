@@ -302,19 +302,37 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
+      // Invalidate all movement-related queries
+      queryClient.invalidateQueries({ queryKey: ['movements'] });
       queryClient.invalidateQueries({ queryKey: ['timeline-events'] });
+      
+      // Clear potentially stale queries
+      queryClient.removeQueries({ queryKey: ['movement-categories'] });
+      
       toast({
         title: isEditing ? "Movimiento actualizado" : "Movimiento creado",
         description: isEditing ? "El movimiento se ha actualizado correctamente." : "El movimiento se ha guardado correctamente.",
       });
       
-      // Reset form state completely for creating new movements
-      if (!isEditing) {
-        form.reset();
+      // Always reset completely regardless of mode
+      setTimeout(() => {
+        form.reset({
+          type_id: '',
+          concept_id: '',
+          created_at: new Date().toISOString().split('T')[0],
+          amount: 0,
+          currency: 'ARS',
+          wallet_id: '',
+          description: '',
+          related_contact_id: '',
+          related_task_id: ''
+        });
         setSelectedTypeId('');
         setCurrentStep(0);
-      }
+        setContactOpen(false);
+        setSelectedFile(null);
+        setContactSearch('');
+      }, 100);
       
       onClose();
     },
@@ -343,15 +361,28 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   };
 
   const handleClose = () => {
-    form.reset();
+    // Force complete reset
+    form.reset({
+      type_id: '',
+      concept_id: '',
+      created_at: new Date().toISOString().split('T')[0],
+      amount: 0,
+      currency: 'ARS',
+      wallet_id: '',
+      description: '',
+      related_contact_id: '',
+      related_task_id: ''
+    });
+    
     setCurrentStep(0);
     setContactOpen(false);
     setSelectedTypeId('');
     setSelectedFile(null);
     setContactSearch('');
     
-    // Clear any stale queries
+    // Aggressively clear queries to prevent cache issues
     queryClient.removeQueries({ queryKey: ['movement-categories'] });
+    queryClient.removeQueries({ queryKey: ['movement-types'] });
     
     onClose();
   };
