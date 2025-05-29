@@ -16,7 +16,7 @@ interface Project {
 export default function SecondarySidebar() {
   const { setView } = useNavigationStore();
   const { user } = useAuthStore();
-  const { organizationId, projectId, setProjectId } = useUserContextStore();
+  const { organizationId, projectId, setUserContext } = useUserContextStore();
   const [showProjectMenu, setShowProjectMenu] = useState(false);
 
   // Fetch projects for the current organization
@@ -29,7 +29,7 @@ export default function SecondarySidebar() {
   const currentProject = projects.find(p => p.id === projectId);
 
   // Get project initials
-  const getProjectInitials = (project: Project) => {
+  const getProjectInitials = (project?: Project) => {
     if (!project) return 'P';
     const words = project.name.split(' ');
     if (words.length >= 2) {
@@ -39,12 +39,12 @@ export default function SecondarySidebar() {
   };
 
   const handleProjectChange = (newProjectId: string) => {
-    setProjectId(newProjectId);
+    setUserContext({ projectId: newProjectId });
     setShowProjectMenu(false);
   };
 
   const handleCreateProject = () => {
-    setView('projects-main');
+    setView('projects-list');
     setShowProjectMenu(false);
   };
 
@@ -52,22 +52,20 @@ export default function SecondarySidebar() {
     <div className="fixed top-0 right-0 w-16 h-screen z-40 flex flex-col justify-between">
       {/* Top section - Project selector */}
       <div className="flex flex-col items-center pt-2.5 pr-2.5">
-        <div className="relative">
-          {/* Project button */}
-          <div 
-            className="w-11 h-11 rounded-full bg-[#919191] hover:bg-[#7a7a7a] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer hover:animate-pulse-x text-white font-medium text-sm"
-            onMouseEnter={() => setShowProjectMenu(true)}
-            onMouseLeave={() => setShowProjectMenu(false)}
-          >
+        <div 
+          className="relative"
+          onMouseEnter={() => setShowProjectMenu(true)}
+          onMouseLeave={() => setShowProjectMenu(false)}
+        >
+          {/* Project button - custom display for initials */}
+          <div className="w-11 h-11 rounded-full bg-[#919191] hover:bg-[#7a7a7a] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer hover:animate-pulse-x text-white font-medium text-sm">
             {getProjectInitials(currentProject)}
           </div>
 
           {/* Project dropdown menu */}
           {showProjectMenu && (
             <div 
-              className="absolute top-0 right-14 bg-white rounded-xl shadow-2xl border border-gray-200 min-w-64 z-50 py-2"
-              onMouseEnter={() => setShowProjectMenu(true)}
-              onMouseLeave={() => setShowProjectMenu(false)}
+              className="absolute top-0 right-12 bg-white rounded-xl shadow-2xl border border-gray-200 min-w-64 z-50 py-2"
             >
               {/* Header */}
               <div className="px-4 py-2 border-b border-gray-100">

@@ -16,6 +16,7 @@ interface UserContextStore extends UserContext {
   isLoading: boolean;
   isInitialized: boolean;
   setUserContext: (context: Partial<UserContext>) => void;
+  setProjectId: (projectId: string) => void;
   clearUserContext: () => void;
   initializeUserContext: () => Promise<void>;
   refreshData: () => Promise<void>;
@@ -78,6 +79,36 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         }
       } catch (error) {
         console.error('Error updating user preferences:', error);
+      }
+    };
+
+    updatePreferences();
+  },
+
+  setProjectId: (projectId: string) => {
+    const currentState = get();
+    set({ projectId });
+    
+    // Update preferences in Supabase
+    const updatePreferences = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: internalUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (!internalUser) return;
+
+        await supabase
+          .from('user_preferences')
+          .update({ last_project_id: projectId })
+          .eq('user_id', internalUser.id);
+      } catch (error) {
+        console.error('Error updating project preference:', error);
       }
     };
 
