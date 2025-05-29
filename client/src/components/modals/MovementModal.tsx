@@ -119,8 +119,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       
       console.log('Categories result:', { data, error });
       console.log('Number of categories found:', data?.length || 0);
+      console.log('Raw categories data:', data);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching categories:', error);
+        throw error;
+      }
       return data || [];
     },
     enabled: isOpen && !!selectedTypeId,
@@ -432,15 +436,21 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {movementCategories.length === 0 ? (
-                                <div className="p-2 text-sm text-gray-500">No hay categorías disponibles</div>
-                              ) : (
-                                movementCategories.map((category) => (
+                              {(() => {
+                                console.log('Rendering categories. selectedTypeId:', selectedTypeId);
+                                console.log('movementCategories length:', movementCategories.length);
+                                console.log('movementCategories data:', movementCategories);
+                                
+                                if (movementCategories.length === 0) {
+                                  return <div className="p-2 text-sm text-gray-500">No hay categorías disponibles</div>;
+                                }
+                                
+                                return movementCategories.map((category) => (
                                   <SelectItem key={category.id} value={category.id}>
                                     {category.name}
                                   </SelectItem>
-                                ))
-                              )}
+                                ));
+                              })()}
                             </SelectContent>
                           </Select>
                           <FormMessage />
