@@ -183,7 +183,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           description: movement.description || '',
           amount: movement.amount || 0,
           currency: movement.currency || 'ARS',
-          wallet_id: movement.wallet_id || 'none',
+          wallet_id: movement.wallet_id || '',
           related_contact_id: movement.related_contact_id || '',
           related_task_id: movement.related_task_id || '',
         });
@@ -202,7 +202,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           description: '',
           amount: 0,
           currency: 'ARS',
-          wallet_id: 'none',
+          wallet_id: '',
           related_contact_id: '',
           related_task_id: '',
         });
@@ -217,7 +217,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         description: '',
         amount: 0,
         currency: 'ARS',
-        wallet_id: 'none',
+        wallet_id: '',
         related_contact_id: '',
         related_task_id: '',
       });
@@ -237,7 +237,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
             description: data.description,
             amount: data.amount,
             currency: data.currency,
-            wallet_id: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
+            wallet_id: data.wallet_id,
             related_contact_id: data.related_contact_id || null,
             related_task_id: data.related_task_id || null,
           })
@@ -258,7 +258,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
             description: data.description,
             amount: data.amount,
             currency: data.currency,
-            wallet_id: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
+            wallet_id: data.wallet_id,
             related_contact_id: data.related_contact_id || null,
             related_task_id: data.related_task_id || null,
           }])
@@ -497,7 +497,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="none">Sin billetera</SelectItem>
+
                               {walletsList.map((wallet) => (
                                 <SelectItem key={wallet.id} value={wallet.id}>
                                   {wallet.name}
