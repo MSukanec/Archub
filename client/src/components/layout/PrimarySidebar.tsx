@@ -9,13 +9,12 @@ import { cn } from '@/lib/utils';
 import CircularButton from '@/components/ui/CircularButton';
 
 const topNavigationItems = [
-  { section: 'dashboard' as Section, icon: Home, label: 'Línea de Tiempo' },
+  { section: 'dashboard' as Section, icon: Home, label: 'Dashboard' },
   { section: 'organization' as Section, icon: Building2, label: 'Organización' },
-  { section: 'projects' as Section, icon: FolderKanban, label: 'Proyectos' },
-  { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
   { section: 'sitelog' as Section, icon: ClipboardList, label: 'Bitácora' },
-  { section: 'movements' as Section, icon: DollarSign, label: 'Finanzas' },
   { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
+  { section: 'movements' as Section, icon: DollarSign, label: 'Finanzas' },
+  { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
 ];
 
 
@@ -97,7 +96,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Center navigation buttons */}
-      <div className="flex-1 flex flex-col items-center justify-center space-y-2 pl-2.5">
+      <div className="flex-1 flex flex-col items-center justify-center space-y-6 pl-2.5">
         {topNavigationItems.slice(1).map(({ section, icon, label }) => (
           <CircularButton
             key={section}

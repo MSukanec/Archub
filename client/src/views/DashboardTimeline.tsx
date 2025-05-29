@@ -398,6 +398,15 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
+      {/* Fixed horizontal dotted line - aligned with sidebar buttons */}
+      <div 
+        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        style={{ 
+          top: '50%',
+          borderTop: '1px dashed #d1d5db'
+        }}
+      ></div>
+
       {/* Fixed "HOY" marker - always centered */}
       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
         {/* Vertical line */}
