@@ -310,7 +310,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
+          <form className="flex-1 flex flex-col">
             {/* Step Content */}
             <div className="flex-1 overflow-y-auto py-4 space-y-4">
               {/* Step 0: Basic Information */}
@@ -641,7 +641,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
               {currentStep === steps.length - 1 ? (
                 <Button 
-                  type="submit" 
+                  type="button"
+                  onClick={() => form.handleSubmit(onSubmit)()}
                   disabled={isLoading}
                   className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
                 >
