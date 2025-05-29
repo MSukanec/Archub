@@ -38,6 +38,7 @@ export default function CircularButton({
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={onClick}
         className={`
           absolute left-0 top-0
           flex items-center
@@ -45,6 +46,7 @@ export default function CircularButton({
           h-11
           rounded-full 
           hover:shadow-xl
+          cursor-pointer
           ${isActive 
             ? 'bg-black' 
             : 'bg-[#e1e1e1]'
@@ -60,7 +62,6 @@ export default function CircularButton({
       >
         {/* Botón principal - siempre visible */}
         <div
-          onClick={onClick}
           className={`
             ${sizeClasses[size]}
             rounded-full 
@@ -83,7 +84,9 @@ export default function CircularButton({
           ${isHovered && label && onPlusClick ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
           overflow-hidden
         `}>
-          <span className="text-sm font-medium text-foreground px-3 whitespace-nowrap">
+          <span className={`text-sm font-medium px-3 whitespace-nowrap ${
+            isActive ? 'text-white' : 'text-foreground'
+          }`}>
             {label}
           </span>
           <button
@@ -91,7 +94,7 @@ export default function CircularButton({
               e.stopPropagation();
               if (onPlusClick) onPlusClick();
             }}
-            className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-2 z-50"
+            className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-1 z-50"
           >
             <Plus className="w-3 h-3 text-white" />
           </button>
