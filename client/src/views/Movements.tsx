@@ -69,6 +69,7 @@ export default function Movements() {
   const [customDate, setCustomDate] = useState<string>('');
   const [filterType, setFilterType] = useState<'all' | 'year' | 'date' | 'custom'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [modalKey, setModalKey] = useState<number>(0);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -82,6 +83,7 @@ export default function Movements() {
   useEffect(() => {
     const handleOpenCreateMovementModal = () => {
       setEditingMovement(null);
+      setModalKey(prev => prev + 1); // Force fresh modal mount
       setIsMovementModalOpen(true);
     };
 
@@ -180,6 +182,7 @@ export default function Movements() {
 
   const handleEdit = (movement: Movement) => {
     setEditingMovement(movement);
+    setModalKey(prev => prev + 1); // Force fresh modal mount for editing
     setIsMovementModalOpen(true);
   };
 
@@ -199,6 +202,8 @@ export default function Movements() {
   const handleCloseModal = () => {
     setIsMovementModalOpen(false);
     setEditingMovement(null);
+    // Force modal remount by changing key
+    setModalKey(prev => prev + 1);
   };
 
   // Filter and sort movements
@@ -675,6 +680,7 @@ export default function Movements() {
 
       {/* Movement Modal */}
       <MovementModal
+        key={modalKey}
         isOpen={isMovementModalOpen}
         onClose={handleCloseModal}
         movement={editingMovement}
