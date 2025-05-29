@@ -345,11 +345,13 @@ export default function DashboardTimeline() {
 
                   const getEventPosition = (type: string) => {
                     switch (type) {
-                      case 'organization': return { top: '-96px' }; // Organization line
-                      case 'sitelog': return { top: '-48px' }; // Bitácora line
-                      case 'project': return { top: '0px' }; // Proyectos line (center)
-                      case 'movement': return { top: '48px' }; // Finanzas line
-                      case 'budget': return { top: '96px' }; // Presupuestos line
+                      case 'organization': return { top: '-128px' }; // Organization line
+                      case 'sitelog': return { top: '-64px' }; // Bitácora line  
+                      case 'project': 
+                      case 'task': return { top: '0px' }; // Proyectos line (center)
+                      case 'movement': return { top: '64px' }; // Finanzas line
+                      case 'budget': 
+                      case 'milestone': return { top: '128px' }; // Presupuestos line
                       default: return { top: '0px' };
                     }
                   };
@@ -421,44 +423,53 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
-      {/* Five horizontal timeline lines - one aligned with each sidebar button center */}
-      {/* Line 1 - Organization */}
+      {/* Five horizontal timeline lines - perfectly aligned with sidebar button centers */}
+      {/* 
+        Sidebar calculation:
+        - Dashboard button at top (outside flex-1 container)
+        - 5 center buttons in flex-1 container with space-y-6 (24px gap)
+        - Button size: 40px (w-10 h-10)
+        - Button center offset: 20px
+        - Total spacing between button centers: 64px (40px button + 24px gap)
+      */}
+      
+      {/* Line 1 - Organization (first button in center group) */}
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 96px)' // Organization button center (space-y-6 = 24px * 4 = 96px)
+          top: 'calc(50% - 128px)' // Two buttons up from center: 2 * 64px = 128px
         }}
       ></div>
       
-      {/* Line 2 - Bitácora */}
+      {/* Line 2 - Bitácora (second button in center group) */}
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 48px)' // Bitácora button center (space-y-6 = 24px * 2 = 48px)
+          top: 'calc(50% - 64px)' // One button up from center: 1 * 64px = 64px
         }}
       ></div>
       
-      {/* Line 3 - Proyectos (Center) */}
+      {/* Line 3 - Proyectos (third button - center of center group) */}
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: '50%' // Center line - Proyectos button
+          top: '50%' // Center line
         }}
       ></div>
       
-      {/* Line 4 - Finanzas */}
+      {/* Line 4 - Finanzas (fourth button in center group) */}
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 48px)' // Finanzas button center (space-y-6 = 24px * 2 = 48px)
+          top: 'calc(50% + 64px)' // One button down from center: 1 * 64px = 64px
         }}
       ></div>
       
-      {/* Line 5 - Presupuestos */}
+      {/* Line 5 - Presupuestos (fifth button in center group) */}
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 96px)' // Presupuestos button center (space-y-6 = 24px * 4 = 96px)
+          top: 'calc(50% + 128px)' // Two buttons down from center: 2 * 64px = 128px
         }}
       ></div>
 
