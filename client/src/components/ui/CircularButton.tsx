@@ -29,7 +29,7 @@ export default function CircularButton({
 
   const iconSizes = {
     sm: 'w-3 h-3',
-    md: 'w-4.5 h-4.5', 
+    md: 'w-[18px] h-[18px]', 
     lg: 'w-6 h-6'
   };
 

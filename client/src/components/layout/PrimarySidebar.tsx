@@ -14,7 +14,7 @@ const topNavigationItems = [
   { section: 'projects' as Section, icon: FolderKanban, label: 'Proyectos' },
   { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
   { section: 'sitelog' as Section, icon: ClipboardList, label: 'Bitácora' },
-  { section: 'movements' as Section, icon: DollarSign, label: 'Movimientos de Obra' },
+  { section: 'movements' as Section, icon: DollarSign, label: 'Finanzas' },
   { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
 ];
 
