@@ -58,13 +58,6 @@ export const useNavigationStore = create<NavigationState>((set) => ({
   setSection: (section) =>
     set((state) => {
       let view = sectionViewMap[section];
-      // Para movements, usar la vista 'transactions' que corresponde al header
-      if (section === 'movements') {
-        return {
-          currentSection: section,
-          currentView: 'transactions' as View,
-        };
-      }
       return {
         currentSection: section,
         currentView: view,
