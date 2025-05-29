@@ -179,8 +179,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .eq('parent_id', selectedTypeId)
         .order('name');
       
-      if (error) throw error;
-      console.log('Categories fetched:', data);
+      if (error) {
+        console.error('Error fetching categories:', error);
+        throw error;
+      }
+      console.log('Categories fetched for type', selectedTypeId, ':', data);
       return data || [];
     },
     enabled: isOpen && !!selectedTypeId,
@@ -520,7 +523,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       name="currency"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#333333]">Moneda</FormLabel>
+                          <FormLabel className="text-[#333333]">Moneda <span className="text-[#8fc700]">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
