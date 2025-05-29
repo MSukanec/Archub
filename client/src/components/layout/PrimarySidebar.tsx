@@ -116,7 +116,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Bottom buttons section */}
-      <div className="flex items-center space-x-4 pb-2.5 pl-2.5">
+      <div className="flex flex-col items-center space-y-2 pb-2.5 pl-2.5">
         {/* Profile button */}
         <CircularButton
           icon={User}

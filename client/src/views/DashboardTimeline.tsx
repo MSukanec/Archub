@@ -342,8 +342,11 @@ export default function DashboardTimeline() {
                 transform: 'translateY(-50%)'
               }}
             >
-              {/* Date label */}
-              <div className="mb-8 text-xs text-muted-foreground font-medium">
+              {/* Date labels - top and bottom */}
+              <div className="absolute top-2 text-xs font-medium text-foreground/50">
+                {formatDate(node.date)}
+              </div>
+              <div className="absolute bottom-2 text-xs font-medium text-foreground/50">
                 {formatDate(node.date)}
               </div>
 
