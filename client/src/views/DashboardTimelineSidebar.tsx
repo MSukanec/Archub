@@ -27,13 +27,13 @@ const SIDEBAR_BUTTONS = [
     id: 'presupuestos' as SidebarCategory, 
     label: 'Presupuestos', 
     icon: Target,
-    offsetVh: -12 // 12vh arriba del centro
+    offsetVh: -20 // 20vh arriba del centro
   },
   { 
     id: 'movimientos' as SidebarCategory, 
     label: 'Movimientos', 
     icon: DollarSign,
-    offsetVh: -6 // 6vh arriba del centro
+    offsetVh: -10 // 10vh arriba del centro
   },
   { 
     id: 'proyectos' as SidebarCategory, 
@@ -45,13 +45,13 @@ const SIDEBAR_BUTTONS = [
     id: 'bitacora' as SidebarCategory, 
     label: 'Bitácora', 
     icon: FileText,
-    offsetVh: 6 // 6vh debajo del centro
+    offsetVh: 10 // 10vh debajo del centro
   },
   { 
     id: 'ejecucion' as SidebarCategory, 
     label: 'Ejecución', 
     icon: Wrench,
-    offsetVh: 12 // 12vh debajo del centro
+    offsetVh: 20 // 20vh debajo del centro
   }
 ];
 
@@ -390,6 +390,7 @@ export default function DashboardTimelineSidebar() {
       case 'task': return 'presupuestos';
       case 'sitelog': return 'bitacora';
       case 'execution': return 'ejecucion';
+      case 'milestone': return 'proyectos';
       default: return 'proyectos';
     }
   };
@@ -490,6 +491,16 @@ export default function DashboardTimelineSidebar() {
               style={{ 
                 left: '50%',
                 background: '#000000'
+              }}
+            />
+            
+            {/* Línea vertical del "AHORA" - más prominente */}
+            <div 
+              className="absolute top-0 bottom-0 w-1 z-30"
+              style={{ 
+                left: '50%',
+                background: '#FF0000',
+                transform: 'translateX(-50%)'
               }}
             />
 
