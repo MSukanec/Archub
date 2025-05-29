@@ -94,6 +94,7 @@ export default function PrimarySidebar() {
           icon={Home}
           isActive={currentSection === 'dashboard'}
           onClick={() => setSection('dashboard')}
+          label="Dashboard"
         />
       </div>
       
@@ -105,10 +106,11 @@ export default function PrimarySidebar() {
             icon={icon}
             isActive={currentSection === section}
             onClick={() => setSection(section)}
+            label={label}
           />
         ))}
         
-        {bottomNavigationItems.map(({ section, icon }) => {
+        {bottomNavigationItems.map(({ section, icon, label }) => {
           // Hide admin section for non-admin users
           if (section === 'admin' && user?.role !== 'admin') {
             return null;
@@ -120,6 +122,7 @@ export default function PrimarySidebar() {
               icon={icon}
               isActive={currentSection === section}
               onClick={() => setSection(section)}
+              label={label}
             />
           );
         })}
@@ -131,6 +134,7 @@ export default function PrimarySidebar() {
           icon={User}
           isActive={currentSection === 'profile'}
           onClick={() => setSection('profile')}
+          label="Perfil"
         />
       </div>
     </div>
