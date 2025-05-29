@@ -56,6 +56,7 @@ const movementSchema = z.object({
   description: z.string().optional(),
   amount: z.number().min(0.01, 'Monto debe ser mayor a 0'),
   currency: z.enum(['ARS', 'USD']),
+  wallet_id: z.string().optional(),
   related_contact_id: z.string().optional(),
   related_task_id: z.string().optional(),
 });
@@ -126,6 +127,21 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen,
   });
 
+  // Fetch wallets
+  const { data: walletsList = [] } = useQuery({
+    queryKey: ['wallets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wallets')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
     defaultValues: {
@@ -135,6 +151,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       description: '',
       amount: 0,
       currency: 'ARS',
+      wallet_id: '',
       related_contact_id: '',
       related_task_id: '',
     },
@@ -151,6 +168,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         description: movement.description || '',
         amount: movement.amount || 0,
         currency: movement.currency || 'ARS',
+        wallet_id: movement.wallet_id || '',
         related_contact_id: movement.related_contact_id || '',
         related_task_id: movement.related_task_id || '',
       });
@@ -163,6 +181,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         description: '',
         amount: 0,
         currency: 'ARS',
+        wallet_id: '',
         related_contact_id: '',
         related_task_id: '',
       });
@@ -182,6 +201,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           description: data.description,
           amount: data.amount,
           currency: data.currency,
+          wallet: data.wallet_id || null,
           related_contact_id: data.related_contact_id || null,
           related_task_id: data.related_task_id || null,
         }])
@@ -240,7 +260,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px] h-[520px] max-h-[85vh] overflow-hidden bg-[#e0e0e0] flex flex-col">
+      <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-hidden bg-[#e0e0e0] flex flex-col">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#8fc700] rounded-full flex items-center justify-center">
@@ -390,27 +410,56 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     />
                   </div>
 
-                  {/* Cantidad */}
-                  <FormField
-                    control={form.control}
-                    name="amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#333333]">Cantidad *</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={field.value || ''}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            className="bg-[#d2d2d2] border-[#cccccc]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Cantidad */}
+                    <FormField
+                      control={form.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Cantidad *</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              className="bg-[#d2d2d2] border-[#cccccc]"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Billetera */}
+                    <FormField
+                      control={form.control}
+                      name="wallet_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Billetera</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                                <SelectValue placeholder="Seleccionar billetera" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="">Sin billetera</SelectItem>
+                              {walletsList.map((wallet) => (
+                                <SelectItem key={wallet.id} value={wallet.id}>
+                                  {wallet.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Descripción */}
                   <FormField
