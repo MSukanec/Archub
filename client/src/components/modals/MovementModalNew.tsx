@@ -1,0 +1,587 @@
+import { useState, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { DollarSign, FileText, User, Upload, ChevronLeft, ChevronRight, Check, ChevronsUpDown } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { supabase } from '@/lib/supabase';
+import { contactsService } from '@/lib/contactsService';
+import { cn } from '@/lib/utils';
+
+// Form schema
+const movementSchema = z.object({
+  type_id: z.string().min(1, 'Tipo es requerido'),
+  concept_id: z.string().min(1, 'Categoría es requerida'),
+  date: z.string().min(1, 'Fecha es requerida'),
+  description: z.string().optional(),
+  amount: z.number().min(0.01, 'Monto debe ser mayor a 0'),
+  currency: z.enum(['ARS', 'USD']),
+  related_contact_id: z.string().optional(),
+  related_task_id: z.string().optional(),
+});
+
+type MovementForm = z.infer<typeof movementSchema>;
+
+interface MovementModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  movement?: any;
+  projectId: string;
+}
+
+export default function MovementModalNew({ isOpen, onClose, movement, projectId }: MovementModalProps) {
+  const { organizationId } = useUserContextStore();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedTypeId, setSelectedTypeId] = useState<string>('');
+  const [contactOpen, setContactOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const isEditing = !!movement;
+
+  const steps = [
+    { title: 'Información Básica', icon: FileText },
+    { title: 'Relaciones', icon: User },
+    { title: 'Archivo Adjunto', icon: Upload }
+  ];
+
+  // Fetch movement types
+  const { data: movementTypes = [] } = useQuery({
+    queryKey: ['movement-types'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('movement_concepts')
+        .select('*')
+        .is('parent_id', null)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
+  // Fetch categories for selected type
+  const { data: movementCategories = [] } = useQuery({
+    queryKey: ['movement-categories', selectedTypeId],
+    queryFn: async () => {
+      if (!selectedTypeId) return [];
+      
+      const { data, error } = await supabase
+        .from('movement_concepts')
+        .select('*')
+        .eq('parent_id', selectedTypeId)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen && !!selectedTypeId,
+  });
+
+  // Fetch contacts
+  const { data: contactsList = [] } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: contactsService.getAll,
+    enabled: isOpen,
+  });
+
+  const form = useForm<MovementForm>({
+    resolver: zodResolver(movementSchema),
+    defaultValues: {
+      type_id: '',
+      concept_id: '',
+      date: new Date().toISOString().split('T')[0],
+      description: '',
+      amount: 0,
+      currency: 'ARS',
+      related_contact_id: '',
+      related_task_id: '',
+    },
+  });
+
+  // Reset form when movement changes
+  useEffect(() => {
+    if (movement && isEditing) {
+      // Load existing movement data
+      form.reset({
+        type_id: movement.movement_concepts?.parent_id || movement.concept_id,
+        concept_id: movement.concept_id || '',
+        date: movement.created_at ? movement.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        description: movement.description || '',
+        amount: movement.amount || 0,
+        currency: movement.currency || 'ARS',
+        related_contact_id: movement.related_contact_id || '',
+        related_task_id: movement.related_task_id || '',
+      });
+      setSelectedTypeId(movement.movement_concepts?.parent_id || movement.concept_id);
+    } else {
+      form.reset({
+        type_id: '',
+        concept_id: '',
+        date: new Date().toISOString().split('T')[0],
+        description: '',
+        amount: 0,
+        currency: 'ARS',
+        related_contact_id: '',
+        related_task_id: '',
+      });
+      setSelectedTypeId('');
+    }
+  }, [movement, isEditing, form, isOpen]);
+
+  // Create movement mutation
+  const createMovementMutation = useMutation({
+    mutationFn: async (data: MovementForm) => {
+      const { data: result, error } = await supabase
+        .from('site_movements')
+        .insert([{
+          project_id: projectId,
+          concept_id: data.concept_id,
+          created_at: data.date + 'T00:00:00.000Z',
+          description: data.description,
+          amount: data.amount,
+          currency: data.currency,
+          related_contact_id: data.related_contact_id || null,
+          related_task_id: data.related_task_id || null,
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
+      toast({
+        title: "Movimiento creado",
+        description: "El movimiento se ha guardado correctamente.",
+      });
+      onClose();
+    },
+    onError: (error) => {
+      console.error('Error creating movement:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo crear el movimiento. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: MovementForm) => {
+    createMovementMutation.mutate(data);
+  };
+
+  const handleClose = () => {
+    form.reset();
+    setCurrentStep(0);
+    setContactOpen(false);
+    onClose();
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const getContactDisplayName = (contact: any) => {
+    return `${contact.first_name} ${contact.last_name || ''}`.trim() || contact.company_name || 'Sin nombre';
+  };
+
+  const isLoading = createMovementMutation.isPending;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-hidden bg-[#e0e0e0]">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#8fc700] rounded-full flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-[#333333]">
+                {isEditing ? 'Editar Movimiento' : 'Nuevo Movimiento'}
+              </DialogTitle>
+              <DialogDescription className="text-[#666666]">
+                Gestiona ingresos, egresos y ajustes financieros del proyecto
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        {/* Step Navigation */}
+        <div className="flex justify-between items-center py-4 border-b border-[#cccccc]">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div key={index} className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  index === currentStep ? 'bg-[#8fc700] text-white' : 
+                  index < currentStep ? 'bg-[#d2d2d2] text-[#666666]' : 
+                  'bg-[#f0f0f0] text-[#999999]'
+                }`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className={`text-sm ${
+                  index === currentStep ? 'text-[#333333] font-medium' : 'text-[#666666]'
+                }`}>
+                  {step.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
+            {/* Step Content */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-4">
+              {/* Step 0: Basic Information */}
+              {currentStep === 0 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Tipo */}
+                    <FormField
+                      control={form.control}
+                      name="type_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Tipo *</FormLabel>
+                          <Select onValueChange={(value) => {
+                            field.onChange(value);
+                            setSelectedTypeId(value);
+                            form.setValue('concept_id', '');
+                          }} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                                <SelectValue placeholder="Seleccionar tipo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {movementTypes.map((type) => (
+                                <SelectItem key={type.id} value={type.id}>
+                                  {type.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Fecha */}
+                    <FormField
+                      control={form.control}
+                      name="date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Fecha *</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              className="bg-[#d2d2d2] border-[#cccccc]"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Categoría */}
+                    <FormField
+                      control={form.control}
+                      name="concept_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Categoría *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value} disabled={!selectedTypeId}>
+                            <FormControl>
+                              <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                                <SelectValue placeholder={selectedTypeId ? "Seleccionar categoría" : "Primero selecciona un tipo"} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {movementCategories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Moneda */}
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Moneda</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
+                              <SelectItem value="USD">USD - Dólar</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Cantidad */}
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">Cantidad *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            className="bg-[#d2d2d2] border-[#cccccc]"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Descripción */}
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">Descripción</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describe el detalle del movimiento... (opcional)"
+                            {...field}
+                            className="bg-[#d2d2d2] border-[#cccccc]"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
+
+              {/* Step 1: Relations */}
+              {currentStep === 1 && (
+                <div className="space-y-4">
+                  {/* Contact Selection */}
+                  <FormField
+                    control={form.control}
+                    name="related_contact_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">Contacto Relacionado</FormLabel>
+                        <Popover open={contactOpen} onOpenChange={setContactOpen}>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-full justify-between bg-[#d2d2d2] border-[#cccccc]",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value
+                                  ? getContactDisplayName(contactsList.find((contact) => contact.id === field.value))
+                                  : "Seleccionar contacto (opcional)"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput placeholder="Buscar contacto..." />
+                              <CommandEmpty>No se encontró contacto.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandList>
+                                  <CommandItem
+                                    onSelect={() => {
+                                      form.setValue("related_contact_id", "");
+                                      setContactOpen(false);
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        !field.value ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    Sin contacto
+                                  </CommandItem>
+                                  {contactsList.map((contact) => (
+                                    <CommandItem
+                                      key={contact.id}
+                                      onSelect={() => {
+                                        form.setValue("related_contact_id", contact.id);
+                                        setContactOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value === contact.id ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                      {getContactDisplayName(contact)}
+                                    </CommandItem>
+                                  ))}
+                                </CommandList>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
+
+              {/* Step 2: File Attachment */}
+              {currentStep === 2 && (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <Upload className="w-12 h-12 text-[#666666] mx-auto mb-2" />
+                    <p className="text-[#666666]">Adjuntar archivo (opcional)</p>
+                    <p className="text-sm text-[#999999]">Máximo 10MB - PDF, imágenes, documentos</p>
+                  </div>
+                  
+                  <div className="border-2 border-dashed border-[#cccccc] rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                      className="hidden"
+                      id="file-upload"
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="cursor-pointer text-[#666666] hover:text-[#333333]"
+                    >
+                      {selectedFile ? (
+                        <div>
+                          <p className="font-medium">{selectedFile.name}</p>
+                          <p className="text-sm text-[#999999]">
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      ) : (
+                        <p>Haz clic para seleccionar un archivo</p>
+                      )}
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer with navigation */}
+            <div className="flex justify-between items-center pt-4 border-t border-[#cccccc]">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePrev}
+                disabled={currentStep === 0}
+                className="bg-[#d2d2d2] border-[#cccccc]"
+              >
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Anterior
+              </Button>
+
+              {currentStep === steps.length - 1 ? (
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
+                >
+                  {isLoading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear')}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
+                >
+                  Siguiente
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
