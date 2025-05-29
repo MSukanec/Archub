@@ -40,6 +40,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/organizations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        // If it's not a number, it might be a UUID, so try direct lookup
+        const organizations = await storage.getAllOrganizations();
+        const organization = organizations.find(org => org.id.toString() === req.params.id);
+        if (!organization) {
+          return res.status(404).json({ message: "Organization not found" });
+        }
+        return res.json(organization);
+      }
+      
+      const organization = await storage.getOrganization(id);
+      if (!organization) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      res.json(organization);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching organization" });
+    }
+  });
+
   app.post("/api/organizations", async (req, res) => {
     try {
       const orgData = insertOrganizationSchema.parse(req.body);

@@ -82,7 +82,23 @@ export default function OrganizationTeam() {
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
 
   const { data: organization, isLoading } = useQuery({
-    queryKey: [`/api/organizations/${organizationId}`],
+    queryKey: ['organization', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return null;
+      
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('*')
+        .eq('id', organizationId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching organization:', error);
+        throw error;
+      }
+      
+      return data;
+    },
     enabled: !!organizationId,
     refetchOnWindowFocus: false,
   });
