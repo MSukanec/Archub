@@ -540,8 +540,8 @@ export default function DashboardTimelineSidebar() {
 
       {/* Main Timeline Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top controls - ESQUINA SUPERIOR IZQUIERDA */}
-        <div className="absolute top-6 left-6 z-[20]">
+        {/* Top controls - CENTRADO HORIZONTALMENTE */}
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-[20]">
           <div className="rounded-full px-6 py-2 border border-gray-300 shadow-lg" style={{ backgroundColor: '#e0e0e0' }}>
             <div className="flex items-center gap-4">
               <button
@@ -669,7 +669,7 @@ export default function DashboardTimelineSidebar() {
                       left: `calc(50% + ${node.position}px)`,
                       top: '10px',
                       transform: 'translateX(-50%)',
-                      color: isToday ? '#FF0000' : '#666666',
+                      color: isToday ? '#FF0000' : '#AAAAAA',
                       fontWeight: isToday ? 'bold' : 'normal',
                       zIndex: 30
                     }}
@@ -684,7 +684,7 @@ export default function DashboardTimelineSidebar() {
                       left: `calc(50% + ${node.position}px)`,
                       bottom: '10px',
                       transform: 'translateX(-50%)',
-                      color: isToday ? '#FF0000' : '#666666',
+                      color: isToday ? '#FF0000' : '#AAAAAA',
                       fontWeight: isToday ? 'bold' : 'normal',
                       zIndex: 30
                     }}
