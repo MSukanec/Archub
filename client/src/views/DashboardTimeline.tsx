@@ -458,9 +458,14 @@ export default function DashboardTimeline() {
                       
                       switch (type) {
                         case 'sitelog':
-                          return sidebarButtonPositions.sitelog 
-                            ? `${sidebarButtonPositions.sitelog - timelineNodeCenter - 20}px`  // -20px to center the 40px event
-                            : '-64px';
+                          if (sidebarButtonPositions.sitelog) {
+                            console.log('Sitelog button position:', sidebarButtonPositions.sitelog);
+                            console.log('Timeline center:', timelineNodeCenter);
+                            const offset = sidebarButtonPositions.sitelog - timelineNodeCenter - 20;
+                            console.log('Calculated offset for sitelog:', offset);
+                            return `${offset}px`;
+                          }
+                          return '-64px';
                         case 'task':
                           return sidebarButtonPositions.contacts 
                             ? `${sidebarButtonPositions.contacts - timelineNodeCenter - 20}px`
@@ -481,7 +486,7 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="absolute left-1/2 transform -translate-x-1/2 z-20"
+                        className="absolute left-1/2 transform -translate-x-1/2 z-30"
                         style={{
                           top: getEventTop()
                         }}
