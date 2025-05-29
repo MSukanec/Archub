@@ -104,7 +104,10 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         const typeId = movement.movement_concepts?.parent_id || '';
         const conceptId = movement.concept_id || '';
         
-        // Reset form with proper values first
+        // Set selected type first to trigger category loading
+        setSelectedTypeId(typeId);
+        
+        // Reset form with proper values
         form.reset({
           type_id: typeId,
           concept_id: conceptId,
@@ -116,11 +119,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           related_contact_id: movement.related_contact_id || '',
           related_task_id: movement.related_task_id || '',
         });
-        
-        // Set the selected type after form reset to trigger category loading
-        setTimeout(() => {
-          setSelectedTypeId(typeId);
-        }, 0);
       } else {
         // Reset for new movement
         setSelectedTypeId('');
@@ -136,20 +134,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           related_task_id: '',
         });
       }
-    } else {
-      // Clear everything when modal closes
-      setSelectedTypeId('');
-      form.reset({
-        type_id: '',
-        concept_id: '',
-        created_at: new Date().toISOString().split('T')[0],
-        description: '',
-        amount: 0,
-        currency: 'ARS',
-        wallet_id: '',
-        related_contact_id: '',
-        related_task_id: '',
-      });
     }
   }, [isOpen, movement, isEditing, form]);
 
