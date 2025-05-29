@@ -433,7 +433,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
-                              <SelectItem value="USD">USD - Dólar</SelectItem>
+                              <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />

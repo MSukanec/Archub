@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useNavigationStore } from '@/stores/navigationStore';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -21,6 +22,7 @@ interface Movement {
   description: string;
   amount: number;
   currency: string;
+  wallet_id?: string;
   related_contact_id?: string;
   related_task_id?: string;
   file_url?: string;
@@ -51,6 +53,7 @@ interface Movement {
 
 export default function Movements() {
   const { projectId } = useUserContextStore();
+  const { setSection, setView } = useNavigationStore();
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const [editingMovement, setEditingMovement] = useState<Movement | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -59,6 +62,12 @@ export default function Movements() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Set navigation state when component mounts
+  useEffect(() => {
+    setSection('movements');
+    setView('transactions');
+  }, [setSection, setView]);
 
   // Listen for floating action button events
   useEffect(() => {
@@ -495,6 +504,7 @@ export default function Movements() {
                   <TableHead>Categoría</TableHead>
                   <TableHead>Detalle</TableHead>
                   <TableHead>Moneda</TableHead>
+                  <TableHead>Billetera</TableHead>
                   <TableHead>Cantidad</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
@@ -513,6 +523,7 @@ export default function Movements() {
                     <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>
                     <TableCell>{movement.description}</TableCell>
                     <TableCell>{movement.currency}</TableCell>
+                    <TableCell>{movement.wallet_id || 'Sin billetera'}</TableCell>
                     <TableCell>
                       <span className="font-medium text-foreground">
                         {formatCurrency(movement.amount, movement.currency)}
