@@ -402,9 +402,7 @@ export default function DashboardTimeline() {
         </div>
       </div>
 
-      {/* Gradient edges for scroll indication */}
-      <div className="absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
-      <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+
     </div>
   );
 }
