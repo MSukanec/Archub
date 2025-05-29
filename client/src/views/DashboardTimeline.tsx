@@ -347,86 +347,51 @@ export default function DashboardTimeline() {
                 {formatDate(node.date)}
               </div>
 
-              {/* Events positioned by type */}
+              {/* Event node */}
               <div className="relative">
-                {/* Group events by type */}
-                {(() => {
-                  const eventsByType = {
-                    sitelog: node.events.filter(e => e.type === 'sitelog'),
-                    movement: node.events.filter(e => e.type === 'movement'),
-                    task: node.events.filter(e => e.type === 'task'),
-                    milestone: node.events.filter(e => e.type === 'milestone')
-                  };
+                {node.events.length > 0 ? (
+                  <div className="group relative">
+                    {/* Event indicator */}
+                    <div 
+                      className="w-4 h-4 rounded-full border-2 border-background shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-125"
+                      style={{ backgroundColor: node.events[0].color }}
+                    >
+                      {node.events.length > 1 && (
+                        <span className="text-[10px] text-white font-bold">
+                          {node.events.length}
+                        </span>
+                      )}
+                    </div>
 
-                  const getEventPosition = (type: string) => {
-                    switch (type) {
-                      case 'sitelog': return { top: '-40px' }; // 10% arriba del timeline
-                      case 'movement': return { top: '40px' }; // 10% debajo del timeline
-                      case 'task': return { top: '80px' }; // 20% debajo del timeline
-                      case 'milestone': return { top: '120px' }; // 30% debajo del timeline
-                      default: return { top: '0px' };
-                    }
-                  };
-
-                  return Object.entries(eventsByType).map(([type, events]) => {
-                    if (events.length === 0) return null;
-
-                    const firstEvent = events[0];
-                    const Icon = firstEvent.icon;
-
-                    return (
-                      <div
-                        key={type}
-                        className="absolute left-1/2 transform -translate-x-1/2"
-                        style={getEventPosition(type)}
-                      >
-                        <div className="group relative">
-                          {/* Large event indicator */}
-                          <div 
-                            className="w-10 h-10 rounded-full border-3 border-background shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
-                            style={{ backgroundColor: firstEvent.color }}
-                          >
-                            <Icon className="w-5 h-5 text-white" />
-                            
-                            {/* Badge for multiple events */}
-                            {events.length > 1 && (
-                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
-                                <span className="text-[10px] text-white font-bold">
-                                  {events.length}
-                                </span>
-                              </div>
+                    {/* Hover tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-30">
+                      <div className="bg-card border border-border rounded-lg shadow-xl p-3 min-w-[200px]">
+                        <div className="text-xs text-muted-foreground mb-1">
+                          {node.date.toLocaleDateString('es-ES')}
+                        </div>
+                        {node.events.slice(0, 3).map((event, eventIndex) => (
+                          <div key={eventIndex} className="flex items-center gap-2 mb-1 last:mb-0">
+                            <event.icon className="w-3 h-3" style={{ color: event.color }} />
+                            <span className="text-xs font-medium">{event.title}</span>
+                            {event.amount && (
+                              <span className="text-xs text-muted-foreground">
+                                ${event.amount.toLocaleString()}
+                              </span>
                             )}
                           </div>
-
-                          {/* Hover tooltip */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-30">
-                            <div className="bg-card border border-border rounded-lg shadow-xl p-3 min-w-[200px]">
-                              <div className="text-xs text-muted-foreground mb-1">
-                                {node.date.toLocaleDateString('es-ES')}
-                              </div>
-                              {events.slice(0, 3).map((event, eventIndex) => (
-                                <div key={eventIndex} className="flex items-center gap-2 mb-1 last:mb-0">
-                                  <event.icon className="w-3 h-3" style={{ color: event.color }} />
-                                  <span className="text-xs font-medium">{event.title}</span>
-                                  {event.amount && (
-                                    <span className="text-xs text-muted-foreground">
-                                      ${event.amount.toLocaleString()}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                              {events.length > 3 && (
-                                <div className="text-xs text-muted-foreground">
-                                  +{events.length - 3} más
-                                </div>
-                              )}
-                            </div>
+                        ))}
+                        {node.events.length > 3 && (
+                          <div className="text-xs text-muted-foreground">
+                            +{node.events.length - 3} más
                           </div>
-                        </div>
+                        )}
                       </div>
-                    );
-                  });
-                })()}
+                    </div>
+                  </div>
+                ) : (
+                  /* Empty node */
+                  <div className="w-2 h-2 rounded-full bg-border/50" />
+                )}
               </div>
             </div>
           ))}
