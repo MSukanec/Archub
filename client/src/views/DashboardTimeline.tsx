@@ -36,22 +36,22 @@ export default function DashboardTimeline() {
 
   // Fetch timeline data
   const { data: timelineData = [] } = useQuery({
-    queryKey: ['/api/timeline-events', activeProject, activeOrganization],
+    queryKey: ['/api/timeline-events', projectId, organizationId],
     queryFn: async () => {
-      if (!activeProject || !activeOrganization) return [];
+      if (!projectId || !organizationId) return [];
       
       // Get site logs
       const { data: siteLogs } = await supabase
         .from('site_logs')
         .select('*')
-        .eq('project_id', activeProject)
+        .eq('project_id', projectId)
         .order('date', { ascending: true });
 
       // Get movements
       const { data: movements } = await supabase
         .from('site_movements')
         .select('*')
-        .eq('project_id', activeProject)
+        .eq('project_id', projectId)
         .order('date', { ascending: true });
 
       // Convert to timeline events
@@ -85,7 +85,7 @@ export default function DashboardTimeline() {
 
       return events.sort((a, b) => a.date.getTime() - b.date.getTime());
     },
-    enabled: !!activeProject && !!activeOrganization,
+    enabled: !!projectId && !!organizationId,
   });
 
   // Generate timeline nodes based on mode
