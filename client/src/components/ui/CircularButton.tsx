@@ -52,7 +52,7 @@ export default function CircularButton({
           hover:shadow-xl
           cursor-pointer
           ${isActive 
-            ? 'bg-black' 
+            ? 'bg-[#e1e1e1]' 
             : 'bg-[#e1e1e1]'
           }
           ${className}
