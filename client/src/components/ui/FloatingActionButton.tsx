@@ -137,18 +137,18 @@ export default function FloatingActionButton() {
 
   return (
     <div 
-      className="fixed bottom-6 right-6 z-50"
+      className="fixed bottom-[37px] right-[37px] z-50"
       onMouseEnter={() => !isBlocked && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
         onClick={!isBlocked ? handleClick : undefined}
         className={cn(
-          "w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
+          "w-12 h-12 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
           "transition-all duration-200",
           isBlocked 
             ? "opacity-75 cursor-not-allowed" 
-            : "hover:shadow-xl cursor-pointer hover:scale-105 active:scale-95",
+            : "hover:shadow-xl cursor-pointer active:shadow-md active:scale-95",
           actionConfig.isMultiple && isHovered && !isBlocked && "bg-[#8fc700]"
         )}
       >
@@ -156,7 +156,7 @@ export default function FloatingActionButton() {
         
         {/* Tooltip cuando hover */}
         {isHovered && !isBlocked && (
-          <div className="absolute bottom-full right-0 mb-2 bg-[#e1e1e1] text-[#919191] px-2 py-1 rounded-lg text-sm whitespace-nowrap shadow-lg border border-[#919191]/20">
+          <div className="absolute bottom-full right-0 mb-2 bg-[#e1e1e1] text-[#919191] px-2 py-1 rounded-lg text-sm whitespace-nowrap shadow-lg border border-[#919191]/20 z-[200]">
             {actionConfig.label}
           </div>
         )}
