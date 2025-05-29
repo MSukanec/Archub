@@ -576,14 +576,14 @@ function DashboardTimeline() {
                           left: '0',
                           top: `${getEventPosition(type)}px`,
                           transform: 'translate(-50%, -50%)',
-                          zIndex: 50
+                          zIndex: 100
                         }}
                       >
-                        <div className="group relative" style={{ zIndex: 50 }}>
+                        <div className="group relative" style={{ zIndex: 100 }}>
                           {/* Event indicator */}
                           <div 
                             className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
-                            style={{ zIndex: 50 }}
+                            style={{ zIndex: 100 }}
                           >
                             <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
                             
