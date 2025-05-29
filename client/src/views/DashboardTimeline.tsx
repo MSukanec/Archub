@@ -1,0 +1,367 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { useUserContextStore } from '@/stores/userContextStore';
+
+interface TimelineEvent {
+  id: string;
+  date: Date;
+  type: 'sitelog' | 'movement' | 'task' | 'milestone';
+  title: string;
+  description?: string;
+  amount?: number;
+  currency?: string;
+  icon: React.ComponentType<any>;
+  color: string;
+}
+
+type TimelineMode = 'hours' | 'days' | 'weeks' | 'months';
+
+interface TimelineNode {
+  date: Date;
+  events: TimelineEvent[];
+  position: number;
+}
+
+export default function DashboardTimeline() {
+  const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [isMouseNearEdge, setIsMouseNearEdge] = useState<'left' | 'right' | null>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
+  
+  const { projectId, organizationId } = useUserContextStore();
+
+  // Fetch timeline data
+  const { data: timelineData = [] } = useQuery({
+    queryKey: ['/api/timeline-events', activeProject, activeOrganization],
+    queryFn: async () => {
+      if (!activeProject || !activeOrganization) return [];
+      
+      // Get site logs
+      const { data: siteLogs } = await supabase
+        .from('site_logs')
+        .select('*')
+        .eq('project_id', activeProject)
+        .order('date', { ascending: true });
+
+      // Get movements
+      const { data: movements } = await supabase
+        .from('site_movements')
+        .select('*')
+        .eq('project_id', activeProject)
+        .order('date', { ascending: true });
+
+      // Convert to timeline events
+      const events: TimelineEvent[] = [];
+
+      siteLogs?.forEach(log => {
+        events.push({
+          id: `sitelog-${log.id}`,
+          date: new Date(log.date),
+          type: 'sitelog',
+          title: 'Bitácora de Obra',
+          description: log.description,
+          icon: FileText,
+          color: '#FF4D1C'
+        });
+      });
+
+      movements?.forEach(movement => {
+        events.push({
+          id: `movement-${movement.id}`,
+          date: new Date(movement.date),
+          type: 'movement',
+          title: 'Movimiento',
+          description: movement.description,
+          amount: movement.amount,
+          currency: movement.currency,
+          icon: DollarSign,
+          color: '#10B981'
+        });
+      });
+
+      return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+    },
+    enabled: !!activeProject && !!activeOrganization,
+  });
+
+  // Generate timeline nodes based on mode
+  const generateTimelineNodes = useCallback((): TimelineNode[] => {
+    const nodes: TimelineNode[] = [];
+    const startDate = new Date(currentDate);
+    startDate.setDate(startDate.getDate() - 30); // Show 30 units before current date
+    
+    for (let i = -30; i <= 60; i++) { // 90 total units
+      const nodeDate = new Date(startDate);
+      
+      switch (timelineMode) {
+        case 'hours':
+          nodeDate.setHours(nodeDate.getHours() + i);
+          break;
+        case 'days':
+          nodeDate.setDate(nodeDate.getDate() + i);
+          break;
+        case 'weeks':
+          nodeDate.setDate(nodeDate.getDate() + (i * 7));
+          break;
+        case 'months':
+          nodeDate.setMonth(nodeDate.getMonth() + i);
+          break;
+      }
+
+      // Filter events for this time period
+      const nodeEvents = timelineData.filter(event => {
+        const eventDate = new Date(event.date);
+        switch (timelineMode) {
+          case 'hours':
+            return eventDate.getHours() === nodeDate.getHours() && 
+                   eventDate.toDateString() === nodeDate.toDateString();
+          case 'days':
+            return eventDate.toDateString() === nodeDate.toDateString();
+          case 'weeks':
+            const weekStart = new Date(nodeDate);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            return eventDate >= weekStart && eventDate <= weekEnd;
+          case 'months':
+            return eventDate.getMonth() === nodeDate.getMonth() && 
+                   eventDate.getFullYear() === nodeDate.getFullYear();
+          default:
+            return false;
+        }
+      });
+
+      nodes.push({
+        date: nodeDate,
+        events: nodeEvents,
+        position: i * 120 // 120px spacing between nodes
+      });
+    }
+
+    return nodes;
+  }, [timelineData, currentDate, timelineMode]);
+
+  const timelineNodes = generateTimelineNodes();
+
+  // Auto-scroll when mouse is near edges
+  useEffect(() => {
+    if (!isMouseNearEdge) return;
+
+    const scroll = () => {
+      const scrollAmount = isMouseNearEdge === 'right' ? 5 : -5;
+      setScrollPosition(prev => {
+        const newPosition = prev + scrollAmount;
+        if (timelineRef.current) {
+          timelineRef.current.scrollLeft = newPosition;
+        }
+        return newPosition;
+      });
+      animationRef.current = requestAnimationFrame(scroll);
+    };
+
+    animationRef.current = requestAnimationFrame(scroll);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isMouseNearEdge]);
+
+  // Handle mouse movement for edge detection
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = timelineRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const edgeThreshold = 100;
+
+    if (x < edgeThreshold) {
+      setIsMouseNearEdge('left');
+    } else if (x > rect.width - edgeThreshold) {
+      setIsMouseNearEdge('right');
+    } else {
+      setIsMouseNearEdge(null);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsMouseNearEdge(null);
+  };
+
+  // Format date based on timeline mode
+  const formatDate = (date: Date) => {
+    switch (timelineMode) {
+      case 'hours':
+        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      case 'days':
+        return date.getDate().toString();
+      case 'weeks':
+        return `S${Math.ceil(date.getDate() / 7)}`;
+      case 'months':
+        return date.toLocaleDateString('es-ES', { month: 'short' });
+      default:
+        return '';
+    }
+  };
+
+  const getTimelineModeLabel = () => {
+    switch (timelineMode) {
+      case 'hours': return 'Horas';
+      case 'days': return 'Días';
+      case 'weeks': return 'Semanas';
+      case 'months': return 'Meses';
+    }
+  };
+
+  return (
+    <div className="h-screen w-full bg-background overflow-hidden flex flex-col">
+      {/* Minimal top controls */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setTimelineMode(prev => {
+                const modes: TimelineMode[] = ['hours', 'days', 'weeks', 'months'];
+                const currentIndex = modes.indexOf(prev);
+                return modes[Math.max(0, currentIndex - 1)];
+              })}
+              className="w-8 h-8 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
+              disabled={timelineMode === 'hours'}
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            
+            <span className="text-sm font-medium min-w-[60px] text-center">
+              {getTimelineModeLabel()}
+            </span>
+            
+            <button
+              onClick={() => setTimelineMode(prev => {
+                const modes: TimelineMode[] = ['hours', 'days', 'weeks', 'months'];
+                const currentIndex = modes.indexOf(prev);
+                return modes[Math.min(modes.length - 1, currentIndex + 1)];
+              })}
+              className="w-8 h-8 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
+              disabled={timelineMode === 'months'}
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Infinite horizontal timeline */}
+      <div 
+        ref={timelineRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ 
+          scrollBehavior: 'smooth',
+          cursor: isMouseNearEdge ? (isMouseNearEdge === 'right' ? 'e-resize' : 'w-resize') : 'default'
+        }}
+      >
+        <div className="relative h-full" style={{ width: '10000px', minWidth: '100vw' }}>
+          {/* Vertical current date line */}
+          <div 
+            className="absolute top-0 bottom-0 w-px bg-primary z-20"
+            style={{ left: '50%' }}
+          />
+          
+          {/* Horizontal timeline line */}
+          <div 
+            className="absolute left-0 right-0 h-px bg-border z-10"
+            style={{ top: '50%' }}
+          />
+
+          {/* Timeline nodes */}
+          {timelineNodes.map((node, index) => (
+            <div
+              key={index}
+              className="absolute flex flex-col items-center"
+              style={{ 
+                left: `calc(50% + ${node.position}px)`,
+                top: '50%',
+                transform: 'translateY(-50%)'
+              }}
+            >
+              {/* Date label */}
+              <div className="mb-8 text-xs text-muted-foreground font-medium">
+                {formatDate(node.date)}
+              </div>
+
+              {/* Event node */}
+              <div className="relative">
+                {node.events.length > 0 ? (
+                  <div className="group relative">
+                    {/* Event indicator */}
+                    <div 
+                      className="w-4 h-4 rounded-full border-2 border-background shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-125"
+                      style={{ backgroundColor: node.events[0].color }}
+                    >
+                      {node.events.length > 1 && (
+                        <span className="text-[10px] text-white font-bold">
+                          {node.events.length}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Hover tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-30">
+                      <div className="bg-card border border-border rounded-lg shadow-xl p-3 min-w-[200px]">
+                        <div className="text-xs text-muted-foreground mb-1">
+                          {node.date.toLocaleDateString('es-ES')}
+                        </div>
+                        {node.events.slice(0, 3).map((event, eventIndex) => (
+                          <div key={eventIndex} className="flex items-center gap-2 mb-1 last:mb-0">
+                            <event.icon className="w-3 h-3" style={{ color: event.color }} />
+                            <span className="text-xs font-medium">{event.title}</span>
+                            {event.amount && (
+                              <span className="text-xs text-muted-foreground">
+                                ${event.amount.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                        {node.events.length > 3 && (
+                          <div className="text-xs text-muted-foreground">
+                            +{node.events.length - 3} más
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Empty node */
+                  <div className="w-2 h-2 rounded-full bg-border/50" />
+                )}
+              </div>
+            </div>
+          ))}
+
+          {/* Today indicator */}
+          <div 
+            className="absolute top-1/2 transform -translate-y-1/2 z-20"
+            style={{ left: '50%' }}
+          >
+            <div className="w-6 h-6 rounded-full bg-primary border-4 border-background shadow-lg flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-white" />
+            </div>
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-xs font-medium text-primary">
+              Hoy
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Gradient edges for scroll indication */}
+      <div className="absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
+      <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+    </div>
+  );
+}

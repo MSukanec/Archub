@@ -40,6 +40,7 @@ const sectionConfig = {
     description: 'Vista principal del sistema',
     items: [
       { view: 'dashboard-main' as View, icon: Home, label: 'Principal' },
+      { view: 'dashboard-timeline' as View, icon: Activity, label: 'Timeline' },
     ],
   },
   organization: {

@@ -7,6 +7,7 @@ import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 
 import Dashboard from '@/views/Dashboard';
+import DashboardTimeline from '@/views/DashboardTimeline';
 import Organization from '@/views/Organization';
 import OrganizationTeam from '@/views/OrganizationTeam';
 import ProjectsList from '@/views/ProjectsList';
@@ -36,6 +37,7 @@ import { useState } from 'react';
 
 const viewComponents = {
   'dashboard-main': Dashboard,
+  'dashboard-timeline': DashboardTimeline,
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
   'organization-activity': Organization,

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'admin' | 'profile';
 export type View = 
   | 'dashboard-main'
+  | 'dashboard-timeline'
   | 'organization-overview'
   | 'organization-team'
   | 'organization-activity'
