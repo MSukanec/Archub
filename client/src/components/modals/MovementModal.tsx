@@ -137,13 +137,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     }
   }, [isOpen, movement, isEditing, form]);
 
-  // Reset category when type changes (except during initial load)
-  useEffect(() => {
-    const currentTypeId = form.getValues('type_id');
-    if (currentTypeId && currentTypeId !== selectedTypeId && !isEditing) {
-      form.setValue('concept_id', '');
-    }
-  }, [selectedTypeId, form, isEditing]);
+
 
   const steps = [
     { title: 'Información Básica', icon: FileText },
