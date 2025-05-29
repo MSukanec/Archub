@@ -77,14 +77,14 @@ export default function SecondarySidebar() {
           {/* Project dropdown menu */}
           {showProjectMenu && (
             <div 
-              className="absolute top-0 right-12 bg-white rounded-xl shadow-2xl border border-gray-200 min-w-64 z-50 py-2"
+              className="absolute top-0 right-12 bg-[#e1e1e1] rounded-xl shadow-2xl border border-gray-300 min-w-64 z-50 py-2"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
               {/* Header */}
-              <div className="px-4 py-2 border-b border-gray-100">
+              <div className="px-4 py-2 border-b border-gray-400">
                 <h3 className="font-semibold text-gray-900 text-sm">Cambiar Proyecto</h3>
-                <p className="text-xs text-gray-500">Selecciona un proyecto activo</p>
+                <p className="text-xs text-gray-600">Selecciona un proyecto activo</p>
               </div>
 
               {/* Projects list */}
@@ -93,36 +93,25 @@ export default function SecondarySidebar() {
                   <button
                     key={project.id}
                     onClick={() => handleProjectChange(project.id)}
-                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 ${
-                      project.id === projectId ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-200 transition-colors flex items-center gap-3 ${
+                      project.id === projectId ? 'bg-gray-300 border-r-2 border-primary' : ''
                     }`}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
                       project.id === projectId 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-primary text-white' 
+                        : 'bg-gray-300 text-gray-700'
                     }`}>
                       {getProjectInitials(project)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`font-medium text-sm truncate ${
-                        project.id === projectId ? 'text-blue-900' : 'text-gray-900'
+                        project.id === projectId ? 'text-primary' : 'text-gray-900'
                       }`}>
                         {project.name}
                       </p>
                       {project.client_name && (
-                        <p className="text-xs text-gray-500 truncate">{project.client_name}</p>
-                      )}
-                      {project.status && (
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                          project.status === 'Activo' || project.status === 'En Progreso'
-                            ? 'bg-green-100 text-green-700'
-                            : project.status === 'Completado'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {project.status}
-                        </span>
+                        <p className="text-xs text-gray-600 truncate">{project.client_name}</p>
                       )}
                     </div>
                   </button>
@@ -130,13 +119,13 @@ export default function SecondarySidebar() {
               </div>
 
               {/* Create new project button */}
-              <div className="border-t border-gray-100 mt-2">
+              <div className="border-t border-gray-400 mt-2">
                 <button
                   onClick={handleCreateProject}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 text-blue-600"
+                  className="w-full text-left px-4 py-3 hover:bg-gray-200 transition-colors flex items-center gap-3 text-primary"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <Plus className="w-4 h-4 text-blue-600" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Plus className="w-4 h-4 text-primary" />
                   </div>
                   <span className="font-medium text-sm">Crear Nuevo Proyecto</span>
                 </button>
