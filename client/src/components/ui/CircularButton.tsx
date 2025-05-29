@@ -39,12 +39,11 @@ export default function CircularButton({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          flex items-center
-          transition-all duration-300 ease-in-out
-          ${isHovered && label && onPlusClick ? 'w-auto pr-3 pl-0' : sizeClasses[size]}
+          flex items-center justify-start
+          transition-all duration-500 ease-out
           h-11
           rounded-full 
-          hover:shadow-lg
+          hover:shadow-xl
           ${isActive 
             ? 'bg-black' 
             : 'bg-[#e1e1e1]'
@@ -53,13 +52,15 @@ export default function CircularButton({
           z-50
           relative
           overflow-visible
+          transform-gpu
         `}
         style={{
-          minWidth: isHovered && label && onPlusClick ? '150px' : '44px'
+          width: isHovered && label && onPlusClick ? '170px' : '44px',
+          transformOrigin: 'left center'
         }}
       >
         {/* Botón principal - siempre visible */}
-        <button
+        <div
           onClick={onClick}
           className={`
             ${sizeClasses[size]}
@@ -68,30 +69,34 @@ export default function CircularButton({
             transition-all duration-200 
             flex-shrink-0
             z-50
+            cursor-pointer
           `}
         >
           <Icon 
             className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
           />
-        </button>
+        </div>
         
-        {/* Texto y botón "+" - aparecen en hover */}
-        {isHovered && label && onPlusClick && (
-          <>
-            <span className="text-sm font-medium text-foreground px-3 whitespace-nowrap flex-grow">
-              {label}
-            </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onPlusClick();
-              }}
-              className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform flex-shrink-0 mr-1 z-50"
-            >
-              <Plus className="w-3 h-3 text-white" />
-            </button>
-          </>
-        )}
+        {/* Texto y botón "+" - aparecen en hover con animación */}
+        <div className={`
+          flex items-center
+          transition-all duration-500 ease-out
+          ${isHovered && label && onPlusClick ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
+          overflow-hidden
+        `}>
+          <span className="text-sm font-medium text-foreground px-3 whitespace-nowrap">
+            {label}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlusClick();
+            }}
+            className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-2 z-50"
+          >
+            <Plus className="w-3 h-3 text-white" />
+          </button>
+        </div>
       </div>
     </div>
   );
