@@ -4,32 +4,21 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import CircularButton from '@/components/ui/CircularButton';
-import { useState } from 'react';
-
-interface Project {
-  id: string;
-  name: string;
-  client_name?: string;
-  status?: string;
-}
+import { useState, useEffect } from 'react';
 
 export default function SecondarySidebar() {
   const { setView } = useNavigationStore();
   const { user } = useAuthStore();
-  const { organizationId, projectId, setUserContext } = useUserContextStore();
+  const { organizationId, projectId, setUserContext, currentProjects } = useUserContextStore();
   const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [menuTimeout, setMenuTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Fetch projects for the current organization
-  const { data: projects = [] } = useQuery({
-    queryKey: [`/api/organizations/${organizationId}/projects`],
-    enabled: !!organizationId,
-    refetchOnWindowFocus: false,
-  }) as { data: Project[] };
-
+  // Use projects from the store instead of fetching again
+  const projects = currentProjects || [];
   const currentProject = projects.find(p => p.id === projectId);
 
   // Get project initials
-  const getProjectInitials = (project?: Project) => {
+  const getProjectInitials = (project?: any) => {
     if (!project) return 'P';
     const words = project.name.split(' ');
     if (words.length >= 2) {
@@ -48,17 +37,40 @@ export default function SecondarySidebar() {
     setShowProjectMenu(false);
   };
 
+  const handleMouseEnter = () => {
+    if (menuTimeout) {
+      clearTimeout(menuTimeout);
+      setMenuTimeout(null);
+    }
+    setShowProjectMenu(true);
+  };
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setShowProjectMenu(false);
+    }, 200); // Small delay to allow moving to popover
+    setMenuTimeout(timeout);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (menuTimeout) {
+        clearTimeout(menuTimeout);
+      }
+    };
+  }, [menuTimeout]);
+
   return (
     <div className="fixed top-0 right-0 w-16 h-screen z-40 flex flex-col justify-between">
       {/* Top section - Project selector */}
       <div className="flex flex-col items-center pt-2.5 pr-2.5">
         <div 
           className="relative"
-          onMouseEnter={() => setShowProjectMenu(true)}
-          onMouseLeave={() => setShowProjectMenu(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          {/* Project button - custom display for initials */}
-          <div className="w-11 h-11 rounded-full bg-[#919191] hover:bg-[#7a7a7a] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer hover:animate-pulse-x text-white font-medium text-sm">
+          {/* Project button using CircularButton style but with custom content */}
+          <div className="w-11 h-11 rounded-full bg-[#e1e1e1] hover:bg-[#d1d1d1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer hover:animate-pulse-x text-[#919191] font-medium text-sm">
             {getProjectInitials(currentProject)}
           </div>
 
@@ -66,6 +78,8 @@ export default function SecondarySidebar() {
           {showProjectMenu && (
             <div 
               className="absolute top-0 right-12 bg-white rounded-xl shadow-2xl border border-gray-200 min-w-64 z-50 py-2"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               {/* Header */}
               <div className="px-4 py-2 border-b border-gray-100">
