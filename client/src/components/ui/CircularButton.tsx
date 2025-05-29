@@ -34,14 +34,14 @@ export default function CircularButton({
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
           flex items-center
           transition-all duration-300 ease-in-out
-          ${isHovered ? 'w-auto pr-2' : sizeClasses[size]}
+          ${isHovered && label && onPlusClick ? 'w-auto pr-3 pl-0' : sizeClasses[size]}
           h-11
           rounded-full 
           hover:shadow-lg
@@ -50,7 +50,13 @@ export default function CircularButton({
             : 'bg-[#e1e1e1]'
           }
           ${className}
+          z-50
+          relative
+          overflow-visible
         `}
+        style={{
+          minWidth: isHovered && label && onPlusClick ? '150px' : '44px'
+        }}
       >
         {/* Botón principal - siempre visible */}
         <button
@@ -61,6 +67,7 @@ export default function CircularButton({
             flex items-center justify-center 
             transition-all duration-200 
             flex-shrink-0
+            z-50
           `}
         >
           <Icon 
@@ -71,7 +78,7 @@ export default function CircularButton({
         {/* Texto y botón "+" - aparecen en hover */}
         {isHovered && label && onPlusClick && (
           <>
-            <span className="text-sm font-medium text-foreground px-2 whitespace-nowrap">
+            <span className="text-sm font-medium text-foreground px-3 whitespace-nowrap flex-grow">
               {label}
             </span>
             <button
@@ -79,7 +86,7 @@ export default function CircularButton({
                 e.stopPropagation();
                 onPlusClick();
               }}
-              className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform flex-shrink-0"
+              className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform flex-shrink-0 mr-1 z-50"
             >
               <Plus className="w-3 h-3 text-white" />
             </button>
