@@ -372,14 +372,32 @@ export default function DashboardTimeline() {
                   };
 
                   const getEventPosition = (type: string) => {
+                    // Use measured sidebar button positions, relative to the timeline node center
+                    const nodeCenter = node.position + 9000; // Timeline node absolute position
+                    
                     switch (type) {
-                      case 'organization': return { top: '-128px' }; // Organization line
-                      case 'sitelog': return { top: '-64px' }; // Bitácora line  
+                      case 'organization': 
+                        return sidebarButtonPositions.organization 
+                          ? { top: `${sidebarButtonPositions.organization - window.innerHeight / 2}px` }
+                          : { top: '0px' };
+                      case 'sitelog': 
+                        return sidebarButtonPositions.sitelog 
+                          ? { top: `${sidebarButtonPositions.sitelog - window.innerHeight / 2}px` }
+                          : { top: '0px' };
                       case 'project': 
-                      case 'task': return { top: '0px' }; // Proyectos line (center)
-                      case 'movement': return { top: '64px' }; // Finanzas line
+                      case 'task': 
+                        return sidebarButtonPositions.projects 
+                          ? { top: `${sidebarButtonPositions.projects - window.innerHeight / 2}px` }
+                          : { top: '0px' };
+                      case 'movement': 
+                        return sidebarButtonPositions.movements 
+                          ? { top: `${sidebarButtonPositions.movements - window.innerHeight / 2}px` }
+                          : { top: '0px' };
                       case 'budget': 
-                      case 'milestone': return { top: '128px' }; // Presupuestos line
+                      case 'milestone': 
+                        return sidebarButtonPositions.budgets 
+                          ? { top: `${sidebarButtonPositions.budgets - window.innerHeight / 2}px` }
+                          : { top: '0px' };
                       default: return { top: '0px' };
                     }
                   };
