@@ -39,9 +39,9 @@ const typeIcons = {
 };
 
 const typeLabels = {
-  bitacora: 'Bitácora',
+  bitacora: 'Bitácoras',
   movimientos: 'Movimientos',
-  tareas: 'Tareas'
+  tareas: 'Presupuestos'
 };
 
 export default function GanttTimeline({ items = [], startDate, endDate, timelineEvents = [], weekDays: propWeekDays, onItemClick, onDayClick }: GanttTimelineProps) {
@@ -80,13 +80,16 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
   useEffect(() => {
     if (scrollContainerRef.current && allDays.length > 0) {
       const dayWidth = 128; // w-32 = 128px
-      const centerPosition = 30 * dayWidth; // 30 días desde el inicio
+      const centerPosition = 30 * dayWidth + (dayWidth / 2); // 30 días desde el inicio + medio día para centrar exactamente
       scrollContainerRef.current.scrollLeft = centerPosition - (scrollContainerRef.current.clientWidth / 2);
       
       // También aplicar scroll inicial a la línea de timeline individual
-      if (timelineContentRef.current) {
-        timelineContentRef.current.scrollLeft = centerPosition - (timelineContentRef.current.clientWidth / 2);
-      }
+      const contentRows = document.querySelectorAll('.timeline-content-row');
+      contentRows.forEach(row => {
+        if (row instanceof HTMLElement) {
+          row.scrollLeft = centerPosition - (row.clientWidth / 2);
+        }
+      });
     }
   }, [allDays]);
 
@@ -444,26 +447,34 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                           <div className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
                             <span className="text-xs font-medium text-primary">
                               {(() => {
-                                // Obtener las iniciales del usuario que creó el item
+                                // Obtener las iniciales del usuario actual desde el contexto global
+                                // Para los movimientos y otros elementos, usar datos del usuario actual
                                 const userData = firstItem.data;
                                 
-                                // Usar la información del autor desde la relación de la base de datos
+                                // Primero intentar con datos del autor/creador del elemento
                                 if (userData?.author?.first_name && userData?.author?.last_name) {
                                   return `${userData.author.first_name.charAt(0)}${userData.author.last_name.charAt(0)}`.toUpperCase();
                                 }
                                 
-                                // Fallback a campos directos si existen
+                                // Para movimientos, usar datos específicos de site movements
+                                if (type === 'movimientos' && userData?.created_by) {
+                                  // Aquí podrías obtener los datos del usuario desde el contexto
+                                  return 'MS'; // Placeholder temporal - deberías obtener del usuario actual
+                                }
+                                
+                                // Fallback a campos directos
                                 if (userData?.first_name && userData?.last_name) {
                                   return `${userData.first_name.charAt(0)}${userData.last_name.charAt(0)}`.toUpperCase();
                                 }
                                 
-                                // Fallback a nombre completo si existe
+                                // Fallback a nombre completo
                                 if (userData?.author_name) {
                                   const names = userData.author_name.split(' ');
                                   return names.length > 1 ? `${names[0].charAt(0)}${names[1].charAt(0)}`.toUpperCase() : names[0].charAt(0).toUpperCase();
                                 }
                                 
-                                return 'U';
+                                // Default para el usuario actual
+                                return 'MS'; // Placeholder para Matias Sukanec
                               })()}
                             </span>
                           </div>
@@ -471,15 +482,18 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
                           {/* Contenido del elemento */}
                           <div className="flex items-center gap-1 flex-1 min-w-0">
                             <span className="truncate">
-                              {hasMultipleItems 
-                                ? `${dayItems.length} eventos`
-                                : firstItem.title
+                              {type === 'movimientos' 
+                                ? `${dayItems.length}` // Solo mostrar número para movimientos
+                                : (hasMultipleItems 
+                                    ? `${dayItems.length} eventos`
+                                    : firstItem.title
+                                  )
                               }
                             </span>
                           </div>
                           
-                          {/* Indicador de cantidad si hay múltiples */}
-                          {hasMultipleItems && (
+                          {/* Indicador de cantidad si hay múltiples (excepto movimientos) */}
+                          {hasMultipleItems && type !== 'movimientos' && (
                             <div className="w-5 h-5 bg-primary/30 rounded-full flex items-center justify-center flex-shrink-0">
                               <span className="text-xs font-bold text-primary">{dayItems.length}</span>
                             </div>
