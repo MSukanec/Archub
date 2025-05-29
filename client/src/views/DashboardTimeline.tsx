@@ -405,7 +405,7 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="absolute left-1/2 transform -translate-x-1/2 z-30"
+                        className="absolute left-1/2 transform -translate-x-1/2 z-20"
                         style={getEventPosition(type)}
                       >
                         <div className="group relative">
@@ -468,7 +468,7 @@ export default function DashboardTimeline() {
           {/* Line 1 - Organization */}
           {sidebarButtonPositions.organization && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.organization}px`
               }}
@@ -478,7 +478,7 @@ export default function DashboardTimeline() {
           {/* Line 2 - Bitácora */}
           {sidebarButtonPositions.sitelog && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.sitelog}px`
               }}
@@ -488,7 +488,7 @@ export default function DashboardTimeline() {
           {/* Line 3 - Proyectos */}
           {sidebarButtonPositions.projects && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.projects}px`
               }}
@@ -498,7 +498,7 @@ export default function DashboardTimeline() {
           {/* Line 4 - Finanzas */}
           {sidebarButtonPositions.movements && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.movements}px`
               }}
@@ -508,7 +508,7 @@ export default function DashboardTimeline() {
           {/* Line 5 - Presupuestos */}
           {sidebarButtonPositions.budgets && (
             <div 
-              className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
+              className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
                 top: `${sidebarButtonPositions.budgets}px`
               }}
