@@ -242,14 +242,13 @@ export default function DashboardTimeline() {
       });
       
       if (todayNode) {
-        // Find today's page index for pagination
-        const todayIndex = timelineNodes.findIndex(node => {
-          const nodeDate = new Date(node.date);
-          return nodeDate.toDateString() === new Date().toDateString();
-        });
-        if (todayIndex !== -1) {
-          setCurrentPageIndex(Math.floor(todayIndex / getDaysPerPage()));
-        }
+        // Center on today's actual position
+        const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
+        timelineRef.current.scrollLeft = centerPosition;
+      } else {
+        // Fallback to center of timeline
+        const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
+        timelineRef.current.scrollLeft = centerPosition;
       }
     }
   }, [timelineNodes, timelineMode]);
@@ -325,14 +324,11 @@ export default function DashboardTimeline() {
                   });
                   
                   if (todayNode) {
-                    // Find today's page index
-                    const todayIndex = timelineNodes.findIndex(node => {
-                      const nodeDate = new Date(node.date);
-                      return nodeDate.toDateString() === today.toDateString();
-                    });
-                    if (todayIndex !== -1) {
-                      setCurrentPageIndex(Math.floor(todayIndex / getDaysPerPage()));
-                    }
+                    const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
+                    timelineRef.current.scrollLeft = centerPosition;
+                  } else {
+                    const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
+                    timelineRef.current.scrollLeft = centerPosition;
                   }
                 }
               }}
