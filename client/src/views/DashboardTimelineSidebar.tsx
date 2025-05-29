@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, DollarSign, FileText, Target, Plus, Minus, Wrench } from 'lucide-react';
+import { Calendar, DollarSign, FileText, Target, Plus, Minus, Wrench, Hammer, CheckCircle, Settings } from 'lucide-react';
 
 interface TimelineEvent {
   id: string;
