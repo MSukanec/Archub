@@ -39,7 +39,8 @@ export default function CircularButton({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          flex items-center justify-start
+          absolute left-0
+          flex items-center
           transition-all duration-500 ease-out
           h-11
           rounded-full 
@@ -50,13 +51,11 @@ export default function CircularButton({
           }
           ${className}
           z-50
-          relative
           overflow-visible
           transform-gpu
         `}
         style={{
-          width: isHovered && label && onPlusClick ? '170px' : '44px',
-          transformOrigin: 'left center'
+          width: isHovered && label && onPlusClick ? '170px' : '44px'
         }}
       >
         {/* Botón principal - siempre visible */}
@@ -90,7 +89,7 @@ export default function CircularButton({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onPlusClick();
+              if (onPlusClick) onPlusClick();
             }}
             className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-2 z-50"
           >
