@@ -244,7 +244,64 @@ export default function DashboardTimelineSidebar() {
     return events.sort((a, b) => a.date.getTime() - b.date.getTime());
   };
 
-  const timelineData = generateDemoEvents();
+  // Crear eventos demo que sí aparezcan
+  const createTestEvents = (): TimelineEvent[] => {
+    const today = new Date();
+    return [
+      {
+        id: '1',
+        date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000), // Hace 2 días
+        type: 'movement',
+        title: 'Pago Joel - $1,500 USD',
+        description: 'Movimiento registrado',
+        amount: 1500,
+        currency: 'USD',
+        icon: DollarSign,
+        color: '#10B981'
+      },
+      {
+        id: '2',
+        date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000), // Ayer
+        type: 'sitelog',
+        title: 'Bitácora - Osvaldo trámites consulado',
+        description: 'Hoy no fué Osvaldo a la obra debido a que tenía que hacer unos trámites en el consulado.',
+        icon: FileText,
+        color: '#8B5CF6'
+      },
+      {
+        id: '3',
+        date: today, // Hoy
+        type: 'task',
+        title: 'Demolición de muros',
+        description: 'Precio: $12,000',
+        amount: 12000,
+        icon: Hammer,
+        color: '#F59E0B'
+      },
+      {
+        id: '4',
+        date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000), // Mañana
+        type: 'milestone',
+        title: 'Milestone: Fase 1 completa',
+        description: 'Finalización de demoliciones',
+        icon: CheckCircle,
+        color: '#3B82F6'
+      },
+      {
+        id: '5',
+        date: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000), // En 3 días
+        type: 'execution',
+        title: 'Ejecución cielorrasos',
+        description: 'Inicio de trabajos',
+        amount: 15000,
+        icon: Settings,
+        color: '#EF4444'
+      }
+    ];
+  };
+
+  const timelineData = createTestEvents();
+  console.log('Timeline data generated:', timelineData);
 
   // Generate timeline nodes based on mode
   const generateTimelineNodes = useCallback((): TimelineNode[] => {
@@ -417,7 +474,8 @@ export default function DashboardTimelineSidebar() {
                 className="relative w-12 h-12 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
                 style={{ 
                   backgroundColor: isActive ? '#000000' : '#e0e0e0',
-                  color: isActive ? '#ffffff' : '#919191'
+                  color: isActive ? '#ffffff' : '#919191',
+                  opacity: 1
                 }}
               >
                 <Icon className="w-5 h-5" />
@@ -446,7 +504,12 @@ export default function DashboardTimelineSidebar() {
                   const currentIndex = modes.indexOf(prev);
                   return modes[Math.max(0, currentIndex - 1)];
                 })}
-                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
+                style={{ 
+                  backgroundColor: '#e0e0e0',
+                  color: '#919191',
+                  opacity: timelineMode === 'hours' ? 0.5 : 1
+                }}
                 disabled={timelineMode === 'hours'}
               >
                 <Minus className="w-4 h-4" />
@@ -462,7 +525,12 @@ export default function DashboardTimelineSidebar() {
                   const currentIndex = modes.indexOf(prev);
                   return modes[Math.min(modes.length - 1, currentIndex + 1)];
                 })}
-                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
+                style={{ 
+                  backgroundColor: '#e0e0e0',
+                  color: '#919191',
+                  opacity: timelineMode === 'months' ? 0.5 : 1
+                }}
                 disabled={timelineMode === 'months'}
               >
                 <Plus className="w-4 h-4" />
@@ -485,30 +553,22 @@ export default function DashboardTimelineSidebar() {
           }}
         >
           <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
-            {/* Vertical current date line - EJE PRINCIPAL */}
+            {/* Línea vertical del "AHORA" - línea roja prominente */}
             <div 
-              className="absolute top-0 bottom-0 w-0.5 z-20"
+              className="absolute top-0 bottom-0 z-30"
               style={{ 
                 left: '50%',
-                background: '#000000'
-              }}
-            />
-            
-            {/* Línea vertical del "AHORA" - más prominente */}
-            <div 
-              className="absolute top-0 bottom-0 w-1 z-30"
-              style={{ 
-                left: '50%',
+                width: '3px',
                 background: '#FF0000',
                 transform: 'translateX(-50%)'
               }}
             />
 
-            {/* Líneas horizontales infinitas para cada categoría */}
+            {/* Líneas horizontales infinitas para cada categoría - DETRÁS de los botones */}
             {SIDEBAR_BUTTONS.map((button) => (
               <div
                 key={`line-${button.id}`}
-                className="absolute left-0 right-0 h-px z-10"
+                className="absolute left-0 right-0 h-px z-0"
                 style={{ 
                   top: `calc(50% + ${button.offsetVh}vh)`, // Posición porcentual del viewport
                   background: button.id === 'proyectos' 
@@ -557,8 +617,12 @@ export default function DashboardTimelineSidebar() {
                       ejecucion: node.events.filter(e => getEventCategory(e.type) === 'ejecucion')
                     };
 
+                    console.log('Events by category for node:', node.date, eventsByCategory);
+
                     return SIDEBAR_BUTTONS.map((button) => {
                       const events = eventsByCategory[button.id];
+                      console.log(`Events for ${button.id}:`, events);
+                      
                       if (events.length === 0) return null;
 
                       const firstEvent = events[0];
@@ -573,7 +637,7 @@ export default function DashboardTimelineSidebar() {
                           <div className="group relative">
                             {/* Event indicator */}
                             <div 
-                              className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                              className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative z-40"
                               style={{ backgroundColor: firstEvent.color }}
                             >
                               <Icon className="w-4 h-4 text-white" />
@@ -589,7 +653,7 @@ export default function DashboardTimelineSidebar() {
                             </div>
 
                             {/* Hover tooltip */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-30">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
                               <div className="bg-white border border-gray-300 rounded-lg shadow-xl p-3 min-w-[200px]">
                                 <div className="text-xs text-gray-500 mb-1">
                                   {node.date.toLocaleDateString('es-ES')}
