@@ -490,15 +490,14 @@ export default function DashboardTimelineSidebar() {
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden flex" style={{ backgroundColor: '#d1d1d1' }}>
-      {/* LÍNEA ROJA FIJA SIEMPRE VISIBLE - CENTRADA EN PANTALLA */}
+      {/* LÍNEA NEGRA FIJA SIEMPRE VISIBLE - CENTRADA EN PANTALLA */}
       <div 
-        className="absolute top-0 bottom-0 z-[9999] pointer-events-none"
+        className="absolute top-0 bottom-0 z-[10] pointer-events-none"
         style={{ 
           left: '50%',
-          width: '6px',
-          background: '#FF0000',
-          transform: 'translateX(-50%)',
-          boxShadow: '0 0 12px rgba(255, 0, 0, 0.5)'
+          width: '3px',
+          background: '#000000',
+          transform: 'translateX(-50%)'
         }}
       />
       {/* Left Sidebar */}
@@ -541,8 +540,8 @@ export default function DashboardTimelineSidebar() {
 
       {/* Main Timeline Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top controls */}
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-10">
+        {/* Top controls - POR DELANTE DE LA LÍNEA */}
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-[20]">
           <div className="rounded-full px-6 py-2 border border-gray-300 shadow-lg" style={{ backgroundColor: '#e0e0e0' }}>
             <div className="flex items-center gap-4">
               <button
@@ -637,19 +636,20 @@ export default function DashboardTimelineSidebar() {
                   }}
                 />
                 
-                {/* EVENTOS DE PRUEBA VISIBLES - círculos en las líneas */}
-                {[1, 2, 3].map((eventIndex) => (
+                {/* EVENTOS VISIBLES - círculos en las líneas horizontales */}
+                {[0, 1, 2].map((eventIndex) => (
                   <div
                     key={`event-${button.id}-${eventIndex}`}
-                    className="absolute w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-40"
+                    className="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-50 cursor-pointer hover:scale-110 transition-transform"
                     style={{
-                      left: `calc(50% + ${(eventIndex - 2) * 200}px)`,
+                      left: `calc(50% + ${(eventIndex - 1) * 150}px)`,
                       top: `calc(50% + ${button.offsetVh}vh)`,
                       transform: 'translate(-50%, -50%)',
                       backgroundColor: ['#10B981', '#8B5CF6', '#F59E0B', '#3B82F6', '#EF4444'][buttonIndex] || '#666666'
                     }}
+                    title={`Evento ${button.label} ${eventIndex + 1}`}
                   >
-                    <button.icon className="w-4 h-4 text-white" />
+                    <button.icon className="w-3 h-3 text-white" />
                   </div>
                 ))}
               </div>
