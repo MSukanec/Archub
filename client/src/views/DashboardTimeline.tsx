@@ -221,6 +221,7 @@ export default function DashboardTimeline() {
         }
       });
       
+      console.log('Sidebar button positions:', positions);
       setSidebarButtonPositions(positions);
     };
 
@@ -461,8 +462,8 @@ export default function DashboardTimeline() {
                             ? `${sidebarButtonPositions.sitelog - timelineNodeCenter - 20}px`  // -20px to center the 40px event
                             : '-64px';
                         case 'task':
-                          return sidebarButtonPositions.agenda 
-                            ? `${sidebarButtonPositions.agenda - timelineNodeCenter - 20}px`
+                          return sidebarButtonPositions.contacts 
+                            ? `${sidebarButtonPositions.contacts - timelineNodeCenter - 20}px`
                             : '0px';
                         case 'movement':
                           return sidebarButtonPositions.movements 
