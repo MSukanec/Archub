@@ -206,7 +206,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           description: data.description,
           amount: data.amount,
           currency: data.currency,
-          wallet: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
+          wallet_id: data.wallet_id && data.wallet_id !== 'none' ? data.wallet_id : null,
           related_contact_id: data.related_contact_id || null,
           related_task_id: data.related_task_id || null,
         }])
