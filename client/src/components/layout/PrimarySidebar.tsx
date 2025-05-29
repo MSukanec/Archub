@@ -89,7 +89,7 @@ export default function PrimarySidebar() {
   return (
     <div className="w-[56px] bg-[#d2d2d2] flex flex-col">
       {/* Dashboard button - fixed at top */}
-      <div className="flex items-center justify-center pt-6">
+      <div className="flex items-center justify-center pt-2.5 pl-2.5">
         <CircularButton
           icon={Home}
           isActive={currentSection === 'dashboard'}
@@ -98,7 +98,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Center navigation buttons */}
-      <div className="flex-1 flex flex-col items-center justify-center space-y-2">
+      <div className="flex-1 flex flex-col items-center justify-center space-y-2 pl-2.5">
         {topNavigationItems.slice(1).map(({ section, icon, label }) => (
           <CircularButton
             key={section}
@@ -126,7 +126,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Profile button - fixed at bottom */}
-      <div className="flex items-center justify-center pb-6">
+      <div className="flex items-center justify-center pb-2.5 pl-2.5">
         <CircularButton
           icon={User}
           isActive={currentSection === 'profile'}
