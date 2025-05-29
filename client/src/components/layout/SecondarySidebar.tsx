@@ -8,10 +8,7 @@ export default function SecondarySidebar() {
   const { user } = useAuthStore();
 
   return (
-    <div className="fixed top-0 right-0 w-16 h-screen bg-[#e1e1e1] z-40 flex flex-col justify-between">
-      {/* Top spacer */}
-      <div></div>
-      
+    <div className="fixed top-0 right-0 w-16 h-screen z-40 flex flex-col justify-end">
       {/* Bottom buttons section */}
       <div className="flex flex-col items-center space-y-2 pb-2.5 pr-2.5">
         {/* Timeline button */}
