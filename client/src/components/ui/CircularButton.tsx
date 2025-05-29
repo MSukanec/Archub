@@ -29,7 +29,7 @@ export default function CircularButton({
 
   const iconSizes = {
     sm: 'w-3 h-3',
-    md: 'w-[18px] h-[18px]', 
+    md: 'w-[20px] h-[20px]', 
     lg: 'w-6 h-6'
   };
 
@@ -57,7 +57,7 @@ export default function CircularButton({
           transform-gpu
         `}
         style={{
-          width: isHovered && label && onPlusClick ? '170px' : '44px'
+          width: isHovered && label && onPlusClick ? '180px' : '44px'
         }}
       >
         {/* Botón principal - siempre visible */}
