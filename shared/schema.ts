@@ -178,6 +178,7 @@ export const siteMovements = pgTable("site_movements", {
   related_task_id: integer("related_task_id").references(() => tasks.id),
   file_url: text("file_url"),
   created_at: timestamp("created_at").defaultNow().notNull(),
+  created_at_local: timestamp("created_at_local", { withTimezone: true }),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
