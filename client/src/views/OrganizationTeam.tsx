@@ -318,13 +318,18 @@ export default function OrganizationTeam() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
+      {/* Header with icon */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Equipo</h1>
-          <p className="text-muted-foreground">
-            Gestiona los miembros y permisos de tu organización
-          </p>
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-primary/10 rounded-full">
+            <Users className="h-8 w-8 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Equipo</h1>
+            <p className="text-muted-foreground">
+              Gestiona los miembros y permisos de tu organización
+            </p>
+          </div>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'timeline', label: 'Timeline' }
   ],
   organization: [
-    { id: 'organization', label: 'Organización' },
+    { id: 'organization-overview', label: 'Organización' },
     { id: 'organization-team', label: 'Equipo' }
   ],
   projects: [
@@ -65,7 +65,7 @@ export default function FloatingHeader() {
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 currentView === view.id
-                  ? "bg-[#8fc700] text-white shadow-md"
+                  ? "bg-black text-white shadow-md"
                   : "text-[#919191] hover:text-[#8fc700] hover:bg-[#8fc700]/10"
               )}
             >
