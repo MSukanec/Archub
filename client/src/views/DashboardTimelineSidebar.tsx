@@ -71,7 +71,7 @@ export default function DashboardTimelineSidebar() {
     // Presupuestos events
     events.push({
       id: 'presupuesto-1',
-      date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000),
+      date: new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000),
       type: 'task',
       title: 'Presupuesto Inicial',
       description: 'Cotización de materiales básicos',
@@ -81,6 +81,16 @@ export default function DashboardTimelineSidebar() {
 
     events.push({
       id: 'presupuesto-2',
+      date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000),
+      type: 'task',
+      title: 'Aprobación Presupuesto',
+      description: 'Cliente aprueba cotización',
+      icon: Target,
+      color: '#8B5CF6'
+    });
+
+    events.push({
+      id: 'presupuesto-3',
       date: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000),
       type: 'task',
       title: 'Revisión de Costos',
@@ -89,9 +99,31 @@ export default function DashboardTimelineSidebar() {
       color: '#8B5CF6'
     });
 
+    events.push({
+      id: 'presupuesto-4',
+      date: new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000),
+      type: 'task',
+      title: 'Presupuesto Final',
+      description: 'Cierre de costos del proyecto',
+      icon: Target,
+      color: '#8B5CF6'
+    });
+
     // Movimientos events
     events.push({
       id: 'movement-1',
+      date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000),
+      type: 'movement',
+      title: 'Anticipo Cliente',
+      description: 'Pago inicial del proyecto',
+      amount: 500000,
+      currency: 'ARS',
+      icon: DollarSign,
+      color: '#10B981'
+    });
+
+    events.push({
+      id: 'movement-2',
       date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
       type: 'movement',
       title: 'Compra Cemento',
@@ -103,7 +135,7 @@ export default function DashboardTimelineSidebar() {
     });
 
     events.push({
-      id: 'movement-2',
+      id: 'movement-3',
       date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000),
       type: 'movement',
       title: 'Pago Mano de Obra',
@@ -114,9 +146,31 @@ export default function DashboardTimelineSidebar() {
       color: '#10B981'
     });
 
+    events.push({
+      id: 'movement-4',
+      date: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000),
+      type: 'movement',
+      title: 'Compra Materiales',
+      description: 'Hierro y arena',
+      amount: 200000,
+      currency: 'ARS',
+      icon: DollarSign,
+      color: '#10B981'
+    });
+
     // Proyectos events (timeline principal)
     events.push({
       id: 'proyecto-1',
+      date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000),
+      type: 'milestone',
+      title: 'Inicio del Proyecto',
+      description: 'Kick-off oficial del proyecto',
+      icon: Calendar,
+      color: '#F59E0B'
+    });
+
+    events.push({
+      id: 'proyecto-2',
       date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000),
       type: 'milestone',
       title: 'Hito del Proyecto',
@@ -126,11 +180,21 @@ export default function DashboardTimelineSidebar() {
     });
 
     events.push({
-      id: 'proyecto-2',
+      id: 'proyecto-3',
       date: today,
       type: 'milestone',
       title: 'Hoy',
       description: 'Fecha actual',
+      icon: Calendar,
+      color: '#F59E0B'
+    });
+
+    events.push({
+      id: 'proyecto-4',
+      date: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000),
+      type: 'milestone',
+      title: 'Revisión General',
+      description: 'Evaluación de progreso',
       icon: Calendar,
       color: '#F59E0B'
     });
@@ -343,7 +407,7 @@ export default function DashboardTimelineSidebar() {
               <div key={button.id} className="relative group">
                 <button
                   onClick={() => setActiveCategory(button.id)}
-                  className="relative w-12 h-12 rounded-full border-2 border-gray-400 transition-all duration-200 hover:shadow-lg flex items-center justify-center"
+                  className="relative w-12 h-12 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
                   style={{ 
                     backgroundColor: isActive ? '#000000' : '#e0e0e0',
                     color: isActive ? '#ffffff' : '#000000'
@@ -359,20 +423,7 @@ export default function DashboardTimelineSidebar() {
                   </div>
                 </div>
                 
-                {/* Línea punteada que se extiende hacia la derecha */}
-                <div 
-                  className="absolute left-full top-1/2 w-8 h-px"
-                  style={{
-                    background: `repeating-linear-gradient(
-                      to right,
-                      ${isActive ? '#000000' : '#999999'} 0px,
-                      ${isActive ? '#000000' : '#999999'} 4px,
-                      transparent 4px,
-                      transparent 8px
-                    )`,
-                    transform: 'translateY(-50%)'
-                  }}
-                />
+
               </div>
             );
           })}
@@ -439,13 +490,12 @@ export default function DashboardTimelineSidebar() {
               }}
             />
 
-            {/* Horizontal lines for each category - SOLO las líneas punteadas que salen de los botones */}
+            {/* Líneas horizontales infinitas para cada categoría */}
             {SIDEBAR_BUTTONS.map((button) => (
               <div
                 key={`line-${button.id}`}
-                className="absolute right-0 h-px z-10"
+                className="absolute left-0 right-0 h-px z-10"
                 style={{ 
-                  left: '96px', // Empieza donde termina el sidebar
                   top: `calc(50% + ${button.offsetPercent}vh)`,
                   background: button.id === 'proyectos' 
                     ? '#000000' // Línea sólida para el timeline principal
