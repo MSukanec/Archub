@@ -540,8 +540,8 @@ export default function DashboardTimelineSidebar() {
 
       {/* Main Timeline Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top controls - POR DELANTE DE LA LÍNEA */}
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-[20]">
+        {/* Top controls - ESQUINA SUPERIOR IZQUIERDA */}
+        <div className="absolute top-6 left-6 z-[20]">
           <div className="rounded-full px-6 py-2 border border-gray-300 shadow-lg" style={{ backgroundColor: '#e0e0e0' }}>
             <div className="flex items-center gap-4">
               <button
@@ -655,96 +655,136 @@ export default function DashboardTimelineSidebar() {
               </div>
             ))}
 
-            {/* Timeline nodes con eventos de prueba SIEMPRE VISIBLES */}
+            {/* Números de fechas - ARRIBA Y ABAJO */}
             {timelineNodes.map((node, index) => {
-              // Forzar eventos de prueba para mostrar funcionalidad
+              const today = new Date();
+              const isToday = node.date.toDateString() === today.toDateString();
+              
+              return (
+                <div key={`date-${index}`}>
+                  {/* Fecha arriba */}
+                  <div 
+                    className="absolute text-xs font-medium"
+                    style={{ 
+                      left: `calc(50% + ${node.position}px)`,
+                      top: '10px',
+                      transform: 'translateX(-50%)',
+                      color: isToday ? '#FF0000' : '#666666',
+                      fontWeight: isToday ? 'bold' : 'normal',
+                      zIndex: 30
+                    }}
+                  >
+                    {formatDate(node.date)}
+                  </div>
+                  
+                  {/* Fecha abajo */}
+                  <div 
+                    className="absolute text-xs font-medium"
+                    style={{ 
+                      left: `calc(50% + ${node.position}px)`,
+                      bottom: '10px',
+                      transform: 'translateX(-50%)',
+                      color: isToday ? '#FF0000' : '#666666',
+                      fontWeight: isToday ? 'bold' : 'normal',
+                      zIndex: 30
+                    }}
+                  >
+                    {formatDate(node.date)}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* EVENTOS REALES - basados en los datos del timeline */}
+            {timelineNodes.map((node, index) => {
               const today = new Date();
               const isToday = node.date.toDateString() === today.toDateString();
               const isYesterday = node.date.toDateString() === new Date(today.getTime() - 24*60*60*1000).toDateString();
               const isTomorrow = node.date.toDateString() === new Date(today.getTime() + 24*60*60*1000).toDateString();
               
-              let testEvents = [];
+              // Eventos forzados para demostración
               if (isYesterday) {
-                testEvents = [
-                  { id: '1', type: 'movement', title: 'Pago Joel $1,500', icon: DollarSign, color: '#10B981' },
-                  { id: '2', type: 'sitelog', title: 'Bitácora Osvaldo', icon: FileText, color: '#8B5CF6' }
-                ];
+                return (
+                  <div key={`events-${index}`}>
+                    {/* Evento movimiento */}
+                    <div 
+                      className="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-50 cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `calc(50% + ${node.position}px)`,
+                        top: `calc(50% + ${SIDEBAR_BUTTONS[1].offsetVh}vh)`,
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#10B981'
+                      }}
+                      title="Pago Joel $1,500"
+                    >
+                      <DollarSign className="w-3 h-3 text-white" />
+                    </div>
+                    {/* Evento bitácora */}
+                    <div 
+                      className="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-50 cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `calc(50% + ${node.position}px)`,
+                        top: `calc(50% + ${SIDEBAR_BUTTONS[3].offsetVh}vh)`,
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#8B5CF6'
+                      }}
+                      title="Bitácora Osvaldo"
+                    >
+                      <FileText className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                );
               } else if (isToday) {
-                testEvents = [
-                  { id: '3', type: 'task', title: 'Demolición muros', icon: Hammer, color: '#F59E0B' },
-                  { id: '4', type: 'milestone', title: 'Milestone Fase 1', icon: CheckCircle, color: '#3B82F6' }
-                ];
+                return (
+                  <div key={`events-${index}`}>
+                    {/* Evento presupuesto */}
+                    <div 
+                      className="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-50 cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `calc(50% + ${node.position}px)`,
+                        top: `calc(50% + ${SIDEBAR_BUTTONS[0].offsetVh}vh)`,
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#F59E0B'
+                      }}
+                      title="Demolición muros"
+                    >
+                      <Target className="w-3 h-3 text-white" />
+                    </div>
+                    {/* Evento proyecto */}
+                    <div 
+                      className="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-50 cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `calc(50% + ${node.position}px)`,
+                        top: `calc(50% + ${SIDEBAR_BUTTONS[2].offsetVh}vh)`,
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#3B82F6'
+                      }}
+                      title="Milestone Fase 1"
+                    >
+                      <CheckCircle className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                );
               } else if (isTomorrow) {
-                testEvents = [
-                  { id: '5', type: 'execution', title: 'Ejecución cielorrasos', icon: Settings, color: '#EF4444' }
-                ];
+                return (
+                  <div key={`events-${index}`}>
+                    {/* Evento ejecución */}
+                    <div 
+                      className="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-50 cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `calc(50% + ${node.position}px)`,
+                        top: `calc(50% + ${SIDEBAR_BUTTONS[4].offsetVh}vh)`,
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#EF4444'
+                      }}
+                      title="Ejecución cielorrasos"
+                    >
+                      <Wrench className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                );
               }
-
-              return (
-                <div
-                  key={index}
-                  className="absolute flex flex-col items-center"
-                  style={{ 
-                    left: `calc(50% + ${node.position}px)`,
-                    top: '50%',
-                    transform: 'translateY(-50%)'
-                  }}
-                >
-                  {/* Date label */}
-                  <div 
-                    className="mb-8 text-xs font-medium"
-                    style={{ 
-                      color: isToday ? '#FF0000' : '#666666',
-                      fontWeight: isToday ? 'bold' : 'normal',
-                      transform: 'translateY(-20px)'
-                    }}
-                  >
-                    {formatDate(node.date)}
-                  </div>
-
-                  {/* Eventos de prueba posicionados por categoría */}
-                  <div className="relative">
-                    {testEvents.map((event) => {
-                      const category = getEventCategory(event.type);
-                      const button = SIDEBAR_BUTTONS.find(b => b.id === category);
-                      if (!button) return null;
-
-                      const Icon = event.icon;
-
-                      return (
-                        <div
-                          key={event.id}
-                          className="absolute left-1/2 transform -translate-x-1/2"
-                          style={{ top: `${button.offsetVh}vh` }}
-                        >
-                          <div className="group relative">
-                            {/* Event indicator */}
-                            <div 
-                              className="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative z-40"
-                              style={{ backgroundColor: event.color }}
-                            >
-                              <Icon className="w-4 h-4 text-white" />
-                            </div>
-
-                            {/* Hover tooltip */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
-                              <div className="bg-white border border-gray-300 rounded-lg shadow-xl p-3 min-w-[200px]">
-                                <div className="text-xs text-gray-500 mb-1">
-                                  {node.date.toLocaleDateString('es-ES')}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Icon className="w-3 h-3" style={{ color: event.color }} />
-                                  <span className="text-xs font-medium text-black">{event.title}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
+              return null;
             })}
           </div>
         </div>
