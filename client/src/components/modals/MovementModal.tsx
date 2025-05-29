@@ -97,7 +97,10 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .is('parent_id', null)
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching movement types:', error);
+        return [];
+      }
       return data || [];
     },
     enabled: isOpen,
@@ -305,6 +308,16 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   });
 
   const onSubmit = (data: MovementForm) => {
+    // Validate that we have the required concept data
+    if (!data.concept_id) {
+      toast({
+        title: "Error",
+        description: "Debe seleccionar una categoría válida.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     createMovementMutation.mutate(data);
   };
 

@@ -99,7 +99,7 @@ export default function Movements() {
         .from('site_movements')
         .select(`
           *,
-          movement_concepts!inner (
+          movement_concepts (
             id,
             name,
             parent_id
