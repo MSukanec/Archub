@@ -77,7 +77,7 @@ export default function SecondarySidebar() {
           {/* Project dropdown menu */}
           {showProjectMenu && (
             <div 
-              className="absolute top-0 right-12 bg-[#e1e1e1] rounded-xl shadow-2xl border border-gray-300 min-w-64 z-50 py-2"
+              className="absolute top-0 right-12 bg-[#e1e1e1] rounded-xl shadow-2xl border border-gray-300 min-w-48 z-50 py-2"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
@@ -122,12 +122,12 @@ export default function SecondarySidebar() {
               <div className="border-t border-gray-400 mt-2">
                 <button
                   onClick={handleCreateProject}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-200 transition-colors flex items-center gap-3 text-primary"
+                  className="w-full text-left px-4 py-3 hover:bg-gray-200 transition-colors flex items-center gap-3"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Plus className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-gray-300 flex items-center justify-center">
+                    <Plus className="w-4 h-4 text-gray-700" />
                   </div>
-                  <span className="font-medium text-sm">Crear Nuevo Proyecto</span>
+                  <span className="font-medium text-sm text-gray-900">Crear Nuevo Proyecto</span>
                 </button>
               </div>
             </div>
