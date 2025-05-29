@@ -52,7 +52,7 @@ export default function CircularButton({
           hover:shadow-xl
           cursor-pointer
           ${isActive 
-            ? 'bg-[#919191]' 
+            ? 'bg-black' 
             : 'bg-[#e1e1e1]'
           }
           ${className}
@@ -78,7 +78,7 @@ export default function CircularButton({
           `}
         >
           <Icon 
-            className={`${iconSizes[size]} ${isActive ? 'text-[#e1e1e1]' : 'text-[#919191]'}`}
+            className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
           />
         </div>
         
