@@ -91,7 +91,6 @@ export default function PrimarySidebar() {
           icon={Home}
           isActive={currentSection === 'dashboard'}
           onClick={() => setSection('dashboard')}
-          label="Dashboard"
           section="dashboard"
         />
       </div>
@@ -104,12 +103,6 @@ export default function PrimarySidebar() {
             icon={icon}
             isActive={currentSection === section}
             onClick={() => setSection(section)}
-            onPlusClick={() => {
-              if (section === 'projects') {
-                window.dispatchEvent(new CustomEvent('openCreateProjectModal'));
-              }
-            }}
-            label={label}
             section={section}
           />
         ))}
@@ -123,7 +116,6 @@ export default function PrimarySidebar() {
           icon={User}
           isActive={currentSection === 'profile'}
           onClick={() => setSection('profile')}
-          label="Perfil"
           section="profile"
         />
       </div>

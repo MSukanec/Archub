@@ -16,10 +16,8 @@ export default function CircularButton({
   icon: Icon, 
   isActive = false, 
   onClick, 
-  onPlusClick,
   className = '',
   size = 'md',
-  label = '',
   section
 }: CircularButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -36,75 +34,30 @@ export default function CircularButton({
   };
 
   return (
-    <div className="relative z-50 w-11 h-11">
-      <div
-        data-section={section}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={onClick}
-        className={`
-          absolute left-0 top-0
-          flex items-center
-          transition-all duration-500 ease-out
-          h-11
-          rounded-full 
-          shadow-lg
-          hover:shadow-xl
-          cursor-pointer
-          ${isActive 
-            ? 'bg-black' 
-            : 'bg-[#e1e1e1]'
-          }
-          ${className}
-          z-50
-          overflow-visible
-          transform-gpu
-          ${isHovered ? 'pressed' : ''}
-        `}
-        style={{
-          width: isHovered && label && onPlusClick ? '185px' : '44px'
-        }}
-      >
-        {/* Botón principal - siempre visible */}
-        <div
-          className={`
-            ${sizeClasses[size]}
-            rounded-full 
-            flex items-center justify-center 
-            transition-all duration-200 
-            flex-shrink-0
-            z-50
-            cursor-pointer
-          `}
-        >
-          <Icon 
-            className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
-          />
-        </div>
-        
-        {/* Texto y botón "+" - aparecen en hover con animación */}
-        <div className={`
-          flex items-center
-          transition-all duration-500 ease-out
-          ${isHovered && label && onPlusClick ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
-          overflow-hidden
-        `}>
-          <span className={`text-sm font-medium px-3 whitespace-nowrap ${
-            isActive ? 'text-white' : 'text-foreground'
-          }`}>
-            {label}
-          </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onPlusClick) onPlusClick();
-            }}
-            className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-2.5 z-50"
-          >
-            <Plus className="w-3 h-3 text-white" />
-          </button>
-        </div>
-      </div>
+    <div
+      data-section={section}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+      className={`
+        ${sizeClasses[size]}
+        rounded-full 
+        flex items-center justify-center 
+        transition-all duration-300
+        shadow-lg
+        hover:shadow-xl
+        cursor-pointer
+        ${isActive 
+          ? 'bg-black' 
+          : 'bg-[#e1e1e1]'
+        }
+        ${className}
+        ${isHovered ? 'pressed' : ''}
+      `}
+    >
+      <Icon 
+        className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
+      />
     </div>
   );
 }
