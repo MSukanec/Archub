@@ -496,41 +496,49 @@ export default function DashboardTimeline() {
                         <div className="group relative" style={{ zIndex: 50 }}>
                           {/* Large event indicator */}
                           <div 
-                            className="w-10 h-10 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            className="w-20 h-20 rounded-full border-4 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
                             style={{ zIndex: 50 }}
                           >
-                            <Icon className="w-5 h-5 text-[#919191]" />
+                            <Icon className="w-10 h-10 text-[#919191]" />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
-                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
-                                <span className="text-[10px] text-white font-bold">
+                              <div className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
+                                <span className="text-sm text-white font-bold">
                                   {events.length}
                                 </span>
                               </div>
                             )}
                           </div>
 
-                          {/* Hover tooltip */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-30">
-                            <div className="bg-card border border-border rounded-lg shadow-xl p-3 min-w-[200px]">
-                              <div className="text-xs text-muted-foreground mb-1">
-                                {node.date.toLocaleDateString('es-ES')}
-                              </div>
+                          {/* Hover cards */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                            <div className="flex flex-col gap-2">
                               {events.slice(0, 3).map((event, eventIndex) => (
-                                <div key={eventIndex} className="flex items-center gap-2 mb-1 last:mb-0">
-                                  <event.icon className="w-3 h-3" style={{ color: event.color }} />
-                                  <span className="text-xs font-medium">{event.title}</span>
-                                  {event.amount && (
-                                    <span className="text-xs text-muted-foreground">
-                                      ${event.amount.toLocaleString()}
-                                    </span>
-                                  )}
-                                </div>
+                                <button
+                                  key={eventIndex}
+                                  onClick={() => {
+                                    console.log('Event card clicked:', event);
+                                  }}
+                                  className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <event.icon className="w-4 h-4 text-[#919191]" />
+                                    <div className="flex-1 text-left">
+                                      <div className="text-xs font-medium text-[#919191]">{event.title}</div>
+                                      <div className="text-xs text-[#919191]/70 truncate">{event.description}</div>
+                                      {event.amount && (
+                                        <div className="text-xs text-[#919191]/70">
+                                          ${event.amount.toLocaleString()}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </button>
                               ))}
                               {events.length > 3 && (
-                                <div className="text-xs text-muted-foreground">
-                                  +{events.length - 3} más
+                                <div className="text-xs text-[#919191]/70 text-center px-2">
+                                  +{events.length - 3} eventos más
                                 </div>
                               )}
                             </div>
