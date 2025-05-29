@@ -302,11 +302,25 @@ export default function DashboardTimeline() {
                 transform: 'translateY(-50%)'
               }}
             >
-              {/* Date labels - screen edges */}
-              <div className="fixed top-2 left-1/2 transform -translate-x-1/2 text-xs font-medium text-foreground/25">
+              {/* Date labels - aligned with dashboard and profile buttons */}
+              <div 
+                className="fixed text-xs font-medium text-foreground/25"
+                style={{
+                  top: '60px', // Aligned with dashboard button
+                  left: `calc(50% + ${node.position}px)`,
+                  transform: 'translateX(-50%)'
+                }}
+              >
                 {formatDate(node.date)}
               </div>
-              <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 text-xs font-medium text-foreground/25">
+              <div 
+                className="fixed text-xs font-medium text-foreground/25"
+                style={{
+                  bottom: '60px', // Aligned with profile button
+                  left: `calc(50% + ${node.position}px)`,
+                  transform: 'translateX(-50%)'
+                }}
+              >
                 {formatDate(node.date)}
               </div>
 
@@ -401,46 +415,46 @@ export default function DashboardTimeline() {
       {/* Five horizontal timeline lines - one aligned with each sidebar button center */}
       {/* Line 1 - Organization */}
       <div 
-        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 96px)', // Organization button center
-          borderTop: '2px dashed white'
+          top: 'calc(50% - 120px)', // Organization button center
+          height: '1px'
         }}
       ></div>
       
       {/* Line 2 - Bitácora */}
       <div 
-        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 48px)', // Bitácora button center
-          borderTop: '2px dashed white'
+          top: 'calc(50% - 60px)', // Bitácora button center
+          height: '1px'
         }}
       ></div>
       
       {/* Line 3 - Proyectos (Center) */}
       <div 
-        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
         style={{ 
           top: '50%', // Center line - Proyectos button
-          borderTop: '2px dashed white'
+          height: '1px'
         }}
       ></div>
       
       {/* Line 4 - Finanzas */}
       <div 
-        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 48px)', // Finanzas button center
-          borderTop: '2px dashed white'
+          top: 'calc(50% + 60px)', // Finanzas button center
+          height: '1px'
         }}
       ></div>
       
       {/* Line 5 - Presupuestos */}
       <div 
-        className="fixed left-0 right-0 h-px z-20 pointer-events-none"
+        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 96px)', // Presupuestos button center
-          borderTop: '2px dashed white'
+          top: 'calc(50% + 120px)', // Presupuestos button center
+          height: '1px'
         }}
       ></div>
 
