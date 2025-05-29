@@ -285,12 +285,6 @@ export default function DashboardTimeline() {
         }}
       >
         <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
-          {/* Horizontal timeline line */}
-          <div 
-            className="absolute left-0 right-0 h-px bg-border z-10"
-            style={{ top: '50%' }}
-          />
-
           {/* Timeline nodes */}
           {timelineNodes.map((node, index) => (
             <div
@@ -337,10 +331,11 @@ export default function DashboardTimeline() {
 
                   const getEventPosition = (type: string) => {
                     switch (type) {
-                      case 'sitelog': return { top: '-40px' }; // 10% arriba del timeline
-                      case 'movement': return { top: '40px' }; // 10% debajo del timeline
-                      case 'task': return { top: '80px' }; // 20% debajo del timeline
-                      case 'milestone': return { top: '120px' }; // 30% debajo del timeline
+                      case 'organization': return { top: '-96px' }; // Organization line
+                      case 'sitelog': return { top: '-48px' }; // Bitácora line
+                      case 'project': return { top: '0px' }; // Proyectos line (center)
+                      case 'movement': return { top: '48px' }; // Finanzas line
+                      case 'budget': return { top: '96px' }; // Presupuestos line
                       default: return { top: '0px' };
                     }
                   };
