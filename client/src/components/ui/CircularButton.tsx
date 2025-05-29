@@ -17,15 +17,15 @@ export default function CircularButton({
   size = 'md'
 }: CircularButtonProps) {
   const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12'
+    sm: 'w-8 h-8',
+    md: 'w-11 h-11',
+    lg: 'w-16 h-16'
   };
 
   const iconSizes = {
-    sm: 'w-3 h-3',
-    md: 'w-4 h-4', 
-    lg: 'w-6 h-6'
+    sm: 'w-4 h-4',
+    md: 'w-5.5 h-5.5', 
+    lg: 'w-8 h-8'
   };
 
   return (
@@ -37,6 +37,7 @@ export default function CircularButton({
         flex items-center justify-center 
         transition-all duration-200 
         hover:scale-110 
+        hover:shadow-lg
         ${isActive 
           ? 'bg-black' 
           : 'bg-[#e1e1e1]'

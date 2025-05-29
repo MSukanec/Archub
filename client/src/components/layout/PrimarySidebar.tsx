@@ -98,7 +98,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Center navigation buttons */}
-      <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+      <div className="flex-1 flex flex-col items-center justify-center space-y-2">
         {topNavigationItems.slice(1).map(({ section, icon, label }) => (
           <CircularButton
             key={section}
