@@ -522,7 +522,7 @@ export default function Movements() {
                 {filteredMovements.map((movement) => (
                   <TableRow key={movement.id} className="hover:bg-muted/50">
                     <TableCell>
-                      {format(new Date(movement.created_at + 'T00:00:00'), 'dd/MM/yyyy', { locale: es })}
+                      {format(new Date(movement.created_at), 'dd/MM/yyyy', { locale: es })}
                     </TableCell>
                     <TableCell>
                       {movement.movement_concepts?.parent_id ? 
