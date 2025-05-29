@@ -77,6 +77,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
   const [contactOpen, setContactOpen] = useState(false);
+  const [contactSearch, setContactSearch] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const isEditing = !!movement;
 
@@ -419,28 +420,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    {/* Cantidad */}
-                    <FormField
-                      control={form.control}
-                      name="amount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#333333]">Cantidad *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              value={field.value || ''}
-                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                              className="bg-[#d2d2d2] border-[#cccccc]"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     {/* Billetera */}
                     <FormField
                       control={form.control}
@@ -463,6 +442,29 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               ))}
                             </SelectContent>
                           </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Cantidad */}
+                    <FormField
+                      control={form.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Cantidad *</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder="0.00"
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                              className="bg-[#d2d2d2] border-[#cccccc]"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -520,43 +522,63 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </PopoverTrigger>
                           <PopoverContent className="w-full p-0">
                             <Command>
-                              <CommandInput placeholder="Buscar contacto..." />
-                              <CommandEmpty>No se encontró contacto.</CommandEmpty>
-                              <CommandGroup>
-                                <CommandList>
-                                  <CommandItem
-                                    onSelect={() => {
-                                      form.setValue("related_contact_id", "");
-                                      setContactOpen(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        !field.value ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    Sin contacto
-                                  </CommandItem>
-                                  {contactsList.map((contact) => (
-                                    <CommandItem
-                                      key={contact.id}
-                                      onSelect={() => {
-                                        form.setValue("related_contact_id", contact.id);
-                                        setContactOpen(false);
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4",
-                                          field.value === contact.id ? "opacity-100" : "opacity-0"
-                                        )}
-                                      />
-                                      {getContactDisplayName(contact)}
-                                    </CommandItem>
-                                  ))}
-                                </CommandList>
-                              </CommandGroup>
+                              <CommandInput 
+                                placeholder="Buscar contacto (min. 3 caracteres)..." 
+                                value={contactSearch}
+                                onValueChange={setContactSearch}
+                              />
+                              {contactSearch.length < 3 ? (
+                                <div className="p-4 text-center text-sm text-muted-foreground">
+                                  Escribe al menos 3 caracteres para buscar contactos
+                                </div>
+                              ) : (
+                                <>
+                                  <CommandEmpty>No se encontró contacto.</CommandEmpty>
+                                  <CommandGroup>
+                                    <CommandList>
+                                      <CommandItem
+                                        onSelect={() => {
+                                          form.setValue("related_contact_id", "");
+                                          setContactOpen(false);
+                                          setContactSearch('');
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            !field.value ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        Sin contacto
+                                      </CommandItem>
+                                      {contactsList
+                                        .filter(contact => 
+                                          getContactDisplayName(contact)
+                                            .toLowerCase()
+                                            .includes(contactSearch.toLowerCase())
+                                        )
+                                        .map((contact) => (
+                                          <CommandItem
+                                            key={contact.id}
+                                            onSelect={() => {
+                                              form.setValue("related_contact_id", contact.id);
+                                              setContactOpen(false);
+                                              setContactSearch('');
+                                            }}
+                                          >
+                                            <Check
+                                              className={cn(
+                                                "mr-2 h-4 w-4",
+                                                field.value === contact.id ? "opacity-100" : "opacity-0"
+                                              )}
+                                            />
+                                            {getContactDisplayName(contact)}
+                                          </CommandItem>
+                                        ))}
+                                    </CommandList>
+                                  </CommandGroup>
+                                </>
+                              )}
                             </Command>
                           </PopoverContent>
                         </Popover>

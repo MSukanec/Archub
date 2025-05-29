@@ -137,11 +137,11 @@ export default function FloatingActionButton() {
 
   return (
     <div 
-      className="fixed bottom-[37px] right-[37px] z-50"
+      className="fixed bottom-[37px] right-[37px] z-50 p-2"
       onMouseEnter={() => !isBlocked && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div
+      <button
         onClick={!isBlocked ? handleClick : undefined}
         className={cn(
           "w-12 h-12 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
@@ -153,14 +153,14 @@ export default function FloatingActionButton() {
         )}
       >
         <Plus className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
-        
-        {/* Tooltip cuando hover */}
-        {isHovered && !isBlocked && (
-          <div className="absolute bottom-full right-0 mb-2 bg-[#e1e1e1] text-[#919191] px-2 py-1 rounded-lg text-sm whitespace-nowrap shadow-lg border border-[#919191]/20 z-[200]">
-            {actionConfig.label}
-          </div>
-        )}
-      </div>
+      </button>
+      
+      {/* Tooltip cuando hover */}
+      {isHovered && !isBlocked && (
+        <div className="absolute bottom-full right-0 mb-2 bg-[#e1e1e1] text-[#919191] px-2 py-1 rounded-lg text-sm whitespace-nowrap shadow-lg border border-[#919191]/20 z-[200]">
+          {actionConfig.label}
+        </div>
+      )}
       
       {/* Badge de restricción para creación de proyectos */}
       {isProjectCreation && isBlocked && (
