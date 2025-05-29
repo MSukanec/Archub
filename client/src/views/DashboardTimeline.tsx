@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, FolderOpen, Contact } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, FolderOpen, Contact, FolderKanban } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -34,7 +34,7 @@ export default function DashboardTimeline() {
   const timelineRef = useRef<HTMLDivElement>(null);
   
   const { projectId, organizationId } = useUserContextStore();
-  const { setView, setSection } = useNavigationStore();
+  const { setView, setSection, currentSection } = useNavigationStore();
 
   // Fetch timeline data
   const { data: timelineData = [] } = useQuery({
@@ -273,13 +273,13 @@ export default function DashboardTimeline() {
 
   return (
     <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden z-0">
-      {/* Agenda button at top */}
+      {/* Proyectos button at top */}
       <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
         <CircularButton
-          icon={Contact}
-          isActive={false}
-          onClick={() => setSection('contacts')}
-          label="Agenda"
+          icon={FolderKanban}
+          isActive={currentSection === 'projects'}
+          onClick={() => setSection('projects')}
+          label="Proyectos"
         />
       </div>
 
@@ -395,7 +395,7 @@ export default function DashboardTimeline() {
                 {(() => {
                   const eventsByType = {
                     sitelog: node.events.filter(e => e.type === 'sitelog'),     // Bitácora line
-                    task: node.events.filter(e => e.type === 'task'),           // Proyectos line  
+                    contacts: node.events.filter(e => e.type === 'contacts'),   // Agenda line  
                     movement: node.events.filter(e => e.type === 'movement'),   // Finanzas line
                     milestone: node.events.filter(e => e.type === 'milestone')  // Presupuestos line
                   };
@@ -514,12 +514,12 @@ export default function DashboardTimeline() {
             />
           )}
           
-          {/* Line 3 - Proyectos */}
-          {sidebarButtonPositions.projects && (
+          {/* Line 3 - Agenda */}
+          {sidebarButtonPositions.contacts && (
             <div 
               className="fixed left-0 right-0 h-px bg-border z-10 pointer-events-none"
               style={{ 
-                top: `${sidebarButtonPositions.projects}px`
+                top: `${sidebarButtonPositions.contacts}px`
               }}
             />
           )}
