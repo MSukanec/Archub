@@ -166,9 +166,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   useEffect(() => {
     if (movement && isEditing) {
       // Load existing movement data
+      const typeId = movement.movement_concepts?.parent_id || '';
+      const conceptId = movement.concept_id || '';
+      
       form.reset({
-        type_id: movement.movement_concepts?.parent_id || movement.concept_id,
-        concept_id: movement.concept_id || '',
+        type_id: typeId,
+        concept_id: conceptId,
         created_at: movement.created_at ? movement.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
         description: movement.description || '',
         amount: movement.amount || 0,
@@ -177,7 +180,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         related_contact_id: movement.related_contact_id || '',
         related_task_id: movement.related_task_id || '',
       });
-      setSelectedTypeId(movement.movement_concepts?.parent_id || movement.concept_id);
+      setSelectedTypeId(typeId);
     } else {
       form.reset({
         type_id: '',
