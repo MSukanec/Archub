@@ -46,7 +46,7 @@ export default function DashboardTimeline() {
         .from('site_logs')
         .select('*')
         .eq('project_id', projectId)
-        .order('date', { ascending: true });
+        .order('log_date', { ascending: true });
 
       // Get movements
       const { data: movements } = await supabase
@@ -61,10 +61,10 @@ export default function DashboardTimeline() {
       siteLogs?.forEach(log => {
         events.push({
           id: `sitelog-${log.id}`,
-          date: new Date(log.date),
+          date: new Date(log.log_date),
           type: 'sitelog',
           title: 'Bitácora de Obra',
-          description: log.description,
+          description: log.comments || log.description,
           icon: FileText,
           color: '#FF4D1C'
         });
