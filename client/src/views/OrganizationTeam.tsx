@@ -81,8 +81,8 @@ export default function OrganizationTeam() {
   const { organizationId } = useUserContextStore();
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
 
-  const { data: teamData, isLoading } = useQuery({
-    queryKey: [`/api/organizations/${organizationId}/team`],
+  const { data: organization, isLoading } = useQuery({
+    queryKey: [`/api/organizations/${organizationId}`],
     enabled: !!organizationId,
     refetchOnWindowFocus: false,
   });
@@ -153,15 +153,33 @@ export default function OrganizationTeam() {
     );
   }
 
-  if (!teamData?.organization) {
+  if (!organization) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">No se encontró información del equipo</p>
+        <p className="text-muted-foreground">No se encontró información de la organización</p>
       </div>
     );
   }
 
-  const teamMembers = teamData.teamMembers || [];
+  // Mock team members data for now since it's not implemented in the backend
+  const teamMembers = [
+    {
+      id: '1',
+      firstName: 'Matias',
+      lastName: 'Sukanec',
+      email: 'lenga@gmail.com',
+      role: 'owner' as const,
+      joinedAt: '2025-05-26T21:36:17.711297+00:00',
+      lastActive: '2025-05-29T15:16:01.678952Z',
+      permissions: {
+        projects: { view: true, create: true, edit: true, delete: true },
+        budgets: { view: true, create: true, edit: true, delete: true },
+        sitelog: { view: true, create: true, edit: true, delete: true },
+        movements: { view: true, create: true, edit: true, delete: true },
+        team: { view: true, invite: true, manage: true }
+      }
+    }
+  ];
 
   return (
     <div className="space-y-8">
