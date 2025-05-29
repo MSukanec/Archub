@@ -401,26 +401,39 @@ export default function DashboardTimeline() {
                   };
 
                   const getEventPosition = (type: string) => {
-                    // Calculate relative position from the timeline node center to match sidebar lines
-                    const viewportCenter = window.innerHeight / 2;
+                    // Position events to align exactly with their corresponding sidebar button centers
+                    // Convert absolute sidebar button position to relative position within the timeline node
                     
                     switch (type) {
                       case 'sitelog': 
-                        return sidebarButtonPositions.sitelog 
-                          ? { top: `${sidebarButtonPositions.sitelog - viewportCenter}px` }
-                          : { top: '-64px' };
+                        if (sidebarButtonPositions.sitelog) {
+                          // Calculate offset from the timeline node center (which is at 50vh)
+                          const timelineNodeCenter = window.innerHeight / 2;
+                          const offset = sidebarButtonPositions.sitelog - timelineNodeCenter;
+                          return { top: `${offset}px` };
+                        }
+                        return { top: '-64px' };
                       case 'contacts': 
-                        return sidebarButtonPositions.contacts 
-                          ? { top: `${sidebarButtonPositions.contacts - viewportCenter}px` }
-                          : { top: '0px' };
+                        if (sidebarButtonPositions.contacts) {
+                          const timelineNodeCenter = window.innerHeight / 2;
+                          const offset = sidebarButtonPositions.contacts - timelineNodeCenter;
+                          return { top: `${offset}px` };
+                        }
+                        return { top: '0px' };
                       case 'movement': 
-                        return sidebarButtonPositions.movements 
-                          ? { top: `${sidebarButtonPositions.movements - viewportCenter}px` }
-                          : { top: '64px' };
+                        if (sidebarButtonPositions.movements) {
+                          const timelineNodeCenter = window.innerHeight / 2;
+                          const offset = sidebarButtonPositions.movements - timelineNodeCenter;
+                          return { top: `${offset}px` };
+                        }
+                        return { top: '64px' };
                       case 'milestone': 
-                        return sidebarButtonPositions.budgets 
-                          ? { top: `${sidebarButtonPositions.budgets - viewportCenter}px` }
-                          : { top: '128px' };
+                        if (sidebarButtonPositions.budgets) {
+                          const timelineNodeCenter = window.innerHeight / 2;
+                          const offset = sidebarButtonPositions.budgets - timelineNodeCenter;
+                          return { top: `${offset}px` };
+                        }
+                        return { top: '128px' };
                       default: return { top: '0px' };
                     }
                   };
