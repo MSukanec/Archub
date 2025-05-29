@@ -260,23 +260,14 @@ function DashboardTimeline() {
               }
             }
           }}
-          className="h-[60px] w-[60px] rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group shadow-lg hover:shadow-xl flex items-center justify-center"
+          className="h-[60px] w-[60px] rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-95 flex items-center justify-center group"
         >
           <span className="text-sm font-medium text-[#919191] group-hover:text-white">HOY</span>
         </button>
       </div>
       
-      {/* Dynamic time view text */}
+      {/* Timeline controls with mode display */}
       <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
-        <div className="bg-card/80 backdrop-blur-sm rounded-full px-4 py-2 border border-border/50 shadow-lg">
-          <span className="text-sm font-medium text-[#919191]">
-            Viendo: {getTimelineModeLabel()}
-          </span>
-        </div>
-      </div>
-
-      {/* Timeline zoom controls */}
-      <div className="absolute bottom-2.5 left-4 z-[60]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-3 py-1 border border-border/50 shadow-lg">
           <div className="flex items-center gap-2">
             {/* Zoom out button */}
@@ -292,6 +283,11 @@ function DashboardTimeline() {
             >
               <span className="text-lg font-bold text-[#919191] group-hover:text-white">-</span>
             </button>
+            
+            {/* Mode label */}
+            <span className="text-sm font-medium text-[#919191] px-2">
+              {getTimelineModeLabel()}
+            </span>
             
             {/* Zoom in button */}
             <button
