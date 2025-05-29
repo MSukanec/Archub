@@ -290,27 +290,17 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         description: isEditing ? "El movimiento se ha actualizado correctamente." : "El movimiento se ha guardado correctamente.",
       });
       
-      // Always reset completely regardless of mode
+      // Close modal immediately
+      onClose();
+      
+      // Reset state after modal closes
       setTimeout(() => {
-        form.reset({
-          type_id: '',
-          concept_id: '',
-          created_at: new Date().toISOString().split('T')[0],
-          amount: 0,
-          currency: 'ARS',
-          wallet_id: '',
-          description: '',
-          related_contact_id: '',
-          related_task_id: ''
-        });
         setSelectedTypeId('');
         setCurrentStep(0);
         setContactOpen(false);
         setSelectedFile(null);
         setContactSearch('');
-      }, 100);
-      
-      onClose();
+      }, 200);
     },
     onError: (error) => {
       console.error('Error with movement:', error);
