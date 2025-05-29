@@ -415,46 +415,41 @@ export default function DashboardTimeline() {
       {/* Five horizontal timeline lines - one aligned with each sidebar button center */}
       {/* Line 1 - Organization */}
       <div 
-        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
+        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 120px)', // Organization button center
-          height: '1px'
+          top: 'calc(50% - 144px)' // Organization button center
         }}
       ></div>
       
       {/* Line 2 - Bitácora */}
       <div 
-        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
+        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 60px)', // Bitácora button center
-          height: '1px'
+          top: 'calc(50% - 72px)' // Bitácora button center
         }}
       ></div>
       
       {/* Line 3 - Proyectos (Center) */}
       <div 
-        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
+        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: '50%', // Center line - Proyectos button
-          height: '1px'
+          top: '50%' // Center line - Proyectos button
         }}
       ></div>
       
       {/* Line 4 - Finanzas */}
       <div 
-        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
+        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 60px)', // Finanzas button center
-          height: '1px'
+          top: 'calc(50% + 72px)' // Finanzas button center
         }}
       ></div>
       
       {/* Line 5 - Presupuestos */}
       <div 
-        className="fixed left-0 right-0 bg-white z-20 pointer-events-none"
+        className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 120px)', // Presupuestos button center
-          height: '1px'
+          top: 'calc(50% + 144px)' // Presupuestos button center
         }}
       ></div>
 
