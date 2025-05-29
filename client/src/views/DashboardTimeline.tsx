@@ -28,9 +28,7 @@ export default function DashboardTimeline() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [isMouseNearEdge, setIsMouseNearEdge] = useState<'left' | 'right' | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
   
   const { projectId, organizationId } = useUserContextStore();
 
@@ -201,49 +199,7 @@ export default function DashboardTimeline() {
     }
   }, [timelineNodes, timelineMode]);
 
-  // Auto-scroll when mouse is near edges
-  useEffect(() => {
-    if (!isMouseNearEdge) return;
 
-    const scroll = () => {
-      const scrollAmount = isMouseNearEdge === 'right' ? 8 : -8; // Increased speed
-      if (timelineRef.current) {
-        const newPosition = timelineRef.current.scrollLeft + scrollAmount;
-        timelineRef.current.scrollLeft = newPosition;
-        setScrollPosition(newPosition);
-      }
-      animationRef.current = requestAnimationFrame(scroll);
-    };
-
-    animationRef.current = requestAnimationFrame(scroll);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isMouseNearEdge]);
-
-  // Handle mouse movement for edge detection
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = timelineRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const x = e.clientX - rect.left;
-    const edgeThreshold = 100;
-
-    if (x < edgeThreshold) {
-      setIsMouseNearEdge('left');
-    } else if (x > rect.width - edgeThreshold) {
-      setIsMouseNearEdge('right');
-    } else {
-      setIsMouseNearEdge(null);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setIsMouseNearEdge(null);
-  };
 
   // Format date based on timeline mode
   const formatDate = (date: Date) => {
@@ -271,7 +227,7 @@ export default function DashboardTimeline() {
   };
 
   return (
-    <div className="h-screen w-full bg-background overflow-hidden flex flex-col">
+    <div className="h-screen w-full bg-background overflow-hidden relative">
       {/* Minimal top controls */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[9999]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
@@ -310,18 +266,15 @@ export default function DashboardTimeline() {
       {/* Infinite horizontal timeline */}
       <div 
         ref={timelineRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        className="absolute inset-0 overflow-x-auto overflow-y-hidden scrollbar-hide z-0"
         style={{ 
-          scrollBehavior: 'auto',
-          cursor: isMouseNearEdge ? (isMouseNearEdge === 'right' ? 'e-resize' : 'w-resize') : 'default'
+          scrollBehavior: 'auto'
         }}
       >
         <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
           {/* Vertical current date line */}
           <div 
-            className="absolute top-0 bottom-0 w-px bg-primary z-20"
+            className="absolute top-0 bottom-0 w-px bg-black z-20"
             style={{ left: '50%' }}
           />
           
@@ -342,11 +295,11 @@ export default function DashboardTimeline() {
                 transform: 'translateY(-50%)'
               }}
             >
-              {/* Date labels - top and bottom */}
-              <div className="absolute top-2 text-xs font-medium text-foreground/50">
+              {/* Date labels - screen edges */}
+              <div className="fixed top-2 left-1/2 transform -translate-x-1/2 text-xs font-medium text-foreground/25">
                 {formatDate(node.date)}
               </div>
-              <div className="absolute bottom-2 text-xs font-medium text-foreground/50">
+              <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 text-xs font-medium text-foreground/25">
                 {formatDate(node.date)}
               </div>
 
