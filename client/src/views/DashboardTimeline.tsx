@@ -29,9 +29,20 @@ interface TimelineNode {
 export default function DashboardTimeline() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [scrollPosition, setScrollPosition] = useState(0);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [sidebarButtonPositions, setSidebarButtonPositions] = useState<Record<string, number>>({});
   const timelineRef = useRef<HTMLDivElement>(null);
+  
+  // Days per page based on mode
+  const getDaysPerPage = () => {
+    switch (timelineMode) {
+      case 'hours': return 1;
+      case 'days': return 7;
+      case 'weeks': return 28; // 4 weeks
+      case 'months': return 90; // ~3 months
+      default: return 7;
+    }
+  };
   
   const { projectId, organizationId } = useUserContextStore();
   const { setView, setSection, currentSection } = useNavigationStore();
@@ -231,15 +242,14 @@ export default function DashboardTimeline() {
       });
       
       if (todayNode) {
-        // Center on today's actual position
-        const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
-        timelineRef.current.scrollLeft = centerPosition;
-        setScrollPosition(centerPosition);
-      } else {
-        // Fallback to center of timeline
-        const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
-        timelineRef.current.scrollLeft = centerPosition;
-        setScrollPosition(centerPosition);
+        // Find today's page index for pagination
+        const todayIndex = timelineNodes.findIndex(node => {
+          const nodeDate = new Date(node.date);
+          return nodeDate.toDateString() === new Date().toDateString();
+        });
+        if (todayIndex !== -1) {
+          setCurrentPageIndex(Math.floor(todayIndex / getDaysPerPage()));
+        }
       }
     }
   }, [timelineNodes, timelineMode]);
@@ -315,13 +325,14 @@ export default function DashboardTimeline() {
                   });
                   
                   if (todayNode) {
-                    const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
-                    timelineRef.current.scrollLeft = centerPosition;
-                    setScrollPosition(centerPosition);
-                  } else {
-                    const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
-                    timelineRef.current.scrollLeft = centerPosition;
-                    setScrollPosition(centerPosition);
+                    // Find today's page index
+                    const todayIndex = timelineNodes.findIndex(node => {
+                      const nodeDate = new Date(node.date);
+                      return nodeDate.toDateString() === today.toDateString();
+                    });
+                    if (todayIndex !== -1) {
+                      setCurrentPageIndex(Math.floor(todayIndex / getDaysPerPage()));
+                    }
                   }
                 }
               }}
@@ -395,7 +406,7 @@ export default function DashboardTimeline() {
                 {(() => {
                   const eventsByType = {
                     sitelog: node.events.filter(e => e.type === 'sitelog'),     // Bitácora line
-                    contacts: node.events.filter(e => e.type === 'contacts'),   // Agenda line  
+                    task: node.events.filter(e => e.type === 'task'),           // Agenda line  
                     movement: node.events.filter(e => e.type === 'movement'),   // Finanzas line
                     milestone: node.events.filter(e => e.type === 'milestone')  // Presupuestos line
                   };
