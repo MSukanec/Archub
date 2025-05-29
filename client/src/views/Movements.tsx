@@ -523,7 +523,13 @@ export default function Movements() {
                 {filteredMovements.map((movement) => (
                   <TableRow key={movement.id} className="hover:bg-muted/50">
                     <TableCell>
-                      {format(new Date(movement.created_at_local || movement.created_at), 'dd/MM/yyyy', { locale: es })}
+                      {(() => {
+                        const dateStr = movement.created_at_local || movement.created_at;
+                        // Parse the date string without timezone conversion
+                        const dateParts = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                        const [year, month, day] = dateParts.split('-');
+                        return `${day}/${month}/${year}`;
+                      })()}
                     </TableCell>
                     <TableCell>
                       {movement.movement_concepts?.parent_id ? 

@@ -118,6 +118,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .order('name');
       
       console.log('Categories result:', { data, error });
+      console.log('Number of categories found:', data?.length || 0);
       
       if (error) throw error;
       return data || [];
@@ -431,11 +432,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {movementCategories.map((category) => (
-                                <SelectItem key={category.id} value={category.id}>
-                                  {category.name}
-                                </SelectItem>
-                              ))}
+                              {movementCategories.length === 0 ? (
+                                <div className="p-2 text-sm text-gray-500">No hay categorías disponibles</div>
+                              ) : (
+                                movementCategories.map((category) => (
+                                  <SelectItem key={category.id} value={category.id}>
+                                    {category.name}
+                                  </SelectItem>
+                                ))
+                              )}
                             </SelectContent>
                           </Select>
                           <FormMessage />

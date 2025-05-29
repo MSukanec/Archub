@@ -260,7 +260,7 @@ function DashboardTimeline() {
               }
             }
           }}
-          className="h-[60px] w-[60px] rounded-full bg-[#e1e1e1] hover:bg-[#d1d1d1] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-95 flex items-center justify-center group"
+          className="h-[60px] w-[60px] rounded-full bg-[#e1e1e1] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-95 flex items-center justify-center group"
         >
           <span className="text-sm font-medium text-[#919191]">HOY</span>
         </button>
