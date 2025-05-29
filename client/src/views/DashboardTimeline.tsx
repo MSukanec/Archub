@@ -251,13 +251,13 @@ export default function DashboardTimeline() {
                 const currentIndex = modes.indexOf(prev);
                 return modes[Math.max(0, currentIndex - 1)];
               })}
-              className="w-8 h-8 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] flex items-center justify-center transition-colors group"
               disabled={timelineMode === 'hours'}
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-4 h-4 text-[#919191] group-hover:text-white" />
             </button>
             
-            <span className="text-sm font-medium min-w-[60px] text-center">
+            <span className="text-sm font-medium min-w-[60px] text-center text-[#919191]">
               {getTimelineModeLabel()}
             </span>
             
@@ -267,10 +267,10 @@ export default function DashboardTimeline() {
                 const currentIndex = modes.indexOf(prev);
                 return modes[Math.min(modes.length - 1, currentIndex + 1)];
               })}
-              className="w-8 h-8 rounded-full bg-muted hover:bg-primary/10 flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] flex items-center justify-center transition-colors group"
               disabled={timelineMode === 'months'}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-[#919191] group-hover:text-white" />
             </button>
           </div>
         </div>
@@ -407,9 +407,6 @@ export default function DashboardTimeline() {
           >
             <div className="w-6 h-6 rounded-full bg-primary border-4 border-background shadow-lg flex items-center justify-center">
               <div className="w-2 h-2 rounded-full bg-white" />
-            </div>
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-xs font-medium text-primary">
-              Hoy
             </div>
           </div>
         </div>
