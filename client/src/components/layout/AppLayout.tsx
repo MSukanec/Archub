@@ -152,6 +152,9 @@ export default function AppLayout() {
       
       <SecondarySidebar />
       
+      {/* Floating Action Button */}
+      <FloatingActionButton />
+      
       <CreateProjectModal 
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
