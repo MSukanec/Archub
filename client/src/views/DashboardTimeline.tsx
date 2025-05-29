@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, FolderOpen } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useNavigationStore } from '@/stores/navigationStore';
+import CircularButton from '@/components/ui/CircularButton';
 
 interface TimelineEvent {
   id: string;
@@ -31,6 +33,7 @@ export default function DashboardTimeline() {
   const timelineRef = useRef<HTMLDivElement>(null);
   
   const { projectId, organizationId } = useUserContextStore();
+  const { setView } = useNavigationStore();
 
   // Fetch timeline data
   const { data: timelineData = [] } = useQuery({
@@ -228,8 +231,18 @@ export default function DashboardTimeline() {
 
   return (
     <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden z-0">
-      {/* Minimal top controls */}
+      {/* Projects button at top */}
       <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
+        <CircularButton
+          icon={FolderOpen}
+          isActive={false}
+          onClick={() => setView('projects-overview')}
+          label="Proyectos"
+        />
+      </div>
+
+      {/* Timeline controls at bottom */}
+      <div className="fixed bottom-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
           <div className="flex items-center gap-4">
             <button
