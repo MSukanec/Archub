@@ -85,7 +85,7 @@ export default function PrimarySidebar() {
   });
 
   return (
-    <div className="w-[56px] bg-[#d2d2d2] flex flex-col">
+    <div className="w-[56px] bg-[#d2d2d2] flex flex-col relative z-[9998]">
       {/* Dashboard button - fixed at top */}
       <div className="flex items-center justify-center pt-2.5 pl-2.5">
         <CircularButton
@@ -116,7 +116,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Bottom buttons section */}
-      <div className="flex items-center space-x-2 pb-2.5 pl-2.5">
+      <div className="flex items-center space-x-4 pb-2.5 pl-2.5">
         {/* Profile button */}
         <CircularButton
           icon={User}

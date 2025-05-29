@@ -273,7 +273,7 @@ export default function DashboardTimeline() {
   return (
     <div className="h-screen w-full bg-background overflow-hidden flex flex-col">
       {/* Minimal top controls */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[9999]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
           <div className="flex items-center gap-4">
             <button
