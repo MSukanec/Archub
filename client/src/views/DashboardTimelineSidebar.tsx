@@ -16,20 +16,74 @@ export default function DashboardTimelineSidebar() {
   const [activeCategory, setActiveCategory] = useState<string>('proyectos');
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  // Generar fechas para el timeline (30 días centrados en hoy)
+  // Generar fechas para el timeline según el modo
   const today = new Date();
-  const dates = [];
-  for (let i = -15; i <= 15; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    dates.push({
-      date,
-      position: i * 150 + 1500 // Posición en píxeles (centro en 1500px)
-    });
-  }
+  const dates: { date: Date; position: number }[] = [];
+  
+  const getDateRange = () => {
+    switch (timelineMode) {
+      case 'hours':
+        // 24 horas (desde -12 hasta +12)
+        for (let i = -12; i <= 12; i++) {
+          const date = new Date(today);
+          date.setHours(today.getHours() + i);
+          dates.push({
+            date,
+            position: i * 120 + 1500
+          });
+        }
+        break;
+      case 'weeks':
+        // 12 semanas (desde -6 hasta +6)
+        for (let i = -6; i <= 6; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + (i * 7));
+          dates.push({
+            date,
+            position: i * 200 + 1500
+          });
+        }
+        break;
+      case 'months':
+        // 12 meses (desde -6 hasta +6)
+        for (let i = -6; i <= 6; i++) {
+          const date = new Date(today);
+          date.setMonth(today.getMonth() + i);
+          dates.push({
+            date,
+            position: i * 250 + 1500
+          });
+        }
+        break;
+      default: // 'days'
+        // 30 días (desde -15 hasta +15)
+        for (let i = -15; i <= 15; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          dates.push({
+            date,
+            position: i * 150 + 1500
+          });
+        }
+        break;
+    }
+  };
+  
+  getDateRange();
 
   const formatDate = (date: Date) => {
-    return date.getDate().toString();
+    switch (timelineMode) {
+      case 'hours':
+        return date.getHours().toString().padStart(2, '0') + ':00';
+      case 'weeks':
+        return `S${Math.ceil(date.getDate() / 7)}`;
+      case 'months':
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
+                           'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        return monthNames[date.getMonth()];
+      default: // 'days'
+        return date.getDate().toString();
+    }
   };
 
   const getTimelineModeLabel = () => {
@@ -42,12 +96,12 @@ export default function DashboardTimelineSidebar() {
     }
   };
 
-  // Auto-scroll al centro (día de hoy) cuando se monta el componente
+  // Auto-scroll al centro cuando se monta el componente o cambia el modo
   useEffect(() => {
     if (timelineRef.current) {
-      timelineRef.current.scrollLeft = 1350; // Centrar en el día de hoy
+      timelineRef.current.scrollLeft = 1350; // Centrar en el día/hora/semana/mes actual
     }
-  }, []);
+  }, [timelineMode]); // Se ejecuta cuando cambia el modo del timeline
 
   // Eventos de ejemplo para demostrar funcionalidad
   const getEventsForDay = (dayOffset: number) => {
