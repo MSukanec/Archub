@@ -41,6 +41,7 @@ const sectionConfig = {
     items: [
       { view: 'dashboard-main' as View, icon: Home, label: 'Principal' },
       { view: 'dashboard-timeline' as View, icon: Activity, label: 'Timeline' },
+      { view: 'dashboard-timeline-sidebar' as View, icon: BarChart3, label: 'Timeline con Sidebar' },
     ],
   },
   organization: {
