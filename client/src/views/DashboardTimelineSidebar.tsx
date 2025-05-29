@@ -27,31 +27,31 @@ const SIDEBAR_BUTTONS = [
     id: 'presupuestos' as SidebarCategory, 
     label: 'Presupuestos', 
     icon: Target,
-    offsetPx: -96 // 96px arriba del centro (space-y-12 = 48px * 2)
+    offsetVh: -12 // 12vh arriba del centro
   },
   { 
     id: 'movimientos' as SidebarCategory, 
     label: 'Movimientos', 
     icon: DollarSign,
-    offsetPx: -48 // 48px arriba del centro
+    offsetVh: -6 // 6vh arriba del centro
   },
   { 
     id: 'proyectos' as SidebarCategory, 
     label: 'Proyectos', 
     icon: Calendar,
-    offsetPx: 0 // Centro exacto
+    offsetVh: 0 // Centro exacto
   },
   { 
     id: 'bitacora' as SidebarCategory, 
     label: 'Bitácora', 
     icon: FileText,
-    offsetPx: 48 // 48px debajo del centro
+    offsetVh: 6 // 6vh debajo del centro
   },
   { 
     id: 'ejecucion' as SidebarCategory, 
     label: 'Ejecución', 
     icon: Wrench,
-    offsetPx: 96 // 96px debajo del centro
+    offsetVh: 12 // 12vh debajo del centro
   }
 ];
 
@@ -397,37 +397,40 @@ export default function DashboardTimelineSidebar() {
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden flex" style={{ backgroundColor: '#d1d1d1' }}>
       {/* Left Sidebar */}
-      <div className="w-20 flex flex-col justify-center relative z-10 pl-2">
-        <div className="flex flex-col items-center space-y-12">
-          {SIDEBAR_BUTTONS.map((button) => {
-            const isActive = activeCategory === button.id;
-            const Icon = button.icon;
-            
-            return (
-              <div key={button.id} className="relative group">
-                <button
-                  onClick={() => setActiveCategory(button.id)}
-                  className="relative w-12 h-12 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
-                  style={{ 
-                    backgroundColor: isActive ? '#000000' : '#e0e0e0',
-                    color: isActive ? '#ffffff' : '#919191'
-                  }}
-                >
-                  <Icon className="w-5 h-5" />
-                </button>
-                
-                {/* Tooltip que aparece al hacer hover */}
-                <div className="absolute left-full ml-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-                  <div className="bg-black text-white px-3 py-1 rounded text-sm whitespace-nowrap">
-                    {button.label}
-                  </div>
+      <div className="w-20 relative z-10 pl-2">
+        {SIDEBAR_BUTTONS.map((button) => {
+          const isActive = activeCategory === button.id;
+          const Icon = button.icon;
+          
+          return (
+            <div 
+              key={button.id} 
+              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 group"
+              style={{ 
+                top: `calc(50% + ${button.offsetVh}vh)`,
+                left: '40px' // Centrado en el sidebar
+              }}
+            >
+              <button
+                onClick={() => setActiveCategory(button.id)}
+                className="relative w-12 h-12 rounded-full transition-all duration-200 hover:shadow-lg flex items-center justify-center"
+                style={{ 
+                  backgroundColor: isActive ? '#000000' : '#e0e0e0',
+                  color: isActive ? '#ffffff' : '#919191'
+                }}
+              >
+                <Icon className="w-5 h-5" />
+              </button>
+              
+              {/* Tooltip que aparece al hacer hover */}
+              <div className="absolute left-full ml-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+                <div className="bg-black text-white px-3 py-1 rounded text-sm whitespace-nowrap">
+                  {button.label}
                 </div>
-                
-
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Main Timeline Area */}
@@ -496,7 +499,7 @@ export default function DashboardTimelineSidebar() {
                 key={`line-${button.id}`}
                 className="absolute left-0 right-0 h-px z-10"
                 style={{ 
-                  top: `calc(50% + ${button.offsetPx}px)`, // Posición exacta en píxeles
+                  top: `calc(50% + ${button.offsetVh}vh)`, // Posición porcentual del viewport
                   background: button.id === 'proyectos' 
                     ? '#000000' // Línea sólida para el timeline principal
                     : `repeating-linear-gradient(
@@ -554,7 +557,7 @@ export default function DashboardTimelineSidebar() {
                         <div
                           key={button.id}
                           className="absolute left-1/2 transform -translate-x-1/2"
-                          style={{ top: `${button.offsetPx}px` }}
+                          style={{ top: `${button.offsetVh}vh` }}
                         >
                           <div className="group relative">
                             {/* Event indicator */}
