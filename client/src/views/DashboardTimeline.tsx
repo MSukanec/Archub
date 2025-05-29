@@ -194,11 +194,25 @@ export default function DashboardTimeline() {
 
   // Center timeline on today when component mounts
   useEffect(() => {
-    if (timelineRef.current) {
-      // Center the timeline on "today" (position 0 in our coordinate system)
-      const centerPosition = timelineRef.current.scrollWidth / 2 - timelineRef.current.clientWidth / 2;
-      timelineRef.current.scrollLeft = centerPosition;
-      setScrollPosition(centerPosition);
+    if (timelineRef.current && timelineNodes.length > 0) {
+      // Find today's position in the timeline
+      const today = new Date();
+      const todayNode = timelineNodes.find(node => {
+        const nodeDate = new Date(node.date);
+        return nodeDate.toDateString() === today.toDateString();
+      });
+      
+      if (todayNode) {
+        // Center on today's actual position
+        const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
+        timelineRef.current.scrollLeft = centerPosition;
+        setScrollPosition(centerPosition);
+      } else {
+        // Fallback to center of timeline
+        const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
+        timelineRef.current.scrollLeft = centerPosition;
+        setScrollPosition(centerPosition);
+      }
     }
   }, [timelineNodes, timelineMode]);
 
@@ -246,31 +260,31 @@ export default function DashboardTimeline() {
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setTimelineMode(prev => {
-                const modes: TimelineMode[] = ['hours', 'days', 'weeks', 'months'];
-                const currentIndex = modes.indexOf(prev);
-                return modes[Math.max(0, currentIndex - 1)];
-              })}
-              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] flex items-center justify-center transition-colors group"
-              disabled={timelineMode === 'hours'}
+              onClick={() => {
+                const today = new Date();
+                setCurrentDate(today);
+                
+                // Find and center on today's position
+                if (timelineRef.current && timelineNodes.length > 0) {
+                  const todayNode = timelineNodes.find(node => {
+                    const nodeDate = new Date(node.date);
+                    return nodeDate.toDateString() === today.toDateString();
+                  });
+                  
+                  if (todayNode) {
+                    const centerPosition = 9000 + todayNode.position - (timelineRef.current.clientWidth / 2);
+                    timelineRef.current.scrollLeft = centerPosition;
+                    setScrollPosition(centerPosition);
+                  } else {
+                    const centerPosition = 9000 - (timelineRef.current.clientWidth / 2);
+                    timelineRef.current.scrollLeft = centerPosition;
+                    setScrollPosition(centerPosition);
+                  }
+                }
+              }}
+              className="px-4 py-2 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group"
             >
-              <Minus className="w-4 h-4 text-[#919191] group-hover:text-white" />
-            </button>
-            
-            <span className="text-sm font-medium min-w-[60px] text-center text-[#919191]">
-              {getTimelineModeLabel()}
-            </span>
-            
-            <button
-              onClick={() => setTimelineMode(prev => {
-                const modes: TimelineMode[] = ['hours', 'days', 'weeks', 'months'];
-                const currentIndex = modes.indexOf(prev);
-                return modes[Math.min(modes.length - 1, currentIndex + 1)];
-              })}
-              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] flex items-center justify-center transition-colors group"
-              disabled={timelineMode === 'months'}
-            >
-              <Plus className="w-4 h-4 text-[#919191] group-hover:text-white" />
+              <span className="text-sm font-medium text-[#919191] group-hover:text-white">HOY</span>
             </button>
           </div>
         </div>
