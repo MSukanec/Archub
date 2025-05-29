@@ -365,10 +365,10 @@ export default function DashboardTimeline() {
                 {/* Group events by type */}
                 {(() => {
                   const eventsByType = {
-                    sitelog: node.events.filter(e => e.type === 'sitelog'),
-                    movement: node.events.filter(e => e.type === 'movement'),
-                    task: node.events.filter(e => e.type === 'task'),
-                    milestone: node.events.filter(e => e.type === 'milestone')
+                    sitelog: node.events.filter(e => e.type === 'sitelog'),     // Bitácora line
+                    task: node.events.filter(e => e.type === 'task'),           // Proyectos line  
+                    movement: node.events.filter(e => e.type === 'movement'),   // Finanzas line
+                    milestone: node.events.filter(e => e.type === 'milestone')  // Presupuestos line
                   };
 
                   const getEventPosition = (type: string) => {
@@ -376,15 +376,10 @@ export default function DashboardTimeline() {
                     const nodeCenter = node.position + 9000; // Timeline node absolute position
                     
                     switch (type) {
-                      case 'organization': 
-                        return sidebarButtonPositions.organization 
-                          ? { top: `${sidebarButtonPositions.organization - window.innerHeight / 2}px` }
-                          : { top: '0px' };
                       case 'sitelog': 
                         return sidebarButtonPositions.sitelog 
                           ? { top: `${sidebarButtonPositions.sitelog - window.innerHeight / 2}px` }
                           : { top: '0px' };
-                      case 'project': 
                       case 'task': 
                         return sidebarButtonPositions.projects 
                           ? { top: `${sidebarButtonPositions.projects - window.innerHeight / 2}px` }
@@ -393,7 +388,6 @@ export default function DashboardTimeline() {
                         return sidebarButtonPositions.movements 
                           ? { top: `${sidebarButtonPositions.movements - window.innerHeight / 2}px` }
                           : { top: '0px' };
-                      case 'budget': 
                       case 'milestone': 
                         return sidebarButtonPositions.budgets 
                           ? { top: `${sidebarButtonPositions.budgets - window.innerHeight / 2}px` }
@@ -411,16 +405,15 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="absolute left-1/2 transform -translate-x-1/2"
+                        className="absolute left-1/2 transform -translate-x-1/2 z-30"
                         style={getEventPosition(type)}
                       >
                         <div className="group relative">
                           {/* Large event indicator */}
                           <div 
-                            className="w-10 h-10 rounded-full border-3 border-background shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
-                            style={{ backgroundColor: firstEvent.color }}
+                            className="w-10 h-10 rounded-full border-2 border-black bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
                           >
-                            <Icon className="w-5 h-5 text-white" />
+                            <Icon className="w-5 h-5 text-black" />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
