@@ -389,7 +389,7 @@ export default function DashboardTimeline() {
               <div 
                 className="fixed text-xs font-medium text-foreground/25"
                 style={{
-                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile - 20}px` : 'auto',
+                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile + 30}px` : 'auto',
                   bottom: sidebarButtonPositions.profile ? 'auto' : '60px',
                   left: `calc(50% + ${node.position}px)`,
                   transform: 'translateX(-50%)'
@@ -493,15 +493,15 @@ export default function DashboardTimeline() {
                           top: (() => {
                             switch (type) {
                               case 'sitelog': 
-                                return sidebarButtonPositions.sitelog || 325;
+                                return sidebarButtonPositions.sitelog ? `${sidebarButtonPositions.sitelog}px` : '325px';
                               case 'task':
-                                return sidebarButtonPositions.contacts || 393;
+                                return sidebarButtonPositions.contacts ? `${sidebarButtonPositions.contacts}px` : '393px';
                               case 'movement':
-                                return sidebarButtonPositions.movements || 461;
+                                return sidebarButtonPositions.movements ? `${sidebarButtonPositions.movements}px` : '461px';
                               case 'milestone':
-                                return sidebarButtonPositions.budgets || 529;
+                                return sidebarButtonPositions.budgets ? `${sidebarButtonPositions.budgets}px` : '529px';
                               default:
-                                return 400;
+                                return '400px';
                             }
                           })(),
                           transform: 'translateX(-50%) translateY(-50%)',
@@ -511,9 +511,9 @@ export default function DashboardTimeline() {
                         <div className="group relative">
                           {/* Large event indicator */}
                           <div 
-                            className="w-10 h-10 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            className="w-16 h-16 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
                           >
-                            <Icon className="w-5 h-5 text-[#919191]" />
+                            <Icon className="w-7 h-7 text-[#919191]" />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
