@@ -417,7 +417,7 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 144px)' // Organization button center
+          top: 'calc(50% - 96px)' // Organization button center (space-y-6 = 24px * 4 = 96px)
         }}
       ></div>
       
@@ -425,7 +425,7 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% - 72px)' // Bitácora button center
+          top: 'calc(50% - 48px)' // Bitácora button center (space-y-6 = 24px * 2 = 48px)
         }}
       ></div>
       
@@ -441,7 +441,7 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 72px)' // Finanzas button center
+          top: 'calc(50% + 48px)' // Finanzas button center (space-y-6 = 24px * 2 = 48px)
         }}
       ></div>
       
@@ -449,7 +449,7 @@ export default function DashboardTimeline() {
       <div 
         className="fixed left-0 right-0 h-px bg-border z-20 pointer-events-none"
         style={{ 
-          top: 'calc(50% + 144px)' // Presupuestos button center
+          top: 'calc(50% + 96px)' // Presupuestos button center (space-y-6 = 24px * 4 = 96px)
         }}
       ></div>
 

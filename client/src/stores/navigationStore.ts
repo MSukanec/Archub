@@ -39,7 +39,7 @@ interface NavigationState {
 }
 
 const sectionViewMap: Record<Section, View> = {
-  dashboard: 'dashboard-main',
+  dashboard: 'dashboard-timeline',
   organization: 'organization-overview',
   projects: 'projects-overview',
   budgets: 'budgets-list',
@@ -52,7 +52,7 @@ const sectionViewMap: Record<Section, View> = {
 
 export const useNavigationStore = create<NavigationState>((set) => ({
   currentSection: 'dashboard',
-  currentView: 'dashboard-main',
+  currentView: 'dashboard-timeline',
   hoveredSection: null,
   setSection: (section) =>
     set({

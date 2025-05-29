@@ -11,12 +11,12 @@ export default function SecondarySidebar() {
     <div className="fixed top-0 right-0 w-16 h-screen z-40 flex flex-col justify-end">
       {/* Bottom buttons section */}
       <div className="flex flex-col items-center space-y-2 pb-2.5 pr-2.5">
-        {/* Timeline button */}
+        {/* Dashboard button */}
         <CircularButton
           icon={Calendar}
           isActive={false}
-          onClick={() => setView('dashboard-timeline')}
-          label="Timeline"
+          onClick={() => setView('dashboard-main')}
+          label="Dashboard"
         />
         
         {/* Admin button - only for admin users */}
