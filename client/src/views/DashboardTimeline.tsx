@@ -372,24 +372,26 @@ export default function DashboardTimeline() {
                   };
 
                   const getEventPosition = (type: string) => {
-                    // Use measured sidebar button positions directly (absolute positioning)
+                    // Calculate relative position from the timeline node center to match sidebar lines
+                    const viewportCenter = window.innerHeight / 2;
+                    
                     switch (type) {
                       case 'sitelog': 
                         return sidebarButtonPositions.sitelog 
-                          ? { top: `${sidebarButtonPositions.sitelog - 20}px` } // Center the event (20px = half event height)
-                          : { top: '0px' };
+                          ? { top: `${sidebarButtonPositions.sitelog - viewportCenter}px` }
+                          : { top: '-64px' };
                       case 'task': 
                         return sidebarButtonPositions.projects 
-                          ? { top: `${sidebarButtonPositions.projects - 20}px` }
+                          ? { top: `${sidebarButtonPositions.projects - viewportCenter}px` }
                           : { top: '0px' };
                       case 'movement': 
                         return sidebarButtonPositions.movements 
-                          ? { top: `${sidebarButtonPositions.movements - 20}px` }
-                          : { top: '0px' };
+                          ? { top: `${sidebarButtonPositions.movements - viewportCenter}px` }
+                          : { top: '64px' };
                       case 'milestone': 
                         return sidebarButtonPositions.budgets 
-                          ? { top: `${sidebarButtonPositions.budgets - 20}px` }
-                          : { top: '0px' };
+                          ? { top: `${sidebarButtonPositions.budgets - viewportCenter}px` }
+                          : { top: '128px' };
                       default: return { top: '0px' };
                     }
                   };
@@ -403,12 +405,8 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="fixed z-20"
-                        style={{
-                          ...getEventPosition(type),
-                          left: `${node.position - scrollPosition + window.innerWidth / 2}px`,
-                          transform: 'translateX(-50%)'
-                        }}
+                        className="absolute left-1/2 transform -translate-x-1/2 z-20"
+                        style={getEventPosition(type)}
                       >
                         <div className="group relative">
                           {/* Large event indicator */}
