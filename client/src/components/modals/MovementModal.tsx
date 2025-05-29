@@ -639,7 +639,18 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 Anterior
               </Button>
 
-              {currentStep === steps.length - 1 ? (
+              <div className="flex gap-2">
+                {currentStep < steps.length - 1 && (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
+                  >
+                    Siguiente
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
+                )}
+                
                 <Button 
                   type="button"
                   onClick={() => form.handleSubmit(onSubmit)()}
@@ -648,16 +659,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 >
                   {isLoading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear')}
                 </Button>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
-                >
-                  Siguiente
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              )}
+              </div>
             </div>
           </form>
         </Form>
