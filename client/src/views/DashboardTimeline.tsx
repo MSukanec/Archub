@@ -464,9 +464,9 @@ export default function DashboardTimeline() {
                           return sidebarButtonPositions.sitelog 
                             ? `${sidebarButtonPositions.sitelog - timelineNodeCenter - 20}px`  // -20px to center the 40px event
                             : '-64px';
-                        case 'contacts':
-                          return sidebarButtonPositions.contacts 
-                            ? `${sidebarButtonPositions.contacts - timelineNodeCenter - 20}px`
+                        case 'task':
+                          return sidebarButtonPositions.agenda 
+                            ? `${sidebarButtonPositions.agenda - timelineNodeCenter - 20}px`
                             : '0px';
                         case 'movement':
                           return sidebarButtonPositions.movements 
