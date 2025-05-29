@@ -37,8 +37,6 @@ export default function CircularButton({
         flex items-center justify-center 
         transition-all duration-200 
         hover:scale-110 
-        border-2 border-white 
-        shadow-lg
         ${isActive 
           ? 'bg-black' 
           : 'bg-[#e1e1e1]'

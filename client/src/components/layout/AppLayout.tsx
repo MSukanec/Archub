@@ -139,13 +139,9 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <div 
-        className="flex"
-        onMouseEnter={() => setSecondarySidebarVisible(true)}
-        onMouseLeave={() => setSecondarySidebarVisible(false)}
-      >
+      <div className="flex">
         <PrimarySidebar />
-        <SecondarySidebar />
+        {/* <SecondarySidebar /> - Temporalmente desactivado */}
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">

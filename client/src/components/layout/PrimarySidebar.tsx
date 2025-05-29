@@ -88,13 +88,6 @@ export default function PrimarySidebar() {
 
   return (
     <div className="w-[56px] bg-[#d2d2d2] flex flex-col">
-      {/* Header area - Logo */}
-      <div className="h-[56px] flex items-center justify-center">
-        <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-          <span className="text-white font-bold text-sm">M</span>
-        </div>
-      </div>
-      
       {/* Top Navigation Icons */}
       <div className="flex flex-col items-center pt-6 space-y-4">
         {topNavigationItems.map(({ section, icon, label }) => (
@@ -111,16 +104,6 @@ export default function PrimarySidebar() {
       
       {/* Bottom Navigation Icons */}
       <div className="flex flex-col items-center pb-6 space-y-4">
-        {/* Plan button */}
-        <CircularButton
-          icon={getPlanIcon(userPlan?.[0]?.name || '')}
-          isActive={currentSection === 'profile'}
-          onClick={() => {
-            setSection('profile');
-            window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
-          }}
-        />
-        
         {bottomNavigationItems.map(({ section, icon }) => {
           // Hide admin section for non-admin users
           if (section === 'admin' && user?.role !== 'admin') {
@@ -136,13 +119,6 @@ export default function PrimarySidebar() {
             />
           );
         })}
-        
-        {/* Notifications */}
-        <CircularButton
-          icon={Bell}
-          isActive={currentSection === 'profile'}
-          onClick={() => setSection('profile')}
-        />
         
         {/* Profile Avatar */}
         <CircularButton
