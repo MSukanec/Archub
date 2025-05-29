@@ -203,7 +203,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .from('site_movements')
           .update({
             concept_id: data.concept_id,
-            created_at: data.created_at + 'T00:00:00.000Z',
+            created_at: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,
@@ -224,7 +224,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .insert([{
             project_id: projectId,
             concept_id: data.concept_id,
-            created_at: data.created_at + 'T00:00:00.000Z',
+            created_at: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,
