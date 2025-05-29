@@ -52,7 +52,7 @@ import { cn } from '@/lib/utils';
 const movementSchema = z.object({
   type_id: z.string().min(1, 'Tipo es requerido'),
   concept_id: z.string().min(1, 'Categoría es requerida'),
-  date: z.string().min(1, 'Fecha es requerida'),
+  created_at: z.string().min(1, 'Fecha es requerida'),
   description: z.string().optional(),
   amount: z.number().min(0.01, 'Monto debe ser mayor a 0'),
   currency: z.enum(['ARS', 'USD']),
@@ -152,7 +152,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     defaultValues: {
       type_id: '',
       concept_id: '',
-      date: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString().split('T')[0],
       description: '',
       amount: 0,
       currency: 'ARS',
@@ -169,7 +169,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       form.reset({
         type_id: movement.movement_concepts?.parent_id || movement.concept_id,
         concept_id: movement.concept_id || '',
-        date: movement.created_at ? movement.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        created_at: movement.created_at ? movement.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
         description: movement.description || '',
         amount: movement.amount || 0,
         currency: movement.currency || 'ARS',
@@ -182,7 +182,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       form.reset({
         type_id: '',
         concept_id: '',
-        date: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString().split('T')[0],
         description: '',
         amount: 0,
         currency: 'ARS',
@@ -203,7 +203,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .from('site_movements')
           .update({
             concept_id: data.concept_id,
-            date: data.date,
+            created_at: data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,
@@ -373,7 +373,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     {/* Fecha */}
                     <FormField
                       control={form.control}
-                      name="date"
+                      name="created_at"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[#333333]">Fecha *</FormLabel>
