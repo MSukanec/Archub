@@ -116,7 +116,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Bottom buttons section */}
-      <div className="flex flex-col items-center space-y-2 pb-2.5 pl-2.5">
+      <div className="flex items-center pb-2.5 pl-2.5">
         {/* Profile button */}
         <CircularButton
           icon={User}
@@ -124,27 +124,6 @@ export default function PrimarySidebar() {
           onClick={() => setSection('profile')}
           label="Perfil"
         />
-        
-        {/* Timeline nuevo button (temporal) */}
-        <CircularButton
-          icon={Calendar}
-          isActive={false}
-          onClick={() => {
-            setSection('dashboard');
-            setView('dashboard-timeline');
-          }}
-          label="Timeline Nuevo"
-        />
-        
-        {/* Admin button - only for admin users */}
-        {user?.role === 'admin' && (
-          <CircularButton
-            icon={Shield}
-            isActive={currentSection === 'admin'}
-            onClick={() => setSection('admin')}
-            label="Administración"
-          />
-        )}
       </div>
     </div>
   );

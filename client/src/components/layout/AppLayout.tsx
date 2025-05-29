@@ -136,16 +136,15 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <div className="flex">
-        <PrimarySidebar />
-        {/* <SecondarySidebar /> - Temporalmente desactivado */}
-      </div>
+      <PrimarySidebar />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-6 relative">
           <ViewComponent />
         </main>
       </div>
+      
+      <SecondarySidebar />
       
       <CreateProjectModal 
         isOpen={isCreateModalOpen}
