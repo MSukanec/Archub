@@ -81,70 +81,32 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const isEditing = !!movement;
 
-  // Force complete reset whenever modal mounts/unmounts
-  useEffect(() => {
-    if (!isOpen) {
-      // Clear everything when closed
-      setCurrentStep(0);
-      setContactOpen(false);
-      setSelectedFile(null);
-      setContactSearch('');
-      setSelectedTypeId('');
-      
-      // Force clear form
-      form.reset({
-        type_id: '',
-        concept_id: '',
-        created_at: new Date().toISOString().split('T')[0],
-        amount: 0,
-        currency: 'ARS',
-        wallet_id: '',
-        description: '',
-        related_contact_id: '',
-        related_task_id: ''
-      });
-      return;
-    }
+  const form = useForm<MovementForm>({
+    resolver: zodResolver(movementSchema),
+    defaultValues: {
+      type_id: '',
+      concept_id: '',
+      created_at: new Date().toISOString().split('T')[0],
+      amount: 0,
+      currency: 'ARS',
+      wallet_id: '',
+      description: '',
+      related_contact_id: '',
+      related_task_id: ''
+    },
+  });
 
-    // When opening, set up fresh state
-    setCurrentStep(0);
-    setContactOpen(false);
-    setSelectedFile(null);
-    setContactSearch('');
-    
-    if (movement) {
+  // Simple reset on modal state change
+  useEffect(() => {
+    if (isOpen && movement) {
       // Editing mode
       const typeId = movement.movement_concepts?.parent_id || '';
       setSelectedTypeId(typeId);
-      
-      // Set form values for editing
-      form.reset({
-        type_id: typeId,
-        concept_id: movement.concept_id || '',
-        created_at: movement.created_at_local?.split('T')[0] || '',
-        amount: movement.amount,
-        currency: movement.currency,
-        wallet_id: movement.wallet_id,
-        description: movement.description || '',
-        related_contact_id: movement.related_contact_id || '',
-        related_task_id: movement.related_task_id || ''
-      });
-    } else {
-      // Creating mode - fresh form
+    } else if (isOpen) {
+      // Creating mode
       setSelectedTypeId('');
-      form.reset({
-        type_id: '',
-        concept_id: '',
-        created_at: new Date().toISOString().split('T')[0],
-        amount: 0,
-        currency: 'ARS',
-        wallet_id: '',
-        description: '',
-        related_contact_id: '',
-        related_task_id: ''
-      });
     }
-  }, [isOpen, movement, form]);
+  }, [isOpen, movement]);
 
   const steps = [
     { title: 'Información Básica', icon: FileText },
@@ -213,77 +175,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen,
   });
 
-  const form = useForm<MovementForm>({
-    resolver: zodResolver(movementSchema),
-    defaultValues: {
-      type_id: '',
-      concept_id: '',
-      created_at: new Date().toISOString().split('T')[0],
-      description: '',
-      amount: 0,
-      currency: 'ARS',
-      wallet_id: '',
-      related_contact_id: '',
-      related_task_id: '',
-    },
-  });
 
-  // Reset form when modal opens/closes or movement changes
-  useEffect(() => {
-    if (isOpen) {
-      if (movement && isEditing) {
-        // Load existing movement data
-        const typeId = movement.movement_concepts?.parent_id || '';
-        const conceptId = movement.concept_id || '';
-        
-        // Reset form with proper values first
-        form.reset({
-          type_id: typeId,
-          concept_id: conceptId,
-          created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          description: movement.description || '',
-          amount: movement.amount || 0,
-          currency: movement.currency || 'ARS',
-          wallet_id: movement.wallet_id || '',
-          related_contact_id: movement.related_contact_id || '',
-          related_task_id: movement.related_task_id || '',
-        });
-        
-        // Set the selected type after form reset to trigger category loading
-        setTimeout(() => {
-          setSelectedTypeId(typeId);
-        }, 0);
-      } else {
-        // Reset for new movement
-        setSelectedTypeId('');
-        form.reset({
-          type_id: '',
-          concept_id: '',
-          created_at: new Date().toISOString().split('T')[0],
-          description: '',
-          amount: 0,
-          currency: 'ARS',
-          wallet_id: '',
-          related_contact_id: '',
-          related_task_id: '',
-        });
-      }
-    } else {
-      // Clear everything when modal closes
-      setSelectedTypeId('');
-      form.reset({
-        type_id: '',
-        concept_id: '',
-        created_at: new Date().toISOString().split('T')[0],
-        description: '',
-        amount: 0,
-        currency: 'ARS',
-        wallet_id: '',
-        related_contact_id: '',
-        related_task_id: '',
-      });
-    }
-  }, [isOpen, movement, isEditing, form]);
+
+
 
   // Handle keyboard shortcuts
   useEffect(() => {
