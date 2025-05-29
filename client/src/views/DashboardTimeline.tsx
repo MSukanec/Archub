@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, FolderOpen, Contact, FolderKanban } from 'lucide-react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useNavigationStore } from '@/stores/navigationStore';
+import { Home, FolderKanban, FileText, DollarSign, Target, Users } from 'lucide-react';
 import CircularButton from '@/components/ui/CircularButton';
+import { useNavigationStore } from '@/stores/navigationStore';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { supabase } from '@/lib/supabase';
+
+type TimelineMode = 'hours' | 'days' | 'weeks' | 'months';
 
 interface TimelineEvent {
   id: string;
   date: Date;
-  type: 'sitelog' | 'movement' | 'task' | 'milestone';
+  type: 'sitelog' | 'task' | 'movement' | 'milestone';
   title: string;
   description?: string;
   amount?: number;
@@ -18,15 +20,13 @@ interface TimelineEvent {
   color: string;
 }
 
-type TimelineMode = 'hours' | 'days' | 'weeks' | 'months';
-
 interface TimelineNode {
   date: Date;
   events: TimelineEvent[];
   position: number;
 }
 
-export default function DashboardTimeline() {
+function DashboardTimeline() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -95,8 +95,6 @@ export default function DashboardTimeline() {
           color: '#10B981'
         });
       });
-
-
 
       return events.sort((a, b) => a.date.getTime() - b.date.getTime());
     },
@@ -212,8 +210,6 @@ export default function DashboardTimeline() {
     }
   }, [timelineNodes, timelineMode]);
 
-
-
   // Format date based on timeline mode
   const formatDate = (date: Date) => {
     switch (timelineMode) {
@@ -240,7 +236,7 @@ export default function DashboardTimeline() {
   };
 
   return (
-    <div className="timeline-container relative h-screen w-full bg-background overflow-hidden">
+    <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden">
       {/* Proyectos button at top */}
       <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
         <CircularButton
@@ -419,214 +415,6 @@ export default function DashboardTimeline() {
         );
       })()}
 
-      {/* Infinite horizontal timeline */}
-      <div 
-        ref={timelineRef}
-        className="absolute inset-0 overflow-x-auto overflow-y-hidden scrollbar-hide z-0"
-        style={{ 
-          scrollBehavior: 'auto'
-        }}
-      >
-        <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
-          {/* Timeline nodes */}
-          {timelineNodes.map((node, index) => (
-            <div
-              key={index}
-              className="absolute flex flex-col items-center"
-              style={{ 
-                left: `calc(50% + ${node.position}px)`,
-                top: '50%',
-                transform: 'translateY(-50%)'
-              }}
-            >
-              {/* Date labels - aligned with dashboard and profile buttons */}
-              <div 
-                className="absolute text-xs font-medium text-foreground/25 z-30"
-                style={{
-                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard + 30}px` : '60px',
-                  left: `calc(50% + ${node.position}px)`,
-                  transform: 'translateX(-50%)'
-                }}
-              >
-                {formatDate(node.date)}
-              </div>
-              <div 
-                className="absolute text-xs font-medium text-foreground/25 z-30"
-                style={{
-                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile - 20}px` : 'calc(100% - 60px)',
-                  left: `calc(50% + ${node.position}px)`,
-                  transform: 'translateX(-50%)'
-                }}
-              >
-                {formatDate(node.date)}
-              </div>
-
-              {/* Events positioned by type */}
-              <div className="relative">
-                {/* Group events by type */}
-                {(() => {
-                  const eventsByType = {
-                    sitelog: node.events.filter(e => e.type === 'sitelog'),     // Bitácora line
-                    task: node.events.filter(e => e.type === 'task'),           // Agenda line  
-                    movement: node.events.filter(e => e.type === 'movement'),   // Finanzas line
-                    milestone: node.events.filter(e => e.type === 'milestone')  // Presupuestos line
-                  };
-
-                  const getEventPosition = (type: string) => {
-                    // Position events to align exactly with their corresponding sidebar button centers
-                    // Convert absolute sidebar button position to relative position within the timeline node
-                    
-                    switch (type) {
-                      case 'sitelog': 
-                        if (sidebarButtonPositions.sitelog) {
-                          // Calculate offset from the timeline node center (which is at 50vh)
-                          const timelineNodeCenter = window.innerHeight / 2;
-                          const offset = sidebarButtonPositions.sitelog - timelineNodeCenter;
-                          return { top: `${offset}px` };
-                        }
-                        return { top: '-64px' };
-                      case 'contacts': 
-                        if (sidebarButtonPositions.contacts) {
-                          const timelineNodeCenter = window.innerHeight / 2;
-                          const offset = sidebarButtonPositions.contacts - timelineNodeCenter;
-                          return { top: `${offset}px` };
-                        }
-                        return { top: '0px' };
-                      case 'movement': 
-                        if (sidebarButtonPositions.movements) {
-                          const timelineNodeCenter = window.innerHeight / 2;
-                          const offset = sidebarButtonPositions.movements - timelineNodeCenter;
-                          return { top: `${offset}px` };
-                        }
-                        return { top: '64px' };
-                      case 'milestone': 
-                        if (sidebarButtonPositions.budgets) {
-                          const timelineNodeCenter = window.innerHeight / 2;
-                          const offset = sidebarButtonPositions.budgets - timelineNodeCenter;
-                          return { top: `${offset}px` };
-                        }
-                        return { top: '128px' };
-                      default: return { top: '0px' };
-                    }
-                  };
-
-                  return Object.entries(eventsByType).map(([type, events]) => {
-                    if (events.length === 0) return null;
-
-                    const firstEvent = events[0];
-                    const Icon = firstEvent.icon;
-
-                    // Calculate position relative to the timeline node center to align with horizontal lines
-                    const getEventTop = () => {
-                      const timelineNodeCenter = window.innerHeight / 2; // Timeline nodes are centered vertically
-                      
-                      switch (type) {
-                        case 'sitelog':
-                          if (sidebarButtonPositions.sitelog) {
-                            console.log('Sitelog button position:', sidebarButtonPositions.sitelog);
-                            console.log('Timeline center:', timelineNodeCenter);
-                            const offset = sidebarButtonPositions.sitelog - timelineNodeCenter - 20;
-                            console.log('Calculated offset for sitelog:', offset);
-                            return `${offset}px`;
-                          }
-                          return '-64px';
-                        case 'task':
-                          return sidebarButtonPositions.contacts 
-                            ? `${sidebarButtonPositions.contacts - timelineNodeCenter - 20}px`
-                            : '0px';
-                        case 'movement':
-                          return sidebarButtonPositions.movements 
-                            ? `${sidebarButtonPositions.movements - timelineNodeCenter - 20}px`
-                            : '64px';
-                        case 'milestone':
-                          return sidebarButtonPositions.budgets 
-                            ? `${sidebarButtonPositions.budgets - timelineNodeCenter - 20}px`
-                            : '128px';
-                        default:
-                          return '0px';
-                      }
-                    };
-
-                    return (
-                      <div
-                        key={type}
-                        className="absolute"
-                        style={{
-                          left: `calc(50% + ${node.position}px)`,
-                          top: `${getEventPosition(type)}px`,
-                          transform: 'translate(-50%, -50%)',
-                          zIndex: 50
-                        }}
-                      >
-                        <div className="group relative" style={{ zIndex: 50 }}>
-                          {/* Large event indicator */}
-                          <div 
-                            className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
-                            style={{ zIndex: 50 }}
-                          >
-                            <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
-                            
-                            {/* Badge for multiple events */}
-                            {events.length > 1 && (
-                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
-                                <span className="text-xs text-white font-bold">
-                                  {events.length}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Hover cards */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
-                            {/* Invisible bridge to prevent hover loss */}
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full h-2"></div>
-                            <div className="flex flex-col gap-2">
-                              {events.slice(0, 3).map((event, eventIndex) => (
-                                <button
-                                  key={eventIndex}
-                                  onClick={() => {
-                                    console.log('Event card clicked:', event);
-                                  }}
-                                  className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <event.icon className="w-4 h-4 text-[#919191]" />
-                                    <div className="flex-1 text-left">
-                                      <div className="text-xs font-medium text-[#919191]">{event.title}</div>
-                                      <div className="text-xs text-[#919191]/70 truncate">
-                                        {event.description && event.description.length > 20 
-                                          ? `${event.description.substring(0, 20)}...` 
-                                          : event.description}
-                                      </div>
-                                      {event.amount && (
-                                        <div className="text-xs text-[#919191]/70">
-                                          ${event.amount.toLocaleString()}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </button>
-                              ))}
-                              {events.length > 3 && (
-                                <div className="text-xs text-[#919191]/70 text-center px-2">
-                                  +{events.length - 3} eventos más
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
-            </div>
-          ))}
-
-
-        </div>
-      </div>
-
       {/* Five horizontal timeline lines - dynamically positioned based on sidebar button measurements */}
       {Object.keys(sidebarButtonPositions).length > 0 && (
         <>
@@ -695,6 +483,171 @@ export default function DashboardTimeline() {
         }}
       ></div>
 
+      {/* Infinite horizontal timeline */}
+      <div 
+        ref={timelineRef}
+        className="absolute inset-0 overflow-x-auto overflow-y-hidden scrollbar-hide z-0"
+        style={{ 
+          scrollBehavior: 'auto'
+        }}
+      >
+        <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
+          {/* Timeline nodes */}
+          {timelineNodes.map((node, index) => (
+            <div
+              key={index}
+              className="absolute flex flex-col items-center"
+              style={{ 
+                left: `calc(50% + ${node.position}px)`,
+                top: '50%',
+                transform: 'translateY(-50%)'
+              }}
+            >
+              {/* Date labels - positioned absolutely within the timeline container */}
+              <div 
+                className="absolute text-xs font-medium text-foreground/25 z-30"
+                style={{
+                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2 + 30}px` : '-300px',
+                  left: '0',
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                {formatDate(node.date)}
+              </div>
+              <div 
+                className="absolute text-xs font-medium text-foreground/25 z-30"
+                style={{
+                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile - 20}px` : '60px',
+                  left: '0',
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                {formatDate(node.date)}
+              </div>
+
+              {/* Events positioned by type */}
+              <div className="relative">
+                {/* Group events by type */}
+                {(() => {
+                  const eventsByType = {
+                    sitelog: node.events.filter(e => e.type === 'sitelog'),     // Bitácora line
+                    task: node.events.filter(e => e.type === 'task'),           // Agenda line  
+                    movement: node.events.filter(e => e.type === 'movement'),   // Finanzas line
+                    milestone: node.events.filter(e => e.type === 'milestone')  // Presupuestos line
+                  };
+
+                  const getEventPosition = (type: string) => {
+                    switch (type) {
+                      case 'sitelog': 
+                        if (sidebarButtonPositions.sitelog) {
+                          const timelineNodeCenter = window.innerHeight / 2;
+                          const offset = sidebarButtonPositions.sitelog - timelineNodeCenter;
+                          return offset;
+                        }
+                        return -64;
+                      case 'task':
+                        return sidebarButtonPositions.contacts 
+                          ? sidebarButtonPositions.contacts - (window.innerHeight / 2)
+                          : 0;
+                      case 'movement':
+                        return sidebarButtonPositions.movements 
+                          ? sidebarButtonPositions.movements - (window.innerHeight / 2)
+                          : 64;
+                      case 'milestone':
+                        return sidebarButtonPositions.budgets 
+                          ? sidebarButtonPositions.budgets - (window.innerHeight / 2)
+                          : 128;
+                      default:
+                        return 0;
+                    }
+                  };
+
+                  return Object.entries(eventsByType).map(([type, events]) => {
+                    if (events.length === 0) return null;
+
+                    const firstEvent = events[0];
+                    const Icon = firstEvent.icon;
+
+                    return (
+                      <div
+                        key={type}
+                        className="absolute"
+                        style={{
+                          left: '0',
+                          top: `${getEventPosition(type)}px`,
+                          transform: 'translate(-50%, -50%)',
+                          zIndex: 50
+                        }}
+                      >
+                        <div className="group relative" style={{ zIndex: 50 }}>
+                          {/* Event indicator */}
+                          <div 
+                            className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            style={{ zIndex: 50 }}
+                          >
+                            <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
+                            
+                            {/* Badge for multiple events */}
+                            {events.length > 1 && (
+                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
+                                <span className="text-xs text-white font-bold">
+                                  {events.length}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Hover cards */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                            {/* Invisible bridge to prevent hover loss */}
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full h-2"></div>
+                            <div className="flex flex-col gap-2">
+                              {events.slice(0, 3).map((event, eventIndex) => (
+                                <button
+                                  key={eventIndex}
+                                  onClick={() => {
+                                    console.log('Event card clicked:', event);
+                                  }}
+                                  className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <event.icon className="w-4 h-4 text-[#919191]" />
+                                    <div className="flex-1 text-left">
+                                      <div className="text-xs font-medium text-[#919191]">{event.title}</div>
+                                      <div className="text-xs text-[#919191]/70 truncate">
+                                        {event.description && event.description.length > 20 
+                                          ? `${event.description.substring(0, 20)}...` 
+                                          : event.description}
+                                      </div>
+                                      {event.amount && (
+                                        <div className="text-xs text-[#919191]/70">
+                                          ${event.amount.toLocaleString()}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </button>
+                              ))}
+                              {events.length > 3 && (
+                                <div className="text-xs text-[#919191]/70 text-center px-2">
+                                  +{events.length - 3} eventos más
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
+
+export default DashboardTimeline;
