@@ -3,30 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 15%; /* #262626 */
-  --foreground: 0 0% 98%; /* #fafafa */
-  --muted: 0 0% 20%; /* #333333 */
-  --muted-foreground: 240 4% 64%; /* #a3a3a3 */
-  --popover: 0 0% 16%; /* #282828 */
-  --popover-foreground: 0 0% 98%; /* #fafafa */
-  --card: 0 0% 16%; /* #282828 */
-  --card-foreground: 0 0% 98%; /* #fafafa */
-  --border: 0 0% 30%; /* #4d4d4d */
-  --input: 0 0% 30%; /* #4d4d4d */
+  --background: 0 0% 82%; /* #d2d2d2 */
+  --foreground: 0 0% 9%; /* #171717 */
+  --muted: 0 0% 88%; /* #e1e1e1 */
+  --muted-foreground: 0 0% 45%; /* #737373 */
+  --popover: 0 0% 98%; /* #fafafa */
+  --popover-foreground: 0 0% 9%; /* #171717 */
+  --card: 0 0% 98%; /* #fafafa */
+  --card-foreground: 0 0% 9%; /* #171717 */
+  --border: 0 0% 89%; /* #e4e4e4 */
+  --input: 0 0% 89%; /* #e4e4e4 */
   --primary: 15 96% 57%; /* #f5502e */
   --primary-foreground: 0 0% 100%; /* #ffffff */
-  --secondary: 0 0% 30%; /* #4d4d4d */
-  --secondary-foreground: 0 0% 98%; /* #fafafa */
-  --accent: 0 0% 30%; /* #4d4d4d */
-  --accent-foreground: 0 0% 98%; /* #fafafa */
+  --secondary: 0 0% 89%; /* #e4e4e4 */
+  --secondary-foreground: 0 0% 9%; /* #171717 */
+  --accent: 0 0% 89%; /* #e4e4e4 */
+  --accent-foreground: 0 0% 9%; /* #171717 */
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 98%; /* #fafafa */
   --ring: 15 96% 57%; /* #f5502e */
   --radius: 0.5rem;
   
   /* Surface variations for better hierarchy */
-  --surface: 0 0% 16%; /* #282828 */
-  --surface-light: 0 0% 30%; /* #4d4d4d */
+  --surface: 0 0% 98%; /* #fafafa */
+  --surface-light: 0 0% 95%; /* #f2f2f2 */
 }
 
 /* Custom scrollbar styles */
