@@ -389,7 +389,7 @@ export default function DashboardTimeline() {
               <div 
                 className="fixed text-xs font-medium text-foreground/25"
                 style={{
-                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile + 30}px` : 'auto',
+                  top: sidebarButtonPositions.profile ? `${sidebarButtonPositions.profile - 20}px` : 'auto',
                   bottom: sidebarButtonPositions.profile ? 'auto' : '60px',
                   left: `calc(50% + ${node.position}px)`,
                   transform: 'translateX(-50%)'
@@ -487,33 +487,19 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="fixed"
+                        className="absolute left-1/2 transform -translate-x-1/2"
                         style={{
-                          left: `calc(50% + ${node.position}px)`,
-                          top: (() => {
-                            switch (type) {
-                              case 'sitelog': 
-                                return sidebarButtonPositions.sitelog ? `${sidebarButtonPositions.sitelog}px` : '325px';
-                              case 'task':
-                                return sidebarButtonPositions.contacts ? `${sidebarButtonPositions.contacts}px` : '393px';
-                              case 'movement':
-                                return sidebarButtonPositions.movements ? `${sidebarButtonPositions.movements}px` : '461px';
-                              case 'milestone':
-                                return sidebarButtonPositions.budgets ? `${sidebarButtonPositions.budgets}px` : '529px';
-                              default:
-                                return '400px';
-                            }
-                          })(),
-                          transform: 'translateX(-50%) translateY(-50%)',
+                          top: getEventTop(),
                           zIndex: 50
                         }}
                       >
-                        <div className="group relative">
+                        <div className="group relative" style={{ zIndex: 50 }}>
                           {/* Large event indicator */}
                           <div 
-                            className="w-16 h-16 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            className="w-10 h-10 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            style={{ zIndex: 50 }}
                           >
-                            <Icon className="w-7 h-7 text-[#919191]" />
+                            <Icon className="w-5 h-5 text-[#919191]" />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
@@ -525,74 +511,28 @@ export default function DashboardTimeline() {
                             )}
                           </div>
 
-                          {/* Hover popover with clickable cards */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
-                            <div className="bg-card border border-border rounded-lg shadow-xl p-2 min-w-[280px] max-w-[320px]">
-                              <div className="text-xs text-muted-foreground mb-2 text-center font-medium">
-                                {node.date.toLocaleDateString('es-ES', { 
-                                  weekday: 'long', 
-                                  year: 'numeric', 
-                                  month: 'long', 
-                                  day: 'numeric' 
-                                })}
+                          {/* Hover tooltip */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-30">
+                            <div className="bg-card border border-border rounded-lg shadow-xl p-3 min-w-[200px]">
+                              <div className="text-xs text-muted-foreground mb-1">
+                                {node.date.toLocaleDateString('es-ES')}
                               </div>
-                              <div className="space-y-1 max-h-64 overflow-y-auto">
-                                {events.map((event, eventIndex) => (
-                                  <div 
-                                    key={eventIndex} 
-                                    className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg p-3 cursor-pointer hover:bg-[#8fc700]/10 hover:border-[#8fc700] transition-all duration-200 group/card"
-                                    onClick={() => {
-                                      console.log('Event clicked:', event);
-                                      // Here we'll add modal opening logic
-                                      if (event.type === 'sitelog') {
-                                        // Open sitelog modal
-                                      } else if (event.type === 'movement') {
-                                        // Open movement modal
-                                      } else if (event.type === 'task') {
-                                        // Open task modal
-                                      }
-                                    }}
-                                  >
-                                    <div className="flex items-start gap-3">
-                                      <div className="flex-shrink-0">
-                                        <div className="w-8 h-8 rounded-full bg-white border border-[#919191]/30 flex items-center justify-center">
-                                          <event.icon className="w-4 h-4 text-[#919191] group-hover/card:text-[#8fc700]" />
-                                        </div>
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-1">
-                                          <h4 className="text-sm font-medium text-foreground group-hover/card:text-[#8fc700] truncate">
-                                            {event.title}
-                                          </h4>
-                                          {event.amount && (
-                                            <span className="text-xs font-medium text-muted-foreground">
-                                              {event.currency === 'USD' ? '$' : '$'}{event.amount.toLocaleString()}
-                                            </span>
-                                          )}
-                                        </div>
-                                        {event.description && (
-                                          <p className="text-xs text-muted-foreground line-clamp-2">
-                                            {event.description}
-                                          </p>
-                                        )}
-                                        <div className="flex items-center justify-between mt-2">
-                                          <span className="text-xs text-muted-foreground">
-                                            {event.date.toLocaleTimeString('es-ES', { 
-                                              hour: '2-digit', 
-                                              minute: '2-digit' 
-                                            })}
-                                          </span>
-                                          <span className="text-xs px-2 py-1 rounded-full bg-white/50 text-[#919191] group-hover/card:bg-[#8fc700]/20 group-hover/card:text-[#8fc700]">
-                                            {event.type === 'sitelog' ? 'Bitácora' : 
-                                             event.type === 'movement' ? 'Movimiento' :
-                                             event.type === 'task' ? 'Tarea' : 'Hito'}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
+                              {events.slice(0, 3).map((event, eventIndex) => (
+                                <div key={eventIndex} className="flex items-center gap-2 mb-1 last:mb-0">
+                                  <event.icon className="w-3 h-3" style={{ color: event.color }} />
+                                  <span className="text-xs font-medium">{event.title}</span>
+                                  {event.amount && (
+                                    <span className="text-xs text-muted-foreground">
+                                      ${event.amount.toLocaleString()}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                              {events.length > 3 && (
+                                <div className="text-xs text-muted-foreground">
+                                  +{events.length - 3} más
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
