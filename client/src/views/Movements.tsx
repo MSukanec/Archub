@@ -678,14 +678,16 @@ export default function Movements() {
         </CardContent>
       </Card>
 
-      {/* Movement Modal */}
-      <MovementModal
-        key={modalKey}
-        isOpen={isMovementModalOpen}
-        onClose={handleCloseModal}
-        movement={editingMovement}
-        projectId={projectId}
-      />
+      {/* Movement Modal - Force complete remount */}
+      {isMovementModalOpen && (
+        <MovementModal
+          key={`movement-modal-${modalKey}-${editingMovement?.id || 'new'}`}
+          isOpen={isMovementModalOpen}
+          onClose={handleCloseModal}
+          movement={editingMovement}
+          projectId={projectId}
+        />
+      )}
 
       {/* Delete Movement Modal */}
       <DeleteMovementModal

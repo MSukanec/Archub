@@ -81,24 +81,70 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const isEditing = !!movement;
 
-  // Reset state when modal opens/closes
+  // Force complete reset whenever modal mounts/unmounts
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) {
+      // Clear everything when closed
       setCurrentStep(0);
       setContactOpen(false);
       setSelectedFile(null);
       setContactSearch('');
+      setSelectedTypeId('');
       
-      if (movement) {
-        // Editing mode
-        const typeId = movement.movement_concepts?.parent_id || '';
-        setSelectedTypeId(typeId);
-      } else {
-        // Creating mode
-        setSelectedTypeId('');
-      }
+      // Force clear form
+      form.reset({
+        type_id: '',
+        concept_id: '',
+        created_at: new Date().toISOString().split('T')[0],
+        amount: 0,
+        currency: 'ARS',
+        wallet_id: '',
+        description: '',
+        related_contact_id: '',
+        related_task_id: ''
+      });
+      return;
     }
-  }, [isOpen, movement]);
+
+    // When opening, set up fresh state
+    setCurrentStep(0);
+    setContactOpen(false);
+    setSelectedFile(null);
+    setContactSearch('');
+    
+    if (movement) {
+      // Editing mode
+      const typeId = movement.movement_concepts?.parent_id || '';
+      setSelectedTypeId(typeId);
+      
+      // Set form values for editing
+      form.reset({
+        type_id: typeId,
+        concept_id: movement.concept_id || '',
+        created_at: movement.created_at_local?.split('T')[0] || '',
+        amount: movement.amount,
+        currency: movement.currency,
+        wallet_id: movement.wallet_id,
+        description: movement.description || '',
+        related_contact_id: movement.related_contact_id || '',
+        related_task_id: movement.related_task_id || ''
+      });
+    } else {
+      // Creating mode - fresh form
+      setSelectedTypeId('');
+      form.reset({
+        type_id: '',
+        concept_id: '',
+        created_at: new Date().toISOString().split('T')[0],
+        amount: 0,
+        currency: 'ARS',
+        wallet_id: '',
+        description: '',
+        related_contact_id: '',
+        related_task_id: ''
+      });
+    }
+  }, [isOpen, movement, form]);
 
   const steps = [
     { title: 'Información Básica', icon: FileText },
