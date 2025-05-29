@@ -55,15 +55,15 @@ export default function FloatingHeader() {
   const views = sectionViews[currentSection];
 
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-40">
-      <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-full px-2 py-1 shadow-lg">
-        <div className="flex items-center space-x-1">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-40" style={{ height: '44px' }}>
+      <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-full px-2 py-1 shadow-lg h-full">
+        <div className="flex items-center space-x-1 h-full">
           {views.map((view) => (
             <button
               key={view.id}
               onClick={() => setView(view.id as any)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 h-9",
                 currentView === view.id
                   ? "bg-black text-white shadow-md"
                   : "text-[#919191] hover:text-[#8fc700] hover:bg-[#8fc700]/10"

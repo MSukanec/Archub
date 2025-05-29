@@ -143,8 +143,10 @@ export default function AppLayout() {
       <FloatingHeader />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-auto p-6 relative">
-          <ViewComponent />
+        <main className="flex-1 overflow-auto relative">
+          <div className="p-[75px]">
+            <ViewComponent />
+          </div>
         </main>
       </div>
       
