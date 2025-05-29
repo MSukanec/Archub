@@ -490,6 +490,17 @@ export default function DashboardTimelineSidebar() {
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden flex" style={{ backgroundColor: '#d1d1d1' }}>
+      {/* LÍNEA ROJA FIJA SIEMPRE VISIBLE - CENTRADA EN PANTALLA */}
+      <div 
+        className="absolute top-0 bottom-0 z-[9999] pointer-events-none"
+        style={{ 
+          left: '50%',
+          width: '6px',
+          background: '#FF0000',
+          transform: 'translateX(-50%)',
+          boxShadow: '0 0 12px rgba(255, 0, 0, 0.5)'
+        }}
+      />
       {/* Left Sidebar */}
       <div className="w-20 relative z-10 pl-2">
         {SIDEBAR_BUTTONS.map((button) => {
@@ -607,23 +618,41 @@ export default function DashboardTimelineSidebar() {
           <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
 
             {/* Líneas horizontales infinitas para cada categoría - DETRÁS de los botones */}
-            {SIDEBAR_BUTTONS.map((button) => (
-              <div
-                key={`line-${button.id}`}
-                className="absolute left-0 right-0 h-px z-0"
-                style={{ 
-                  top: `calc(50% + ${button.offsetVh}vh)`, // Posición porcentual del viewport
-                  background: button.id === 'proyectos' 
-                    ? '#000000' // Línea sólida para el timeline principal
-                    : `repeating-linear-gradient(
-                        to right,
-                        #999999 0px,
-                        #999999 4px,
-                        transparent 4px,
-                        transparent 8px
-                      )`
-                }}
-              />
+            {SIDEBAR_BUTTONS.map((button, buttonIndex) => (
+              <div key={`line-${button.id}`}>
+                {/* Línea horizontal */}
+                <div
+                  className="absolute left-0 right-0 h-px z-0"
+                  style={{ 
+                    top: `calc(50% + ${button.offsetVh}vh)`,
+                    background: button.id === 'proyectos' 
+                      ? '#000000'
+                      : `repeating-linear-gradient(
+                          to right,
+                          #999999 0px,
+                          #999999 4px,
+                          transparent 4px,
+                          transparent 8px
+                        )`
+                  }}
+                />
+                
+                {/* EVENTOS DE PRUEBA VISIBLES - círculos en las líneas */}
+                {[1, 2, 3].map((eventIndex) => (
+                  <div
+                    key={`event-${button.id}-${eventIndex}`}
+                    className="absolute w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center z-40"
+                    style={{
+                      left: `calc(50% + ${(eventIndex - 2) * 200}px)`,
+                      top: `calc(50% + ${button.offsetVh}vh)`,
+                      transform: 'translate(-50%, -50%)',
+                      backgroundColor: ['#10B981', '#8B5CF6', '#F59E0B', '#3B82F6', '#EF4444'][buttonIndex] || '#666666'
+                    }}
+                  >
+                    <button.icon className="w-4 h-4 text-white" />
+                  </div>
+                ))}
+              </div>
             ))}
 
             {/* Timeline nodes con eventos de prueba SIEMPRE VISIBLES */}
