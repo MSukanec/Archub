@@ -27,31 +27,31 @@ const SIDEBAR_BUTTONS = [
     id: 'presupuestos' as SidebarCategory, 
     label: 'Presupuestos', 
     icon: Target,
-    offsetPercent: -10 // 10% arriba del timeline
+    offsetPx: -96 // 96px arriba del centro (space-y-12 = 48px * 2)
   },
   { 
     id: 'movimientos' as SidebarCategory, 
     label: 'Movimientos', 
     icon: DollarSign,
-    offsetPercent: -5 // 5% arriba del timeline
+    offsetPx: -48 // 48px arriba del centro
   },
   { 
     id: 'proyectos' as SidebarCategory, 
     label: 'Proyectos', 
     icon: Calendar,
-    offsetPercent: 0 // Centro (timeline principal)
+    offsetPx: 0 // Centro exacto
   },
   { 
     id: 'bitacora' as SidebarCategory, 
     label: 'Bitácora', 
     icon: FileText,
-    offsetPercent: 5 // 5% debajo del timeline
+    offsetPx: 48 // 48px debajo del centro
   },
   { 
     id: 'ejecucion' as SidebarCategory, 
     label: 'Ejecución', 
     icon: Wrench,
-    offsetPercent: 10 // 10% debajo del timeline
+    offsetPx: 96 // 96px debajo del centro
   }
 ];
 
@@ -496,7 +496,7 @@ export default function DashboardTimelineSidebar() {
                 key={`line-${button.id}`}
                 className="absolute left-0 right-0 h-px z-10"
                 style={{ 
-                  top: `calc(50% + ${button.offsetPercent * 0.8}vh)`, // Ajuste para coincidir con botones
+                  top: `calc(50% + ${button.offsetPx}px)`, // Posición exacta en píxeles
                   background: button.id === 'proyectos' 
                     ? '#000000' // Línea sólida para el timeline principal
                     : `repeating-linear-gradient(
@@ -554,7 +554,7 @@ export default function DashboardTimelineSidebar() {
                         <div
                           key={button.id}
                           className="absolute left-1/2 transform -translate-x-1/2"
-                          style={{ top: `${button.offsetPercent * 0.8}vh` }}
+                          style={{ top: `${button.offsetPx}px` }}
                         >
                           <div className="group relative">
                             {/* Event indicator */}
