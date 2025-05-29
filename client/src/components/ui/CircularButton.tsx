@@ -57,7 +57,7 @@ export default function CircularButton({
           transform-gpu
         `}
         style={{
-          width: isHovered && label && onPlusClick ? '180px' : '44px'
+          width: isHovered && label && onPlusClick ? '185px' : '44px'
         }}
       >
         {/* Botón principal - siempre visible */}
@@ -94,7 +94,7 @@ export default function CircularButton({
               e.stopPropagation();
               if (onPlusClick) onPlusClick();
             }}
-            className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-1 z-50"
+            className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 flex-shrink-0 mr-2.5 z-50"
           >
             <Plus className="w-3 h-3 text-white" />
           </button>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -18,9 +18,7 @@ const topNavigationItems = [
   { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
 ];
 
-const bottomNavigationItems = [
-  { section: 'admin' as Section, icon: Shield, label: 'Administración' },
-];
+
 
 export default function PrimarySidebar() {
   const { currentSection, setSection, setHoveredSection, setView } = useNavigationStore();
@@ -114,33 +112,36 @@ export default function PrimarySidebar() {
             label={label}
           />
         ))}
-        
-        {bottomNavigationItems.map(({ section, icon, label }) => {
-          // Hide admin section for non-admin users
-          if (section === 'admin' && user?.role !== 'admin') {
-            return null;
-          }
-          
-          return (
-            <CircularButton
-              key={section}
-              icon={icon}
-              isActive={currentSection === section}
-              onClick={() => setSection(section)}
-              label={label}
-            />
-          );
-        })}
+
       </div>
       
-      {/* Profile button - fixed at bottom */}
-      <div className="flex items-center justify-center pb-2.5 pl-2.5">
+      {/* Bottom buttons section */}
+      <div className="flex flex-col items-center space-y-2 pb-2.5 pl-2.5">
+        {/* Profile button */}
         <CircularButton
           icon={User}
           isActive={currentSection === 'profile'}
           onClick={() => setSection('profile')}
           label="Perfil"
         />
+        
+        {/* Timeline nuevo button (temporal) */}
+        <CircularButton
+          icon={Calendar}
+          isActive={currentSection === 'timeline-new'}
+          onClick={() => setSection('timeline-new' as Section)}
+          label="Timeline Nuevo"
+        />
+        
+        {/* Admin button - only for admin users */}
+        {user?.role === 'admin' && (
+          <CircularButton
+            icon={Shield}
+            isActive={currentSection === 'admin'}
+            onClick={() => setSection('admin')}
+            label="Administración"
+          />
+        )}
       </div>
     </div>
   );
