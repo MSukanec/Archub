@@ -81,6 +81,25 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const isEditing = !!movement;
 
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(0);
+      setContactOpen(false);
+      setSelectedFile(null);
+      setContactSearch('');
+      
+      if (movement) {
+        // Editing mode
+        const typeId = movement.movement_concepts?.parent_id || '';
+        setSelectedTypeId(typeId);
+      } else {
+        // Creating mode
+        setSelectedTypeId('');
+      }
+    }
+  }, [isOpen, movement]);
+
   const steps = [
     { title: 'Información Básica', icon: FileText },
     { title: 'Relaciones', icon: User },
@@ -327,6 +346,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     form.reset();
     setCurrentStep(0);
     setContactOpen(false);
+    setSelectedTypeId('');
+    setSelectedFile(null);
+    setContactSearch('');
+    
+    // Clear any stale queries
+    queryClient.removeQueries({ queryKey: ['movement-categories'] });
+    
     onClose();
   };
 
