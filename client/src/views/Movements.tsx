@@ -40,6 +40,11 @@ interface Movement {
       name: string;
     };
   };
+  // Joined data from wallets
+  wallets?: {
+    id: string;
+    name: string;
+  };
   contact?: {
     id: string;
     name: string;
@@ -96,10 +101,14 @@ export default function Movements() {
             id,
             name,
             parent_id
+          ),
+          wallets (
+            id,
+            name
           )
         `)
         .eq('project_id', projectId)
-        .order('date', { ascending: false });
+        .order('created_at', { ascending: false });
         
       // Obtener información de los conceptos padre para cada movimiento
       if (data && data.length > 0) {
@@ -523,7 +532,7 @@ export default function Movements() {
                     <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>
                     <TableCell>{movement.description}</TableCell>
                     <TableCell>{movement.currency}</TableCell>
-                    <TableCell>{movement.wallet_id || 'Sin billetera'}</TableCell>
+                    <TableCell>{movement.wallets?.name || 'Sin billetera'}</TableCell>
                     <TableCell>
                       <span className="font-medium text-foreground">
                         {formatCurrency(movement.amount, movement.currency)}

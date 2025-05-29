@@ -224,7 +224,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .insert([{
             project_id: projectId,
             concept_id: data.concept_id,
-            date: data.date,
+            created_at: data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
             currency: data.currency,
