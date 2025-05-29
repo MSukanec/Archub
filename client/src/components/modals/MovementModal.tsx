@@ -240,7 +240,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px] h-[600px] overflow-hidden bg-[#e0e0e0] flex flex-col">
+      <DialogContent className="sm:max-w-[480px] h-[520px] max-h-[85vh] overflow-hidden bg-[#e0e0e0] flex flex-col">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#8fc700] rounded-full flex items-center justify-center">
