@@ -487,15 +487,17 @@ export default function DashboardTimeline() {
                     return (
                       <div
                         key={type}
-                        className="absolute left-1/2 transform -translate-x-1/2 z-30"
+                        className="absolute left-1/2 transform -translate-x-1/2"
                         style={{
-                          top: getEventTop()
+                          top: getEventTop(),
+                          zIndex: 50
                         }}
                       >
-                        <div className="group relative">
+                        <div className="group relative" style={{ zIndex: 50 }}>
                           {/* Large event indicator */}
                           <div 
                             className="w-10 h-10 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            style={{ zIndex: 50 }}
                           >
                             <Icon className="w-5 h-5 text-[#919191]" />
                             
