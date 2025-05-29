@@ -486,9 +486,10 @@ function DashboardTimeline() {
       {/* Infinite horizontal timeline */}
       <div 
         ref={timelineRef}
-        className="absolute inset-0 overflow-x-auto overflow-y-hidden scrollbar-hide z-0"
+        className="absolute inset-0 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ 
-          scrollBehavior: 'auto'
+          scrollBehavior: 'auto',
+          zIndex: 1
         }}
       >
         <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
