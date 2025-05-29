@@ -65,7 +65,9 @@ export default function Movements() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [movementToDelete, setMovementToDelete] = useState<Movement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<string>(new Date().getFullYear().toString());
+  const [dateFilter, setDateFilter] = useState<string>('all');
+  const [customDate, setCustomDate] = useState<string>('');
+  const [filterType, setFilterType] = useState<'all' | 'year' | 'date' | 'custom'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -213,14 +215,30 @@ export default function Movements() {
       
       // Filter by date
       const movementDate = movement.created_at_local ? new Date(movement.created_at_local) : new Date();
-      const movementYear = movementDate.getFullYear();
-      const currentYear = new Date().getFullYear();
       
       let matchesDate = true;
-      if (dateFilter && dateFilter !== 'all') {
-        const filterYear = parseInt(dateFilter);
-        if (!isNaN(filterYear)) {
-          matchesDate = movementYear === filterYear;
+      if (filterType !== 'all') {
+        switch (filterType) {
+          case 'year':
+            if (dateFilter && dateFilter !== 'all') {
+              const filterYear = parseInt(dateFilter);
+              if (!isNaN(filterYear)) {
+                matchesDate = movementDate.getFullYear() === filterYear;
+              }
+            }
+            break;
+          case 'date':
+            if (customDate) {
+              const selectedDate = new Date(customDate);
+              const movementDateOnly = new Date(movementDate.getFullYear(), movementDate.getMonth(), movementDate.getDate());
+              const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+              matchesDate = movementDateOnly.getTime() === selectedDateOnly.getTime();
+            }
+            break;
+          case 'custom':
+            // Para filtros personalizados se puede extender más tarde
+            matchesDate = true;
+            break;
         }
       }
       
@@ -239,7 +257,7 @@ export default function Movements() {
       const dateB = new Date(b.created_at_local || b.created_at);
       return dateB.getTime() - dateA.getTime(); // Newest first
     });
-  }, [movements, searchTerm, dateFilter, typeFilter]);
+  }, [movements, searchTerm, dateFilter, typeFilter, filterType, customDate]);
 
   // Calculate totals by currency
   const totalsByCurrency = useMemo(() => {
@@ -491,12 +509,51 @@ export default function Movements() {
                 className="pl-10 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
               />
             </div>
-            <Input
-              placeholder="Año (ej: 2024)"
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="w-32 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
-            />
+            <div className="flex gap-2">
+              <Select value={filterType} onValueChange={(value: 'all' | 'year' | 'date' | 'custom') => {
+                setFilterType(value);
+                if (value === 'all') {
+                  setDateFilter('all');
+                  setCustomDate('');
+                }
+              }}>
+                <SelectTrigger className="w-28 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
+                  <SelectValue placeholder="Filtro" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todo</SelectItem>
+                  <SelectItem value="year">Año</SelectItem>
+                  <SelectItem value="date">Fecha</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {filterType === 'year' && (
+                <Select value={dateFilter} onValueChange={setDateFilter}>
+                  <SelectTrigger className="w-20 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
+                    <SelectValue placeholder="Año" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 6 }, (_, i) => {
+                      const year = new Date().getFullYear() - i;
+                      return (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {filterType === 'date' && (
+                <Input
+                  type="date"
+                  value={customDate}
+                  onChange={(e) => setCustomDate(e.target.value)}
+                  className="w-36 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
+                />
+              )}
+            </div>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-48 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
                 <SelectValue placeholder="Tipo de movimiento" />
