@@ -96,49 +96,7 @@ export default function DashboardTimeline() {
         });
       });
 
-      // Add some demo events around today for visualization
-      const today = new Date();
-      events.push({
-        id: 'demo-1',
-        date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        type: 'sitelog',
-        title: 'Inicio de Obra',
-        description: 'Comienzo de trabajos de demolición',
-        icon: FileText,
-        color: '#FF4D1C'
-      });
 
-      events.push({
-        id: 'demo-2',
-        date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000), // Yesterday
-        type: 'task',
-        title: 'Instalación Eléctrica',
-        description: 'Finalización de canalizaciones',
-        icon: Target,
-        color: '#8B5CF6'
-      });
-
-      events.push({
-        id: 'demo-3',
-        date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
-        type: 'movement',
-        title: 'Pago Materiales',
-        description: 'Compra de cemento y arena',
-        amount: 150000,
-        currency: 'ARS',
-        icon: DollarSign,
-        color: '#10B981'
-      });
-
-      events.push({
-        id: 'demo-4',
-        date: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-        type: 'milestone',
-        title: 'Revisión Cliente',
-        description: 'Inspección de avance de obra',
-        icon: Users,
-        color: '#F59E0B'
-      });
 
       return events.sort((a, b) => a.date.getTime() - b.date.getTime());
     },
@@ -360,13 +318,19 @@ export default function DashboardTimeline() {
         const today = new Date();
         const todayStr = today.toDateString();
         
-        // Get today's events
-        const todayEvents = timelineData.filter(event => 
+        // Filter events for current project only
+        const projectEvents = timelineData.filter(event => {
+          // Since timelineData is already filtered by projectId in the query, all events should be from current project
+          return true;
+        });
+        
+        // Get today's events from current project
+        const todayEvents = projectEvents.filter(event => 
           new Date(event.date).toDateString() === todayStr
         );
         
-        // Get upcoming events in next 2 days
-        const upcomingEvents = timelineData.filter(event => {
+        // Get upcoming events in next 2 days from current project
+        const upcomingEvents = projectEvents.filter(event => {
           const eventDate = new Date(event.date);
           const daysDiff = Math.ceil((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
           return daysDiff > 0 && daysDiff <= 2;
