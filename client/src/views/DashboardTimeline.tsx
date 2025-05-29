@@ -409,9 +409,9 @@ export default function DashboardTimeline() {
                         return sidebarButtonPositions.sitelog 
                           ? { top: `${sidebarButtonPositions.sitelog - viewportCenter}px` }
                           : { top: '-64px' };
-                      case 'task': 
-                        return sidebarButtonPositions.projects 
-                          ? { top: `${sidebarButtonPositions.projects - viewportCenter}px` }
+                      case 'contacts': 
+                        return sidebarButtonPositions.contacts 
+                          ? { top: `${sidebarButtonPositions.contacts - viewportCenter}px` }
                           : { top: '0px' };
                       case 'movement': 
                         return sidebarButtonPositions.movements 
