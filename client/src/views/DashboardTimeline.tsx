@@ -227,7 +227,7 @@ export default function DashboardTimeline() {
   };
 
   return (
-    <div className="h-screen w-full bg-background overflow-hidden relative">
+    <div className="fixed inset-0 w-screen h-screen bg-background overflow-hidden z-0">
       {/* Minimal top controls */}
       <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-[9999]">
         <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 border border-border/50 shadow-lg">
