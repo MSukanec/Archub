@@ -180,7 +180,7 @@ export default function ProjectsOverview() {
 
       {/* Cards de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Proyectos</p>
@@ -191,7 +191,7 @@ export default function ProjectsOverview() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Proyectos Activos</p>
@@ -202,7 +202,7 @@ export default function ProjectsOverview() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Completados</p>
@@ -213,7 +213,7 @@ export default function ProjectsOverview() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Proyecto Activo</p>

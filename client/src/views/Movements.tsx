@@ -325,7 +325,7 @@ export default function Movements() {
       {/* Summary Cards - Modern Professional Style */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Pesos Argentinos */}
-        <Card className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <Card className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 bg-green-500/10 rounded-xl flex items-center justify-center">
               <span className="text-lg">🇦🇷</span>
@@ -376,7 +376,7 @@ export default function Movements() {
         </Card>
 
         {/* Dólares */}
-        <Card className="rounded-2xl shadow-md bg-muted/10 p-6 border-0">
+        <Card className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 bg-blue-500/10 rounded-xl flex items-center justify-center">
               <span className="text-lg">🇺🇸</span>

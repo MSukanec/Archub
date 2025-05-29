@@ -1,44 +1,22 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useAuthStore } from '@/stores/authStore';
-import { 
-  Users, 
-  Shield, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Crown, 
-  User, 
-  MoreVertical,
-  Mail,
-  Calendar,
-  CheckCircle,
-  XCircle,
-  Settings
-} from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Users, UserPlus, Settings, Mail, Calendar, Crown, Shield, User, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { supabase } from '@/lib/supabase';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface TeamMember {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
+  role: 'owner' | 'admin' | 'member';
   joinedAt: string;
   lastActive: string;
   permissions: {
@@ -78,264 +56,137 @@ interface TeamMember {
   };
 }
 
-const ROLE_CONFIG = {
-  owner: { 
-    icon: Crown, 
-    color: 'text-yellow-400', 
-    bgColor: 'bg-yellow-500/10', 
-    label: 'Propietario' 
+const roleConfig = {
+  owner: {
+    label: 'Propietario',
+    icon: Crown,
+    bgColor: 'bg-amber-500/10',
+    color: 'text-amber-600'
   },
-  admin: { 
-    icon: Shield, 
-    color: 'text-blue-400', 
-    bgColor: 'bg-blue-500/10', 
-    label: 'Administrador' 
+  admin: {
+    label: 'Administrador',
+    icon: Shield,
+    bgColor: 'bg-purple-500/10',
+    color: 'text-purple-600'
   },
-  manager: { 
-    icon: Settings, 
-    color: 'text-green-400', 
-    bgColor: 'bg-green-500/10', 
-    label: 'Manager' 
-  },
-  member: { 
-    icon: User, 
-    color: 'text-gray-400', 
-    bgColor: 'bg-gray-500/10', 
-    label: 'Miembro' 
-  },
+  member: {
+    label: 'Miembro',
+    icon: User,
+    bgColor: 'bg-blue-500/10',
+    color: 'text-blue-600'
+  }
 };
 
 export default function OrganizationTeam() {
   const { organizationId } = useUserContextStore();
-  const { user: currentUser } = useAuthStore();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [expandedMember, setExpandedMember] = useState<number | null>(null);
+  const [expandedMember, setExpandedMember] = useState<string | null>(null);
 
-  // Fetch team members
-  const { data: teamMembers = [], isLoading } = useQuery({
-    queryKey: ['/api/team-members', organizationId],
-    queryFn: async () => {
-      if (!organizationId) return [];
-      
-      console.log('Fetching team members for organization:', organizationId);
-      
-      try {
-        // First, get the organization with owner
-        const { data: orgData, error: orgError } = await supabase
-          .from('organizations')
-          .select(`
-            id,
-            name,
-            created_at,
-            owner_id,
-            owner:users!owner_id(
-              id,
-              first_name,
-              last_name,
-              email,
-              role,
-              created_at
-            )
-          `)
-          .eq('id', organizationId)
-          .single();
-
-        if (orgError) {
-          console.error('Error fetching organization:', orgError);
-          return [];
-        }
-
-        console.log('Organization data:', orgData);
-
-        // Get organization members
-        const { data: membersData, error: membersError } = await supabase
-          .from('organization_members')
-          .select(`
-            id,
-            role,
-            created_at,
-            user_id,
-            organization_id,
-            user:users!user_id(
-              id,
-              first_name,
-              last_name,
-              email,
-              role,
-              created_at
-            )
-          `)
-          .eq('organization_id', organizationId);
-
-        if (membersError) {
-          console.error('Error fetching members:', membersError);
-        }
-
-        console.log('Members data:', membersData);
-
-        // Combine owner and members
-        const allMembers = [];
-        
-        // Add owner
-        if (orgData?.owner) {
-          allMembers.push({
-            id: orgData.owner.id,
-            firstName: orgData.owner.first_name || '',
-            lastName: orgData.owner.last_name || '',
-            email: orgData.owner.email || '',
-            role: 'owner',
-            joinedAt: orgData.created_at,
-            lastActive: new Date().toISOString(),
-            permissions: {
-              projects: { view: true, create: true, edit: true, delete: true },
-              budgets: { view: true, create: true, edit: true, delete: true },
-              sitelog: { view: true, create: true, edit: true, delete: true },
-              movements: { view: true, create: true, edit: true, delete: true },
-              team: { view: true, invite: true, manage: true },
-              reports: { view: true, export: true },
-            }
-          });
-        }
-
-        // Add organization members
-        if (membersData) {
-          membersData.forEach(member => {
-            if (member.user && member.user.id !== orgData?.owner_id) {
-              allMembers.push({
-                id: member.user.id,
-                firstName: member.user.first_name || '',
-                lastName: member.user.last_name || '',
-                email: member.user.email || '',
-                role: member.role || 'member',
-                joinedAt: member.created_at,
-                lastActive: new Date().toISOString(),
-                permissions: {
-                  projects: { view: true, create: member.role === 'admin', edit: member.role === 'admin', delete: false },
-                  budgets: { view: true, create: member.role === 'admin', edit: member.role === 'admin', delete: false },
-                  sitelog: { view: true, create: true, edit: true, delete: false },
-                  movements: { view: true, create: member.role === 'admin', edit: member.role === 'admin', delete: false },
-                  team: { view: true, invite: member.role === 'admin', manage: false },
-                  reports: { view: true, export: member.role === 'admin' },
-                }
-              });
-            }
-          });
-        }
-
-        console.log('Final team members:', allMembers);
-        return allMembers;
-      } catch (error) {
-        console.error('Error in team members query:', error);
-        return [];
-      }
-    },
+  const { data: teamData, isLoading } = useQuery({
+    queryKey: [`/api/organizations/${organizationId}/team`],
     enabled: !!organizationId,
+    refetchOnWindowFocus: false,
   });
 
-  // Update member permissions
-  const updatePermissionsMutation = useMutation({
-    mutationFn: async ({ memberId, permissions }: { memberId: number; permissions: any }) => {
-      // This would update permissions in the database
-      console.log('Updating permissions for member:', memberId, permissions);
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Permisos actualizados',
-        description: 'Los permisos del miembro han sido actualizados correctamente.',
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/team-members'] });
-    },
-  });
-
-  const getRoleConfig = (role: string) => {
-    return ROLE_CONFIG[role as keyof typeof ROLE_CONFIG] || ROLE_CONFIG.member;
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
   };
 
   const getInitials = (firstName: string, lastName: string) => {
-    const first = firstName || '';
-    const last = lastName || '';
-    return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const isCurrentUserOwnerOrAdmin = () => {
-    const currentMember = teamMembers.find(member => member.email === currentUser?.email);
-    return currentMember?.role === 'owner' || currentMember?.role === 'admin';
-  };
-
-  const handlePermissionChange = (memberId: number, section: string, permission: string, checked: boolean) => {
-    // Update permissions logic here
-    console.log('Permission change:', { memberId, section, permission, checked });
-  };
-
-  const PermissionCheckbox = ({ 
-    label, 
-    checked, 
-    onChange, 
-    disabled = false 
-  }: { 
-    label: string; 
-    checked: boolean; 
-    onChange: (checked: boolean) => void;
-    disabled?: boolean;
-  }) => (
-    <div className="flex items-center space-x-2 py-1">
-      <Checkbox 
-        id={label}
-        checked={checked}
-        onCheckedChange={onChange}
-        disabled={disabled}
-        className="h-4 w-4"
-      />
-      <label 
-        htmlFor={label} 
-        className={`text-sm ${disabled ? 'text-muted-foreground' : 'text-foreground'} cursor-pointer`}
-      >
-        {label}
-      </label>
-    </div>
-  );
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-20 bg-muted rounded-lg"></div>
+      <div className="space-y-8">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Skeleton className="w-12 h-12 rounded-full" />
+            <div>
+              <Skeleton className="h-8 w-32 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          </div>
+          <Skeleton className="h-10 w-32" />
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="bg-[#e1e1e1]">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="w-12 h-12 rounded-full" />
+                  <div>
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Team Members Skeleton */}
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="bg-[#e1e1e1]">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="w-12 h-12 rounded-full" />
+                    <div>
+                      <Skeleton className="h-5 w-32 mb-2" />
+                      <Skeleton className="h-4 w-48" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>
     );
   }
 
+  if (!teamData?.organization) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-muted-foreground">No se encontró información del equipo</p>
+      </div>
+    );
+  }
+
+  const teamMembers = teamData.teamMembers || [];
+
   return (
     <div className="space-y-8">
-      {/* Header with icon */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="p-3 bg-primary/10 rounded-full">
-            <Users className="h-8 w-8 text-primary" />
+            <Users className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Equipo</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-semibold text-gray-900">Equipo</h1>
+            <p className="text-sm text-gray-600">
               Gestiona los miembros y permisos de tu organización
             </p>
           </div>
         </div>
+        <Button className="bg-primary hover:bg-primary/90">
+          <UserPlus className="h-4 w-4 mr-2" />
+          Invitar Miembro
+        </Button>
       </div>
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#e1e1e1] border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-full bg-green-50">
@@ -349,11 +200,11 @@ export default function OrganizationTeam() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#e1e1e1] border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-full bg-green-50">
-                <CheckCircle className="h-6 w-6 text-primary" />
+                <Shield className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Activos</p>
@@ -363,7 +214,7 @@ export default function OrganizationTeam() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#e1e1e1] border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-full bg-green-50">
@@ -379,11 +230,11 @@ export default function OrganizationTeam() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#e1e1e1] border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-full bg-green-50">
-                <Shield className="h-6 w-6 text-primary" />
+                <Settings className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Con Permisos</p>
@@ -396,13 +247,15 @@ export default function OrganizationTeam() {
 
       {/* Team Members List */}
       <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900">Miembros del Equipo</h2>
+        
         {teamMembers.map((member) => {
-          const roleConfig = getRoleConfig(member.role);
-          const RoleIcon = roleConfig.icon;
+          const config = roleConfig[member.role] || roleConfig.member;
+          const RoleIcon = config.icon;
           const isExpanded = expandedMember === member.id;
 
           return (
-            <Card key={member.id} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <Card key={member.id} className="bg-[#e1e1e1] border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -418,9 +271,9 @@ export default function OrganizationTeam() {
                         <h3 className="font-semibold text-gray-900">
                           {member.firstName} {member.lastName}
                         </h3>
-                        <Badge className={`${roleConfig.bgColor} ${roleConfig.color} border-0`}>
+                        <Badge className={`${config.bgColor} ${config.color} border-0`}>
                           <RoleIcon className="h-3 w-3 mr-1" />
-                          {roleConfig.label}
+                          {config.label}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
@@ -438,233 +291,55 @@ export default function OrganizationTeam() {
 
                   <div className="flex items-center gap-2">
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       onClick={() => setExpandedMember(isExpanded ? null : member.id)}
-                      className="text-muted-foreground hover:text-foreground"
                     >
-                      {isExpanded ? 'Ocultar Permisos' : 'Ver Permisos'}
+                      Ver Permisos
+                      <ChevronRight className={`h-4 w-4 ml-1 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                     </Button>
-
-                    {isCurrentUserOwnerOrAdmin() && member.role !== 'owner' && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Editar Rol
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Settings className="h-4 w-4 mr-2" />
-                            Configurar Permisos
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Remover del Equipo
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
+                    <Button variant="outline" size="sm">
+                      <Settings className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
 
-                {/* Permissions Panel */}
+                {/* Expanded Permissions */}
                 {isExpanded && (
-                  <>
-                    <Separator className="my-4" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {/* Projects Permissions */}
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                          Proyectos
-                        </h4>
-                        <div className="space-y-2 pl-4">
-                          <PermissionCheckbox
-                            label="Ver proyectos"
-                            checked={member.permissions.projects.view}
-                            onChange={(checked) => handlePermissionChange(member.id, 'projects', 'view', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Crear proyectos"
-                            checked={member.permissions.projects.create}
-                            onChange={(checked) => handlePermissionChange(member.id, 'projects', 'create', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Editar proyectos"
-                            checked={member.permissions.projects.edit}
-                            onChange={(checked) => handlePermissionChange(member.id, 'projects', 'edit', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Eliminar proyectos"
-                            checked={member.permissions.projects.delete}
-                            onChange={(checked) => handlePermissionChange(member.id, 'projects', 'delete', checked)}
-                          />
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="font-medium text-gray-900 mb-4">Permisos del Usuario</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {Object.entries(member.permissions).map(([category, perms]) => (
+                        <div key={category} className="space-y-2">
+                          <h5 className="text-sm font-medium text-gray-700 capitalize">
+                            {category === 'sitelog' ? 'Bitácora' : category}
+                          </h5>
+                          <div className="space-y-1">
+                            {Object.entries(perms).map(([perm, hasPermission]) => (
+                              <div key={perm} className="flex items-center gap-2 text-xs">
+                                <div className={`w-2 h-2 rounded-full ${hasPermission ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                <span className={hasPermission ? 'text-gray-700' : 'text-gray-400'}>
+                                  {perm === 'view' ? 'Ver' : 
+                                   perm === 'create' ? 'Crear' :
+                                   perm === 'edit' ? 'Editar' :
+                                   perm === 'delete' ? 'Eliminar' :
+                                   perm === 'invite' ? 'Invitar' :
+                                   perm === 'manage' ? 'Gestionar' :
+                                   perm === 'export' ? 'Exportar' : perm}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Budgets Permissions */}
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                          Presupuestos
-                        </h4>
-                        <div className="space-y-2 pl-4">
-                          <PermissionCheckbox
-                            label="Ver presupuestos"
-                            checked={member.permissions.budgets.view}
-                            onChange={(checked) => handlePermissionChange(member.id, 'budgets', 'view', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Crear presupuestos"
-                            checked={member.permissions.budgets.create}
-                            onChange={(checked) => handlePermissionChange(member.id, 'budgets', 'create', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Editar presupuestos"
-                            checked={member.permissions.budgets.edit}
-                            onChange={(checked) => handlePermissionChange(member.id, 'budgets', 'edit', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Eliminar presupuestos"
-                            checked={member.permissions.budgets.delete}
-                            onChange={(checked) => handlePermissionChange(member.id, 'budgets', 'delete', checked)}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Site Log Permissions */}
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-                          Bitácora
-                        </h4>
-                        <div className="space-y-2 pl-4">
-                          <PermissionCheckbox
-                            label="Ver bitácora"
-                            checked={member.permissions.sitelog.view}
-                            onChange={(checked) => handlePermissionChange(member.id, 'sitelog', 'view', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Crear entradas"
-                            checked={member.permissions.sitelog.create}
-                            onChange={(checked) => handlePermissionChange(member.id, 'sitelog', 'create', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Editar entradas"
-                            checked={member.permissions.sitelog.edit}
-                            onChange={(checked) => handlePermissionChange(member.id, 'sitelog', 'edit', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Eliminar entradas"
-                            checked={member.permissions.sitelog.delete}
-                            onChange={(checked) => handlePermissionChange(member.id, 'sitelog', 'delete', checked)}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Financial Permissions */}
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
-                          Finanzas
-                        </h4>
-                        <div className="space-y-2 pl-4">
-                          <PermissionCheckbox
-                            label="Ver movimientos"
-                            checked={member.permissions.movements.view}
-                            onChange={(checked) => handlePermissionChange(member.id, 'movements', 'view', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Crear movimientos"
-                            checked={member.permissions.movements.create}
-                            onChange={(checked) => handlePermissionChange(member.id, 'movements', 'create', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Editar movimientos"
-                            checked={member.permissions.movements.edit}
-                            onChange={(checked) => handlePermissionChange(member.id, 'movements', 'edit', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Eliminar movimientos"
-                            checked={member.permissions.movements.delete}
-                            onChange={(checked) => handlePermissionChange(member.id, 'movements', 'delete', checked)}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Team Permissions */}
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-purple-400"></div>
-                          Equipo
-                        </h4>
-                        <div className="space-y-2 pl-4">
-                          <PermissionCheckbox
-                            label="Ver equipo"
-                            checked={member.permissions.team.view}
-                            onChange={(checked) => handlePermissionChange(member.id, 'team', 'view', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Invitar miembros"
-                            checked={member.permissions.team.invite}
-                            onChange={(checked) => handlePermissionChange(member.id, 'team', 'invite', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Gestionar miembros"
-                            checked={member.permissions.team.manage}
-                            onChange={(checked) => handlePermissionChange(member.id, 'team', 'manage', checked)}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Reports Permissions */}
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-                          Reportes
-                        </h4>
-                        <div className="space-y-2 pl-4">
-                          <PermissionCheckbox
-                            label="Ver reportes"
-                            checked={member.permissions.reports.view}
-                            onChange={(checked) => handlePermissionChange(member.id, 'reports', 'view', checked)}
-                          />
-                          <PermissionCheckbox
-                            label="Exportar reportes"
-                            checked={member.permissions.reports.export}
-                            onChange={(checked) => handlePermissionChange(member.id, 'reports', 'export', checked)}
-                          />
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  </>
+                  </div>
                 )}
               </CardContent>
             </Card>
           );
         })}
       </div>
-
-      {/* Empty State */}
-      {teamMembers.length === 0 && (
-        <Card className="bg-[#1e1e1e] border-border">
-          <CardContent className="p-8 text-center">
-            <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              No hay miembros en el equipo
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Comienza invitando a tu primer compañero de trabajo
-            </p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
