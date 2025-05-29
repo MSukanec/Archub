@@ -224,6 +224,23 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     }
   }, [isOpen, movement, isEditing, form]);
 
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+      
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (form.formState.isValid) {
+          form.handleSubmit(onSubmit)();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, form]);
+
   // Create movement mutation
   const createMovementMutation = useMutation({
     mutationFn: async (data: MovementForm) => {
@@ -271,10 +288,19 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['timeline-events'] });
       toast({
         title: isEditing ? "Movimiento actualizado" : "Movimiento creado",
         description: isEditing ? "El movimiento se ha actualizado correctamente." : "El movimiento se ha guardado correctamente.",
       });
+      
+      // Reset form state completely for creating new movements
+      if (!isEditing) {
+        form.reset();
+        setSelectedTypeId('');
+        setCurrentStep(0);
+      }
+      
       onClose();
     },
     onError: (error) => {
