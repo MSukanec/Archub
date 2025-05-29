@@ -496,15 +496,15 @@ export default function DashboardTimeline() {
                         <div className="group relative" style={{ zIndex: 50 }}>
                           {/* Large event indicator */}
                           <div 
-                            className="w-20 h-20 rounded-full border-4 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
                             style={{ zIndex: 50 }}
                           >
-                            <Icon className="w-10 h-10 text-[#919191]" />
+                            <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
-                              <div className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
-                                <span className="text-sm text-white font-bold">
+                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
+                                <span className="text-xs text-white font-bold">
                                   {events.length}
                                 </span>
                               </div>
@@ -512,7 +512,9 @@ export default function DashboardTimeline() {
                           </div>
 
                           {/* Hover cards */}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                            {/* Invisible bridge to prevent hover loss */}
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full h-2"></div>
                             <div className="flex flex-col gap-2">
                               {events.slice(0, 3).map((event, eventIndex) => (
                                 <button
