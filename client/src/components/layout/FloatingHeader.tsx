@@ -9,9 +9,8 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'timeline', label: 'Timeline' }
   ],
   organization: [
-    { id: 'info', label: 'Información' },
-    { id: 'members', label: 'Miembros' },
-    { id: 'settings', label: 'Configuración' }
+    { id: 'organization', label: 'Organización' },
+    { id: 'organization-team', label: 'Equipo' }
   ],
   projects: [
     { id: 'list', label: 'Lista' },
@@ -42,6 +41,11 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
 
 export default function FloatingHeader() {
   const { currentSection, currentView, setView } = useNavigationStore();
+
+  // No mostrar en la vista DashboardTimeline
+  if (currentView === 'dashboard-timeline') {
+    return null;
+  }
 
   // Si no hay sección activa o no tiene vistas, no mostrar nada
   if (!currentSection || !sectionViews[currentSection]) {
