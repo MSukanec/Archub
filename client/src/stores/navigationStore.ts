@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'admin' | 'profile' | 'timeline-new';
+export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'admin' | 'profile';
 export type View = 
   | 'dashboard-main'
   | 'dashboard-timeline'
@@ -27,8 +27,7 @@ export type View =
   | 'profile-info'
   | 'profile-subscription'
   | 'profile-notifications'
-  | 'subscription-tables'
-  | 'timeline-new-main';
+  | 'subscription-tables';
 
 interface NavigationState {
   currentSection: Section;
@@ -49,7 +48,6 @@ const sectionViewMap: Record<Section, View> = {
   contacts: 'contacts',
   admin: 'admin-organizations',
   profile: 'profile-info',
-  'timeline-new': 'timeline-new-main',
 };
 
 export const useNavigationStore = create<NavigationState>((set) => ({
