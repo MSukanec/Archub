@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Clock, Users, DollarSign, FileText, Target, Plus, Minus, Wrench } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { useUserContextStore } from '@/stores/userContextStore';
+import { Calendar, DollarSign, FileText, Target, Plus, Minus, Wrench } from 'lucide-react';
 
 interface TimelineEvent {
   id: string;
@@ -30,7 +27,7 @@ const SIDEBAR_BUTTONS = [
     id: 'presupuestos' as SidebarCategory, 
     label: 'Presupuestos', 
     icon: Target,
-    offsetPercent: -10 // 5% arriba del timeline, luego 5% más arriba
+    offsetPercent: -10 // 10% arriba del timeline
   },
   { 
     id: 'movimientos' as SidebarCategory, 
@@ -42,7 +39,7 @@ const SIDEBAR_BUTTONS = [
     id: 'proyectos' as SidebarCategory, 
     label: 'Proyectos', 
     icon: Calendar,
-    offsetPercent: 0 // Centro (timeline)
+    offsetPercent: 0 // Centro (timeline principal)
   },
   { 
     id: 'bitacora' as SidebarCategory, 
@@ -54,118 +51,136 @@ const SIDEBAR_BUTTONS = [
     id: 'ejecucion' as SidebarCategory, 
     label: 'Ejecución', 
     icon: Wrench,
-    offsetPercent: 10 // 5% debajo del anterior
+    offsetPercent: 10 // 10% debajo del timeline
   }
 ];
 
 export default function DashboardTimelineSidebar() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isMouseNearEdge, setIsMouseNearEdge] = useState<'left' | 'right' | null>(null);
   const [activeCategory, setActiveCategory] = useState<SidebarCategory>('proyectos');
   const timelineRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
-  
-  const { projectId, organizationId } = useUserContextStore();
 
-  // Fetch timeline data
-  const { data: timelineData = [] } = useQuery({
-    queryKey: ['/api/timeline-events', projectId, organizationId],
-    queryFn: async () => {
-      if (!projectId || !organizationId) return [];
-      
-      // Get site logs
-      const { data: siteLogs } = await supabase
-        .from('site_logs')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('date', { ascending: true });
+  // Generate demo events for each category
+  const generateDemoEvents = (): TimelineEvent[] => {
+    const today = new Date();
+    const events: TimelineEvent[] = [];
 
-      // Get movements
-      const { data: movements } = await supabase
-        .from('site_movements')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('date', { ascending: true });
+    // Presupuestos events
+    events.push({
+      id: 'presupuesto-1',
+      date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000),
+      type: 'task',
+      title: 'Presupuesto Inicial',
+      description: 'Cotización de materiales básicos',
+      icon: Target,
+      color: '#8B5CF6'
+    });
 
-      // Convert to timeline events
-      const events: TimelineEvent[] = [];
+    events.push({
+      id: 'presupuesto-2',
+      date: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000),
+      type: 'task',
+      title: 'Revisión de Costos',
+      description: 'Actualización de precios',
+      icon: Target,
+      color: '#8B5CF6'
+    });
 
-      siteLogs?.forEach(log => {
-        events.push({
-          id: `sitelog-${log.id}`,
-          date: new Date(log.date),
-          type: 'sitelog',
-          title: 'Bitácora de Obra',
-          description: log.comments,
-          icon: FileText,
-          color: '#FF4D1C'
-        });
-      });
+    // Movimientos events
+    events.push({
+      id: 'movement-1',
+      date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
+      type: 'movement',
+      title: 'Compra Cemento',
+      description: 'Pago a proveedor',
+      amount: 75000,
+      currency: 'ARS',
+      icon: DollarSign,
+      color: '#10B981'
+    });
 
-      movements?.forEach(movement => {
-        events.push({
-          id: `movement-${movement.id}`,
-          date: new Date(movement.date),
-          type: 'movement',
-          title: 'Movimiento',
-          description: movement.description,
-          amount: movement.amount,
-          currency: movement.currency,
-          icon: DollarSign,
-          color: '#10B981'
-        });
-      });
+    events.push({
+      id: 'movement-2',
+      date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000),
+      type: 'movement',
+      title: 'Pago Mano de Obra',
+      description: 'Salarios semanales',
+      amount: 120000,
+      currency: 'ARS',
+      icon: DollarSign,
+      color: '#10B981'
+    });
 
-      // Add some demo events around today for visualization
-      const today = new Date();
-      events.push({
-        id: 'demo-1',
-        date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
-        type: 'sitelog',
-        title: 'Inicio de Obra',
-        description: 'Comienzo de trabajos de demolición',
-        icon: FileText,
-        color: '#FF4D1C'
-      });
+    // Proyectos events (timeline principal)
+    events.push({
+      id: 'proyecto-1',
+      date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000),
+      type: 'milestone',
+      title: 'Hito del Proyecto',
+      description: 'Finalización de cimientos',
+      icon: Calendar,
+      color: '#F59E0B'
+    });
 
-      events.push({
-        id: 'demo-2',
-        date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000),
-        type: 'task',
-        title: 'Instalación Eléctrica',
-        description: 'Finalización de canalizaciones',
-        icon: Target,
-        color: '#8B5CF6'
-      });
+    events.push({
+      id: 'proyecto-2',
+      date: today,
+      type: 'milestone',
+      title: 'Hoy',
+      description: 'Fecha actual',
+      icon: Calendar,
+      color: '#F59E0B'
+    });
 
-      events.push({
-        id: 'demo-3',
-        date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000),
-        type: 'movement',
-        title: 'Pago Materiales',
-        description: 'Compra de cemento y arena',
-        amount: 150000,
-        currency: 'ARS',
-        icon: DollarSign,
-        color: '#10B981'
-      });
+    // Bitácora events
+    events.push({
+      id: 'bitacora-1',
+      date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000),
+      type: 'sitelog',
+      title: 'Registro Diario',
+      description: 'Avance de estructura',
+      icon: FileText,
+      color: '#FF4D1C'
+    });
 
-      events.push({
-        id: 'demo-4',
-        date: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000),
-        type: 'execution',
-        title: 'Avance de Obra',
-        description: 'Finalización de estructura',
-        icon: Wrench,
-        color: '#F59E0B'
-      });
+    events.push({
+      id: 'bitacora-2',
+      date: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000),
+      type: 'sitelog',
+      title: 'Inspección',
+      description: 'Control de calidad',
+      icon: FileText,
+      color: '#FF4D1C'
+    });
 
-      return events.sort((a, b) => a.date.getTime() - b.date.getTime());
-    },
-    enabled: !!projectId && !!organizationId,
-  });
+    // Ejecución events
+    events.push({
+      id: 'ejecucion-1',
+      date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000),
+      type: 'execution',
+      title: 'Inicio Excavación',
+      description: 'Preparación del terreno',
+      icon: Wrench,
+      color: '#06B6D4'
+    });
+
+    events.push({
+      id: 'ejecucion-2',
+      date: new Date(today.getTime() + 4 * 24 * 60 * 60 * 1000),
+      type: 'execution',
+      title: 'Instalaciones',
+      description: 'Sistema eléctrico',
+      icon: Wrench,
+      color: '#06B6D4'
+    });
+
+    return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+  };
+
+  const timelineData = generateDemoEvents();
 
   // Generate timeline nodes based on mode
   const generateTimelineNodes = useCallback((): TimelineNode[] => {
@@ -316,32 +331,37 @@ export default function DashboardTimelineSidebar() {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden flex" style={{ backgroundColor: '#d1d1d1' }}>
+    <div className="fixed inset-0 w-full h-full overflow-hidden flex" style={{ backgroundColor: '#d1d1d1' }}>
       {/* Left Sidebar */}
-      <div className="w-48 flex flex-col justify-center relative">
-        <div className="flex flex-col items-center space-y-8">
+      <div className="w-20 flex flex-col justify-center relative z-10">
+        <div className="flex flex-col items-center space-y-12">
           {SIDEBAR_BUTTONS.map((button) => {
             const isActive = activeCategory === button.id;
             const Icon = button.icon;
             
             return (
-              <button
-                key={button.id}
-                onClick={() => setActiveCategory(button.id)}
-                className="relative w-32 h-12 rounded-lg border border-gray-400 transition-all duration-200 hover:shadow-lg"
-                style={{ 
-                  backgroundColor: isActive ? '#000000' : '#e0e0e0',
-                  color: isActive ? '#ffffff' : '#000000'
-                }}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{button.label}</span>
+              <div key={button.id} className="relative group">
+                <button
+                  onClick={() => setActiveCategory(button.id)}
+                  className="relative w-12 h-12 rounded-full border-2 border-gray-400 transition-all duration-200 hover:shadow-lg flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: isActive ? '#000000' : '#e0e0e0',
+                    color: isActive ? '#ffffff' : '#000000'
+                  }}
+                >
+                  <Icon className="w-5 h-5" />
+                </button>
+                
+                {/* Tooltip que aparece al hacer hover */}
+                <div className="absolute left-full ml-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+                  <div className="bg-black text-white px-3 py-1 rounded text-sm whitespace-nowrap">
+                    {button.label}
+                  </div>
                 </div>
                 
                 {/* Línea punteada que se extiende hacia la derecha */}
                 <div 
-                  className="absolute left-full top-1/2 w-12 h-px"
+                  className="absolute left-full top-1/2 w-8 h-px"
                   style={{
                     background: `repeating-linear-gradient(
                       to right,
@@ -353,7 +373,7 @@ export default function DashboardTimelineSidebar() {
                     transform: 'translateY(-50%)'
                   }}
                 />
-              </button>
+              </div>
             );
           })}
         </div>
@@ -362,7 +382,7 @@ export default function DashboardTimelineSidebar() {
       {/* Main Timeline Area */}
       <div className="flex-1 flex flex-col">
         {/* Top controls */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-10">
           <div className="bg-white/90 backdrop-blur-sm rounded-full px-6 py-2 border border-gray-300 shadow-lg">
             <div className="flex items-center gap-4">
               <button
@@ -399,36 +419,42 @@ export default function DashboardTimelineSidebar() {
         {/* Timeline container */}
         <div 
           ref={timelineRef}
-          className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+          className="flex-1 overflow-x-auto overflow-y-hidden"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{ 
             scrollBehavior: 'auto',
-            cursor: isMouseNearEdge ? (isMouseNearEdge === 'right' ? 'e-resize' : 'w-resize') : 'default'
+            cursor: isMouseNearEdge ? (isMouseNearEdge === 'right' ? 'e-resize' : 'w-resize') : 'default',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
           }}
         >
           <div className="relative h-full" style={{ width: '18000px', minWidth: '100vw' }}>
-            {/* Vertical current date line */}
+            {/* Vertical current date line - EJE PRINCIPAL */}
             <div 
-              className="absolute top-0 bottom-0 w-px bg-black z-20"
-              style={{ left: '50%' }}
+              className="absolute top-0 bottom-0 w-0.5 z-20"
+              style={{ 
+                left: '50%',
+                background: '#000000'
+              }}
             />
-            
-            {/* Horizontal timeline lines for each category */}
+
+            {/* Horizontal lines for each category - SOLO las líneas punteadas que salen de los botones */}
             {SIDEBAR_BUTTONS.map((button) => (
               <div
                 key={`line-${button.id}`}
-                className="absolute left-0 right-0 h-px z-10"
+                className="absolute right-0 h-px z-10"
                 style={{ 
+                  left: '96px', // Empieza donde termina el sidebar
                   top: `calc(50% + ${button.offsetPercent}vh)`,
                   background: button.id === 'proyectos' 
                     ? '#000000' // Línea sólida para el timeline principal
                     : `repeating-linear-gradient(
                         to right,
                         #999999 0px,
-                        #999999 6px,
-                        transparent 6px,
-                        transparent 12px
+                        #999999 4px,
+                        transparent 4px,
+                        transparent 8px
                       )`
                 }}
               />
@@ -446,7 +472,13 @@ export default function DashboardTimelineSidebar() {
                 }}
               >
                 {/* Date label */}
-                <div className="mb-8 text-xs font-medium" style={{ color: '#666666' }}>
+                <div 
+                  className="mb-8 text-xs font-medium"
+                  style={{ 
+                    color: '#666666',
+                    transform: 'translateY(-20px)'
+                  }}
+                >
                   {formatDate(node.date)}
                 </div>
 
