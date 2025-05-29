@@ -335,7 +335,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         <Form {...form}>
           <form className="flex-1 flex flex-col">
             {/* Step Content */}
-            <div className="flex-1 overflow-y-auto py-4 space-y-4">
+            <div className="flex-1 overflow-y-auto py-4 px-2 space-y-4">
               {/* Step 0: Basic Information */}
               {currentStep === 0 && (
                 <div className="space-y-4">

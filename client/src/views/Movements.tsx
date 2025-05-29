@@ -140,7 +140,7 @@ export default function Movements() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/movements', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
       toast({
         title: "Movimiento eliminado",
         description: "El movimiento se ha eliminado correctamente.",
