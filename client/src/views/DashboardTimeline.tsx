@@ -440,9 +440,9 @@ export default function DashboardTimeline() {
                         <div className="group relative">
                           {/* Large event indicator */}
                           <div 
-                            className="w-10 h-10 rounded-full border-2 border-black bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
+                            className="w-10 h-10 rounded-full border-2 border-[#919191] bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative"
                           >
-                            <Icon className="w-5 h-5 text-black" />
+                            <Icon className="w-5 h-5 text-[#919191]" />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (

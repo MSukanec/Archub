@@ -13,6 +13,7 @@ const topNavigationItems = [
   { section: 'organization' as Section, icon: Building2, label: 'Organización' },
   { section: 'sitelog' as Section, icon: ClipboardList, label: 'Bitácora' },
   { section: 'projects' as Section, icon: FolderKanban, label: 'Proyectos' },
+  { section: 'contacts' as Section, icon: Contact, label: 'Agenda' },
   { section: 'movements' as Section, icon: DollarSign, label: 'Finanzas' },
   { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
 ];
