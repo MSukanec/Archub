@@ -444,11 +444,39 @@ export default function DashboardTimeline() {
                     const firstEvent = events[0];
                     const Icon = firstEvent.icon;
 
+                    // Calculate position relative to the timeline node center to align with horizontal lines
+                    const getEventTop = () => {
+                      const timelineNodeCenter = window.innerHeight / 2; // Timeline nodes are centered vertically
+                      
+                      switch (type) {
+                        case 'sitelog':
+                          return sidebarButtonPositions.sitelog 
+                            ? `${sidebarButtonPositions.sitelog - timelineNodeCenter - 20}px`  // -20px to center the 40px event
+                            : '-64px';
+                        case 'contacts':
+                          return sidebarButtonPositions.contacts 
+                            ? `${sidebarButtonPositions.contacts - timelineNodeCenter - 20}px`
+                            : '0px';
+                        case 'movement':
+                          return sidebarButtonPositions.movements 
+                            ? `${sidebarButtonPositions.movements - timelineNodeCenter - 20}px`
+                            : '64px';
+                        case 'milestone':
+                          return sidebarButtonPositions.budgets 
+                            ? `${sidebarButtonPositions.budgets - timelineNodeCenter - 20}px`
+                            : '128px';
+                        default:
+                          return '0px';
+                      }
+                    };
+
                     return (
                       <div
                         key={type}
                         className="absolute left-1/2 transform -translate-x-1/2 z-20"
-                        style={getEventPosition(type)}
+                        style={{
+                          top: getEventTop()
+                        }}
                       >
                         <div className="group relative">
                           {/* Large event indicator */}
