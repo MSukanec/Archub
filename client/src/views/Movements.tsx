@@ -70,6 +70,7 @@ export default function Movements() {
   const [filterType, setFilterType] = useState<'all' | 'year' | 'date' | 'custom'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [modalKey, setModalKey] = useState<number>(0);
+  const [modalReady, setModalReady] = useState<boolean>(true);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -82,6 +83,7 @@ export default function Movements() {
   // Listen for floating action button events
   useEffect(() => {
     const handleOpenCreateMovementModal = () => {
+      if (!modalReady) return; // Prevent opening if modal is not ready
       setEditingMovement(null);
       setModalKey(prev => prev + 1); // Force fresh modal mount
       setIsMovementModalOpen(true);
@@ -91,7 +93,7 @@ export default function Movements() {
     return () => {
       window.removeEventListener('openCreateMovementModal', handleOpenCreateMovementModal);
     };
-  }, []);
+  }, [modalReady]);
 
   // Fetch movements for current project
   const { data: movements = [], isLoading } = useQuery({
@@ -202,8 +204,13 @@ export default function Movements() {
   const handleCloseModal = () => {
     setIsMovementModalOpen(false);
     setEditingMovement(null);
-    // Force modal remount by changing key
-    setModalKey(prev => prev + 1);
+    setModalReady(false);
+    
+    // Force modal remount by changing key and adding delay
+    setTimeout(() => {
+      setModalKey(prev => prev + 1);
+      setModalReady(true);
+    }, 300);
   };
 
   // Filter and sort movements
@@ -679,7 +686,7 @@ export default function Movements() {
       </Card>
 
       {/* Movement Modal - Force complete remount */}
-      {isMovementModalOpen && (
+      {isMovementModalOpen && modalReady && (
         <MovementModal
           key={`movement-modal-${modalKey}-${editingMovement?.id || 'new'}`}
           isOpen={isMovementModalOpen}
