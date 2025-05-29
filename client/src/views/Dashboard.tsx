@@ -66,6 +66,79 @@ export default function Dashboard() {
   // Generar array de días para el período visible (7 días)
   const visibleDays = Array.from({ length: 7 }, (_, i) => addDays(viewStartDate, i));
 
+  // Función para convertir los datos del timeline a eventos para el timeline horizontal
+  const convertToTimelineEvents = (timelineData: DayEvent[]) => {
+    const events: any[] = [];
+    
+    timelineData.forEach(dayEvent => {
+      // Agregar bitácoras
+      dayEvent.siteLogs?.forEach(log => {
+        events.push({
+          id: `sitelog-${log.id}`,
+          type: 'bitacora',
+          title: log.comments || log.description || 'Entrada de bitácora',
+          description: log.comments || log.description,
+          date: log.log_date || log.date,
+          data: log
+        });
+      });
+
+      // Agregar movimientos
+      dayEvent.movements?.forEach(movement => {
+        events.push({
+          id: `movement-${movement.id}`,
+          type: 'movimiento',
+          title: `${movement.description || 'Movimiento financiero'}`,
+          description: movement.description,
+          date: movement.date,
+          amount: movement.amount,
+          currency: movement.currency,
+          data: movement
+        });
+      });
+
+      // Agregar tareas
+      dayEvent.tasks?.forEach(task => {
+        events.push({
+          id: `task-${task.id}`,
+          type: 'tarea',
+          title: task.name || 'Tarea',
+          description: task.description,
+          date: task.start_date || dayEvent.date,
+          data: task
+        });
+      });
+    });
+
+    return events;
+  };
+
+  // Manejar click en eventos del timeline
+  const handleEventClick = (event: any) => {
+    console.log('Event clicked:', event);
+    
+    if (event.type === 'bitacora') {
+      setSelectedSiteLog(event.data);
+      setIsSiteLogModalOpen(true);
+    } else if (event.type === 'movimiento') {
+      setSelectedMovement(event.data);
+      setIsMovementModalOpen(true);
+    }
+  };
+
+  // Manejar creación de nuevos eventos
+  const handleCreateEvent = (type: string, date: string) => {
+    console.log('Create event:', type, date);
+    
+    if (type === 'bitacora') {
+      setSelectedSiteLog(null);
+      setIsSiteLogModalOpen(true);
+    } else if (type === 'movimiento') {
+      setSelectedMovement(null);
+      setIsMovementModalOpen(true);
+    }
+  };
+
   // Listen for timeline action events
   useEffect(() => {
     const handleOpenCreateSiteLogModal = () => {
@@ -401,12 +474,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Detail Modal */}
-      <DayDetailModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        dayEvent={selectedDay}
-      />
+
 
       {/* Site Log Modal */}
       <SiteLogModal
@@ -436,22 +504,8 @@ export default function Dashboard() {
         projectId={projectId}
       />
 
-      {/* Day Detail Modal */}
-      <DayDetailModal
-        isOpen={isDayDetailModalOpen}
-        onClose={() => {
-          setIsDayDetailModalOpen(false);
-          setFilterType(undefined); // Limpiar filtro al cerrar
-        }}
-        date={selectedDayData?.date || ''}
-        siteLogs={selectedDayData?.siteLogs || []}
-        movements={selectedDayData?.movements || []}
-        tasks={selectedDayData?.tasks || []}
-        attendees={selectedDayData?.attendees || []}
-        files={selectedDayData?.files || []}
-        onItemClick={handleDayItemClick}
-        filterType={filterType}
-      />
+
+
     </div>
   );
 }
