@@ -595,11 +595,31 @@ export default function DashboardTimelineSidebar() {
             const element = e.target as HTMLElement;
             setScrollPosition(element.scrollLeft);
           }}
+          onWheel={(e) => {
+            // Permitir scroll horizontal con rueda del mouse
+            if (timelineRef.current) {
+              timelineRef.current.scrollLeft += e.deltaY;
+              e.preventDefault();
+            }
+          }}
+          onKeyDown={(e) => {
+            // Navegación con teclado
+            if (timelineRef.current) {
+              if (e.key === 'ArrowLeft') {
+                timelineRef.current.scrollLeft -= 100;
+                e.preventDefault();
+              } else if (e.key === 'ArrowRight') {
+                timelineRef.current.scrollLeft += 100;
+                e.preventDefault();
+              }
+            }
+          }}
+          tabIndex={0}
           style={{ 
             scrollBehavior: 'auto',
             cursor: isMouseNearEdge ? (isMouseNearEdge === 'right' ? 'e-resize' : 'w-resize') : 'default',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#999999 transparent'
           }}
         >
           {/* Línea vertical del "AHORA" - FIJA en el centro de la pantalla */}
