@@ -56,7 +56,7 @@ const movementSchema = z.object({
   description: z.string().optional(),
   amount: z.number().min(0.01, 'Monto debe ser mayor a 0'),
   currency: z.enum(['ARS', 'USD']),
-  wallet_id: z.string().optional(),
+  wallet_id: z.string().min(1, 'Billetera es requerida'),
   related_contact_id: z.string().optional(),
   related_task_id: z.string().optional(),
 });
@@ -161,7 +161,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       description: '',
       amount: 0,
       currency: 'ARS',
-      wallet_id: 'none',
+      wallet_id: '',
       related_contact_id: '',
       related_task_id: '',
     },
@@ -376,7 +376,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       name="type_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#333333]">Tipo *</FormLabel>
+                          <FormLabel className="text-[#333333]">Tipo <span className="text-[#8fc700]">*</span></FormLabel>
                           <Select onValueChange={(value) => {
                             field.onChange(value);
                             setSelectedTypeId(value);
@@ -406,7 +406,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       name="created_at"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#333333]">Fecha *</FormLabel>
+                          <FormLabel className="text-[#333333]">Fecha <span className="text-[#8fc700]">*</span></FormLabel>
                           <FormControl>
                             <Input 
                               type="date" 
@@ -428,7 +428,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       name="concept_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#333333]">Categoría *</FormLabel>
+                          <FormLabel className="text-[#333333]">Categoría <span className="text-[#8fc700]">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value} disabled={!selectedTypeId}>
                             <FormControl>
                               <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
@@ -489,11 +489,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       name="wallet_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#333333]">Billetera</FormLabel>
+                          <FormLabel className="text-[#333333]">Billetera <span className="text-[#8fc700]">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
-                                <SelectValue placeholder="Seleccionar billetera (opcional)" />
+                                <SelectValue placeholder="Seleccionar billetera" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -516,7 +516,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       name="amount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-[#333333]">Cantidad *</FormLabel>
+                          <FormLabel className="text-[#333333]">Cantidad <span className="text-[#8fc700]">*</span></FormLabel>
                           <FormControl>
                             <Input 
                               type="number"
