@@ -163,6 +163,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     if (isOpen) {
       if (movement && isEditing) {
         // Load existing movement data
+        console.log('Movement data for editing:', movement);
+        console.log('movement_concepts:', movement.movement_concepts);
+        
         const typeId = movement.movement_concepts?.parent_id || '';
         const conceptId = movement.concept_id || '';
         

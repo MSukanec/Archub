@@ -65,6 +65,7 @@ export default function Movements() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [movementToDelete, setMovementToDelete] = useState<Movement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -109,7 +110,7 @@ export default function Movements() {
           )
         `)
         .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
+        .order('created_at_local', { ascending: false });
         
       // Obtener información de los conceptos padre para cada movimiento
       if (data && data.length > 0) {
@@ -210,18 +211,36 @@ export default function Movements() {
         movement.movement_concepts?.movement_concepts?.name?.toLowerCase().includes(searchTermLower) ||
         movement.amount.toString().includes(searchTermLower);
       
+      // Filter by date
+      const movementDate = movement.created_at_local ? new Date(movement.created_at_local) : new Date();
+      const movementYear = movementDate.getFullYear();
+      const currentYear = new Date().getFullYear();
+      
+      let matchesDate = true;
+      if (dateFilter !== 'all') {
+        if (dateFilter === 'current-year') {
+          matchesDate = movementYear === currentYear;
+        } else if (dateFilter === 'last-year') {
+          matchesDate = movementYear === currentYear - 1;
+        } else if (dateFilter.includes('-')) {
+          // Specific year
+          const filterYear = parseInt(dateFilter);
+          matchesDate = movementYear === filterYear;
+        }
+      }
+      
       const movementType = movement.movement_concepts?.movement_concepts?.name?.toLowerCase();
       const matchesType = typeFilter === 'all' || 
         (typeFilter === 'ingreso' && movementType === 'ingresos') ||
         (typeFilter === 'egreso' && movementType === 'egresos') ||
         (typeFilter === 'ajuste' && movementType === 'ajustes');
       
-      return matchesSearch && matchesType;
+      return matchesSearch && matchesDate && matchesType;
     });
 
     // Sort by date (newest first) - data is already sorted from query
     return filtered;
-  }, [movements, searchTerm, typeFilter]);
+  }, [movements, searchTerm, dateFilter, typeFilter]);
 
   // Calculate totals by currency
   const totalsByCurrency = useMemo(() => {
@@ -473,6 +492,19 @@ export default function Movements() {
                 className="pl-10 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
               />
             </div>
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-48 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
+                <SelectValue placeholder="Filtrar por fecha" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="all">Todas las fechas</SelectItem>
+                <SelectItem value="current-year">Este año</SelectItem>
+                <SelectItem value="last-year">Año anterior</SelectItem>
+                <SelectItem value="2024">2024</SelectItem>
+                <SelectItem value="2023">2023</SelectItem>
+                <SelectItem value="2022">2022</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-48 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
                 <SelectValue placeholder="Tipo de movimiento" />
