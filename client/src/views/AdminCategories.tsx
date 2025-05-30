@@ -237,8 +237,8 @@ export default function AdminCategories() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredCategories.map((category: any) => (
-                <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
+              filteredCategories.map((category: any, index: number) => (
+                <TableRow key={category.id || `category-${index}`} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{category.name}</div>
                   </TableCell>

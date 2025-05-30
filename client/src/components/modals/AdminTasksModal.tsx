@@ -218,14 +218,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
   const addMaterial = () => {
-    if (selectedMaterialId && materialQuantity && materialUnitCost) {
+    if (selectedMaterialId && materialQuantity) {
       const material = materials.find(m => m.id === selectedMaterialId);
       if (material) {
         const newMaterial: TaskMaterial = {
           material_id: selectedMaterialId,
           material_name: material.name,
           quantity: parseFloat(materialQuantity),
-          unit_cost: parseFloat(materialUnitCost),
+          unit_cost: 0, // No longer using unit cost
         };
         
         setTaskMaterials([...taskMaterials, newMaterial]);
@@ -323,7 +323,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     name="unit_material_price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Precio Material</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Precio Materiales</FormLabel>
                         <FormControl>
                           <Input 
                             type="number"
@@ -464,21 +464,12 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       onChange={(e) => setMaterialQuantity(e.target.value)}
                       className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     />
-
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="Costo unitario"
-                      value={materialUnitCost}
-                      onChange={(e) => setMaterialUnitCost(e.target.value)}
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                    />
                   </div>
 
                   <Button
                     type="button"
                     onClick={addMaterial}
-                    disabled={!selectedMaterialId || !materialQuantity || !materialUnitCost}
+                    disabled={!selectedMaterialId || !materialQuantity}
                     className="w-full text-xs bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
                   >
                     Agregar Material
