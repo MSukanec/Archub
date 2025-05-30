@@ -229,7 +229,7 @@ export default function AdminCategoriesModal({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
-                    <SelectItem value="">Sin categoría padre</SelectItem>
+                    <SelectItem value="none">Sin categoría padre</SelectItem>
                     {allCategories
                       .filter(cat => cat.id !== category?.id) // No mostrar la categoría actual
                       .map((cat) => (
