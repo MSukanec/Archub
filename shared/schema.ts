@@ -182,6 +182,23 @@ export const siteMovements = pgTable("site_movements", {
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Calendar events table for agenda functionality
+export const calendarEvents = pgTable("calendar_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  date: text("date").notNull(), // Store as YYYY-MM-DD
+  time: text("time").notNull(), // Store as HH:MM
+  duration: varchar("duration", { length: 50 }).notNull(), // Duration in minutes
+  location: varchar("location", { length: 255 }),
+  attendees: text("attendees"), // Comma-separated list
+  type: text("type").notNull().default("meeting"), // meeting, task, reminder, appointment
+  priority: text("priority").notNull().default("medium"), // low, medium, high
+  organization_id: uuid("organization_id").notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
