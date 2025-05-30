@@ -1,12 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { FolderOpen } from 'lucide-react';
@@ -14,6 +15,7 @@ import { FolderOpen } from 'lucide-react';
 const categorySchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   code: z.string().min(1, 'El código es requerido'),
+  parent_id: z.string().optional(),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -38,6 +40,21 @@ export default function AdminCategoriesModal({
     defaultValues: {
       name: '',
       code: '',
+      parent_id: '',
+    },
+  });
+
+  // Get all categories for parent selection
+  const { data: allCategories = [] } = useQuery({
+    queryKey: ['/api/admin/task-categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('task_categories')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
     },
   });
 
@@ -47,6 +64,7 @@ export default function AdminCategoriesModal({
       form.reset({
         name: category?.name || '',
         code: category?.code || '',
+        parent_id: category?.parent_id?.toString() || '',
       });
     }
   }, [category, isOpen, form]);
@@ -183,6 +201,34 @@ export default function AdminCategoriesModal({
                     {...field}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="parent_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-medium text-foreground">Categoría Padre (Opcional)</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                      <SelectValue placeholder="Seleccionar categoría padre" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                    <SelectItem value="">Sin categoría padre</SelectItem>
+                    {allCategories
+                      .filter(cat => cat.id !== category?.id) // No mostrar la categoría actual
+                      .map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                          {cat.name} ({cat.code})
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

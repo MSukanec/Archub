@@ -140,7 +140,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
       onClose={handleClose}
       title={unit ? 'Editar Unidad' : 'Crear Nueva Unidad'}
       subtitle="Gestiona las unidades de medida utilizadas en el proyecto"
-      icon={<Ruler className="w-5 h-5" />}
+      icon={Ruler}
       footer={footer}
     >
       <Form {...form}>

@@ -362,7 +362,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
                           {getMainCategories().map((category) => (
-                            <SelectItem key={category.id} value={category.id.toString()}>
+                            <SelectItem key={category.id} value={category.id ? category.id.toString() : ''}>
                               {category.name}
                             </SelectItem>
                           ))}
