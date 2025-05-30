@@ -112,13 +112,13 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
   };
 
   const footer = (
-    <div className="flex gap-3 justify-end">
+    <div className="flex gap-3 w-full">
       <Button
         type="button"
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+        className="flex-1 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
       >
         Cancelar
       </Button>
@@ -126,7 +126,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
         type="submit"
         form="unit-form"
         disabled={isSubmitting}
-        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
       >
         {isSubmitting ? 'Guardando...' : (unit ? 'Actualizar' : 'Crear')}
       </Button>

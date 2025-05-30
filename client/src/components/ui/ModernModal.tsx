@@ -30,13 +30,13 @@ export default function ModernModal({
       />
       
       {/* Modal positioned to the right */}
-      <div className="ml-auto flex">
+      <div className="ml-auto flex h-screen">
         <div className={`
           ${width} max-w-[90vw] sm:max-w-none
           sm:w-[420px] 
           sm:min-w-[400px] 
           sm:max-w-[500px]
-          h-screen 
+          h-full 
           bg-[#e0e0e0] 
           shadow-2xl 
           flex 
