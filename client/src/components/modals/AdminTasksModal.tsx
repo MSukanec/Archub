@@ -351,11 +351,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           setSelectedCategoryId(value);
                           setSelectedSubcategoryId('');
                           setSelectedElementCategoryId('');
-                          field.onChange(parseInt(value));
+                          field.onChange(value ? parseInt(value) : null);
                           form.setValue('subcategory_id', null);
                           form.setValue('element_category_id', null);
                         }} 
-                        value={field.value ? field.value.toString() : ''}
+                        value={selectedCategoryId}
                       >
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
@@ -375,72 +375,73 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                   )}
                 />
 
-                {selectedCategoryId && subcategories.length > 0 && (
-                  <FormField
-                    control={form.control}
-                    name="subcategory_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Subrubro</FormLabel>
-                        <Select 
-                          onValueChange={(value) => {
-                            setSelectedSubcategoryId(value);
-                            field.onChange(parseInt(value));
-                            form.setValue('element_category_id', null);
-                          }} 
-                          value={field.value ? field.value.toString() : ''}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                              <SelectValue placeholder="Seleccionar subrubro" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                            {subcategories.map((subcategory) => (
-                              <SelectItem key={subcategory.id} value={String(subcategory.id)}>
-                                {subcategory.code} - {subcategory.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
+                {/* Subrubro - Siempre visible */}
+                <FormField
+                  control={form.control}
+                  name="subcategory_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Subrubro</FormLabel>
+                      <Select 
+                        onValueChange={(value) => {
+                          setSelectedSubcategoryId(value);
+                          setSelectedElementCategoryId('');
+                          field.onChange(value ? parseInt(value) : null);
+                          form.setValue('element_category_id', null);
+                        }} 
+                        value={selectedSubcategoryId}
+                        disabled={!selectedCategoryId}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                            <SelectValue placeholder="Seleccionar subrubro" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          {subcategories.map((subcategory) => (
+                            <SelectItem key={subcategory.id} value={String(subcategory.id)}>
+                              {subcategory.code} - {subcategory.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                {selectedSubcategoryId && elementCategories.length > 0 && (
-                  <FormField
-                    control={form.control}
-                    name="element_category_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Element</FormLabel>
-                        <Select 
-                          onValueChange={(value) => {
-                            setSelectedElementCategoryId(value);
-                            field.onChange(parseInt(value));
-                          }} 
-                          value={field.value ? field.value.toString() : ''}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                              <SelectValue placeholder="Seleccionar element" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                            {elementCategories.map((element) => (
-                              <SelectItem key={element.id} value={element.id.toString()}>
-                                {element.code} - {element.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
+                {/* Elemento - Siempre visible */}
+                <FormField
+                  control={form.control}
+                  name="element_category_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
+                      <Select 
+                        onValueChange={(value) => {
+                          setSelectedElementCategoryId(value);
+                          field.onChange(value ? parseInt(value) : null);
+                        }} 
+                        value={selectedElementCategoryId}
+                        disabled={!selectedSubcategoryId}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                            <SelectValue placeholder="Seleccionar elemento" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          {elementCategories.map((element) => (
+                            <SelectItem key={element.id} value={element.id.toString()}>
+                              {element.code} - {element.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 {/* Acción */}
                 <FormItem>
@@ -492,7 +493,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <FormControl>
                         <Input 
                           placeholder="Se genera automáticamente al seleccionar acción y elemento"
-                          className="bg-[#f0f0f0] border-[#919191]/20 text-sm cursor-not-allowed"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm cursor-not-allowed"
                           readOnly
                           {...field}
                         />
@@ -509,10 +510,28 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <FolderTree className="w-4 h-4" />
-                  Precios
+                  Unidad y Precios
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
+                {/* Campo de Unidad */}
+                <FormItem>
+                  <FormLabel className="text-xs font-medium text-foreground">Unidad</FormLabel>
+                  <Select>
+                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                      <SelectValue placeholder="Seleccionar unidad" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                      <SelectItem value="m2">m²</SelectItem>
+                      <SelectItem value="m3">m³</SelectItem>
+                      <SelectItem value="ml">ml</SelectItem>
+                      <SelectItem value="un">Unidad</SelectItem>
+                      <SelectItem value="kg">kg</SelectItem>
+                      <SelectItem value="global">Global</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+
                 <div className="grid grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
