@@ -14,7 +14,6 @@ import AdminCategoriesModal from '@/components/modals/AdminCategoriesModal';
 
 interface Category {
   id: string;
-  ud: string;
   name: string;
   code: string;
   parent_id: string | null;
@@ -148,15 +147,13 @@ const AdminCategories = () => {
     queryKey: ['/api/admin/task-categories'],
   });
 
-  // Debug log to see what data we're getting
-  console.log('Categories data:', categories);
+
 
   // Build tree structure
   const buildTree = (categories: any[]): Category[] => {
-    // Map the data structure to our interface, using 'ud' as the ID
+    // Map the data structure to our interface
     const mappedCategories = categories.map(cat => ({
-      id: cat.ud || cat.id,
-      ud: cat.ud,
+      id: cat.id,
       name: cat.name,
       code: cat.code,
       parent_id: cat.parent_id,

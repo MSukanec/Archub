@@ -73,7 +73,7 @@ export default function AdminCategoriesModal({
     mutationFn: async (data: CategoryFormData) => {
       const insertData = {
         ...data,
-        parent_id: data.parent_id || null,
+        parent_id: data.parent_id === "none" ? null : data.parent_id || null,
       };
       
       const { error } = await supabase
@@ -83,7 +83,7 @@ export default function AdminCategoriesModal({
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
       toast({
         title: "Categoría creada",
         description: "La categoría ha sido creada correctamente.",
@@ -104,7 +104,7 @@ export default function AdminCategoriesModal({
     mutationFn: async (data: CategoryFormData) => {
       const updateData = {
         ...data,
-        parent_id: data.parent_id || null,
+        parent_id: data.parent_id === "none" ? null : data.parent_id || null,
       };
       
       const { error } = await supabase
@@ -115,7 +115,7 @@ export default function AdminCategoriesModal({
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
       toast({
         title: "Categoría actualizada",
         description: "La categoría ha sido actualizada correctamente.",
