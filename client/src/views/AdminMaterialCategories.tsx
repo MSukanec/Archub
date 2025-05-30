@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { FolderOpen, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { FolderOpen, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -38,12 +38,15 @@ export default function AdminMaterialCategories() {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   
   // State for modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  
+  const ITEMS_PER_PAGE = 10;
   const queryClient = useQueryClient();
 
   // Delete mutation
@@ -132,7 +135,7 @@ export default function AdminMaterialCategories() {
   };
 
   // Filter and sort categories
-  const filteredCategories = categories.filter((category: any) => {
+  const filteredAndSortedCategories = categories.filter((category: any) => {
     const matchesSearch = (category.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (category.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -144,6 +147,16 @@ export default function AdminMaterialCategories() {
       return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
     }
   });
+
+  const totalPages = Math.ceil(filteredAndSortedCategories.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedCategories = filteredAndSortedCategories.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminMaterialCategoriesSkeleton />;
@@ -178,8 +191,18 @@ export default function AdminMaterialCategories() {
               placeholder="Buscar categorías de materiales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-background border-border rounded-xl"
             />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -225,9 +248,9 @@ export default function AdminMaterialCategories() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCategories.length === 0 ? (
+            {paginatedCategories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-4 h-8">
                   {searchTerm 
                     ? 'No se encontraron categorías que coincidan con los filtros.'
                     : 'No hay categorías de materiales registradas.'
@@ -235,7 +258,7 @@ export default function AdminMaterialCategories() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredCategories.map((category: any) => (
+              paginatedCategories.map((category: any) => (
                 <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{category.name}</div>
