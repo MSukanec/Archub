@@ -35,7 +35,6 @@ import AdminUnitsModal from '@/components/modals/AdminUnitsModal';
 
 export default function AdminUnits() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -109,10 +108,8 @@ export default function AdminUnits() {
   const filteredUnits = units.filter((unit: any) => {
     const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (unit.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = !dateFilter || 
-                       (unit.created_at && format(new Date(unit.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd'));
     
-    return matchesSearch && matchesDate;
+    return matchesSearch;
   }).sort((a: any, b: any) => {
     if (sortOrder === 'newest') {
       return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
@@ -152,40 +149,7 @@ export default function AdminUnits() {
             />
           </div>
           
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
-                  !dateFilter && "text-muted-foreground"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "dd/MM/yyyy") : "Filtrar por fecha"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
+
 
           <Popover>
             <PopoverTrigger asChild>
