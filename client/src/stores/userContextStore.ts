@@ -132,15 +132,16 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
           console.log('Updating budget preference for userId:', currentState.userId);
           console.log('Setting budget to:', budgetId);
           
-          const { error } = await supabase
+          const { data, error } = await supabase
             .from('user_preferences')
             .update({ last_budget_id: budgetId })
-            .eq('user_id', currentState.userId);
+            .eq('user_id', currentState.userId)
+            .select();
 
           if (error) {
             console.error('Error updating budget preference:', error);
           } else {
-            console.log('Budget preference updated successfully');
+            console.log('Budget preference updated successfully:', data);
           }
         } catch (error) {
           console.error('Error in budget preference update:', error);
