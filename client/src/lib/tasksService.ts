@@ -58,16 +58,31 @@ export const tasksService = {
 
   async update(id: number, taskData: Partial<CreateTaskData>): Promise<Task> {
     console.log('Updating task:', id, taskData);
+    console.log('Task data object keys:', Object.keys(taskData));
+    console.log('Task data values:', Object.values(taskData));
+    
+    // Limpiar valores undefined y null para evitar problemas
+    const cleanedTaskData = Object.entries(taskData).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+    
+    console.log('Cleaned task data:', cleanedTaskData);
     
     const { data, error } = await supabase
       .from('tasks')
-      .update(taskData)
+      .update(cleanedTaskData)
       .eq('id', id)
       .select()
       .single();
 
     if (error) {
       console.error('Error updating task:', error);
+      console.error('Error details:', error.details);
+      console.error('Error hint:', error.hint);
+      console.error('Error code:', error.code);
       throw new Error(`Error updating task: ${error.message}`);
     }
 

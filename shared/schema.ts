@@ -121,6 +121,7 @@ export const tasks = pgTable("tasks", {
   unit_id: uuid("unit_id"),
   unit_labor_price: decimal("unit_labor_price", { precision: 12, scale: 2 }),
   unit_material_price: decimal("unit_material_price", { precision: 12, scale: 2 }),
+  organization_id: uuid("organization_id"),
   category_id: uuid("category_id").references(() => taskCategories.id),
   subcategory_id: uuid("subcategory_id").references(() => taskCategories.id),
   element_category_id: uuid("element_category_id").references(() => taskCategories.id),
