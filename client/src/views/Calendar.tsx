@@ -65,6 +65,7 @@ interface CalendarEvent {
   priority: 'low' | 'medium' | 'high';
   organization_id: string;
   created_at?: string;
+  created_at_local?: string;
 }
 
 export default function Calendar() {
@@ -232,9 +233,14 @@ export default function Calendar() {
   const onSubmit = (data: EventFormData) => {
     if (!organizationId) return;
 
+    // Capturar fecha y hora local del navegador del usuario
+    const now = new Date();
+    const localTimestamp = now.toISOString(); // Timestamp completo con zona horaria local
+
     const eventData = {
       ...data,
       organization_id: organizationId,
+      created_at_local: localTimestamp, // Incluir timestamp local del navegador
     };
 
     if (editingEvent) {

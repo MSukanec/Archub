@@ -196,6 +196,7 @@ export const calendarEvents = pgTable("calendar_events", {
   priority: text("priority").notNull().default("medium"), // low, medium, high
   organization_id: uuid("organization_id").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
+  created_at_local: timestamp("created_at_local", { withTimezone: true }), // Local browser timestamp
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
@@ -309,6 +310,7 @@ export const insertCalendarEventSchema = createInsertSchema(calendarEvents).pick
   type: true,
   priority: true,
   organization_id: true,
+  created_at_local: true,
 });
 
 // Types
