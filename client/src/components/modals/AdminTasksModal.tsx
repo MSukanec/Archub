@@ -100,7 +100,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('materials')
-        .select('id, name, unit, cost');
+        .select('id, name, cost');
       
       if (error) {
         console.error('Error fetching materials:', error);
@@ -192,6 +192,25 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   // Calculate filtered categories based on current selection
   const subcategoriesFiltered = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
   const elementCategoriesFiltered = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
+
+  // Initialize form states when editing a task
+  useEffect(() => {
+    if (task && isOpen) {
+      console.log('Initializing form for task:', task);
+      setSelectedCategoryId(task.category_id || '');
+      setSelectedSubcategoryId(task.subcategory_id || '');
+      setSelectedElementCategoryId(task.element_category_id || '');
+      setSelectedActionId(task.action_id || '');
+      setSelectedElementId(task.element_id || '');
+    } else if (!task && isOpen) {
+      // Reset form when creating new task
+      setSelectedCategoryId('');
+      setSelectedSubcategoryId('');
+      setSelectedElementCategoryId('');
+      setSelectedActionId('');
+      setSelectedElementId('');
+    }
+  }, [task, isOpen]);
 
   // Debug logs
   console.log('All categories:', allCategories);
@@ -429,7 +448,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4" />
-                  Información Básica
+                  Categoría de Rubro
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
