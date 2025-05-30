@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'admin' | 'profile';
+export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'admin-community' | 'admin-library' | 'profile';
 export type View = 
   | 'dashboard-main'
   | 'dashboard-timeline'
@@ -49,7 +49,8 @@ const sectionViewMap: Record<Section, View> = {
   sitelog: 'sitelog-main',
   movements: 'movements-main',
   contacts: 'schedule',
-  admin: 'admin-organizations',
+  'admin-community': 'admin-organizations',
+  'admin-library': 'admin-tasks',
   profile: 'profile-info',
 };
 
@@ -62,7 +63,8 @@ const getSectionFromView = (view: View): Section => {
   if (view.startsWith('sitelog-')) return 'sitelog';
   if (view.startsWith('movements-') || view === 'transactions') return 'movements';
   if (view === 'contacts' || view === 'calendar' || view === 'list' || view === 'schedule') return 'contacts';
-  if (view.startsWith('admin-')) return 'admin';
+  if (view === 'admin-organizations' || view === 'admin-users') return 'admin-community';
+  if (view.startsWith('admin-') && view !== 'admin-organizations' && view !== 'admin-users') return 'admin-library';
   if (view.startsWith('profile-') || view === 'subscription-tables') return 'profile';
   return 'dashboard';
 };

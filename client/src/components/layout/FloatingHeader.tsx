@@ -32,9 +32,11 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
     { id: 'budgets-materials', label: 'Lista de Materiales' }
   ],
-  admin: [
+  'admin-community': [
     { id: 'admin-organizations', label: 'Organizaciones' },
-    { id: 'admin-users', label: 'Usuarios' },
+    { id: 'admin-users', label: 'Usuarios' }
+  ],
+  'admin-library': [
     { id: 'admin-tasks', label: 'Tareas' },
     { id: 'admin-categories', label: 'Categorías de Tareas' },
     { id: 'admin-material-categories', label: 'Categorías de Materiales' },

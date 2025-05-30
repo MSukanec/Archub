@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -109,6 +109,26 @@ export default function PrimarySidebar() {
           />
         ))}
 
+      </div>
+      
+      {/* Admin buttons section */}
+      <div className="flex flex-col items-center space-y-6 pb-6 pl-2.5">
+        {/* Admin Community button */}
+        <CircularButton
+          icon={UserCheck}
+          isActive={currentSection === 'admin-community'}
+          onClick={() => setSection('admin-community')}
+          section="admin-community"
+          label="Administración de Comunidad"
+        />
+        {/* Admin Library button */}
+        <CircularButton
+          icon={Library}
+          isActive={currentSection === 'admin-library'}
+          onClick={() => setSection('admin-library')}
+          section="admin-library"
+          label="Administración de Biblioteca"
+        />
       </div>
       
       {/* Bottom buttons section */}
