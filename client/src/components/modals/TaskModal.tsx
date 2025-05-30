@@ -89,13 +89,18 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
     queryKey: ['/api/tasks', organizationId],
     queryFn: async () => {
       if (!organizationId) return [];
+      console.log('Fetching tasks for organization:', organizationId);
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('organization_id', organizationId)
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tasks:', error);
+        throw error;
+      }
+      console.log('Tasks fetched:', data);
       return data;
     },
     enabled: !!organizationId && isOpen,
