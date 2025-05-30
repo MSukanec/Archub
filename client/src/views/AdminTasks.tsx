@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, Calendar } from 'lucide-react';
@@ -35,8 +35,22 @@ import { supabase } from '@/lib/supabase';
 export default function AdminTasks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateTaskModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
+    return () => {
+      window.removeEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
+    };
+  }, []);
 
   const { data: tasks = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/tasks'],

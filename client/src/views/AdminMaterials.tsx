@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Package, Search, Plus, Edit, Trash2, DollarSign, Calendar } from 'lucide-react';
@@ -31,6 +31,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminMaterialsModal from '@/components/modals/AdminMaterialsModal';
 
 export default function AdminMaterials() {
   // State for search and filters
@@ -38,8 +39,22 @@ export default function AdminMaterials() {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   
   // State for modals
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateMaterialModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateMaterialModal', handleOpenCreateMaterialModal);
+    return () => {
+      window.removeEventListener('openCreateMaterialModal', handleOpenCreateMaterialModal);
+    };
+  }, []);
 
   // Fetch materials
   const { data: materials = [], isLoading, error } = useQuery({

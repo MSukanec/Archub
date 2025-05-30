@@ -32,6 +32,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminUsersModal from '@/components/modals/AdminUsersModal';
 
 export default function AdminUsers() {
   const { toast } = useToast();
@@ -304,6 +305,22 @@ export default function AdminUsers() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create User Modal */}
+      <AdminUsersModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit User Modal */}
+      <AdminUsersModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+      />
     </div>
   );
 }

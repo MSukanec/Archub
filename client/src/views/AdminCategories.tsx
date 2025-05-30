@@ -42,8 +42,22 @@ export default function AdminCategories() {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   
   // State for modals
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateCategoryModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateCategoryModal', handleOpenCreateCategoryModal);
+    return () => {
+      window.removeEventListener('openCreateCategoryModal', handleOpenCreateCategoryModal);
+    };
+  }, []);
 
   // Fetch categories
   const { data: categories = [], isLoading, error } = useQuery({
