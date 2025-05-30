@@ -361,8 +361,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
-                          {getMainCategories().map((category) => (
-                            <SelectItem key={category.id} value={category.id ? category.id.toString() : ''}>
+                          {getMainCategories().map((category, index) => (
+                            <SelectItem key={category.id || `category-${index}`} value={category.id ? category.id.toString() : `none-${index}`}>
                               {category.name}
                             </SelectItem>
                           ))}
