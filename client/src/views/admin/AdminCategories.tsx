@@ -192,6 +192,20 @@ const AdminCategories = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleCreateCategoryModal = () => {
+      setEditingCategory(null);
+      setShowModal(true);
+    };
+
+    window.addEventListener('openCreateCategoryModal', handleCreateCategoryModal);
+    
+    return () => {
+      window.removeEventListener('openCreateCategoryModal', handleCreateCategoryModal);
+    };
+  }, []);
+
   // Fetch categories
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['/api/admin/task-categories'],
@@ -468,10 +482,6 @@ const AdminCategories = () => {
             </p>
           </div>
         </div>
-        <Button onClick={handleAddNew} className="gap-2">
-          <Plus className="w-4 h-4" />
-          Nueva Categoría
-        </Button>
       </div>
 
       {/* Search and Filters */}
@@ -500,7 +510,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={expandAll}
-              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300"
+              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
             >
               Expandir Todo
             </Button>
@@ -508,7 +518,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={collapseAll}
-              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300"
+              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
             >
               Colapsar Todo
             </Button>
