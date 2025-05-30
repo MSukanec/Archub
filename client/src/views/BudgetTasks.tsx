@@ -289,86 +289,109 @@ export default function BudgetTasks() {
           ) : (
             <div className="overflow-hidden">
               {/* Table Header */}
-              <div className="grid grid-cols-12 gap-4 p-4 bg-gray-100 border-b border-gray-300 font-medium text-sm text-gray-700">
+              <div className="grid grid-cols-14 gap-3 p-4 bg-gray-100 border-b border-gray-300 font-medium text-sm text-gray-700">
                 <div className="col-span-2">Rubro</div>
                 <div className="col-span-3">Descripción</div>
                 <div className="col-span-1">Unidad</div>
                 <div className="col-span-2">Cantidad</div>
                 <div className="col-span-2">Costo Mano de Obra</div>
                 <div className="col-span-2">Subtotal</div>
+                <div className="col-span-1">% Incidencia</div>
+                <div className="col-span-1">Acciones</div>
               </div>
               
-              {/* Table Rows */}
+              {/* Table Rows Grouped by Category */}
               <div className="max-h-[500px] overflow-y-auto">
-                {budgetTasks.map((budgetTask: any, index: number) => (
-                  <div 
-                    key={budgetTask.id} 
-                    className={`grid grid-cols-12 gap-4 p-4 border-b border-gray-200 hover:bg-gray-50 ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
-                  >
-                    <div className="col-span-2 text-sm font-medium">
-                      {budgetTask.category_name}
-                    </div>
-                    <div className="col-span-3 text-sm">
-                      {budgetTask.task_name}
-                    </div>
-                    <div className="col-span-1 text-sm">
-                      {budgetTask.unit}
-                    </div>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={budgetTask.quantity}
-                        onChange={(e) => {
-                          const newQuantity = parseFloat(e.target.value) || 0;
-                          updateQuantityMutation.mutate({ 
-                            id: budgetTask.id, 
-                            quantity: newQuantity 
-                          });
-                        }}
-                        className="h-8 text-sm bg-white border-gray-300"
-                      />
-                    </div>
-                    <div className="col-span-2 text-sm font-medium">
-                      ${budgetTask.unit_labor_price.toFixed(2)}
-                    </div>
-                    <div className="col-span-2 flex items-center justify-between">
-                      <span className="text-sm font-bold">
-                        ${(budgetTask.unit_labor_price * budgetTask.quantity).toFixed(2)}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                            <MoreHorizontal className="h-3 w-3" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem 
-                            onClick={() => deleteTaskMutation.mutate(budgetTask.id)}
-                            className="text-destructive"
+                {Object.keys(groupedTasks).map((categoryName) => {
+                  const categoryTasks = groupedTasks[categoryName];
+                  const categoryTotal = categoryTasks.reduce((sum: number, task: any) => 
+                    sum + (task.unit_labor_price * task.quantity), 0
+                  );
+                  
+                  return (
+                    <div key={categoryName}>
+                      {/* Category Header */}
+                      <div className="grid grid-cols-14 gap-3 p-3 bg-blue-100 border-b border-blue-200 font-bold text-sm text-blue-800">
+                        <div className="col-span-14 flex justify-between items-center">
+                          <span>{categoryName.toUpperCase()}</span>
+                          <span>${categoryTotal.toFixed(2)}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Tasks in Category */}
+                      {categoryTasks.map((budgetTask: any, index: number) => {
+                        const subtotal = budgetTask.unit_labor_price * budgetTask.quantity;
+                        const incidencePercentage = totalGeneral > 0 ? (subtotal / totalGeneral) * 100 : 0;
+                        
+                        return (
+                          <div 
+                            key={budgetTask.id} 
+                            className={`grid grid-cols-14 gap-3 p-3 border-b border-gray-200 hover:bg-gray-50 ${
+                              index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                            }`}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <div className="col-span-2 text-sm font-medium text-gray-500">
+                              {/* Empty for rubro since it's in header */}
+                            </div>
+                            <div className="col-span-3 text-sm">
+                              {budgetTask.task_name}
+                            </div>
+                            <div className="col-span-1 text-sm">
+                              {budgetTask.unit}
+                            </div>
+                            <div className="col-span-2">
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={budgetTask.quantity}
+                                onChange={(e) => {
+                                  const newQuantity = parseFloat(e.target.value) || 0;
+                                  updateQuantityMutation.mutate({ 
+                                    id: budgetTask.id, 
+                                    quantity: newQuantity 
+                                  });
+                                }}
+                                className="h-8 text-sm bg-white border-gray-300"
+                              />
+                            </div>
+                            <div className="col-span-2 text-sm font-medium">
+                              ${budgetTask.unit_labor_price.toFixed(2)}
+                            </div>
+                            <div className="col-span-2 text-sm font-bold">
+                              ${subtotal.toFixed(2)}
+                            </div>
+                            <div className="col-span-1 text-sm">
+                              {incidencePercentage.toFixed(1)}%
+                            </div>
+                            <div className="col-span-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteTaskMutation.mutate(budgetTask.id)}
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               
               {/* Total Row */}
-              <div className="grid grid-cols-12 gap-4 p-4 bg-green-50 border-t-2 border-green-200 font-bold">
-                <div className="col-span-9 text-right text-lg">
-                  TOTAL:
+              <div className="grid grid-cols-14 gap-3 p-4 bg-green-50 border-t-2 border-green-200 font-bold">
+                <div className="col-span-11 text-right text-lg">
+                  TOTAL GENERAL:
                 </div>
-                <div className="col-span-3 text-lg text-green-600">
-                  ${budgetTasks.reduce((sum: number, task: any) => 
-                    sum + (task.unit_labor_price * task.quantity), 0
-                  ).toFixed(2)}
+                <div className="col-span-2 text-lg text-green-600">
+                  ${totalGeneral.toFixed(2)}
+                </div>
+                <div className="col-span-1 text-lg text-green-600">
+                  100%
                 </div>
               </div>
             </div>
