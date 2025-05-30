@@ -44,7 +44,7 @@ export const unitsService = {
     return data;
   },
 
-  async update(id: number, unitData: Partial<CreateUnitData>): Promise<Unit> {
+  async update(id: string, unitData: Partial<CreateUnitData>): Promise<Unit> {
     const { data, error } = await supabase
       .from('units')
       .update(unitData)
@@ -60,7 +60,7 @@ export const unitsService = {
     return data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const { error } = await supabase
       .from('units')
       .delete()
