@@ -101,11 +101,11 @@ export const contactTaskLinks = pgTable("contact_task_links", {
 });
 
 export const taskCategories = pgTable("task_categories", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   code: text("code").notNull(),
   name: text("name").notNull(),
   position: integer("position").notNull(),
-  parent_id: integer("parent_id").references(() => taskCategories.id),
+  parent_id: uuid("parent_id").references(() => taskCategories.id),
 });
 
 export const materials = pgTable("materials", {
@@ -121,9 +121,9 @@ export const tasks = pgTable("tasks", {
   unit_id: integer("unit_id").references(() => units.id),
   unit_labor_price: decimal("unit_labor_price", { precision: 12, scale: 2 }),
   unit_material_price: decimal("unit_material_price", { precision: 12, scale: 2 }),
-  category_id: integer("category_id").references(() => taskCategories.id),
-  subcategory_id: integer("subcategory_id").references(() => taskCategories.id),
-  element_category_id: integer("element_category_id").references(() => taskCategories.id),
+  category_id: uuid("category_id").references(() => taskCategories.id),
+  subcategory_id: uuid("subcategory_id").references(() => taskCategories.id),
+  element_category_id: uuid("element_category_id").references(() => taskCategories.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
