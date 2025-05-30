@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, X, ShoppingCart } from 'lucide-react';
+import { Search, X, ShoppingCart, Package } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
@@ -48,6 +48,23 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
     }
   }, [isOpen]);
 
+  // Obtener tareas ya agregadas al presupuesto
+  const { data: existingBudgetTasks = [] } = useQuery({
+    queryKey: ['budget-tasks', budgetId],
+    queryFn: async () => {
+      if (!budgetId) return [];
+      
+      const { data, error } = await supabase
+        .from('budget_tasks')
+        .select('task_id')
+        .eq('budget_id', budgetId);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!budgetId && isOpen,
+  });
+
   // Obtener todas las tareas
   const { data: allTasks = [] } = useQuery({
     queryKey: ['all-tasks', organizationId],
@@ -66,8 +83,14 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
     enabled: Boolean(organizationId && isOpen),
   });
 
+  // Obtener IDs de tareas ya agregadas
+  const existingTaskIds = existingBudgetTasks.map(bt => bt.task_id);
+  
+  // Filtrar tareas excluyendo las ya agregadas
+  const availableTasks = allTasks.filter(task => !existingTaskIds.includes(task.id));
+
   // Filtrar tareas basado en la búsqueda
-  const filteredTasks = allTasks.filter(task =>
+  const filteredTasks = availableTasks.filter(task =>
     searchQuery.length === 0 || 
     task.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -142,22 +165,35 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl h-[80vh] bg-[#e0e0e0] border-gray-300 flex flex-col">
-        <DialogHeader className="pb-4">
-          <DialogTitle className="text-xl font-semibold text-foreground">
-            Agregar Tareas al Presupuesto
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            Busca tareas por nombre y selecciona las que quieres agregar al presupuesto
-          </DialogDescription>
+        <DialogHeader className="pb-4 relative">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary rounded-full p-2">
+              <Package className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-semibold text-foreground">
+                Agregar Tareas al Presupuesto
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                Busca tareas por nombre y selecciona las que quieres agregar al presupuesto
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="p-2 flex-1 overflow-hidden">
           <Tabs defaultValue="available" className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="available">
+            <TabsList className="grid w-full grid-cols-2 bg-[#d2d2d2]">
+              <TabsTrigger 
+                value="available"
+                className="data-[state=active]:bg-white data-[state=active]:text-foreground"
+              >
                 Tareas Disponibles ({filteredTasks.length})
               </TabsTrigger>
-              <TabsTrigger value="selected" className="relative">
+              <TabsTrigger 
+                value="selected" 
+                className="relative data-[state=active]:bg-white data-[state=active]:text-foreground"
+              >
                 Seleccionadas ({selectedTasks.length})
                 {selectedTasks.length > 0 && (
                   <div className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">

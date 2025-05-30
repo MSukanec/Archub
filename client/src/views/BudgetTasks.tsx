@@ -91,9 +91,9 @@ export default function BudgetTasks() {
         if (tasksError) throw tasksError;
 
         // Obtenemos las categorías por separado si hay tareas
-        let categoriesData = [];
+        let categoriesData: any[] = [];
         if (tasksData && tasksData.length > 0) {
-          const categoryIds = [...new Set(tasksData.map(t => t.category_id).filter(Boolean))];
+          const categoryIds = Array.from(new Set(tasksData.map(t => t.category_id).filter(Boolean)));
           if (categoryIds.length > 0) {
             const { data: catData } = await supabase
               .from('task_categories')
@@ -125,6 +125,21 @@ export default function BudgetTasks() {
     },
     enabled: !!budgetId,
   });
+
+  // Agrupar tareas por categoría
+  const groupedTasks = budgetTasks.reduce((groups: any, task: any) => {
+    const categoryName = task.category_name || 'Sin categoría';
+    if (!groups[categoryName]) {
+      groups[categoryName] = [];
+    }
+    groups[categoryName].push(task);
+    return groups;
+  }, {});
+
+  // Calcular total general
+  const totalGeneral = budgetTasks.reduce((sum: number, task: any) => 
+    sum + (task.unit_labor_price * task.quantity), 0
+  );
 
   // Mutation to update task quantity
   const updateQuantityMutation = useMutation({
