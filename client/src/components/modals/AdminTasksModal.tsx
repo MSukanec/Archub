@@ -31,10 +31,16 @@ const createTaskSchema = z.object({
 
 type FormData = z.infer<typeof createTaskSchema>;
 
+// Tipo extendido que incluye los nuevos campos
+type TaskWithNewFields = Task & {
+  action_id?: string | null;
+  element_id?: string | null;
+};
+
 interface AdminTasksModalProps {
   isOpen: boolean;
   onClose: () => void;
-  task?: Task | null;
+  task?: TaskWithNewFields | null;
 }
 
 interface TaskCategory {

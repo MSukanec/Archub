@@ -71,7 +71,7 @@ export const actions = pgTable("actions", {
 });
 
 export const units = pgTable("units", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   description: text("description"),
   created_at: timestamp("created_at").defaultNow().notNull(),
@@ -118,7 +118,7 @@ export const materials = pgTable("materials", {
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  unit_id: uuid("unit_id").references(() => units.id),
+  unit_id: uuid("unit_id"),
   unit_labor_price: decimal("unit_labor_price", { precision: 12, scale: 2 }),
   unit_material_price: decimal("unit_material_price", { precision: 12, scale: 2 }),
   category_id: uuid("category_id").references(() => taskCategories.id),
