@@ -105,8 +105,17 @@ export default function AdminMaterials() {
                          (material.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (material.unit || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesDate = !dateFilter || 
-                       format(new Date(material.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    let matchesDate = true;
+    if (dateFilter && material.created_at) {
+      try {
+        const materialDate = new Date(material.created_at);
+        if (!isNaN(materialDate.getTime())) {
+          matchesDate = format(materialDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+        }
+      } catch (e) {
+        matchesDate = false;
+      }
+    }
     
     return matchesSearch && matchesDate;
   });
@@ -237,7 +246,7 @@ export default function AdminMaterials() {
                     </div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
-                    {format(new Date(material.created_at), 'dd/MM/yyyy')}
+                    {material.created_at ? format(new Date(material.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
                   </TableCell>
                   <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">

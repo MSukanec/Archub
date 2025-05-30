@@ -83,8 +83,19 @@ export default function AdminUnits() {
   const filteredUnits = units.filter((unit: any) => {
     const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (unit.symbol || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = !dateFilter || 
-                       format(new Date(unit.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    
+    let matchesDate = true;
+    if (dateFilter && unit.created_at) {
+      try {
+        const unitDate = new Date(unit.created_at);
+        if (!isNaN(unitDate.getTime())) {
+          matchesDate = format(unitDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+        }
+      } catch (e) {
+        matchesDate = false;
+      }
+    }
+    
     return matchesSearch && matchesDate;
   });
 
@@ -198,7 +209,7 @@ export default function AdminUnits() {
                     </span>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
-                    {format(new Date(unit.created_at), 'dd/MM/yyyy')}
+                    {unit.created_at ? format(new Date(unit.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
                   </TableCell>
                   <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">

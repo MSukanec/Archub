@@ -43,10 +43,7 @@ export default function AdminTasks() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')
-        .select(`
-          *,
-          category:task_categories(name)
-        `)
+        .select('*')
         .order('name', { ascending: true });
       
       if (error) {
@@ -89,7 +86,7 @@ export default function AdminTasks() {
 
   const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch = (task.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+                         (task.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     let matchesDate = true;
     if (dateFilter && task.created_at) {
@@ -213,16 +210,9 @@ export default function AdminTasks() {
                     </div>
                   </TableCell>
                   <TableCell className="py-4">
-                    <div className="space-y-1">
-                      <Badge variant="outline" className="bg-muted/50">
-                        {task.category?.name || 'Sin categoría'}
-                      </Badge>
-                      {task.subcategory?.name && (
-                        <div className="text-xs text-muted-foreground">
-                          {task.subcategory.name}
-                        </div>
-                      )}
-                    </div>
+                    <Badge variant="outline" className="bg-muted/50">
+                      {task.category_id ? `Categoría: ${task.category_id.slice(0, 8)}...` : 'Sin categoría'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
                     <div className="flex items-center gap-2">
