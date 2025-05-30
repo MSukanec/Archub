@@ -165,7 +165,7 @@ export default function FloatingActionButton() {
       <button
         onClick={!isBlocked ? handleClick : undefined}
         className={cn(
-          "w-18 h-18 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
+          "w-16 h-16 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
           "transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(82_100%_39%)] focus-visible:ring-offset-2",
           isBlocked 
             ? "opacity-75 cursor-not-allowed" 

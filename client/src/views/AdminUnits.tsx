@@ -66,15 +66,7 @@ export default function AdminUnits() {
 
   const { data: units = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/units'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('units')
-        .select('*')
-        .order('name', { ascending: true });
-      
-      if (error) throw error;
-      return data || [];
-    },
+    queryFn: () => unitsService.getAll(),
     retry: 1,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -105,6 +97,12 @@ export default function AdminUnits() {
   const handleDelete = (unit: any) => {
     setSelectedUnit(unit);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteUnit = () => {
+    if (selectedUnit) {
+      deleteMutation.mutate(selectedUnit.id);
+    }
   };
 
   const filteredUnits = units.filter((unit: any) => {

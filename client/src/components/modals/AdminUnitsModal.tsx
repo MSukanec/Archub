@@ -59,7 +59,7 @@ export default function AdminUnitsModal({
       return unitsService.create(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/units'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/units'] });
       toast({
         title: "Unidad creada",
         description: "La unidad se ha creado exitosamente.",
@@ -80,10 +80,10 @@ export default function AdminUnitsModal({
       return unitsService.update(unit.id, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/units'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/units'] });
       toast({
         title: "Unidad actualizada",
-        description: "La unidad se ha actualizado exitosamente.",
+        description: "La unidad se ha actualizada exitosamente.",
       });
       onClose();
     },
