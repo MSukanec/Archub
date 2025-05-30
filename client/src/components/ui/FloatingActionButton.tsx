@@ -121,9 +121,9 @@ export default function FloatingActionButton() {
     'admin-users': { label: 'Crear Usuario', action: modalActions.openCreateUserModal },
     'admin-categories': { label: 'Crear Categoría', action: modalActions.openCreateCategoryModal },
     'admin-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
-    'admin-units': { label: 'Crear Unidad', action: modalActions.openCreateUnitModal },
-    'admin-elements': { label: 'Crear Elemento', action: modalActions.openCreateElementModal },
-    'admin-actions': { label: 'Crear Acción', action: modalActions.openCreateActionModal },
+    'admin-units': { label: 'Crear Unidad', action: () => console.log('Crear Unidad') },
+    'admin-elements': { label: 'Crear Elemento', action: () => console.log('Crear Elemento') },
+    'admin-actions': { label: 'Crear Acción', action: () => console.log('Crear Acción') },
     'admin-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
     'admin-permissions': null,
     'profile-info': null,
@@ -152,7 +152,7 @@ export default function FloatingActionButton() {
 
   return (
     <div 
-      className="fixed bottom-[37px] right-[37px] z-50 p-2"
+      className="fixed bottom-[37px] right-[25px] z-50 p-2"
       onMouseEnter={() => !isBlocked && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

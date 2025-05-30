@@ -41,7 +41,7 @@ export default function AdminElements() {
     queryKey: ['/api/admin/elements'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('element_categories')
+        .from('task_elements')
         .select('*')
         .order('name', { ascending: true });
       

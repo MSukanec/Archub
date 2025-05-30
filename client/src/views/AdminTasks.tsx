@@ -113,10 +113,6 @@ export default function AdminTasks() {
             <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6">
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva Tarea
-        </Button>
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">

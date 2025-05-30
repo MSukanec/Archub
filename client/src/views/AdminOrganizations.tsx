@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Building2, Search, Plus, Edit, Trash2, Users, Calendar } from 'lucide-react';
@@ -47,6 +47,18 @@ export default function AdminOrganizations() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateOrganizationModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateOrganizationModal', handleOpenCreateOrganizationModal);
+    return () => {
+      window.removeEventListener('openCreateOrganizationModal', handleOpenCreateOrganizationModal);
+    };
+  }, []);
 
   // Fetch organizations
   const { data: organizations = [], isLoading, error } = useQuery({
