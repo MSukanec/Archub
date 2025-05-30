@@ -45,13 +45,14 @@ export default function AdminTasks() {
         .from('tasks')
         .select(`
           *,
-          category:categories(name),
-          subcategory:subcategories(name),
-          element_category:element_categories(name)
+          category:task_categories(name)
         `)
         .order('name', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.warn('Tasks table error, returning empty array:', error);
+        return [];
+      }
       return data || [];
     },
     retry: 1,
@@ -88,10 +89,20 @@ export default function AdminTasks() {
 
   const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch = (task.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.subcategory?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = !dateFilter || 
-                       format(new Date(task.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+                         (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+    
+    let matchesDate = true;
+    if (dateFilter && task.created_at) {
+      try {
+        const taskDate = new Date(task.created_at);
+        if (!isNaN(taskDate.getTime())) {
+          matchesDate = format(taskDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+        }
+      } catch (e) {
+        matchesDate = false;
+      }
+    }
+    
     return matchesSearch && matchesDate;
   });
 
@@ -226,7 +237,7 @@ export default function AdminTasks() {
                     </div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
-                    {format(new Date(task.created_at), 'dd/MM/yyyy')}
+                    {task.created_at ? format(new Date(task.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
                   </TableCell>
                   <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">

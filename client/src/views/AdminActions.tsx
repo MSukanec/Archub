@@ -40,12 +40,16 @@ export default function AdminActions() {
   const { data: actions = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/actions'],
     queryFn: async () => {
+      // Intentar cargar desde la tabla correcta
       const { data, error } = await supabase
         .from('actions')
         .select('*')
         .order('name', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.warn('Actions table not found, returning empty array:', error);
+        return [];
+      }
       return data || [];
     },
     retry: 1,

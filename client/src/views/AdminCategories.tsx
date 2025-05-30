@@ -50,7 +50,7 @@ export default function AdminCategories() {
     queryKey: ['/api/admin/categories'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('categories')
+        .from('task_categories')
         .select('*')
         .order('name', { ascending: true });
       
@@ -108,8 +108,17 @@ export default function AdminCategories() {
     const matchesSearch = (category.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (category.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesDate = !dateFilter || 
-                       format(new Date(category.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    let matchesDate = true;
+    if (dateFilter && category.created_at) {
+      try {
+        const categoryDate = new Date(category.created_at);
+        if (!isNaN(categoryDate.getTime())) {
+          matchesDate = format(categoryDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+        }
+      } catch (e) {
+        matchesDate = false;
+      }
+    }
     
     return matchesSearch && matchesDate;
   });
@@ -233,7 +242,7 @@ export default function AdminCategories() {
                     </div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
-                    {format(new Date(category.created_at), 'dd/MM/yyyy')}
+                    {category.created_at ? format(new Date(category.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
                   </TableCell>
                   <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">
