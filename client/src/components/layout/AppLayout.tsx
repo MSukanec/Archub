@@ -105,7 +105,11 @@ export default function AppLayout() {
       } else {
         setUser(null);
       }
+      // Always set loading to false after processing
       setLoading(false);
+    }).catch((error) => {
+      console.error('Error during initial auth check:', error);
+      setLoading(false); // Ensure loading is set to false even on error
     });
 
     // Listen for auth changes
