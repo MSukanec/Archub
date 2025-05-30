@@ -4,6 +4,7 @@ export interface Material {
   id: string;
   name: string;
   unit_id: string;
+  cost?: number;
   created_at: string;
   // Join with units table
   unit?: {
@@ -16,6 +17,7 @@ export interface Material {
 export interface CreateMaterialData {
   name: string;
   unit_id: string;
+  cost?: number;
 }
 
 export const materialsService = {
@@ -46,6 +48,8 @@ export const materialsService = {
       .insert([{
         name: materialData.name,
         unit_id: materialData.unit_id,
+        cost: materialData.cost,
+        created_at: new Date().toISOString(),
       }])
       .select(`
         *,

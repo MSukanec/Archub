@@ -250,7 +250,7 @@ export default function AdminMaterials() {
                   <TableCell className="text-center py-4">
                     <div className="flex items-center justify-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
-                      {material.price ? material.price.toFixed(2) : '0.00'}
+                      {material.cost ? material.cost.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
                   <TableCell className="text-center py-4">

@@ -18,6 +18,7 @@ const materialSchema = z.object({
     required_error: 'Debes seleccionar una unidad',
     invalid_type_error: 'Debes seleccionar una unidad',
   }).min(1, 'La unidad es obligatoria'),
+  cost: z.coerce.number().min(0, 'El costo debe ser mayor o igual a 0').optional(),
 });
 
 interface AdminMaterialsModalProps {
@@ -36,6 +37,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     defaultValues: {
       name: '',
       unit_id: '',
+      cost: 0,
     },
   });
 
@@ -51,11 +53,13 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
       form.reset({
         name: material.name,
         unit_id: material.unit_id,
+        cost: material.cost || 0,
       });
     } else {
       form.reset({
         name: '',
         unit_id: '',
+        cost: 0,
       });
     }
   }, [material, form]);
@@ -158,6 +162,28 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cost"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Costo (Opcional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      placeholder="0.00" 
+                      {...field} 
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
