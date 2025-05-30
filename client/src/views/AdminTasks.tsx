@@ -146,12 +146,12 @@ export default function AdminTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Tarea</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Precio Mano de Obra</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Precio Material</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-6">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-6">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-6">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-6">Precio Mano de Obra</TableHead>
+              <TableHead className="text-foreground font-semibold h-6">Precio Material</TableHead>
+              <TableHead className="text-foreground font-semibold text-right h-6">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

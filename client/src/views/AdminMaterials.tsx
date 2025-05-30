@@ -240,17 +240,17 @@ export default function AdminMaterials() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Material</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Precio</TableHead>
-              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-6 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-6 text-center">Material</TableHead>
+              <TableHead className="text-foreground font-semibold h-6 text-center">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-6 text-center">Precio</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-6">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedMaterials.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-2 h-8">
                   {searchTerm 
                     ? 'No se encontraron materiales que coincidan con los filtros.'
                     : 'No hay materiales registrados.'
@@ -259,27 +259,27 @@ export default function AdminMaterials() {
               </TableRow>
             ) : (
               paginatedMaterials.map((material: any) => (
-                <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="text-center py-4">
-                    <Badge variant="secondary" className="bg-muted/50">
+                <TableRow key={material.id} className="border-border hover:bg-muted/50 transition-colors">
+                  <TableCell className="text-center py-1 h-6">
+                    <Badge variant="secondary" className="bg-muted/50 text-xs">
                       {material.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-4 text-center">
-                    <div className="font-medium text-foreground">{material.name}</div>
+                  <TableCell className="py-1 text-center h-6">
+                    <div className="font-medium text-foreground text-xs">{material.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
-                    <Badge variant="outline" className="bg-muted/50">
+                  <TableCell className="text-center py-1 h-6">
+                    <Badge variant="outline" className="bg-muted/50 text-xs">
                       {material.unit?.name || 'No especificada'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-center py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      <DollarSign className="w-4 h-4 text-muted-foreground" />
+                  <TableCell className="text-center py-1 h-6">
+                    <div className="flex items-center justify-center gap-2 text-xs">
+                      <DollarSign className="w-3 h-3 text-muted-foreground" />
                       {material.cost ? material.cost.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-1 h-6">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
