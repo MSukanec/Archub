@@ -126,6 +126,25 @@ export const tasks = pgTable("tasks", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Budgets table
+export const budgets = pgTable("budgets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  project_id: uuid("project_id").notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Budget tasks table - junction table for budgets and tasks
+export const budgetTasks = pgTable("budget_tasks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  budget_id: uuid("budget_id").notNull().references(() => budgets.id, { onDelete: "cascade" }),
+  task_id: integer("task_id").notNull().references(() => tasks.id),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull().default("0"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Site logs tables
 export const siteLogs = pgTable("site_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -252,11 +271,24 @@ export const insertMaterialSchema = createInsertSchema(materials).pick({
 
 export const insertTaskSchema = createInsertSchema(tasks).pick({
   name: true,
+  unit_id: true,
   unit_labor_price: true,
   unit_material_price: true,
   category_id: true,
   subcategory_id: true,
   element_category_id: true,
+});
+
+export const insertBudgetSchema = createInsertSchema(budgets).pick({
+  name: true,
+  description: true,
+  project_id: true,
+});
+
+export const insertBudgetTaskSchema = createInsertSchema(budgetTasks).pick({
+  budget_id: true,
+  task_id: true,
+  quantity: true,
 });
 
 export const insertSiteLogSchema = createInsertSchema(siteLogs).pick({
