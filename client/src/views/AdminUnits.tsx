@@ -190,7 +190,7 @@ export default function AdminUnits() {
                 <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4 text-center">
                     <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
-                      {unit.symbol || 'N/A'}
+                      {unit.name || 'N/A'}
                     </span>
                   </TableCell>
                   <TableCell className="text-center py-4">

@@ -57,6 +57,18 @@ const useModalActions = () => {
     window.dispatchEvent(new CustomEvent('openCreateTaskModal'));
   };
 
+  const openCreateUnitModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateUnitModal'));
+  };
+
+  const openCreateElementModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateElementModal'));
+  };
+
+  const openCreateActionModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateActionModal'));
+  };
+
   return {
     openCreateProjectModal,
     openCreateMovementModal,
@@ -68,6 +80,9 @@ const useModalActions = () => {
     openCreateCategoryModal,
     openCreateMaterialModal,
     openCreateTaskModal,
+    openCreateUnitModal,
+    openCreateElementModal,
+    openCreateActionModal,
     openInviteTeamMemberModal,
   };
 };
@@ -106,9 +121,9 @@ export default function FloatingActionButton() {
     'admin-users': { label: 'Crear Usuario', action: modalActions.openCreateUserModal },
     'admin-categories': { label: 'Crear Categoría', action: modalActions.openCreateCategoryModal },
     'admin-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
-    'admin-units': null,
-    'admin-elements': null,
-    'admin-actions': null,
+    'admin-units': { label: 'Crear Unidad', action: modalActions.openCreateUnitModal },
+    'admin-elements': { label: 'Crear Elemento', action: modalActions.openCreateElementModal },
+    'admin-actions': { label: 'Crear Acción', action: modalActions.openCreateActionModal },
     'admin-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
     'admin-permissions': null,
     'profile-info': null,
