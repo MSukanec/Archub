@@ -1,13 +1,13 @@
 import { supabase } from './supabase';
 
 export interface Material {
-  id: number;
+  id: string;
   name: string;
-  unit_id: number;
+  unit_id: string;
   created_at: string;
   // Join with units table
   unit?: {
-    id: number;
+    id: string;
     name: string;
     description?: string;
   };
@@ -15,7 +15,7 @@ export interface Material {
 
 export interface CreateMaterialData {
   name: string;
-  unit_id: number;
+  unit_id: string;
 }
 
 export const materialsService = {

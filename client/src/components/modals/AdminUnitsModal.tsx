@@ -122,12 +122,12 @@ export default function AdminUnitsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-[#282828] border border-gray-700">
-        <DialogHeader>
-          <DialogTitle className="text-white">
+      <DialogContent className="sm:max-w-[500px] bg-[#e0e0e0] border-0 rounded-2xl shadow-2xl p-0 gap-0 max-h-[90vh] overflow-hidden">
+        <DialogHeader className="bg-[#e0e0e0] p-6 border-b border-[#cccccc]">
+          <DialogTitle className="text-[#333333] text-xl font-semibold">
             {isEditing ? 'Editar Unidad' : 'Nueva Unidad'}
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-[#666666] text-sm">
             {isEditing 
               ? 'Modifica los datos de la unidad de medida'
               : 'Crea una nueva unidad de medida en el sistema'
@@ -136,56 +136,58 @@ export default function AdminUnitsModal({
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Nombre de la Unidad</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Ej: Metro, Kilogramo, Litro"
-                      className="bg-[#1e1e1e] border-gray-600 text-white placeholder:text-gray-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
+            <div className="flex-1 overflow-y-auto py-4 px-6 space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#333333]">Nombre de la Unidad</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Ej: Metro, Kilogramo, Litro"
+                        className="bg-[#d2d2d2] border-[#cccccc] text-[#333333] placeholder:text-[#666666]"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Descripción</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Descripción de la unidad de medida"
-                      className="bg-[#1e1e1e] border-gray-600 text-white placeholder:text-gray-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#333333]">Descripción</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Descripción de la unidad de medida"
+                        className="bg-[#d2d2d2] border-[#cccccc] text-[#333333] placeholder:text-[#666666]"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <DialogFooter>
+            <DialogFooter className="bg-[#e0e0e0] p-6 border-t border-[#cccccc] gap-3">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={onClose}
-                className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="bg-[#d2d2d2] border-[#cccccc] text-[#666666] hover:bg-[#cccccc] hover:text-[#333333]"
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="bg-[#4f9eff] hover:bg-[#3d8ce6] text-white"
+                className="bg-[#8fc700] hover:bg-[#7eb600] text-white"
               >
                 {createMutation.isPending || updateMutation.isPending 
                   ? 'Guardando...' 

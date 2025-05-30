@@ -14,7 +14,7 @@ import { unitsService } from '@/lib/unitsService';
 
 const materialSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
-  unit_id: z.number({
+  unit_id: z.string({
     required_error: 'Debes seleccionar una unidad',
     invalid_type_error: 'Debes seleccionar una unidad',
   }).min(1, 'La unidad es obligatoria'),
@@ -35,7 +35,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     resolver: zodResolver(materialSchema),
     defaultValues: {
       name: '',
-      unit_id: undefined,
+      unit_id: '',
     },
   });
 
@@ -55,7 +55,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     } else {
       form.reset({
         name: '',
-        unit_id: undefined,
+        unit_id: '',
       });
     }
   }, [material, form]);
@@ -142,8 +142,8 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                 <FormItem>
                   <FormLabel>Unidad de Medida</FormLabel>
                   <Select 
-                    value={field.value?.toString()} 
-                    onValueChange={(value) => field.onChange(parseInt(value))}
+                    value={field.value} 
+                    onValueChange={field.onChange}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -152,7 +152,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                     </FormControl>
                     <SelectContent>
                       {units.map((unit) => (
-                        <SelectItem key={unit.id} value={unit.id.toString()}>
+                        <SelectItem key={unit.id} value={unit.id}>
                           {unit.name} {unit.description && `(${unit.description})`}
                         </SelectItem>
                       ))}
