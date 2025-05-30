@@ -281,7 +281,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                   Información Básica
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="space-y-3 pt-2">
+              <AccordionContent className="space-y-2 pt-1">
                 <FormField
                   control={form.control}
                   name="name"
@@ -446,7 +446,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                   Materiales
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="space-y-3 pt-2">
+              <AccordionContent className="space-y-2 pt-1">
                 <div className="space-y-2">
                   <div className="grid grid-cols-3 gap-2">
                     <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
