@@ -85,7 +85,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
       )}
       
       <div 
-        className={`flex items-center gap-2 p-3 bg-[#e1e1e1] border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
+        className={`flex items-center gap-2 py-2 px-3 bg-[#e1e1e1] border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
           isOver && dropPosition === 'inside' ? 'ring-2 ring-primary ring-opacity-50 bg-primary/10' : ''
         }`}
         style={{ paddingLeft: `${paddingLeft}px` }}
@@ -127,20 +127,20 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => onEdit(category)}
-            className="h-8 w-8 p-0 border-[#919191]/20 bg-[#e1e1e1] hover:bg-gray-300 text-blue-600 hover:text-blue-700"
+            className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
           >
             <Edit className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => onDelete(category.id)}
-            className="h-8 w-8 p-0 border-[#919191]/20 bg-[#e1e1e1] hover:bg-red-200 text-red-600 hover:text-red-700"
+            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
