@@ -450,7 +450,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <Select 
                         onValueChange={(value) => {
                           setSelectedElementCategoryId(value);
-                          field.onChange(value ? parseInt(value) : null);
+                          field.onChange(value);
                         }} 
                         value={selectedElementCategoryId}
                         disabled={!selectedSubcategoryId}
