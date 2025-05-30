@@ -287,21 +287,22 @@ export default function BudgetTasks() {
               )}
             </div>
           ) : (
-            <div className="overflow-hidden">
+            <div className="overflow-hidden border border-gray-300 rounded-lg">
               {/* Table Header */}
-              <div className="grid grid-cols-14 gap-3 p-4 bg-gray-100 border-b border-gray-300 font-medium text-sm text-gray-700">
-                <div className="col-span-2">Rubro</div>
-                <div className="col-span-3">Descripción</div>
-                <div className="col-span-1">Unidad</div>
-                <div className="col-span-2">Cantidad</div>
-                <div className="col-span-2">Costo Mano de Obra</div>
-                <div className="col-span-2">Subtotal</div>
-                <div className="col-span-1">% Incidencia</div>
-                <div className="col-span-1">Acciones</div>
+              <div className="bg-gray-100 border-b border-gray-300 p-4">
+                <div className="grid grid-cols-12 gap-4 font-medium text-sm text-gray-700">
+                  <div className="col-span-2">Rubro</div>
+                  <div className="col-span-3">Descripción</div>
+                  <div className="col-span-1">Unidad</div>
+                  <div className="col-span-2">Cantidad</div>
+                  <div className="col-span-2">Costo Mano de Obra</div>
+                  <div className="col-span-1">Subtotal</div>
+                  <div className="col-span-1">% Incidencia</div>
+                </div>
               </div>
               
-              {/* Table Rows Grouped by Category */}
-              <div className="max-h-[500px] overflow-y-auto">
+              {/* Table Body */}
+              <div className="max-h-[500px] overflow-y-auto bg-white">
                 {Object.keys(groupedTasks).map((categoryName) => {
                   const categoryTasks = groupedTasks[categoryName];
                   const categoryTotal = categoryTasks.reduce((sum: number, task: any) => 
@@ -311,8 +312,8 @@ export default function BudgetTasks() {
                   return (
                     <div key={categoryName}>
                       {/* Category Header */}
-                      <div className="grid grid-cols-14 gap-3 p-3 bg-blue-100 border-b border-blue-200 font-bold text-sm text-blue-800">
-                        <div className="col-span-14 flex justify-between items-center">
+                      <div className="bg-blue-100 border-b border-blue-200 p-3 font-bold text-sm text-blue-800">
+                        <div className="flex justify-between items-center">
                           <span>{categoryName.toUpperCase()}</span>
                           <span>${categoryTotal.toFixed(2)}</span>
                         </div>
@@ -326,7 +327,7 @@ export default function BudgetTasks() {
                         return (
                           <div 
                             key={budgetTask.id} 
-                            className={`grid grid-cols-14 gap-3 p-3 border-b border-gray-200 hover:bg-gray-50 ${
+                            className={`grid grid-cols-12 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 ${
                               index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                             }`}
                           >
@@ -358,21 +359,19 @@ export default function BudgetTasks() {
                             <div className="col-span-2 text-sm font-medium">
                               ${budgetTask.unit_labor_price.toFixed(2)}
                             </div>
-                            <div className="col-span-2 text-sm font-bold">
-                              ${subtotal.toFixed(2)}
-                            </div>
-                            <div className="col-span-1 text-sm">
-                              {incidencePercentage.toFixed(1)}%
-                            </div>
-                            <div className="col-span-1">
+                            <div className="col-span-1 text-sm font-bold flex items-center justify-between">
+                              <span>${subtotal.toFixed(2)}</span>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => deleteTaskMutation.mutate(budgetTask.id)}
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 ml-2"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3 w-3" />
                               </Button>
+                            </div>
+                            <div className="col-span-1 text-sm">
+                              {incidencePercentage.toFixed(1)}%
                             </div>
                           </div>
                         );
@@ -383,15 +382,17 @@ export default function BudgetTasks() {
               </div>
               
               {/* Total Row */}
-              <div className="grid grid-cols-14 gap-3 p-4 bg-green-50 border-t-2 border-green-200 font-bold">
-                <div className="col-span-11 text-right text-lg">
-                  TOTAL GENERAL:
-                </div>
-                <div className="col-span-2 text-lg text-green-600">
-                  ${totalGeneral.toFixed(2)}
-                </div>
-                <div className="col-span-1 text-lg text-green-600">
-                  100%
+              <div className="bg-green-50 border-t-2 border-green-200 p-4 font-bold">
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="col-span-9 text-right text-lg">
+                    TOTAL GENERAL:
+                  </div>
+                  <div className="col-span-2 text-lg text-green-600">
+                    ${totalGeneral.toFixed(2)}
+                  </div>
+                  <div className="col-span-1 text-lg text-green-600">
+                    100%
+                  </div>
                 </div>
               </div>
             </div>
