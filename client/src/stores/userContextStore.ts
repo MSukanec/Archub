@@ -127,18 +127,27 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
     const updatePreferences = async () => {
       try {
         console.log('Starting budget preference update...');
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) {
+          console.error('Auth error:', authError);
+          return;
+        }
         if (!user) {
           console.log('No authenticated user found');
           return;
         }
 
         console.log('Auth user found:', user.id);
-        const { data: internalUser } = await supabase
+        const { data: internalUser, error: userError } = await supabase
           .from('users')
           .select('id')
           .eq('auth_id', user.id)
           .single();
+
+        if (userError) {
+          console.error('Error fetching internal user:', userError);
+          return;
+        }
 
         if (!internalUser) {
           console.log('No internal user found');
