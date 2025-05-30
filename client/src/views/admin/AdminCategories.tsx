@@ -144,7 +144,7 @@ const AdminCategories = () => {
 
   // Fetch categories
   const { data: categories = [], isLoading } = useQuery({
-    queryKey: ['/api/categories'],
+    queryKey: ['/api/admin/task-categories'],
   });
 
   // Build tree structure
