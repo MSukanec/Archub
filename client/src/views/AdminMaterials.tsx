@@ -221,7 +221,7 @@ export default function AdminMaterials() {
                 {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#d2d2d2]">
+            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}

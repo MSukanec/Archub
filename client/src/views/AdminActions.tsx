@@ -186,7 +186,7 @@ export default function AdminActions() {
                 {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#d2d2d2]">
+            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}
@@ -324,7 +324,22 @@ export default function AdminActions() {
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
+              onClick={async () => {
+                if (selectedAction) {
+                  try {
+                    const { error } = await supabase
+                      .from('actions')
+                      .delete()
+                      .eq('id', selectedAction.id);
+                    
+                    if (error) throw error;
+                    
+                    // Refrescar la lista
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Error deleting action:', error);
+                  }
+                }
                 setIsDeleteDialogOpen(false);
                 setSelectedAction(null);
               }}
