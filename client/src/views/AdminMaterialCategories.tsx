@@ -221,15 +221,13 @@ export default function AdminMaterialCategories() {
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
               <TableHead className="text-foreground font-semibold h-12 text-center">Nombre</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Descripción</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Fecha de Creación</TableHead>
               <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredCategories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm 
                     ? 'No se encontraron categorías que coincidan con los filtros.'
                     : 'No hay categorías de materiales registradas.'
@@ -241,16 +239,6 @@ export default function AdminMaterialCategories() {
                 <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{category.name}</div>
-                  </TableCell>
-                  <TableCell className="text-center py-4">
-                    <div className="text-muted-foreground">
-                      {category.description || 'Sin descripción'}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center py-4">
-                    <Badge variant="outline" className="bg-muted/50">
-                      {category.created_at ? format(new Date(category.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
-                    </Badge>
                   </TableCell>
                   <TableCell className="text-center py-4">
                     <div className="flex items-center justify-center gap-2">

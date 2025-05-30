@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { materialsService, type Material, type CreateMaterialData } from '@/lib/materialsService';
 import { unitsService } from '@/lib/unitsService';
 import { materialCategoriesService } from '@/lib/materialCategoriesService';
+import { Package } from 'lucide-react';
 
 const materialSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
@@ -140,7 +141,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="flex-1 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+        className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
       >
         Cancelar
       </Button>
@@ -148,7 +149,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
         type="submit"
         form="material-form"
         disabled={isSubmitting}
-        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+        className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
       >
         {isSubmitting ? 'Guardando...' : (material ? 'Actualizar' : 'Crear')}
       </Button>
