@@ -592,11 +592,11 @@ function DashboardTimeline() {
                 }}
               />
 
-              {/* Date label - top (positioned at extreme top) */}
+              {/* Date label - bottom only (positioned at bottom edge as marked) */}
               <div 
                 className="absolute flex items-center text-center z-30"
                 style={{
-                  top: '20px', // Very close to top edge
+                  bottom: '40px', // Positioned where the cyan line is marked
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
@@ -605,25 +605,6 @@ function DashboardTimeline() {
                   <div className="date-label-engraved text-sm font-medium">
                     {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
                       `${(formatDate(node.date) as any).dayName} ${(formatDate(node.date) as any).dayNumber}` :
-                      formatDate(node.date)
-                    }
-                  </div>
-                </div>
-              </div>
-
-              {/* Date label - bottom (positioned at extreme bottom) */}
-              <div 
-                className="absolute flex items-center text-center z-30"
-                style={{
-                  bottom: '20px', // Very close to bottom edge
-                  left: '0',
-                  transform: 'translateX(-50%)'
-                }}
-              >
-                <div className="date-label-container">
-                  <div className="date-label-engraved text-sm font-medium">
-                    {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
-                      `${(formatDate(node.date) as any).dayNumber} ${(formatDate(node.date) as any).dayName}` :
                       formatDate(node.date)
                     }
                   </div>
