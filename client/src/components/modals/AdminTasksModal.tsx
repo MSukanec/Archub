@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,7 +13,7 @@ import { tasksService, Task, CreateTaskData } from '@/lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
-import { X, Settings, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings, Package, CheckSquare, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const createTaskSchema = insertTaskSchema.extend({
@@ -279,8 +279,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   const elementCategories = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
 
   const steps = [
-    { id: 0, name: 'Datos de la Tarea', icon: Settings },
-    { id: 1, name: 'Materiales', icon: Package },
+    { title: 'Información Básica', icon: Settings },
+    { title: 'Materiales', icon: Package }
   ];
 
   const handleNext = () => {
@@ -295,344 +295,349 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     }
   };
 
+  const handleClose = () => {
+    form.reset({
+      name: '',
+      unit_labor_price: '',
+      unit_material_price: '',
+      category_id: null,
+      subcategory_id: null,
+      element_category_id: null,
+    });
+    
+    setCurrentStep(0);
+    setSelectedCategoryId('');
+    setSelectedSubcategoryId('');
+    setTaskMaterials([]);
+    setSelectedMaterialId('');
+    setMaterialQuantity('');
+    setMaterialUnitCost('');
+    
+    onClose();
+  };
+
+  const isLoading = createMutation.isPending || updateMutation.isPending;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-6xl h-[90vh] p-0 gap-0 bg-[#e0e0e0] border-none shadow-2xl rounded-xl overflow-hidden" 
-        style={{ zIndex: 1100 }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#cccccc] bg-[#e0e0e0]">
-          <h2 className="text-xl font-semibold text-[#333333]">
-            {task ? 'Editar Tarea' : 'Nueva Tarea'}
-          </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="text-[#666666] hover:text-[#333333] hover:bg-[#d0d0d0]"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[480px] max-h-[85vh] overflow-hidden bg-[#e0e0e0] flex flex-col">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#8fc700] rounded-full flex items-center justify-center">
+              <CheckSquare className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-[#333333]">
+                {task ? 'Editar Tarea' : 'Nueva Tarea'}
+              </DialogTitle>
+              <DialogDescription className="text-[#666666]">
+                Gestiona tareas de construcción y sus materiales asociados
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        {/* Step Navigation */}
+        <div className="flex justify-between items-center py-4 border-b border-[#cccccc]">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div 
+                key={index} 
+                className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setCurrentStep(index)}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  index === currentStep ? 'bg-[#8fc700] text-white' : 
+                  index < currentStep ? 'bg-[#d2d2d2] text-[#666666]' : 
+                  'bg-[#f0f0f0] text-[#999999]'
+                }`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className={`text-sm ${
+                  index === currentStep ? 'text-[#333333] font-medium' : 'text-[#666666]'
+                }`}>
+                  {step.title}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex bg-[#e0e0e0] border-b border-[#cccccc]">
-          {steps.map((step) => (
-            <button
-              key={step.id}
-              onClick={() => setCurrentStep(step.id)}
-              className={`flex-1 px-6 py-4 flex items-center justify-center gap-2 text-sm font-medium transition-all duration-200 ${
-                currentStep === step.id
-                  ? 'bg-white text-[#333333] border-b-2 border-[#8fc700] shadow-sm'
-                  : 'text-[#666666] hover:text-[#333333] hover:bg-[#d0d0d0]'
-              }`}
-            >
-              <step.icon className="h-4 w-4" />
-              {step.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto bg-white">
-          <div className="p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Step 0: Task Information */}
-                {currentStep === 0 && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-8">
-                      {/* Left Column - Categories */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-[#333333] mb-4 pb-2 border-b border-[#eeeeee]">
-                          Categorización
-                        </h3>
-                        
-                        {/* Category */}
-                        <FormField
-                          control={form.control}
-                          name="category_id"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[#333333] font-medium">Rubro</FormLabel>
-                              <Select
-                                value={selectedCategoryId || "none"}
-                                onValueChange={handleCategoryChange}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]">
-                                    <SelectValue placeholder="Seleccionar rubro" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">Sin rubro</SelectItem>
-                                  {parentCategories.map((category) => (
-                                    <SelectItem key={category.id} value={category.id.toString()}>
-                                      {category.code} {category.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Subcategory */}
-                        <FormField
-                          control={form.control}
-                          name="subcategory_id"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[#333333] font-medium">Subrubro</FormLabel>
-                              <Select
-                                value={selectedSubcategoryId || "none"}
-                                onValueChange={handleSubcategoryChange}
-                                disabled={!selectedCategoryId || selectedCategoryId === 'none'}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]">
-                                    <SelectValue placeholder="Seleccionar subrubro" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">Sin subrubro</SelectItem>
-                                  {subcategories.map((subcategory) => (
-                                    <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                                      {subcategory.code} {subcategory.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Element Category */}
-                        <FormField
-                          control={form.control}
-                          name="element_category_id"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[#333333] font-medium">Elemento</FormLabel>
-                              <Select
-                                onValueChange={handleElementCategoryChange}
-                                disabled={!selectedSubcategoryId || selectedSubcategoryId === 'none'}
-                                value={field.value?.toString() || "none"}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]">
-                                    <SelectValue placeholder="Seleccionar elemento" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">Sin elemento</SelectItem>
-                                  {elementCategories.map((element) => (
-                                    <SelectItem key={element.id} value={element.id.toString()}>
-                                      {element.code} {element.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      {/* Right Column - Task Details */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-[#333333] mb-4 pb-2 border-b border-[#eeeeee]">
-                          Detalles de la Tarea
-                        </h3>
-                        
-                        {/* Task Name */}
-                        <FormField
-                          control={form.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[#333333] font-medium">
-                                Nombre de la Tarea <span className="text-[#8fc700]">*</span>
-                              </FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="Ingresa el nombre de la tarea" 
-                                  className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]"
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Labor Price */}
-                        <FormField
-                          control={form.control}
-                          name="unit_labor_price"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[#333333] font-medium">Precio Mano de Obra</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number"
-                                  step="0.01"
-                                  placeholder="0.00"
-                                  className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]"
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Material Price */}
-                        <FormField
-                          control={form.control}
-                          name="unit_material_price"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[#333333] font-medium">Precio Material</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number"
-                                  step="0.01"
-                                  placeholder="0.00"
-                                  className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]"
-                                  {...field} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 1: Materials */}
-                {currentStep === 1 && (
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-[#333333] mb-4 pb-2 border-b border-[#eeeeee]">
-                      Materiales de la Tarea
-                    </h3>
-                    
-                    {/* Add Material Form */}
-                    <div className="bg-[#f8f9fa] p-4 rounded-lg border border-[#e9ecef]">
-                      <h4 className="text-sm font-medium text-[#333333] mb-3">Agregar Material</h4>
-                      <div className="grid grid-cols-4 gap-4">
-                        <div>
-                          <label className="block text-sm text-[#666666] mb-1">Material</label>
-                          <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
-                            <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]">
-                              <SelectValue placeholder="Seleccionar material" />
+        {/* Form Content */}
+        <div className="flex-1 overflow-auto p-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Step 0: Basic Information */}
+              {currentStep === 0 && (
+                <div className="space-y-4">
+                  {/* Rubro */}
+                  <FormField
+                    control={form.control}
+                    name="category_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">Rubro <span className="text-[#8fc700]">*</span></FormLabel>
+                        <Select
+                          value={selectedCategoryId || ""}
+                          onValueChange={handleCategoryChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                              <SelectValue placeholder="Seleccionar rubro" />
                             </SelectTrigger>
-                            <SelectContent>
-                              {materials.map((material) => (
-                                <SelectItem key={material.id} value={material.id}>
-                                  {material.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <label className="block text-sm text-[#666666] mb-1">Cantidad</label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0"
-                            value={materialQuantity}
-                            onChange={(e) => setMaterialQuantity(e.target.value)}
-                            className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]"
+                          </FormControl>
+                          <SelectContent>
+                            {parentCategories.map((category) => (
+                              <SelectItem key={category.id} value={category.id.toString()}>
+                                {category.code} {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Subrubro */}
+                  <FormField
+                    control={form.control}
+                    name="subcategory_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">Subrubro</FormLabel>
+                        <Select
+                          value={selectedSubcategoryId || ""}
+                          onValueChange={handleSubcategoryChange}
+                          disabled={!selectedCategoryId}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                              <SelectValue placeholder="Primero selecciona un rubro..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {subcategories.map((subcategory) => (
+                              <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                                {subcategory.code} {subcategory.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Elemento */}
+                  <FormField
+                    control={form.control}
+                    name="element_category_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">Elemento</FormLabel>
+                        <Select
+                          onValueChange={handleElementCategoryChange}
+                          disabled={!selectedSubcategoryId}
+                          value={field.value?.toString() || ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                              <SelectValue placeholder="Seleccionar elemento" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {elementCategories.map((element) => (
+                              <SelectItem key={element.id} value={element.id.toString()}>
+                                {element.code} {element.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Nombre */}
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#333333]">
+                          Nombre de la Tarea <span className="text-[#8fc700]">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ingresa el nombre de la tarea" 
+                            className="bg-[#d2d2d2] border-[#cccccc]"
+                            {...field} 
                           />
-                        </div>
-                        <div>
-                          <label className="block text-sm text-[#666666] mb-1">Costo Unitario</label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={materialUnitCost}
-                            onChange={(e) => setMaterialUnitCost(e.target.value)}
-                            className="bg-[#d2d2d2] border-[#cccccc] focus:ring-2 focus:ring-[#8fc700] focus:border-[#8fc700]"
-                          />
-                        </div>
-                        <div className="flex items-end">
-                          <Button
-                            type="button"
-                            onClick={addMaterial}
-                            className="w-full bg-[#8fc700] hover:bg-[#7db600] text-white"
-                          >
-                            Agregar
-                          </Button>
-                        </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Precio Mano de Obra */}
+                    <FormField
+                      control={form.control}
+                      name="unit_labor_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Precio Mano de Obra</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number"
+                              step="0.01"
+                              placeholder="0.00"
+                              className="bg-[#d2d2d2] border-[#cccccc]"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Precio Material */}
+                    <FormField
+                      control={form.control}
+                      name="unit_material_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#333333]">Precio Material</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number"
+                              step="0.01"
+                              placeholder="0.00"
+                              className="bg-[#d2d2d2] border-[#cccccc]"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 1: Materials */}
+              {currentStep === 1 && (
+                <div className="space-y-4">
+                  {/* Add Material Section */}
+                  <div className="space-y-4 p-4 bg-[#f5f5f5] rounded-lg border border-[#ddd]">
+                    <h4 className="text-sm font-medium text-[#333333]">Agregar Material</h4>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm text-[#666666] mb-1">Material</label>
+                        <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#cccccc]">
+                            <SelectValue placeholder="Seleccionar material" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {materials.map((material) => (
+                              <SelectItem key={material.id} value={material.id}>
+                                {material.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm text-[#666666] mb-1">Cantidad</label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0"
+                          value={materialQuantity}
+                          onChange={(e) => setMaterialQuantity(e.target.value)}
+                          className="bg-[#d2d2d2] border-[#cccccc]"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm text-[#666666] mb-1">Costo Unitario</label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={materialUnitCost}
+                          onChange={(e) => setMaterialUnitCost(e.target.value)}
+                          className="bg-[#d2d2d2] border-[#cccccc]"
+                        />
                       </div>
                     </div>
+                    
+                    <Button
+                      type="button"
+                      onClick={addMaterial}
+                      className="w-full bg-[#8fc700] hover:bg-[#7db600] text-white"
+                    >
+                      Agregar Material
+                    </Button>
+                  </div>
 
-                    {/* Materials List */}
-                    {taskMaterials.length > 0 && (
-                      <div className="bg-[#f8f9fa] p-4 rounded-lg border border-[#e9ecef]">
-                        <h4 className="text-sm font-medium text-[#333333] mb-3">Materiales Agregados</h4>
-                        <div className="space-y-2">
-                          {taskMaterials.map((material, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-white rounded border border-[#e9ecef]">
-                              <div className="flex-1">
-                                <span className="font-medium text-[#333333]">{material.material_name}</span>
-                                <div className="text-sm text-[#666666]">
-                                  Cantidad: {material.quantity} | Costo unitario: ${material.unit_cost.toFixed(2)}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <Badge variant="outline" className="bg-[#8fc700]/10 text-[#8fc700] border-[#8fc700]/20">
-                                  Total: ${(material.quantity * material.unit_cost).toFixed(2)}
-                                </Badge>
-                                <Button
-                                  type="button"
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => removeMaterial(index)}
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
+                  {/* Materials List */}
+                  {taskMaterials.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-[#333333]">Materiales Agregados</h4>
+                      {taskMaterials.map((material, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-[#f9f9f9] rounded border border-[#ddd]">
+                          <div className="flex-1">
+                            <span className="font-medium text-[#333333]">{material.material_name}</span>
+                            <div className="text-sm text-[#666666]">
+                              Cantidad: {material.quantity} | Costo: ${material.unit_cost.toFixed(2)}
                             </div>
-                          ))}
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-[#e9ecef]">
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium text-[#333333]">Total de Materiales:</span>
-                            <Badge className="bg-[#8fc700] hover:bg-[#7db600] text-white">
-                              ${getTotalMaterialCost().toFixed(2)}
-                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-[#8fc700]">
+                              Total: ${(material.quantity * material.unit_cost).toFixed(2)}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeMaterial(index)}
+                              className="h-6 w-6 p-0"
+                            >
+                              ×
+                            </Button>
                           </div>
                         </div>
+                      ))}
+                      
+                      <div className="flex justify-between items-center p-3 bg-[#8fc700]/10 rounded border border-[#8fc700]/20">
+                        <span className="font-medium text-[#333333]">Total de Materiales:</span>
+                        <span className="font-bold text-[#8fc700]">
+                          ${getTotalMaterialCost().toFixed(2)}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                )}
-              </form>
-            </Form>
-          </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </form>
+          </Form>
         </div>
 
-        {/* Footer with Navigation */}
-        <div className="flex items-center justify-between p-6 border-t border-[#cccccc] bg-[#e0e0e0]">
-          <div className="flex items-center gap-2">
+        {/* Bottom Navigation */}
+        <div className="flex items-center justify-between p-4 border-t border-[#cccccc] bg-[#e0e0e0]">
+          <div className="flex gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="flex items-center gap-2 bg-[#f0f0f0] border-[#cccccc] text-[#666666] hover:bg-[#e0e0e0] hover:text-[#333333]"
+              className="bg-[#f0f0f0] border-[#cccccc] text-[#666666] hover:bg-[#e0e0e0]"
             >
-              <ChevronLeft className="h-4 w-4" />
               Anterior
             </Button>
             
@@ -640,35 +645,34 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
               <Button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-2 bg-[#8fc700] hover:bg-[#7db600] text-white"
+                className="bg-[#8fc700] hover:bg-[#7db600] text-white"
               >
                 Siguiente
-                <ChevronRight className="h-4 w-4" />
               </Button>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
-              disabled={createMutation.isPending || updateMutation.isPending}
-              className="bg-[#f0f0f0] border-[#cccccc] text-[#666666] hover:bg-[#e0e0e0] hover:text-[#333333]"
+              onClick={handleClose}
+              disabled={isLoading}
+              className="bg-[#f0f0f0] border-[#cccccc] text-[#666666] hover:bg-[#e0e0e0]"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               onClick={form.handleSubmit(onSubmit)}
-              disabled={createMutation.isPending || updateMutation.isPending}
-              className="bg-[#8fc700] hover:bg-[#7db600] text-white font-medium"
+              disabled={isLoading}
+              className="bg-[#8fc700] hover:bg-[#7db600] text-white"
             >
-              {createMutation.isPending || updateMutation.isPending
+              {isLoading
                 ? 'Guardando...'
                 : task
-                ? 'Actualizar Tarea'
-                : 'Crear Tarea'}
+                ? 'Actualizar'
+                : 'Crear'}
             </Button>
           </div>
         </div>
