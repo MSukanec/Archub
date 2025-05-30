@@ -35,7 +35,7 @@ import AdminUnitsModal from '@/components/modals/AdminUnitsModal';
 
 export default function AdminUnits() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -107,21 +107,15 @@ export default function AdminUnits() {
 
   const filteredUnits = units.filter((unit: any) => {
     const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (unit.symbol || '').toLowerCase().includes(searchTerm.toLowerCase());
+                         (unit.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    let matchesDate = true;
-    if (dateFilter && unit.created_at) {
-      try {
-        const unitDate = new Date(unit.created_at);
-        if (!isNaN(unitDate.getTime())) {
-          matchesDate = format(unitDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-        }
-      } catch (e) {
-        matchesDate = false;
-      }
+    return matchesSearch;
+  }).sort((a: any, b: any) => {
+    if (sortOrder === 'newest') {
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    } else {
+      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
     }
-    
-    return matchesSearch && matchesDate;
   });
 
   if (isLoading) {
@@ -158,34 +152,31 @@ export default function AdminUnits() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
-                  !dateFilter && "text-muted-foreground"
-                )}
+                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
+            <PopoverContent className="w-auto p-2">
+              <div className="space-y-2">
+                <Button
+                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('newest')}
+                  className="w-full justify-start"
+                >
+                  Más reciente primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('oldest')}
+                  className="w-full justify-start"
+                >
+                  Más antiguo primero
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>

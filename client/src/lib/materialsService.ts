@@ -65,7 +65,7 @@ export const materialsService = {
     return data;
   },
 
-  async update(id: number, materialData: Partial<CreateMaterialData>): Promise<Material> {
+  async update(id: string, materialData: Partial<CreateMaterialData>): Promise<Material> {
     const { data, error } = await supabase
       .from('materials')
       .update(materialData)
@@ -88,7 +88,7 @@ export const materialsService = {
     return data;
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const { error } = await supabase
       .from('materials')
       .delete()
