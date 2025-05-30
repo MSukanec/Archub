@@ -204,7 +204,7 @@ export default function AdminTasks() {
               placeholder="Buscar tareas..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -247,8 +247,8 @@ export default function AdminTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Precio M.O.</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Precio Mat.</TableHead>
@@ -268,13 +268,13 @@ export default function AdminTasks() {
             ) : (
               paginatedTasks.map((task: any) => (
                 <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors h-12">
-                  <TableCell className="py-1 text-center">
-                    <div className="font-medium text-foreground">{task.name}</div>
-                  </TableCell>
                   <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
                       {task.category?.name || 'Sin categoría'}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="py-1 text-center">
+                    <div className="font-medium text-foreground">{task.name}</div>
                   </TableCell>
                   <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
