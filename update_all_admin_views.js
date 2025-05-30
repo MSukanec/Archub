@@ -1,14 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
-// Lista de vistas de administración para actualizar
+// Lista de vistas de administración
 const adminViews = [
-  'AdminMaterials.tsx',
-  'AdminMaterialCategories.tsx', 
+  'AdminUnits.tsx',
+  'AdminMaterials.tsx', 
+  'AdminMaterialCategories.tsx',
   'AdminTasks.tsx',
   'AdminCategories.tsx',
   'AdminUsers.tsx',
-  'AdminUnits.tsx'
+  'AdminElements.tsx'
 ];
 
 const viewsPath = 'client/src/views';
@@ -21,18 +22,49 @@ adminViews.forEach(fileName => {
     
     console.log(`Actualizando: ${fileName}`);
     
-    // 1. Agregar import de X si no existe
-    if (!content.includes(', X ') && content.includes('lucide-react')) {
+    // 1. Agregar imports necesarios
+    if (!content.includes('useEffect')) {
       content = content.replace(
-        /} from 'lucide-react';/,
-        ', X } from \'lucide-react\';'
+        /import { useState/,
+        'import { useState, useEffect'
       );
     }
     
-    // 2. Actualizar el campo de búsqueda para incluir botón X
-    const searchFieldPattern = /<div className="relative flex-1">\s*<Search[^>]+\/>\s*<Input[^>]+\/>\s*<\/div>/s;
+    if (!content.includes('ChevronLeft, ChevronRight, X')) {
+      content = content.replace(
+        /} from 'lucide-react';/,
+        ', ChevronLeft, ChevronRight, X } from \'lucide-react\';'
+      );
+    }
     
-    if (content.match(searchFieldPattern)) {
+    // 2. Agregar estados de paginación
+    const hasPageState = content.includes('currentPage');
+    if (!hasPageState) {
+      const statePattern = /(const \[selectedUnit.*?\] = useState<any>\(null\);)/;
+      if (content.match(statePattern)) {
+        content = content.replace(
+          statePattern,
+          '$1\n  const [currentPage, setCurrentPage] = useState(1);\n  \n  const ITEMS_PER_PAGE = 10;'
+        );
+      }
+    }
+    
+    // 3. Reducir altura de filas y agregar hover
+    content = content.replace(/py-4/g, 'py-1');
+    content = content.replace(/py-8/g, 'py-2');
+    content = content.replace(/h-16/g, 'h-8');
+    content = content.replace(/h-12/g, 'h-6');
+    content = content.replace(/text-sm/g, 'text-xs');
+    
+    // 4. Agregar hover effect a filas
+    content = content.replace(
+      /className="border-border"/g,
+      'className="border-border hover:bg-muted/50 transition-colors"'
+    );
+    
+    // 5. Agregar botón X para limpiar búsqueda
+    const searchPattern = /<div className="relative flex-1">\s*<Search[^>]+\/>\s*<Input[^>]+\/>\s*<\/div>/s;
+    if (content.match(searchPattern)) {
       const newSearchField = `<div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -53,18 +85,8 @@ adminViews.forEach(fileName => {
             )}
           </div>`;
       
-      content = content.replace(searchFieldPattern, newSearchField);
+      content = content.replace(searchPattern, newSearchField);
     }
-    
-    // 3. Reducir altura de filas (cambiar py-2 por py-1 y h-8 por h-6)
-    content = content.replace(/py-2(?=.*TableCell)/g, 'py-1');
-    content = content.replace(/h-8(?=.*TableCell)/g, 'h-6');
-    
-    // 4. Agregar text-sm a los contenidos de las celdas
-    content = content.replace(
-      /<div className="([^"]*font-medium[^"]*)">/g,
-      '<div className="$1 text-sm">'
-    );
     
     fs.writeFileSync(filePath, content);
     console.log(`✓ Actualizado: ${fileName}`);
@@ -73,4 +95,4 @@ adminViews.forEach(fileName => {
   }
 });
 
-console.log('Actualización completada');
+console.log('Actualización de alturas y hover effects completada');
