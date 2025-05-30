@@ -77,52 +77,44 @@ export default function AppLayout() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
-    let isInitialized = false;
+    let mounted = true;
     
-    // Check initial auth state
-    authService.getCurrentUser().then(async ({ user }) => {
-      if (isInitialized) return; // Prevent double initialization
-      isInitialized = true;
-      
-      console.log('Initial auth check:', user);
-      if (user) {
-        // Get user data from database table
-        const dbUser = await authService.getUserFromDatabase(user.id);
+    const init = async () => {
+      try {
+        const { user } = await authService.getCurrentUser();
+        if (!mounted) return;
         
-        const authUser = {
-          id: user.id,
-          email: user.email || '',
-          firstName: user.user_metadata?.first_name || '',
-          lastName: user.user_metadata?.last_name || '',
-          role: dbUser?.role || 'user', // Use role from database table
-        };
-        console.log('User from database on init:', dbUser);
-        console.log('Setting user:', authUser);
-        setUser(authUser);
-        
-        // Initialize user context after setting user
-        await initializeUserContext();
-      } else {
-        setUser(null);
+        if (user) {
+          const dbUser = await authService.getUserFromDatabase(user.id);
+          if (!mounted) return;
+          
+          setUser({
+            id: user.id,
+            email: user.email || '',
+            firstName: user.user_metadata?.first_name || '',
+            lastName: user.user_metadata?.last_name || '',
+            role: dbUser?.role || 'user',
+          });
+          
+          if (mounted) {
+            await initializeUserContext();
+          }
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Init error:', error);
+      } finally {
+        if (mounted) setLoading(false);
       }
-      // Always set loading to false after processing
-      setLoading(false);
-    }).catch((error) => {
-      console.error('Error during initial auth check:', error);
-      setLoading(false); // Ensure loading is set to false even on error
-    });
+    };
 
-    // Listen for auth changes
-    const { data: { subscription } } = authService.onAuthStateChange((user) => {
-      console.log('Auth state changed:', user);
-      setUser(user);
-    });
+    init();
 
     return () => {
-      subscription.unsubscribe();
-      isInitialized = true; // Mark as cleanup
+      mounted = false;
     };
-  }, []); // Remove dependencies to prevent re-runs
+  }, []);
 
   // Listen for create project modal event
   useEffect(() => {
