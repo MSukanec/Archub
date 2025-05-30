@@ -200,7 +200,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                       <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -228,9 +228,9 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                       <SelectValue placeholder="Selecciona una unidad" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                     {units.map((unit) => (
-                      <SelectItem key={unit.id} value={unit.id}>
+                      <SelectItem key={unit.id} value={String(unit.id)}>
                         {unit.name} {unit.description && `(${unit.description})`}
                       </SelectItem>
                     ))}
