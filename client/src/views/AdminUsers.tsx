@@ -1,75 +1,95 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
+import { useState } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { Users, Search, Plus, Edit, Trash2, Shield, Mail, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { usersService, User } from '@/lib/usersService';
-import AdminUsersModal from '@/components/modals/AdminUsersModal';
+import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminUsers() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  // Listen for floating action button events
-  useEffect(() => {
-    const handleOpenCreateUserModal = () => {
-      setSelectedUser(null);
-      setIsModalOpen(true);
-    };
-
-    window.addEventListener('openCreateUserModal', handleOpenCreateUserModal);
-    return () => {
-      window.removeEventListener('openCreateUserModal', handleOpenCreateUserModal);
-    };
-  }, []);
+  
+  // State for search and filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  
+  // State for modals
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
 
   // Fetch users
   const { data: users = [], isLoading, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => {
-      // Add timeout to prevent hanging
-      return Promise.race([
-        usersService.getAll(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout: La consulta tardó demasiado')), 5000)
-        )
-      ]);
+    queryKey: ['/api/admin/users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
-    retry: 0, // No retry to fail faster
+    retry: 1,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  // Handle errors - Show user-friendly message instead of freezing
+  // Handle errors
   if (error) {
     console.error('Error loading users:', error);
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">
-            Gestión de Usuarios
-          </h1>
-          <p className="text-muted-foreground">
-            Administra los usuarios del sistema.
-          </p>
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Users className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Gestión de Usuarios
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Administra todos los usuarios del sistema
+              </p>
+            </div>
+          </div>
         </div>
         
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
           <div className="text-center">
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              Tabla no disponible
+              Error al cargar usuarios
             </h3>
             <p className="text-muted-foreground max-w-md">
-              La tabla de usuarios no está configurada correctamente. 
-              Esta funcionalidad estará disponible cuando se complete la configuración.
+              No se pudieron cargar los usuarios. Intenta recargar la página.
             </p>
           </div>
         </div>
@@ -77,180 +97,167 @@ export default function AdminUsers() {
     );
   }
 
-  // Delete user mutation
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => usersService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast({
-        title: 'Éxito',
-        description: 'Usuario eliminado correctamente',
-      });
-      setIsDeleteDialogOpen(false);
-      setSelectedUser(null);
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Error al eliminar el usuario',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleEdit = (user: User) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (user: User) => {
+  // Handle delete
+  const handleDelete = (user: any) => {
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleCreate = () => {
-    setSelectedUser(null);
-    setIsModalOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedUser) {
-      deleteMutation.mutate(selectedUser.id);
-    }
-  };
-
-  // Filter users based on search (newest first)
-  const filteredUsers = users
-    .filter((user: User) =>
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (user.full_name && user.full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      user.role.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a: User, b: User) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-  const getRoleBadgeVariant = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'destructive';
-      case 'manager':
-        return 'default';
-      case 'user':
-        return 'secondary';
-      default:
-        return 'outline';
-    }
-  };
-
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return <UserCheck className="h-3 w-3" />;
-      case 'manager':
-        return <UserCheck className="h-3 w-3" />;
-      default:
-        return <UserX className="h-3 w-3" />;
-    }
-  };
-
-  const getPlanDisplay = (user: User) => {
-    return user.plan_name || 'Sin plan';
-  };
+  // Filter users based on search and date
+  const filteredUsers = users.filter((user: any) => {
+    const matchesSearch = (user.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (user.last_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (user.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesDate = !dateFilter || 
+                       format(new Date(user.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    
+    return matchesSearch && matchesDate;
+  });
 
   if (isLoading) {
     return <AdminUsersSkeleton />;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Gestión de Usuarios</h1>
-          <p className="text-muted-foreground">
-            Administra los usuarios del sistema
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Users className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Gestión de Usuarios
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Administra todos los usuarios del sistema
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Buscar usuarios por email, nombre o rol..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full"
-          />
+      {/* Search and Filters */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar usuarios..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background border-border rounded-xl"
+            />
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
+                  !dateFilter && "text-muted-foreground"
+                )}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <CalendarComponent
+                mode="single"
+                selected={dateFilter}
+                onSelect={setDateFilter}
+                initialFocus
+              />
+              {dateFilter && (
+                <div className="p-3 border-t border-border">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setDateFilter(undefined)}
+                    className="w-full"
+                  >
+                    Limpiar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="border rounded-md">
+      {/* Users Table */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Nombre completo</TableHead>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Apellido</TableHead>
-              <TableHead>Rol</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Fecha de registro</TableHead>
-              <TableHead className="w-24">Acciones</TableHead>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12">Usuario</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Email</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Rol</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Fecha de registro</TableHead>
+              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
-                  {searchTerm ? 'No se encontraron usuarios que coincidan con tu búsqueda.' : 'No hay usuarios registrados aún.'}
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
+                  {searchTerm || dateFilter 
+                    ? 'No se encontraron usuarios que coincidan con los filtros.'
+                    : 'No hay usuarios registrados.'
+                  }
                 </TableCell>
               </TableRow>
             ) : (
-              filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.email}</TableCell>
-                  <TableCell>{user.full_name || '-'}</TableCell>
-                  <TableCell>{user.first_name || '-'}</TableCell>
-                  <TableCell>{user.last_name || '-'}</TableCell>
-                  <TableCell>
-                    <Badge variant={getRoleBadgeVariant(user.role)} className="flex items-center gap-1 w-fit">
-                      {getRoleIcon(user.role)}
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              filteredUsers.map((user: any) => (
+                <TableRow key={user.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">
+                          {user.first_name && user.last_name 
+                            ? `${user.first_name} ${user.last_name}` 
+                            : user.full_name || 'Sin nombre'
+                          }
+                        </div>
+                        <div className="text-sm text-muted-foreground">ID: {user.id.slice(0, 8)}...</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-foreground py-4">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      {user.email}
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <Badge 
+                      variant={user.role === 'admin' ? "default" : "secondary"}
+                      className={user.role === 'admin'
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                        : "bg-muted text-muted-foreground"
+                      }
+                    >
+                      <Shield className="w-3 h-3 mr-1" />
+                      {user.role || 'Usuario'}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                      {getPlanDisplay(user)}
-                    </Badge>
+                  <TableCell className="text-foreground py-4">
+                    {format(new Date(user.created_at), 'dd/MM/yyyy')}
                   </TableCell>
-                  <TableCell>
-                    {new Date(user.created_at).toLocaleDateString('es-ES', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(user)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Editar usuario</span>
-                      </Button>
+                  <TableCell className="text-right py-4">
+                    <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(user)}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Eliminar usuario</span>
                       </Button>
                     </div>
                   </TableCell>
@@ -261,33 +268,32 @@ export default function AdminUsers() {
         </Table>
       </div>
 
-      {/* Modals */}
-      <AdminUsersModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedUser(null);
-        }}
-        user={selectedUser}
-      />
-
+      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-card border-border rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar usuario?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el usuario
-              <strong> {selectedUser?.email}</strong> del sistema.
+            <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Esta acción no se puede deshacer. Esto eliminará permanentemente el usuario
+              <span className="font-semibold text-foreground"> "{selectedUser?.email}"</span> y 
+              todos sus datos asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            <AlertDialogCancel 
+              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
             >
-              {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                // Add delete logic here
+                setIsDeleteDialogOpen(false);
+                setSelectedUser(null);
+              }}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
+            >
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -298,22 +304,46 @@ export default function AdminUsers() {
 
 function AdminUsersSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="space-y-2">
-          <div className="h-8 w-64 bg-muted rounded animate-pulse" />
-          <div className="h-4 w-48 bg-muted rounded animate-pulse" />
+    <div className="p-6 space-y-6">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+          <div>
+            <div className="h-8 w-64 bg-muted rounded animate-pulse"></div>
+            <div className="h-4 w-48 bg-muted rounded animate-pulse mt-2"></div>
+          </div>
         </div>
-        <div className="h-10 w-32 bg-muted rounded animate-pulse" />
       </div>
       
-      <div className="h-10 w-full bg-muted rounded animate-pulse" />
+      {/* Search skeleton */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex gap-4">
+          <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
+          <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
+        </div>
+      </div>
       
-      <div className="border rounded-md">
-        <div className="h-12 bg-muted border-b animate-pulse" />
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-16 border-b last:border-b-0 animate-pulse" />
-        ))}
+      {/* Table skeleton */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="p-6">
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+                    <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

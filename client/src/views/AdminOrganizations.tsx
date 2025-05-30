@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Calendar, Search, Plus, Edit, Trash2 } from 'lucide-react';
+import { Building2, Search, Plus, Edit, Trash2, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -138,79 +138,96 @@ export default function AdminOrganizations() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Gestión de Organizaciones</h1>
-        <p className="text-gray-400 mt-1">
-          Administra todas las organizaciones del sistema.
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Gestión de Organizaciones
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Administra todas las organizaciones del sistema
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva Organización
+        </Button>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Buscar organizaciones..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-[#282828] border-gray-600 text-white"
-          />
-        </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[200px] justify-start text-left font-normal bg-[#282828] border-gray-600 text-white hover:bg-gray-700",
-                !dateFilter && "text-gray-400"
-              )}
-            >
-              <Calendar className="mr-2 h-4 w-4" />
-              {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-[#282828] border-gray-600">
-            <CalendarComponent
-              mode="single"
-              selected={dateFilter}
-              onSelect={setDateFilter}
-              initialFocus
-              className="bg-[#282828] text-white"
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar organizaciones..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background border-border rounded-xl"
             />
-            {dateFilter && (
-              <div className="p-3 border-t border-gray-600">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setDateFilter(undefined)}
-                  className="w-full bg-[#282828] border-gray-600 text-white hover:bg-gray-700"
-                >
-                  Limpiar filtro
-                </Button>
-              </div>
-            )}
-          </PopoverContent>
-        </Popover>
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
+                  !dateFilter && "text-muted-foreground"
+                )}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <CalendarComponent
+                mode="single"
+                selected={dateFilter}
+                onSelect={setDateFilter}
+                initialFocus
+              />
+              {dateFilter && (
+                <div className="p-3 border-t border-border">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setDateFilter(undefined)}
+                    className="w-full"
+                  >
+                    Limpiar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Organizations Table */}
-      <div className="bg-[#282828] rounded-lg border border-gray-600">
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-gray-600">
-              <TableHead className="text-gray-300 h-10">Organización</TableHead>
-              <TableHead className="text-gray-300 h-10">Propietario</TableHead>
-              <TableHead className="text-gray-300 h-10">Fecha de creación</TableHead>
-              <TableHead className="text-gray-300 h-10">Estado</TableHead>
-              <TableHead className="text-gray-300 text-right h-10">Acciones</TableHead>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12">Organización</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Propietario</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Fecha de creación</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Estado</TableHead>
+              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredOrganizations.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-gray-400 py-6 h-12">
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron organizaciones que coincidan con los filtros.'
                     : 'No hay organizaciones registradas.'
@@ -219,39 +236,47 @@ export default function AdminOrganizations() {
               </TableRow>
             ) : (
               filteredOrganizations.map((organization: any) => (
-                <TableRow key={organization.id} className="border-gray-600 h-12">
-                  <TableCell className="py-2">
-                    <div>
-                      <div className="font-medium text-white">{organization.name || 'Sin nombre'}</div>
-                      {organization.slug && (
-                        <div className="text-sm text-gray-400">/{organization.slug}</div>
-                      )}
+                <TableRow key={organization.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">{organization.name || 'Sin nombre'}</div>
+                        {organization.slug && (
+                          <div className="text-sm text-muted-foreground">/{organization.slug}</div>
+                        )}
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-300 py-2">
-                    {organization.owner_name || 'Sin asignar'}
+                  <TableCell className="text-foreground py-4">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      {organization.owner_name || 'Sin asignar'}
+                    </div>
                   </TableCell>
-                  <TableCell className="text-gray-300 py-2">
+                  <TableCell className="text-foreground py-4">
                     {format(new Date(organization.created_at), 'dd/MM/yyyy')}
                   </TableCell>
-                  <TableCell className="py-2">
+                  <TableCell className="py-4">
                     <Badge 
                       variant={organization.is_active ? "default" : "secondary"}
                       className={organization.is_active 
-                        ? "bg-green-600 hover:bg-green-700 text-white" 
-                        : "bg-gray-600 hover:bg-gray-700 text-white"
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                        : "bg-muted text-muted-foreground"
                       }
                     >
                       {organization.is_active ? 'Activa' : 'Inactiva'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right py-2">
+                  <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(organization)}
-                        className="text-[#4f9eff] hover:text-[#3a8bef] hover:bg-gray-700 h-8 w-8 p-0"
+                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -259,7 +284,7 @@ export default function AdminOrganizations() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(organization)}
-                        className="text-red-400 hover:text-red-300 hover:bg-gray-700 h-8 w-8 p-0"
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -290,25 +315,25 @@ export default function AdminOrganizations() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-gray-800 border-gray-700">
+        <AlertDialogContent className="bg-card border-border rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300">
+            <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               Esta acción no se puede deshacer. Esto eliminará permanentemente la organización
-              <span className="font-semibold"> "{selectedOrganization?.name}"</span> y 
+              <span className="font-semibold text-foreground"> "{selectedOrganization?.name}"</span> y 
               todos sus datos asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
-              className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
             >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => selectedOrganization && deleteMutation.mutate(selectedOrganization.id)}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
             >
               {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
             </AlertDialogAction>
@@ -321,34 +346,47 @@ export default function AdminOrganizations() {
 
 function AdminOrganizationsSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="h-8 w-64 bg-gray-600 rounded animate-pulse"></div>
-          <div className="h-4 w-48 bg-gray-600 rounded animate-pulse mt-2"></div>
+    <div className="p-6 space-y-6">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+          <div>
+            <div className="h-8 w-64 bg-muted rounded animate-pulse"></div>
+            <div className="h-4 w-48 bg-muted rounded animate-pulse mt-2"></div>
+          </div>
         </div>
-        <div className="h-10 w-40 bg-gray-600 rounded animate-pulse"></div>
+        <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
       </div>
       
-      <div className="flex gap-4">
-        <div className="h-10 flex-1 bg-gray-600 rounded animate-pulse"></div>
-        <div className="h-10 w-48 bg-gray-600 rounded animate-pulse"></div>
+      {/* Search skeleton */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex gap-4">
+          <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
+          <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
+        </div>
       </div>
       
-      <div className="bg-[#282828] rounded-lg border border-gray-600 p-6">
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between h-10">
-              <div className="space-y-2">
-                <div className="h-4 w-48 bg-gray-600 rounded animate-pulse"></div>
-                <div className="h-3 w-32 bg-gray-600 rounded animate-pulse"></div>
+      {/* Table skeleton */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="p-6">
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+                    <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <div className="h-6 w-6 bg-gray-600 rounded animate-pulse"></div>
-                <div className="h-6 w-6 bg-gray-600 rounded animate-pulse"></div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

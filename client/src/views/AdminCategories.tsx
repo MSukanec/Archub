@@ -1,460 +1,345 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, GripVertical, FolderOpen, Folder, FileText } from 'lucide-react';
-import { useUserContextStore } from '@/stores/userContextStore';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { FolderOpen, Search, Plus, Edit, Trash2, Tag, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { taskCategoriesService, TaskCategory, CreateTaskCategoryData } from '@/lib/taskCategoriesService';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
-interface CategoryModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: CreateTaskCategoryData) => void;
-  category?: TaskCategory | null;
-  parentCategory?: TaskCategory | null;
-  isSubmitting: boolean;
-}
-
-function CategoryModal({ isOpen, onClose, onSubmit, category, parentCategory, isSubmitting }: CategoryModalProps) {
-  const [formData, setFormData] = useState({
-    code: category?.code || '',
-    name: category?.name || '',
-    parent_id: parentCategory?.id || category?.parent_id || null,
-  });
-
-  if (!isOpen) return null;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>
-            {category ? 'Editar Categoría' : 'Nueva Categoría'}
-            {parentCategory && (
-              <div className="text-sm text-muted-foreground mt-1">
-                Subcategoría de: {parentCategory.name}
-              </div>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Código</label>
-              <Input
-                value={formData.code}
-                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                placeholder="Ej: A, AD, RF"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Nombre</label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Nombre de la categoría"
-                required
-              />
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? 'Guardando...' : 'Guardar'}
-              </Button>
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancelar
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-interface CategoryItemProps {
-  category: TaskCategory;
-  level: number;
-  onEdit: (category: TaskCategory) => void;
-  onDelete: (category: TaskCategory) => void;
-  onAddChild: (parent: TaskCategory) => void;
-}
-
-function CategoryItem({ category, level, onEdit, onDelete, onAddChild }: CategoryItemProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const hasChildren = false; // Simplified for flat list display
-  
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: category.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const getIcon = () => {
-    if (level === 0) return <FolderOpen className="w-4 h-4 text-blue-500" />;
-    if (level === 1) return <Folder className="w-4 h-4 text-green-500" />;
-    return <FileText className="w-4 h-4 text-gray-500" />;
-  };
-
-  const getBadgeColor = () => {
-    if (level === 0) return "bg-blue-100 text-blue-800";
-    if (level === 1) return "bg-green-100 text-green-800";
-    return "bg-gray-100 text-gray-800";
-  };
-
-  return (
-    <div className="space-y-1" ref={setNodeRef} style={style}>
-      <div 
-        className={`flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 group ${
-          level > 0 ? 'ml-' + (level * 6) : ''
-        }`}
-        style={{ marginLeft: level * 24 }}
-      >
-        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
-          <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-        </div>
-        
-        {hasChildren && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-4 h-4 flex items-center justify-center hover:bg-accent rounded"
-          >
-            {isExpanded ? '−' : '+'}
-          </button>
-        )}
-        
-        {!hasChildren && <div className="w-4" />}
-        
-        <Badge variant="secondary" className={getBadgeColor()}>
-          {category.code}
-        </Badge>
-        
-        <span className="flex-1 text-sm font-medium">{category.name}</span>
-        
-        <div className="opacity-0 group-hover:opacity-100 flex gap-1">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onAddChild(category)}
-            className="h-6 w-6 p-0"
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onEdit(category)}
-            className="h-6 w-6 p-0"
-          >
-            <Edit className="w-3 h-3" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onDelete(category)}
-            className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-          >
-            <Trash2 className="w-3 h-3" />
-          </Button>
-        </div>
-      </div>
-      
-      {isExpanded && hasChildren && (
-        <div>
-          {((category as any).children || []).map((child: any) => (
-            <CategoryItem
-              key={child.id}
-              category={child}
-              level={level + 1}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onAddChild={onAddChild}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminCategories() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<TaskCategory | null>(null);
-  const [parentCategory, setParentCategory] = useState<TaskCategory | null>(null);
-  
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // State for search and filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  
+  // State for modals
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // Simplify the query to avoid context dependencies for now
-  const { data: categories = [], isLoading } = useQuery({
-    queryKey: ['task-categories'],
+  // Fetch categories
+  const { data: categories = [], isLoading, error } = useQuery({
+    queryKey: ['/api/admin/categories'],
     queryFn: async () => {
-      console.log('Fetching task categories...');
-      const result = await taskCategoriesService.getAll();
-      console.log('Found', result.length, 'categories');
-      console.log('Returning sorted data:', result.length, 'categories');
-      return result;
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
     },
     retry: 1,
-    retryDelay: 500,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
-  console.log('Categories state:', { categories: categories.length, isLoading });
-
-  const createMutation = useMutation({
-    mutationFn: taskCategoriesService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['task-categories'] });
-      setIsModalOpen(false);
-      setEditingCategory(null);
-      setParentCategory(null);
-      toast({
-        title: 'Categoría creada',
-        description: 'La categoría se ha creado correctamente.',
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Error al crear la categoría',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<CreateTaskCategoryData> }) =>
-      taskCategoriesService.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['task-categories'] });
-      setIsModalOpen(false);
-      setEditingCategory(null);
-      setParentCategory(null);
-      toast({
-        title: 'Categoría actualizada',
-        description: 'La categoría se ha actualizado correctamente.',
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Error al actualizar la categoría',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: taskCategoriesService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['task-categories'] });
-      toast({
-        title: 'Categoría eliminada',
-        description: 'La categoría se ha eliminado correctamente.',
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Error al eliminar la categoría',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleSubmit = (data: CreateTaskCategoryData) => {
-    if (editingCategory) {
-      updateMutation.mutate({ id: editingCategory.id, data });
-    } else {
-      createMutation.mutate(data);
-    }
-  };
-
-  const handleEdit = (category: TaskCategory) => {
-    setEditingCategory(category);
-    setParentCategory(null);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (category: TaskCategory) => {
-    if (confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
-      deleteMutation.mutate(category.id);
-    }
-  };
-
-  const handleAddChild = (parent: TaskCategory) => {
-    setParentCategory(parent);
-    setEditingCategory(null);
-    setIsModalOpen(true);
-  };
-
-  const handleAddRoot = () => {
-    setParentCategory(null);
-    setEditingCategory(null);
-    setIsModalOpen(true);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      const oldIndex = categories.findIndex((item) => item.id === active.id);
-      const newIndex = categories.findIndex((item) => item.id === over?.id);
-      
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newCategories = arrayMove(categories, oldIndex, newIndex);
-        
-        // Update positions in the backend
-        const updates = newCategories.map((category, index) => ({
-          id: category.id,
-          position: index + 1,
-          parent_id: category.parent_id
-        }));
-        
-        taskCategoriesService.updatePositions(updates).then(() => {
-          queryClient.invalidateQueries({ queryKey: ['task-categories'] });
-        }).catch(() => {
-          toast({
-            title: 'Error',
-            description: 'Error al actualizar las posiciones',
-            variant: 'destructive',
-          });
-        });
-      }
-    }
-  };
-
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (isLoading) {
+  // Handle errors
+  if (error) {
+    console.error('Error loading categories:', error);
     return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Gestión de Categorías</h1>
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <FolderOpen className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Gestión de Categorías
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Administra todas las categorías del sistema
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-accent rounded"></div>
-          <div className="h-64 bg-accent rounded"></div>
+        
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Error al cargar categorías
+            </h3>
+            <p className="text-muted-foreground max-w-md">
+              No se pudieron cargar las categorías. Intenta recargar la página.
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Handle delete
+  const handleDelete = (category: any) => {
+    setSelectedCategory(category);
+    setIsDeleteDialogOpen(true);
+  };
+
+  // Filter categories based on search and date
+  const filteredCategories = categories.filter((category: any) => {
+    const matchesSearch = (category.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (category.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesDate = !dateFilter || 
+                       format(new Date(category.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    
+    return matchesSearch && matchesDate;
+  });
+
+  if (isLoading) {
+    return <AdminCategoriesSkeleton />;
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Gestión de Categorías</h1>
-        <Button onClick={handleAddRoot}>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <FolderOpen className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Gestión de Categorías
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Administra todas las categorías del sistema
+            </p>
+          </div>
+        </div>
+        <Button
+          className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
+        >
           <Plus className="w-4 h-4 mr-2" />
-          Nueva Categoría Principal
+          Nueva Categoría
         </Button>
       </div>
 
-      <div className="flex gap-4">
-        <Input
-          placeholder="Buscar categorías..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
+      {/* Search and Filters */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar categorías..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background border-border rounded-xl"
+            />
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
+                  !dateFilter && "text-muted-foreground"
+                )}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <CalendarComponent
+                mode="single"
+                selected={dateFilter}
+                onSelect={setDateFilter}
+                initialFocus
+              />
+              {dateFilter && (
+                <div className="p-3 border-t border-border">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setDateFilter(undefined)}
+                    className="w-full"
+                  >
+                    Limpiar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Estructura de Categorías
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredCategories.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No hay categorías disponibles
-            </div>
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={filteredCategories.map(cat => cat.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-1">
-                  {filteredCategories.map((category) => (
-                    <CategoryItem
-                      key={category.id}
-                      category={category}
-                      level={0}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onAddChild={handleAddChild}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          )}
-        </CardContent>
-      </Card>
+      {/* Categories Table */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Descripción</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Fecha de creación</TableHead>
+              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCategories.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
+                  {searchTerm || dateFilter 
+                    ? 'No se encontraron categorías que coincidan con los filtros.'
+                    : 'No hay categorías registradas.'
+                  }
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredCategories.map((category: any) => (
+                <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        <Tag className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">{category.name}</div>
+                        <div className="text-sm text-muted-foreground">ID: {category.id}</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-foreground py-4 max-w-xs">
+                    <div className="truncate">
+                      {category.description || 'Sin descripción'}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-foreground py-4">
+                    {format(new Date(category.created_at), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell className="text-right py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(category)}
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-      <CategoryModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingCategory(null);
-          setParentCategory(null);
-        }}
-        onSubmit={handleSubmit}
-        category={editingCategory}
-        parentCategory={parentCategory}
-        isSubmitting={createMutation.isPending || updateMutation.isPending}
-      />
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="bg-card border-border rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Esta acción no se puede deshacer. Esto eliminará permanentemente la categoría
+              <span className="font-semibold text-foreground"> "{selectedCategory?.name}"</span> y 
+              todos sus datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                // Add delete logic here
+                setIsDeleteDialogOpen(false);
+                setSelectedCategory(null);
+              }}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function AdminCategoriesSkeleton() {
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header skeleton */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+          <div>
+            <div className="h-8 w-64 bg-muted rounded animate-pulse"></div>
+            <div className="h-4 w-48 bg-muted rounded animate-pulse mt-2"></div>
+          </div>
+        </div>
+        <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
+      </div>
+      
+      {/* Search skeleton */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex gap-4">
+          <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
+          <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+      
+      {/* Table skeleton */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="p-6">
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+                    <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
