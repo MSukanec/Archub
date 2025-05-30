@@ -8,7 +8,7 @@ export interface CreateTaskData {
   category_id?: string;
   subcategory_id?: string;
   element_category_id?: string;
-  unit_id?: number;
+  unit_id?: string;
 }
 
 export { Task };

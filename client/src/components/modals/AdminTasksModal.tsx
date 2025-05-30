@@ -17,13 +17,14 @@ import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-const createTaskSchema = insertTaskSchema.extend({
+const createTaskSchema = z.object({
+  name: z.string().min(1, "Nombre es requerido"),
   unit_labor_price: z.string().optional().or(z.literal('')),
   unit_material_price: z.string().optional().or(z.literal('')),
   category_id: z.string().min(1, "Rubro es requerido"),
   subcategory_id: z.string().min(1, "Subrubro es requerido"),
   element_category_id: z.string().min(1, "Elemento es requerido"),
-  unit_id: z.number().min(1, "Unidad es requerida"),
+  unit_id: z.string().min(1, "Unidad es requerida"),
 });
 
 type FormData = z.infer<typeof createTaskSchema>;
@@ -146,7 +147,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       category_id: task?.category_id || '',
       subcategory_id: task?.subcategory_id || '',
       element_category_id: task?.element_category_id || '',
-      unit_id: task?.unit_id || 0,
+      unit_id: task?.unit_id?.toString() || '',
     },
   });
 
@@ -220,7 +221,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         category_id: '',
         subcategory_id: '',
         element_category_id: '',
-        unit_id: 0,
+        unit_id: '',
       });
       setSelectedCategoryId('');
       setSelectedSubcategoryId('');
