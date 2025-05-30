@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverEvent, DragOverlay } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -29,22 +29,24 @@ interface TreeNodeProps {
   onDelete: (categoryId: string) => void;
   expandedNodes: Set<string>;
   onToggleExpand: (nodeId: string) => void;
+  isOver?: boolean;
+  isDragging?: boolean;
 }
 
-const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleExpand }: TreeNodeProps) => {
+const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleExpand, isOver, isDragging }: TreeNodeProps) => {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging,
+    isDragging: sortableIsDragging,
   } = useSortable({ id: category.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: sortableIsDragging ? 0.5 : 1,
   };
 
   const hasChildren = category.children && category.children.length > 0;
@@ -53,8 +55,18 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
 
   return (
     <div ref={setNodeRef} style={style} className="w-full">
+      {/* Drop zone indicator */}
+      {isOver && (
+        <div 
+          className="h-2 mx-4 mb-1 border-2 border-dashed border-primary bg-primary/10 rounded"
+          style={{ marginLeft: `${paddingLeft}px` }}
+        />
+      )}
+      
       <div 
-        className="flex items-center gap-2 p-3 bg-white border-b border-gray-100 hover:bg-gray-50 group"
+        className={`flex items-center gap-2 p-3 bg-white border-b border-gray-100 hover:bg-gray-50 group transition-colors ${
+          isOver ? 'ring-2 ring-primary ring-opacity-50 bg-primary/5' : ''
+        }`}
         style={{ paddingLeft: `${paddingLeft}px` }}
       >
         {/* Drag Handle */}
@@ -126,6 +138,8 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
               onDelete={onDelete}
               expandedNodes={expandedNodes}
               onToggleExpand={onToggleExpand}
+              isOver={isOver}
+              isDragging={isDragging}
             />
           ))}
         </div>
@@ -140,6 +154,8 @@ const AdminCategories = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -239,11 +255,36 @@ const AdminCategories = () => {
     })
   );
 
-  // Handle drag end
+  // Handle drag start
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
+
+  // Handle drag over
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    setOverId(over ? over.id as string : null);
+  };
+
+  // Handle drag end with optimistic updates
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+    
+    setActiveId(null);
+    setOverId(null);
 
     if (over && active.id !== over.id) {
+      // Optimistic update - update UI immediately
+      queryClient.setQueryData(['/api/admin/task-categories'], (oldData: any[]) => {
+        if (!oldData) return oldData;
+        
+        return oldData.map(cat => 
+          cat.id === active.id 
+            ? { ...cat, parent_id: over.id }
+            : cat
+        );
+      });
+
       try {
         // Update parent_id of the dragged item using Supabase
         const { error } = await supabase
@@ -253,14 +294,14 @@ const AdminCategories = () => {
 
         if (error) throw error;
 
-        // Refresh the data
-        queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
-        
         toast({
           title: "Éxito",
           description: "Categoría movida correctamente en la jerarquía.",
         });
       } catch (error) {
+        // Revert optimistic update on error
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
+        
         toast({
           title: "Error",
           description: "No se pudo mover la categoría. Inténtalo de nuevo.",
@@ -380,6 +421,8 @@ const AdminCategories = () => {
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
@@ -408,6 +451,8 @@ const AdminCategories = () => {
                     onDelete={handleDelete}
                     expandedNodes={expandedNodes}
                     onToggleExpand={handleToggleExpand}
+                    isOver={overId === category.id}
+                    isDragging={activeId === category.id}
                   />
                 ))
               )}
