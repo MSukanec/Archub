@@ -86,7 +86,7 @@ export default function QuickNavigationButtons() {
           onClick={() => setIsOrgMenuOpen(!isOrgMenuOpen)}
           onMouseEnter={() => setIsOrgMenuOpen(true)}
           onMouseLeave={() => setTimeout(() => setIsOrgMenuOpen(false), 200)}
-          className="group flex items-center space-x-2 h-9 px-3 bg-[#1e1e1e] hover:bg-[#282828] border border-[#333] rounded-lg transition-all duration-200"
+          className="group flex items-center space-x-2 h-9 px-3 bg-[#1e1e1e] hover:bg-[#282828] border border-[#333] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
         >
           {currentOrganization?.logo_url ? (
             <img 
@@ -147,7 +147,7 @@ export default function QuickNavigationButtons() {
           onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
           onMouseEnter={() => setIsProjectMenuOpen(true)}
           onMouseLeave={() => setTimeout(() => setIsProjectMenuOpen(false), 200)}
-          className="group flex items-center space-x-2 h-9 px-3 bg-[#1e1e1e] hover:bg-[#282828] border border-[#333] rounded-lg transition-all duration-200"
+          className="group flex items-center space-x-2 h-9 px-3 bg-[#1e1e1e] hover:bg-[#282828] border border-[#333] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center text-xs font-bold text-white">
             {currentProject ? getProjectInitials(currentProject.name) : 'PR'}

@@ -365,7 +365,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
                           {getMainCategories().map((category, index) => (
-                            <SelectItem key={category.id || `category-${index}`} value={category.id.toString()}>
+                            <SelectItem key={category.id || `category-${index}`} value={category.id?.toString() || `category-${index}`}>
                               {category.name}
                             </SelectItem>
                           ))}
@@ -398,7 +398,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           </FormControl>
                           <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
                             {subcategories.map((subcategory) => (
-                              <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                              <SelectItem key={subcategory.id} value={String(subcategory.id)}>
                                 {subcategory.name}
                               </SelectItem>
                             ))}
