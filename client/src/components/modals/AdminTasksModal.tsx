@@ -363,9 +363,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                          {getMainCategories().map((category, index) => (
-                            <SelectItem key={category.id || `category-${index}`} value={category.id?.toString() || `category-${index}`}>
-                              {category.name}
+                          {getMainCategories().map((category) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              {category.code} - {category.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -398,7 +398,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                             {subcategories.map((subcategory) => (
                               <SelectItem key={subcategory.id} value={String(subcategory.id)}>
-                                {subcategory.name}
+                                {subcategory.code} - {subcategory.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -431,7 +431,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                             {elementCategories.map((element) => (
                               <SelectItem key={element.id} value={element.id.toString()}>
-                                {element.name}
+                                {element.code} - {element.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
