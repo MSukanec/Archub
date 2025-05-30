@@ -339,66 +339,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Nombre de la Tarea</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Ej: Construcción de muro"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField
-                    control={form.control}
-                    name="unit_labor_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Precio Mano de Obra</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="unit_material_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Precio Materiales</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
+                {/* Rubro */}
                 <FormField
                   control={form.control}
                   name="category_id"
@@ -409,6 +350,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         onValueChange={(value) => {
                           setSelectedCategoryId(value);
                           setSelectedSubcategoryId('');
+                          setSelectedElementCategoryId('');
                           field.onChange(parseInt(value));
                           form.setValue('subcategory_id', null);
                           form.setValue('element_category_id', null);
@@ -473,11 +415,17 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     name="element_category_id"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value ? field.value.toString() : ''}>
+                        <FormLabel className="text-xs font-medium text-foreground">Element</FormLabel>
+                        <Select 
+                          onValueChange={(value) => {
+                            setSelectedElementCategoryId(value);
+                            field.onChange(parseInt(value));
+                          }} 
+                          value={field.value ? field.value.toString() : ''}
+                        >
                           <FormControl>
                             <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                              <SelectValue placeholder="Seleccionar elemento" />
+                              <SelectValue placeholder="Seleccionar element" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
@@ -493,6 +441,109 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     )}
                   />
                 )}
+
+                {/* Acción */}
+                <FormItem>
+                  <FormLabel className="text-xs font-medium text-foreground">Acción</FormLabel>
+                  <Select 
+                    onValueChange={setSelectedActionId}
+                    value={selectedActionId}
+                  >
+                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                      <SelectValue placeholder="Seleccionar acción" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                      {actions.map((action) => (
+                        <SelectItem key={action.id} value={action.id}>
+                          {action.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+
+                {/* Elemento */}
+                <FormItem>
+                  <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
+                  <Select 
+                    onValueChange={setSelectedElementId}
+                    value={selectedElementId}
+                  >
+                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                      <SelectValue placeholder="Seleccionar elemento" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                      {taskElements.map((element) => (
+                        <SelectItem key={element.id} value={element.id}>
+                          {element.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+
+                {/* Nombre generado automáticamente */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Nombre de la Tarea (Generado)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Se genera automáticamente al seleccionar acción y elemento"
+                          className="bg-[#f0f0f0] border-[#919191]/20 text-sm cursor-not-allowed"
+                          readOnly
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Precios */}
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="unit_labor_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Precio Mano de Obra</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="unit_material_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Precio Materiales</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </AccordionContent>
             </AccordionItem>
 
