@@ -118,6 +118,19 @@ export default function AdminMaterials() {
     setIsDeleteDialogOpen(true);
   };
 
+  // Handle edit
+  const handleEdit = (material: any) => {
+    setSelectedMaterial(material);
+    setIsEditModalOpen(true);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = () => {
+    if (selectedMaterial) {
+      deleteMutation.mutate(selectedMaterial.id);
+    }
+  };
+
   // Filter and sort materials
   const filteredMaterials = materials.filter((material: any) => {
     const matchesSearch = (material.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -231,7 +244,7 @@ export default function AdminMaterials() {
                   </TableCell>
                   <TableCell className="text-center py-4">
                     <Badge variant="outline" className="bg-muted/50">
-                      {material.unit || 'No especificada'}
+                      {material.unit?.name || 'No especificada'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center py-4">
@@ -245,6 +258,7 @@ export default function AdminMaterials() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => handleEdit(material)}
                         className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
@@ -284,10 +298,7 @@ export default function AdminMaterials() {
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                setIsDeleteDialogOpen(false);
-                setSelectedMaterial(null);
-              }}
+              onClick={handleDeleteConfirm}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
             >
               Eliminar
