@@ -592,87 +592,51 @@ function DashboardTimeline() {
                 }}
               />
 
-              {/* Date labels - top (aligned with dashboard button) */}
+              {/* Date labels - top (positioned below HOY button area) */}
               <div 
                 className="absolute flex flex-col items-center text-center z-30"
                 style={{
-                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2 - 15}px` : '-380px',
+                  top: '90px', // Fixed position below HOY button
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
                 {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
-                  <div className="bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset">
-                    <div 
-                      className="text-xs font-medium text-foreground/50"
-                      style={{ 
-                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-                        fontWeight: 500
-                      }}
-                    >
+                  <div className="date-label-container">
+                    <div className="date-label-engraved text-xs font-medium">
                       {(formatDate(node.date) as any).dayName}
                     </div>
-                    <div 
-                      className="text-lg font-bold text-foreground/70"
-                      style={{ 
-                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-                        fontWeight: 600
-                      }}
-                    >
+                    <div className="date-label-engraved text-lg font-bold">
                       {(formatDate(node.date) as any).dayNumber}
                     </div>
                   </div>
                 ) : (
-                  <div 
-                    className="text-xs font-medium text-foreground/50 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset"
-                    style={{ 
-                      textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-                      fontWeight: 500
-                    }}
-                  >
+                  <div className="date-label-engraved text-xs font-medium">
                     {formatDate(node.date)}
                   </div>
                 )}
               </div>
 
-              {/* Date labels - bottom (aligned with profile button) */}
+              {/* Date labels - bottom (positioned at bottom with same margin as top) */}
               <div 
                 className="absolute flex flex-col items-center text-center z-30"
                 style={{
-                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile - 15}px` : '20px',
+                  bottom: '90px', // Fixed position at bottom with same margin
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
                 {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
-                  <div className="bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset">
-                    <div 
-                      className="text-lg font-bold text-foreground/70"
-                      style={{ 
-                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-                        fontWeight: 600
-                      }}
-                    >
+                  <div className="date-label-container">
+                    <div className="date-label-engraved text-lg font-bold">
                       {(formatDate(node.date) as any).dayNumber}
                     </div>
-                    <div 
-                      className="text-xs font-medium text-foreground/50"
-                      style={{ 
-                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-                        fontWeight: 500
-                      }}
-                    >
+                    <div className="date-label-engraved text-xs font-medium">
                       {(formatDate(node.date) as any).dayName}
                     </div>
                   </div>
                 ) : (
-                  <div 
-                    className="text-xs font-medium text-foreground/50 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset"
-                    style={{ 
-                      textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-                      fontWeight: 500
-                    }}
-                  >
+                  <div className="date-label-engraved text-xs font-medium">
                     {formatDate(node.date)}
                   </div>
                 )}
