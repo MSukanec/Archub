@@ -97,7 +97,7 @@ function DashboardTimeline() {
       movements?.forEach(movement => {
         events.push({
           id: `movement-${movement.id}`,
-          date: new Date(movement.date),
+          date: new Date(movement.created_at),
           type: 'movement',
           title: 'Movimiento',
           description: movement.description,
@@ -361,6 +361,47 @@ function DashboardTimeline() {
         
         return (
           <div className="absolute bottom-4 right-4 z-[60]">
+            {/* Detailed event info card */}
+            {hoveredEvent && (
+              <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4">
+                <h3 className="text-sm font-semibold text-[#919191] mb-3">INFORMACIÓN DEL EVENTO</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <hoveredEvent.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
+                    <div className="text-sm font-medium text-[#919191]">{hoveredEvent.title}</div>
+                  </div>
+                  {hoveredEvent.description && (
+                    <div className="text-xs text-[#919191]/70">
+                      <span className="font-medium">Descripción:</span> {hoveredEvent.description}
+                    </div>
+                  )}
+                  <div className="text-xs text-[#919191]/70">
+                    <span className="font-medium">Fecha:</span> {hoveredEvent.date.toLocaleDateString('es-ES')}
+                  </div>
+                  {hoveredEvent.time && (
+                    <div className="text-xs text-[#919191]/70">
+                      <span className="font-medium">Hora:</span> {hoveredEvent.time}
+                    </div>
+                  )}
+                  {hoveredEvent.location && (
+                    <div className="text-xs text-[#919191]/70">
+                      <span className="font-medium">Ubicación:</span> {hoveredEvent.location}
+                    </div>
+                  )}
+                  {hoveredEvent.eventType && (
+                    <div className="text-xs text-[#919191]/70 capitalize">
+                      <span className="font-medium">Tipo:</span> {hoveredEvent.eventType}
+                    </div>
+                  )}
+                  {hoveredEvent.amount && (
+                    <div className="text-xs text-[#919191]/70">
+                      <span className="font-medium">Monto:</span> ${hoveredEvent.amount.toLocaleString()} {hoveredEvent.currency}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
             <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
               {todayEvents.length > 0 ? (
                 <>
@@ -612,6 +653,8 @@ function DashboardTimeline() {
                           <div 
                             className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative opacity-100"
                             style={{ zIndex: 150, backgroundColor: '#e1e1e1' }}
+                            onMouseEnter={() => setHoveredEvent(events[0])}
+                            onMouseLeave={() => setHoveredEvent(null)}
                           >
                             <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
                             

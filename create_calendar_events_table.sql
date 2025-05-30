@@ -2,17 +2,18 @@
 
 CREATE TABLE IF NOT EXISTS calendar_events (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title VARCHAR NOT NULL,
+  title VARCHAR(255) NOT NULL,
   description TEXT,
-  date DATE NOT NULL,
-  time TIME NOT NULL,
-  duration VARCHAR NOT NULL, -- Duration in minutes as string
-  location VARCHAR,
+  date TEXT NOT NULL, -- Store as YYYY-MM-DD
+  time TEXT NOT NULL, -- Store as HH:MM
+  duration VARCHAR(50) NOT NULL, -- Duration in minutes as string
+  location VARCHAR(255),
   attendees TEXT, -- Comma-separated list of attendees
-  type VARCHAR CHECK (type IN ('meeting', 'task', 'reminder', 'appointment')) NOT NULL DEFAULT 'meeting',
-  priority VARCHAR CHECK (priority IN ('low', 'medium', 'high')) NOT NULL DEFAULT 'medium',
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  type TEXT CHECK (type IN ('meeting', 'task', 'reminder', 'appointment')) NOT NULL DEFAULT 'meeting',
+  priority TEXT CHECK (priority IN ('low', 'medium', 'high')) NOT NULL DEFAULT 'medium',
+  organization_id UUID NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at_local TIMESTAMP WITH TIME ZONE, -- Local browser timestamp
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
