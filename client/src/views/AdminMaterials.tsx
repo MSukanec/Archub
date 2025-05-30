@@ -198,8 +198,18 @@ export default function AdminMaterials() {
               placeholder="Buscar materiales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-background border-border rounded-xl"
             />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -260,26 +270,26 @@ export default function AdminMaterials() {
             ) : (
               paginatedMaterials.map((material: any) => (
                 <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <Badge variant="secondary" className="bg-muted/50">
                       {material.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-4 text-center">
+                  <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">{material.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <Badge variant="outline" className="bg-muted/50">
                       {material.unit?.name || 'No especificada'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <div className="flex items-center justify-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {material.cost ? material.cost.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -304,6 +314,53 @@ export default function AdminMaterials() {
             )}
           </TableBody>
         </Table>
+        
+        {/* Paginación */}
+        {filteredAndSortedMaterials.length > 0 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedMaterials.length)} de {filteredAndSortedMaterials.length} elementos
+            </div>
+            
+            {totalPages > 1 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8 h-8 p-0 rounded-lg"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Dialog */}
