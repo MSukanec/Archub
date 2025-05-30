@@ -32,7 +32,6 @@ import AdminTasks from '@/views/AdminTasks';
 import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
 import SubscriptionTables from '@/views/SubscriptionTables';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
 
 import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
@@ -154,9 +153,6 @@ export default function AppLayout() {
       </div>
       
       <SecondarySidebar />
-      
-      {/* Floating Action Button */}
-      <FloatingActionButton />
       
       <CreateProjectModal 
         isOpen={isCreateModalOpen}

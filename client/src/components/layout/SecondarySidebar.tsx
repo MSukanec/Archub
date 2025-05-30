@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import CircularButton from '@/components/ui/CircularButton';
+import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import { useState, useEffect } from 'react';
 
 export default function SecondarySidebar() {
@@ -140,27 +141,6 @@ export default function SecondarySidebar() {
         
         {/* Additional buttons section */}
         <div className="flex flex-col items-center space-y-2 pt-2">
-          {/* Budget navigation - only show when in budgets section */}
-          {currentSection === 'budgets' && (
-            <>
-              <CircularButton
-                icon={Calculator}
-                isActive={currentView === 'budgets-list'}
-                onClick={() => setView('budgets-list')}
-              />
-              <CircularButton
-                icon={Hammer}
-                isActive={currentView === 'budgets-tasks'}
-                onClick={() => setView('budgets-tasks')}
-              />
-              <CircularButton
-                icon={Package}
-                isActive={currentView === 'budgets-materials'}
-                onClick={() => setView('budgets-materials')}
-              />
-            </>
-          )}
-          
           {/* Dashboard button */}
           <CircularButton
             icon={Calendar}
@@ -179,8 +159,9 @@ export default function SecondarySidebar() {
         </div>
       </div>
 
-      {/* Empty bottom section */}
+      {/* Bottom section with floating action button */}
       <div className="flex flex-col items-center space-y-2 pb-2.5 pr-2.5">
+        <FloatingActionButton />
       </div>
     </div>
   );
