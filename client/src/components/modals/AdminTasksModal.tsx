@@ -121,6 +121,21 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     enabled: isOpen,
   });
 
+  // Fetch units from Supabase
+  const { data: units = [] } = useQuery({
+    queryKey: ['units'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('units')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
   const form = useForm<FormData>({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
@@ -453,6 +468,17 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                   )}
                 />
 
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="task" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <CheckSquare className="w-4 h-4" />
+                  Tarea
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="space-y-2 pt-1">
                 {/* Acción */}
                 <FormItem>
                   <FormLabel className="text-xs font-medium text-foreground">Acción</FormLabel>
@@ -512,7 +538,6 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     </FormItem>
                   )}
                 />
-
               </AccordionContent>
             </AccordionItem>
 
@@ -532,12 +557,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <SelectValue placeholder="Seleccionar unidad" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                      <SelectItem value="m2">m²</SelectItem>
-                      <SelectItem value="m3">m³</SelectItem>
-                      <SelectItem value="ml">ml</SelectItem>
-                      <SelectItem value="un">Unidad</SelectItem>
-                      <SelectItem value="kg">kg</SelectItem>
-                      <SelectItem value="global">Global</SelectItem>
+                      {units.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.id}>
+                          {unit.symbol} - {unit.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
