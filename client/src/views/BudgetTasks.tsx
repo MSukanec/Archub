@@ -20,9 +20,8 @@ import { supabase } from '@/lib/supabase';
 import TaskModal from '@/components/modals/TaskModal';
 
 export default function BudgetTasks() {
-  const { projectId } = useUserContextStore();
+  const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
-  const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
   const { toast } = useToast();
@@ -95,12 +94,9 @@ export default function BudgetTasks() {
         </div>
         <div className="flex items-center gap-2">
           <Select 
-            value={activeBudgetId?.toString() || ""} 
+            value={budgetId || ""} 
             onValueChange={(value) => {
-              console.log('Budget selected:', value);
-              const budgetId = Number(value);
-              console.log('Setting activeBudgetId to:', budgetId);
-              setActiveBudgetId(budgetId);
+              setBudgetId(value);
             }}
           >
             <SelectTrigger className="w-[200px]">
@@ -117,7 +113,7 @@ export default function BudgetTasks() {
           <Button 
             className="flex items-center gap-2"
             onClick={() => setIsTaskModalOpen(true)}
-            disabled={!activeBudgetId}
+            disabled={!budgetId}
           >
             <Plus className="h-4 w-4" />
             Agregar Tarea
@@ -142,12 +138,12 @@ export default function BudgetTasks() {
               No hay tareas en este presupuesto
             </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              {!activeBudgetId 
+              {!budgetId 
                 ? "Selecciona un presupuesto para ver sus tareas"
                 : "Comienza agregando la primera tarea"
               }
             </p>
-            {activeBudgetId && (
+            {budgetId && (
               <Button onClick={() => setIsTaskModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Agregar Primera Tarea
@@ -159,7 +155,7 @@ export default function BudgetTasks() {
 
       {/* Task Modal */}
       <TaskModal
-        budgetId={activeBudgetId}
+        budgetId={budgetId ? Number(budgetId) : null}
         task={editingTask}
         isOpen={isTaskModalOpen}
         onClose={() => {
