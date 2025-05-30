@@ -56,6 +56,8 @@ const viewComponents = {
   'transactions': Movements,
   'contacts': Contacts,
   'calendar': Calendar,
+  'list': Contacts,
+  'schedule': Calendar,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
   'admin-categories': AdminCategories,

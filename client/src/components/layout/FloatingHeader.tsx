@@ -21,9 +21,8 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'sitelog-main', label: 'Bitácora' }
   ],
   contacts: [
-    { id: 'list', label: 'Lista' },
-    { id: 'tasks', label: 'Tareas' },
-    { id: 'schedule', label: 'Agenda' }
+    { id: 'schedule', label: 'Agenda' },
+    { id: 'list', label: 'Contactos' }
   ],
   movements: [
     { id: 'transactions', label: 'Movimientos' }

@@ -47,7 +47,7 @@ const sectionViewMap: Record<Section, View> = {
   budgets: 'budgets-list',
   sitelog: 'sitelog-main',
   movements: 'movements-main',
-  contacts: 'calendar',
+  contacts: 'schedule',
   admin: 'admin-organizations',
   profile: 'profile-info',
 };
@@ -60,7 +60,7 @@ const getSectionFromView = (view: View): Section => {
   if (view.startsWith('budgets-')) return 'budgets';
   if (view.startsWith('sitelog-')) return 'sitelog';
   if (view.startsWith('movements-') || view === 'transactions') return 'movements';
-  if (view === 'contacts' || view === 'calendar') return 'contacts';
+  if (view === 'contacts' || view === 'calendar' || view === 'list' || view === 'schedule') return 'contacts';
   if (view.startsWith('admin-')) return 'admin';
   if (view.startsWith('profile-') || view === 'subscription-tables') return 'profile';
   return 'dashboard';
