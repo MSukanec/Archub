@@ -226,9 +226,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       if (task.element_category_id) {
         setSelectedElementCategoryId(task.element_category_id);
       }
-      // Set text fields for action and element
-      setActionText(task.action_id || '');
-      setElementText(task.element_id || '');
+      // Set action and element IDs
+      setSelectedActionId(task.action_id || '');
+      setSelectedElementId(task.element_id || '');
     } else {
       form.reset({
         name: '',
@@ -244,8 +244,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       setSelectedCategoryId('');
       setSelectedSubcategoryId('');
       setSelectedElementCategoryId('');
-      setActionText('');
-      setElementText('');
+      setSelectedActionId('');
+      setSelectedElementId('');
     }
   }, [task, form]);
 
@@ -301,8 +301,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       subcategory_id: data.subcategory_id || undefined,
       element_category_id: data.element_category_id || undefined,
       unit_id: data.unit_id || undefined,
-      action_id: data.action_id || undefined,
-      element_id: data.element_id || undefined,
+      action_id: selectedActionId || undefined,
+      element_id: selectedElementId || undefined,
     };
 
     console.log('Task data to send:', taskData);
