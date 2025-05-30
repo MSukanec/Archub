@@ -259,6 +259,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   });
 
   const onSubmit = (data: FormData) => {
+    console.log('Form submitted with data:', data);
+    console.log('Form errors:', form.formState.errors);
+    
     const taskData = {
       name: data.name,
       unit_labor_price: data.unit_labor_price ? parseFloat(data.unit_labor_price) : undefined,
@@ -267,6 +270,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       subcategory_id: data.subcategory_id || undefined,
       element_category_id: data.element_category_id || undefined,
     };
+
+    console.log('Task data to send:', taskData);
 
     if (task) {
       updateMutation.mutate({ id: task.id, updates: taskData });
@@ -559,7 +564,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                       {units.map((unit) => (
                         <SelectItem key={unit.id} value={unit.id}>
-                          {unit.symbol} - {unit.name}
+                          {unit.symbol} {unit.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
