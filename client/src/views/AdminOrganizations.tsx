@@ -247,7 +247,7 @@ export default function AdminOrganizations() {
                     </div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
-                    {format(new Date(organization.created_at), 'dd/MM/yyyy')}
+                    {organization.created_at ? format(new Date(organization.created_at), 'dd/MM/yyyy') : 'N/A'}
                   </TableCell>
                   <TableCell className="py-4">
                     <Badge 

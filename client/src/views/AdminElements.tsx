@@ -190,7 +190,7 @@ export default function AdminElements() {
                     </div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
-                    {format(new Date(element.created_at), 'dd/MM/yyyy')}
+                    {element.created_at ? format(new Date(element.created_at), 'dd/MM/yyyy') : 'N/A'}
                   </TableCell>
                   <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">
