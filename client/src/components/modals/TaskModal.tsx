@@ -180,18 +180,24 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? 'Editar Tarea' : 'Agregar Tarea al Presupuesto'}</DialogTitle>
-          <DialogDescription>
-            {isEditing 
-              ? 'Modifica los datos de la tarea en el presupuesto'
-              : 'Selecciona una tarea y especifica la cantidad para agregar al presupuesto'
-            }
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent 
+        className="fixed inset-0 z-[9999] bg-[#e0e0e0] p-0 m-0 max-w-none h-full w-full flex items-center justify-center"
+        style={{ zIndex: 9999 }}
+      >
+        <div className="bg-[#e0e0e0] w-full max-w-lg mx-auto p-6 rounded-lg shadow-lg">
+          <DialogHeader className="text-center mb-6">
+            <DialogTitle className="text-xl font-semibold text-foreground">
+              {isEditing ? 'Editar Tarea' : 'Agregar Tarea al Presupuesto'}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground mt-2">
+              {isEditing 
+                ? 'Modifica los datos de la tarea en el presupuesto'
+                : 'Selecciona una tarea y especifica la cantidad para agregar al presupuesto'
+              }
+            </DialogDescription>
+          </DialogHeader>
 
-        <Form {...form}>
+          <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
@@ -207,7 +213,7 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
                     </FormControl>
                     <SelectContent>
                       {tasks.map((task: any) => (
-                        <SelectItem key={task.id} value={task.id}>
+                        <SelectItem key={task.id} value={task.id.toString()}>
                           {task.name} - {task.unit || 'unidad'}
                         </SelectItem>
                       ))}
@@ -300,6 +306,7 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
             </div>
           </form>
         </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );
