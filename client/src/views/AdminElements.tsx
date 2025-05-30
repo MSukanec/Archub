@@ -176,19 +176,11 @@ export default function AdminElements() {
             ) : (
               filteredElements.map((element: any) => (
                 <TableRow key={element.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{element.name}</div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4 max-w-xs">
-                    <div className="truncate">
-                      {element.description || 'Sin descripción'}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    {element.created_at ? format(new Date(element.created_at), 'dd/MM/yyyy') : 'N/A'}
-                  </TableCell>
-                  <TableCell className="text-right py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"

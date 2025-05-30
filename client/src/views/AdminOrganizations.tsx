@@ -154,13 +154,7 @@ export default function AdminOrganizations() {
             </p>
           </div>
         </div>
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva Organización
-        </Button>
+
       </div>
 
       {/* Search and Filters */}
