@@ -203,9 +203,9 @@ export default function AdminElements() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSearchTerm('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted rounded-full"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
               >
-                <X className="h-3 w-3 text-muted-foreground" />
+                <X className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -302,22 +302,24 @@ export default function AdminElements() {
           </TableBody>
         </Table>
         
-        {/* Paginación centrada */}
-        {totalPages > 1 && (
-          <div className="flex flex-col items-center gap-3 px-6 py-4 border-t border-border">
-            <div className="text-sm text-muted-foreground">
-              Mostrando {startIndex + 1} a {Math.min(endIndex, filteredAndSortedElements.length)} de {filteredAndSortedElements.length} elementos
+        {/* Paginación */}
+        {filteredAndSortedElements.length > 0 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedElements.length)} de {filteredAndSortedElements.length} elementos
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="rounded-lg"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+            
+            {totalPages > 1 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
               <div className="flex items-center gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <Button

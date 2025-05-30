@@ -66,14 +66,14 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
       form.reset({
         name: material.name,
         unit_id: material.unit_id,
-        category_id: material.category_id || 'none',
+        category_id: material.category_id || '',
         cost: material.cost || 0,
       });
     } else {
       form.reset({
         name: '',
         unit_id: '',
-        category_id: 'none',
+        category_id: '',
         cost: 0,
       });
     }
