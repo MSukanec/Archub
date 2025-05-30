@@ -269,41 +269,49 @@ export default function AdminUnits() {
       </div>
 
       {/* Paginación */}
-      {totalPages > 1 && (
+      {filteredAndSortedUnits.length > 0 && (
         <div className="flex items-center justify-center gap-2 mt-6">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="rounded-xl border-border"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setCurrentPage(page)}
-                className="w-8 h-8 p-0 rounded-lg"
-              >
-                {page}
-              </Button>
-            ))}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+            Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedUnits.length)} de {filteredAndSortedUnits.length} elementos
           </div>
           
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="rounded-xl border-border"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          {totalPages > 1 && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="rounded-xl border-border"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className="w-8 h-8 p-0 rounded-lg"
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="rounded-xl border-border"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       )}
 
