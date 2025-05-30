@@ -123,6 +123,12 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   // Reset form when task changes or modal opens
   useEffect(() => {
     if (isOpen) {
+      setCurrentStep(0);
+      setTaskMaterials([]);
+      setSelectedMaterialId('');
+      setMaterialQuantity('');
+      setMaterialUnitCost('');
+      
       if (task) {
         const categoryId = task.category_id?.toString() || '';
         const subcategoryId = task.subcategory_id?.toString() || '';
@@ -152,6 +158,45 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       }
     }
   }, [isOpen, task, form]);
+
+  // Add material to task
+  const addMaterial = () => {
+    if (!selectedMaterialId || !materialQuantity || !materialUnitCost) {
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos del material",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedMaterial = materials.find(m => m.id === selectedMaterialId);
+    if (!selectedMaterial) return;
+
+    const newMaterial: TaskMaterial = {
+      material_id: selectedMaterialId,
+      material_name: selectedMaterial.name,
+      quantity: parseFloat(materialQuantity),
+      unit_cost: parseFloat(materialUnitCost),
+    };
+
+    setTaskMaterials(prev => [...prev, newMaterial]);
+    setSelectedMaterialId('');
+    setMaterialQuantity('');
+    setMaterialUnitCost('');
+  };
+
+  // Remove material from task
+  const removeMaterial = (index: number) => {
+    setTaskMaterials(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Calculate total material cost
+  const getTotalMaterialCost = () => {
+    return taskMaterials.reduce((total, material) => 
+      total + (material.quantity * material.unit_cost), 0
+    );
+  };
 
   // Handle category change
   const handleCategoryChange = (value: string) => {
@@ -233,200 +278,388 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   const subcategories = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
   const elementCategories = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
 
+  const steps = [
+    { id: 0, name: 'Datos de la Tarea', icon: Settings },
+    { id: 1, name: 'Materiales', icon: Package },
+  ];
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{task ? 'Editar Tarea' : 'Nueva Tarea'}</DialogTitle>
-        </DialogHeader>
+      <DialogContent 
+        className="max-w-6xl h-[90vh] p-0 gap-0 bg-[#e0e0e0]" 
+        style={{ zIndex: 1000 }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-300">
+          <h2 className="text-xl font-semibold text-gray-800">
+            {task ? 'Editar Tarea' : 'Nueva Tarea'}
+          </h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-2 gap-8">
-              {/* Left Column - Categories */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-gray-400">Categorización</h3>
-                
-                {/* Category */}
-                <FormField
-                  control={form.control}
-                  name="category_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rubro</FormLabel>
-                      <Select
-                        value={selectedCategoryId || "none"}
-                        onValueChange={handleCategoryChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar rubro" />
+        {/* Step Tabs */}
+        <div className="flex border-b border-gray-300 bg-[#e0e0e0]">
+          {steps.map((step, index) => (
+            <button
+              key={step.id}
+              onClick={() => setCurrentStep(step.id)}
+              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-colors ${
+                currentStep === step.id
+                  ? 'bg-white text-gray-900 border-b-2 border-primary'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+            >
+              <step.icon className="h-4 w-4" />
+              {step.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto p-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
+              {currentStep === 0 && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-8">
+                    {/* Left Column - Categories */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-gray-800 mb-4">Categorización</h3>
+                      
+                      {/* Category */}
+                      <FormField
+                        control={form.control}
+                        name="category_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Rubro</FormLabel>
+                            <Select
+                              value={selectedCategoryId || "none"}
+                              onValueChange={handleCategoryChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="bg-[#d2d2d2] border-gray-400">
+                                  <SelectValue placeholder="Seleccionar rubro" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">Sin rubro</SelectItem>
+                                {parentCategories.map((category) => (
+                                  <SelectItem key={category.id} value={category.id.toString()}>
+                                    {category.code} {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Subcategory */}
+                      <FormField
+                        control={form.control}
+                        name="subcategory_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Subrubro</FormLabel>
+                            <Select
+                              value={selectedSubcategoryId || "none"}
+                              onValueChange={handleSubcategoryChange}
+                              disabled={!selectedCategoryId || selectedCategoryId === 'none'}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="bg-[#d2d2d2] border-gray-400">
+                                  <SelectValue placeholder="Seleccionar subrubro" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">Sin subrubro</SelectItem>
+                                {subcategories.map((subcategory) => (
+                                  <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                                    {subcategory.code} {subcategory.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Element Category */}
+                      <FormField
+                        control={form.control}
+                        name="element_category_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Elemento</FormLabel>
+                            <Select
+                              onValueChange={handleElementCategoryChange}
+                              disabled={!selectedSubcategoryId || selectedSubcategoryId === 'none'}
+                              value={field.value?.toString() || "none"}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="bg-[#d2d2d2] border-gray-400">
+                                  <SelectValue placeholder="Seleccionar elemento" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">Sin elemento</SelectItem>
+                                {elementCategories.map((element) => (
+                                  <SelectItem key={element.id} value={element.id.toString()}>
+                                    {element.code} {element.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Right Column - Task Details */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-gray-800 mb-4">Detalles de la Tarea</h3>
+                      
+                      {/* Task Name */}
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">
+                              Nombre de la Tarea <span className="text-primary">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Ingresa el nombre de la tarea" 
+                                className="bg-[#d2d2d2] border-gray-400"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Labor Price */}
+                      <FormField
+                        control={form.control}
+                        name="unit_labor_price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Precio Mano de Obra</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                                className="bg-[#d2d2d2] border-gray-400"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Material Price */}
+                      <FormField
+                        control={form.control}
+                        name="unit_material_price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Precio Material</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                                className="bg-[#d2d2d2] border-gray-400"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium text-gray-800 mb-4">Materiales de la Tarea</h3>
+                  
+                  {/* Add Material Form */}
+                  <div className="bg-white p-4 rounded-lg border border-gray-300">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">Agregar Material</h4>
+                    <div className="grid grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Material</label>
+                        <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
+                          <SelectTrigger className="bg-[#d2d2d2] border-gray-400">
+                            <SelectValue placeholder="Seleccionar material" />
                           </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Sin rubro</SelectItem>
-                          {parentCategories.map((category) => (
-                            <SelectItem key={category.id} value={category.id.toString()}>
-                              {category.code} {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Subcategory */}
-                <FormField
-                  control={form.control}
-                  name="subcategory_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subrubro</FormLabel>
-                      <Select
-                        value={selectedSubcategoryId || "none"}
-                        onValueChange={handleSubcategoryChange}
-                        disabled={!selectedCategoryId || selectedCategoryId === 'none'}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar subrubro" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Sin subrubro</SelectItem>
-                          {subcategories.map((subcategory) => (
-                            <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                              {subcategory.code} {subcategory.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Element Category */}
-                <FormField
-                  control={form.control}
-                  name="element_category_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Elemento</FormLabel>
-                      <Select
-                        onValueChange={handleElementCategoryChange}
-                        disabled={!selectedSubcategoryId || selectedSubcategoryId === 'none'}
-                        value={field.value?.toString() || "none"}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar elemento" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Sin elemento</SelectItem>
-                          {elementCategories.map((element) => (
-                            <SelectItem key={element.id} value={element.id.toString()}>
-                              {element.code} {element.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Right Column - Task Details */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-gray-400">Detalles de la Tarea</h3>
-                
-                {/* Task Name */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre de la Tarea</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Ingresa el nombre de la tarea" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Labor Price */}
-                <FormField
-                  control={form.control}
-                  name="unit_labor_price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Precio Mano de Obra</FormLabel>
-                      <FormControl>
-                        <Input 
+                          <SelectContent>
+                            {materials.map((material) => (
+                              <SelectItem key={material.id} value={material.id}>
+                                {material.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Cantidad</label>
+                        <Input
                           type="number"
                           step="0.01"
-                          placeholder="0.00" 
-                          {...field} 
+                          placeholder="0"
+                          value={materialQuantity}
+                          onChange={(e) => setMaterialQuantity(e.target.value)}
+                          className="bg-[#d2d2d2] border-gray-400"
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Material Price */}
-                <FormField
-                  control={form.control}
-                  name="unit_material_price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Precio Material</FormLabel>
-                      <FormControl>
-                        <Input 
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Costo Unitario</label>
+                        <Input
                           type="number"
                           step="0.01"
-                          placeholder="0.00" 
-                          {...field} 
+                          placeholder="0.00"
+                          value={materialUnitCost}
+                          onChange={(e) => setMaterialUnitCost(e.target.value)}
+                          className="bg-[#d2d2d2] border-gray-400"
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
+                      </div>
+                      <div className="flex items-end">
+                        <Button
+                          type="button"
+                          onClick={addMaterial}
+                          className="w-full bg-primary hover:bg-primary/90"
+                        >
+                          Agregar
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-2 pt-4 border-t">
+                  {/* Materials List */}
+                  {taskMaterials.length > 0 && (
+                    <div className="bg-white p-4 rounded-lg border border-gray-300">
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Materiales Agregados</h4>
+                      <div className="space-y-2">
+                        {taskMaterials.map((material, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                            <div className="flex-1">
+                              <span className="font-medium">{material.material_name}</span>
+                              <div className="text-sm text-gray-600">
+                                Cantidad: {material.quantity} | Costo unitario: ${material.unit_cost.toFixed(2)}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Badge variant="outline">
+                                Total: ${(material.quantity * material.unit_cost).toFixed(2)}
+                              </Badge>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeMaterial(index)}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">Total de Materiales:</span>
+                          <Badge className="bg-primary">
+                            ${getTotalMaterialCost().toFixed(2)}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </form>
+          </Form>
+        </div>
+
+        {/* Footer Navigation */}
+        <div className="flex items-center justify-between p-6 border-t border-gray-300 bg-[#e0e0e0]">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handlePrev}
+              disabled={currentStep === 0}
+              className="flex items-center gap-2"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Button>
+            
+            {currentStep < steps.length - 1 && (
               <Button
                 type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={createMutation.isPending || updateMutation.isPending}
+                onClick={handleNext}
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90"
               >
-                Cancelar
+                Siguiente
+                <ChevronRight className="h-4 w-4" />
               </Button>
-              <Button
-                type="submit"
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                {createMutation.isPending || updateMutation.isPending
-                  ? 'Guardando...'
-                  : task
-                  ? 'Actualizar'
-                  : 'Crear Tarea'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              onClick={form.handleSubmit(onSubmit)}
+              disabled={createMutation.isPending || updateMutation.isPending}
+              className="bg-primary hover:bg-primary/90"
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Guardando...'
+                : task
+                ? 'Actualizar Tarea'
+                : 'Crear Tarea'}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
