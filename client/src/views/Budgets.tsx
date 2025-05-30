@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Calculator, Package, MapPin, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import { Plus, Calculator, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,20 +13,27 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUserContextStore } from '@/stores/userContextStore';
-import { projectsService } from '@/lib/projectsService';
+import { useNavigationStore } from '@/stores/navigationStore';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
-import TaskModal from '@/components/modals/TaskModal';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 
 export default function Budgets() {
   const { projectId } = useUserContextStore();
+  const { setSection, setView } = useNavigationStore();
   const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
   const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [budgetToDelete, setBudgetToDelete] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Set navigation state when component mounts
+  useEffect(() => {
+    setSection('budgets');
+    setView('budgets');
+  }, [setSection, setView]);
 
   // Listen for floating action button events
   useEffect(() => {
@@ -36,21 +41,12 @@ export default function Budgets() {
       setIsCreateBudgetModalOpen(true);
     };
 
-    const handleOpenCreateTaskModal = () => {
-      setIsTaskModalOpen(true);
-    };
-
     window.addEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
-    window.addEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
     
     return () => {
       window.removeEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
-      window.removeEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
     };
   }, []);
-  const [editingTask, setEditingTask] = useState<any>(null);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   // Get projects to find current project name
   const { data: projects = [] } = useQuery({
