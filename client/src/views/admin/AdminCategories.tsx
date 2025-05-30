@@ -86,7 +86,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
 
         {/* Category Info */}
         <div className="flex-1 flex items-center gap-3">
-          <Badge variant="outline" className="font-mono text-xs bg-blue-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="font-mono text-xs bg-primary/10 text-primary border-primary/20">
             {category.code}
           </Badge>
           <span className="font-medium text-gray-900">{category.name}</span>
@@ -239,18 +239,33 @@ const AdminCategories = () => {
   );
 
   // Handle drag end
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      // Here you would implement the logic to update positions
-      // This would involve calling an API to update the position values
-      console.log('Moving', active.id, 'over', over.id);
-      
-      toast({
-        title: "Funcionalidad en desarrollo",
-        description: "El reordenamiento por drag and drop se implementará próximamente.",
-      });
+      try {
+        // Update parent_id of the dragged item
+        await apiRequest(`/api/admin/task-categories/${active.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            parent_id: over.id
+          }),
+        });
+
+        // Refresh the data
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
+        
+        toast({
+          title: "Éxito",
+          description: "Categoría movida correctamente en la jerarquía.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo mover la categoría. Inténtalo de nuevo.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -360,14 +375,14 @@ const AdminCategories = () => {
       </div>
 
       {/* Tree View */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-[#e1e1e1] border-0 overflow-hidden">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
-            <div className="min-h-[400px]">
+            <div className="min-h-[400px] p-4">
               {filteredTreeData.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <FolderOpen className="w-12 h-12 text-muted-foreground mb-4" />
