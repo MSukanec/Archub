@@ -594,6 +594,25 @@ function DashboardTimeline() {
 
 
 
+              {/* Date label positioned at bottom */}
+              <div 
+                className="absolute flex items-center text-center z-30 pointer-events-none"
+                style={{
+                  bottom: '-400px', // Far below the timeline center
+                  left: '0',
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                <div className="date-label-container">
+                  <div className="date-label-engraved text-sm font-medium">
+                    {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
+                      `${(formatDate(node.date) as any).dayName} ${(formatDate(node.date) as any).dayNumber}` :
+                      formatDate(node.date)
+                    }
+                  </div>
+                </div>
+              </div>
+
               {/* Events positioned by type */}
               <div className="relative">
                 {/* Group events by type */}
@@ -737,38 +756,7 @@ function DashboardTimeline() {
         </div>
       </div>
 
-      {/* Date labels positioned at bottom of screen - fixed position */}
-      {timelineNodes.map((node, index) => {
-        const timelineScrollLeft = timelineRef.current?.scrollLeft || 0;
-        const timelineWidth = timelineRef.current?.clientWidth || window.innerWidth;
-        const centerOffset = timelineWidth / 2;
-        const nodeScreenPosition = centerOffset + node.position - timelineScrollLeft;
-        
-        // Only render if the node is visible on screen
-        if (nodeScreenPosition > -100 && nodeScreenPosition < timelineWidth + 100) {
-          return (
-            <div
-              key={`date-label-${index}`}
-              className="fixed flex items-center text-center z-30 pointer-events-none"
-              style={{
-                bottom: '100px', // Positioned well below the events card
-                left: `${nodeScreenPosition}px`,
-                transform: 'translateX(-50%)'
-              }}
-            >
-              <div className="date-label-container">
-                <div className="date-label-engraved text-sm font-medium">
-                  {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
-                    `${(formatDate(node.date) as any).dayName} ${(formatDate(node.date) as any).dayNumber}` :
-                    formatDate(node.date)
-                  }
-                </div>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      })}
+
 
     </div>
   );
