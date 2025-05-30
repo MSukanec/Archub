@@ -17,7 +17,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
-import TaskModalNew from '@/components/modals/TaskModalNew';
+import { TaskModalSimple } from '@/components/modals/TaskModalSimple';
 
 export default function BudgetTasks() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
