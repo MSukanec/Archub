@@ -85,7 +85,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
       )}
       
       <div 
-        className={`flex items-center gap-2 p-3 bg-white border-b border-gray-100 hover:bg-gray-50 group transition-colors ${
+        className={`flex items-center gap-2 p-3 bg-[#e1e1e1] border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
           isOver && dropPosition === 'inside' ? 'ring-2 ring-primary ring-opacity-50 bg-primary/10' : ''
         }`}
         style={{ paddingLeft: `${paddingLeft}px` }}
@@ -496,10 +496,20 @@ const AdminCategories = () => {
             </SelectContent>
           </Select>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={expandAll}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={expandAll}
+              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300"
+            >
               Expandir Todo
             </Button>
-            <Button variant="outline" size="sm" onClick={collapseAll}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={collapseAll}
+              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300"
+            >
               Colapsar Todo
             </Button>
           </div>
