@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { materialsService, type Material, type CreateMaterialData } from '@/lib/materialsService';
 import { unitsService } from '@/lib/unitsService';
+import { materialCategoriesService } from '@/lib/materialCategoriesService';
 
 const materialSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),

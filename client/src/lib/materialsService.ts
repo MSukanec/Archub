@@ -4,19 +4,25 @@ export interface Material {
   id: string;
   name: string;
   unit_id: string;
+  category_id?: string;
   cost?: number;
   created_at: string;
-  // Join with units table
+  // Join with units and categories tables
   unit?: {
     id: string;
     name: string;
     description?: string;
+  };
+  category?: {
+    id: string;
+    name: string;
   };
 }
 
 export interface CreateMaterialData {
   name: string;
   unit_id: string;
+  category_id?: string;
   cost?: number;
 }
 
@@ -30,6 +36,10 @@ export const materialsService = {
           id,
           name,
           description
+        ),
+        category:material_categories!category_id (
+          id,
+          name
         )
       `)
       .order('created_at', { ascending: false });
@@ -48,6 +58,7 @@ export const materialsService = {
       .insert([{
         name: materialData.name,
         unit_id: materialData.unit_id,
+        category_id: materialData.category_id,
         cost: materialData.cost,
         created_at: new Date().toISOString(),
       }])
@@ -57,6 +68,10 @@ export const materialsService = {
           id,
           name,
           description
+        ),
+        category:material_categories!category_id (
+          id,
+          name
         )
       `)
       .single();
@@ -80,6 +95,10 @@ export const materialsService = {
           id,
           name,
           description
+        ),
+        category:material_categories!category_id (
+          id,
+          name
         )
       `)
       .single();

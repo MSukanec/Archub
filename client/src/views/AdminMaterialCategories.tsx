@@ -43,16 +43,16 @@ export default function AdminMaterialCategories() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // Listen for create category modal events
+  // Listen for create material category modal events
   useEffect(() => {
-    const handleOpenCreateCategoryModal = () => {
+    const handleOpenCreateMaterialCategoryModal = () => {
       setIsCreateModalOpen(true);
     };
 
-    window.addEventListener('openCreateCategoryModal', handleOpenCreateCategoryModal);
+    window.addEventListener('openCreateMaterialCategoryModal', handleOpenCreateMaterialCategoryModal);
     
     return () => {
-      window.removeEventListener('openCreateCategoryModal', handleOpenCreateCategoryModal);
+      window.removeEventListener('openCreateMaterialCategoryModal', handleOpenCreateMaterialCategoryModal);
     };
   }, []);
 
