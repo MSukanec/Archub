@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Shapes, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Shapes, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -37,11 +37,11 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 import AdminElementsModal from '@/components/modals/AdminElementsModal';
 
 export default function AdminElements() {
   const [searchTerm, setSearchTerm] = useState('');
-
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name'>('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -50,6 +50,36 @@ export default function AdminElements() {
   const [selectedElement, setSelectedElement] = useState<any>(null);
   
   const ITEMS_PER_PAGE = 10;
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase
+        .from('task_elements')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/elements'] });
+      toast({
+        title: "Elemento eliminado",
+        description: "El elemento se ha eliminado exitosamente.",
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedElement(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo eliminar el elemento.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Event listener for floating action button
   useEffect(() => {
@@ -166,8 +196,18 @@ export default function AdminElements() {
               placeholder="Buscar elementos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-background border-border rounded-xl"
             />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted rounded-full"
+              >
+                <X className="h-3 w-3 text-muted-foreground" />
+              </Button>
+            )}
           </div>
           
           <Popover>
@@ -233,10 +273,10 @@ export default function AdminElements() {
             ) : (
               paginatedElements.map((element: any) => (
                 <TableRow key={element.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-2 text-center h-8">
-                    <div className="font-medium text-foreground">{element.name}</div>
+                  <TableCell className="py-1 text-center h-6">
+                    <div className="font-medium text-foreground text-sm">{element.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-2 h-8">
+                  <TableCell className="text-center py-1 h-6">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -321,8 +361,9 @@ export default function AdminElements() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                setIsDeleteDialogOpen(false);
-                setSelectedElement(null);
+                if (selectedElement) {
+                  deleteMutation.mutate(selectedElement.id);
+                }
               }}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
             >
