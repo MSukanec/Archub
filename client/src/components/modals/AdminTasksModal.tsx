@@ -200,7 +200,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         category_id: task.category_id || '',
         subcategory_id: task.subcategory_id || '',
         element_category_id: task.element_category_id || '',
-        unit_id: task.unit_id || 0,
+        unit_id: task.unit_id?.toString() || '',
       });
       
       // Set the selected IDs for the dropdowns
@@ -300,7 +300,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       category_id: '',
       subcategory_id: '',
       element_category_id: '',
-      unit_id: 0,
+      unit_id: '',
     });
     
     setSelectedCategoryId('');
