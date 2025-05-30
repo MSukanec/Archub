@@ -197,6 +197,10 @@ export default function AdminTasks() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => {
+                          setSelectedTask(task);
+                          setIsEditModalOpen(true);
+                        }}
                         className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
