@@ -64,6 +64,35 @@ export default function BudgetTasks() {
     enabled: !!projectId,
   });
 
+  // Fetch budget tasks for current budget
+  const { data: budgetTasks = [], isLoading: tasksLoading } = useQuery({
+    queryKey: ['budget-tasks', budgetId],
+    queryFn: async () => {
+      if (!budgetId) return [];
+      
+      const { data, error } = await supabase
+        .from('budget_tasks')
+        .select(`
+          *,
+          task:tasks (
+            id,
+            name,
+            unit,
+            unit_labor_price,
+            unit_material_price
+          )
+        `)
+        .eq('budget_id', Number(budgetId))
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!budgetId,
+  });
+
+
+
   if (budgetsLoading) {
     return (
       <div className="space-y-4">
@@ -125,31 +154,95 @@ export default function BudgetTasks() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Tabla de Cómputo</span>
-            <Badge variant="secondary">Total: $0.00</Badge>
+            <Badge variant="secondary">Total: ${totalAmount.toFixed(2)}</Badge>
           </CardTitle>
           <CardDescription>
             Agrega tareas y cantidades para calcular el presupuesto total
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium text-muted-foreground mb-2">
-              No hay tareas en este presupuesto
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {!budgetId 
-                ? "Selecciona un presupuesto para ver sus tareas"
-                : "Comienza agregando la primera tarea"
-              }
-            </p>
-            {budgetId && (
-              <Button onClick={() => setIsTaskModalOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar Primera Tarea
-              </Button>
-            )}
-          </div>
+          {tasksLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-16" />
+              ))}
+            </div>
+          ) : budgetTasks.length === 0 ? (
+            <div className="text-center py-8">
+              <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">
+                No hay tareas en este presupuesto
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                {!budgetId 
+                  ? "Selecciona un presupuesto para ver sus tareas"
+                  : "Comienza agregando la primera tarea"
+                }
+              </p>
+              {budgetId && (
+                <Button onClick={() => setIsTaskModalOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Agregar Primera Tarea
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {budgetTasks.map((budgetTask: any) => (
+                <div key={budgetTask.id} className="bg-[#e1e1e1] rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <h4 className="font-medium text-foreground">
+                            {budgetTask.task?.name || 'Tarea eliminada'}
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            Cantidad: {budgetTask.quantity} {budgetTask.task?.unit || 'unidad'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="font-medium text-foreground">
+                          ${(budgetTask.unit_price * budgetTask.quantity).toFixed(2)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          ${budgetTask.unit_price.toFixed(2)} c/u
+                        </p>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {
+                            setEditingTask(budgetTask);
+                            setIsTaskModalOpen(true);
+                          }}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                  {budgetTask.notes && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {budgetTask.notes}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

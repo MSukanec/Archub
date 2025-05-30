@@ -198,114 +198,126 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
           </DialogHeader>
 
           <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="task_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tarea *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar tarea" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {tasks.map((task: any) => (
-                        <SelectItem key={task.id} value={task.id.toString()}>
-                          {task.name} - {task.unit || 'unidad'}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cantidad *</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      placeholder="1.00"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="unit_price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Precio Unitario (opcional)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notas (opcional)</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Notas adicionales sobre esta tarea..."
-                      className="resize-none"
-                      rows={3}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button 
-                type="button" 
-                variant="ghost" 
-                onClick={handleClose}
-                disabled={saveTaskMutation.isPending}
-              >
-                Cancelar
-              </Button>
-              <Button 
-                type="submit"
-                disabled={saveTaskMutation.isPending}
-              >
-                {saveTaskMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-2">
+              <FormField
+                control={form.control}
+                name="task_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Tarea <span className="text-primary">*</span>
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary">
+                          <SelectValue placeholder="Seleccionar tarea" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {tasks.map((task: any) => (
+                          <SelectItem key={task.id} value={task.id.toString()}>
+                            {task.name} - {task.unit || 'unidad'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                {isEditing ? 'Actualizar Tarea' : 'Agregar Tarea'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              />
+
+              <FormField
+                control={form.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Cantidad <span className="text-primary">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="1.00"
+                        className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary"
+                        {...field}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="unit_price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">Precio Unitario (opcional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary"
+                        {...field}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">Notas (opcional)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Notas adicionales sobre esta tarea..."
+                        className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary resize-none"
+                        rows={3}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-center gap-4 pt-6">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleClose}
+                  className="px-6 py-2 bg-white border-gray-300 hover:bg-gray-50"
+                  disabled={saveTaskMutation.isPending}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit"
+                  className="px-6 py-2 bg-primary hover:bg-primary/90 text-white min-w-[120px]"
+                  disabled={saveTaskMutation.isPending}
+                >
+                  {saveTaskMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {isEditing ? 'Actualizando...' : 'Agregando...'}
+                    </>
+                  ) : (
+                    isEditing ? 'Actualizar Tarea' : 'Agregar Tarea'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
       </DialogContent>
     </Dialog>
