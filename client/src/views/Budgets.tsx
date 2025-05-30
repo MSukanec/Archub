@@ -1,33 +1,71 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Calculator, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, Calculator, Edit, Trash2, ArrowUpDown, Activity, TrendingUp, DollarSign, FileText } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
-import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 
-export default function Budgets() {
-  const { projectId } = useUserContextStore();
-  const { setSection, setView } = useNavigationStore();
-  const [activeBudgetId, setActiveBudgetId] = useState<number | null>(null);
-  const [isCreateBudgetModalOpen, setIsCreateBudgetModalOpen] = useState(false);
-  const [editingBudget, setEditingBudget] = useState<any>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [budgetToDelete, setBudgetToDelete] = useState<any>(null);
+interface Budget {
+  id: string;
+  name: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  project_id: string;
+}
+
+function BudgetsListSkeleton() {
+  return (
+    <div className="flex-1 p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Skeleton className="w-10 h-10 rounded-xl" />
+          <div>
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64 mt-1" />
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-24 rounded-2xl" />
+        ))}
+      </div>
+      
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-10 flex-1" />
+        <Skeleton className="h-10 w-32" />
+      </div>
+      
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-32" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function BudgetsList() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [activeBudgetId, setActiveBudgetId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { projectId } = useUserContextStore();
+  const { setSection, setView } = useNavigationStore();
 
   // Set navigation state when component mounts
   useEffect(() => {
@@ -35,21 +73,7 @@ export default function Budgets() {
     setView('budgets-list');
   }, [setSection, setView]);
 
-  // Listen for floating action button events
-  useEffect(() => {
-    const handleOpenCreateBudgetModal = () => {
-      setIsCreateBudgetModalOpen(true);
-    };
-
-    window.addEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
-    
-    return () => {
-      window.removeEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
-    };
-  }, []);
-
-  // Fetch budgets for current project
-  const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
+  const { data: budgets = [], isLoading } = useQuery({
     queryKey: ['budgets', projectId],
     queryFn: async () => {
       if (!projectId) return [];
@@ -66,9 +90,8 @@ export default function Budgets() {
     enabled: !!projectId,
   });
 
-  // Delete budget mutation
-  const deleteBudgetMutation = useMutation({
-    mutationFn: async (budgetId: number) => {
+  const deleteMutation = useMutation({
+    mutationFn: async (budgetId: string) => {
       const { error } = await supabase
         .from('budgets')
         .delete()
@@ -78,164 +101,327 @@ export default function Budgets() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
-      setIsDeleteModalOpen(false);
-      setBudgetToDelete(null);
+      setIsDeleteDialogOpen(false);
+      setSelectedBudget(null);
       toast({
         title: "Presupuesto eliminado",
-        description: "El presupuesto se ha eliminado correctamente.",
+        description: "El presupuesto ha sido eliminado exitosamente.",
+        duration: 2000,
       });
     },
-    onError: (error) => {
-      console.error('Error deleting budget:', error);
+    onError: () => {
       toast({
         title: "Error",
-        description: "No se pudo eliminar el presupuesto. Intenta nuevamente.",
+        description: "No se pudo eliminar el presupuesto. Inténtalo de nuevo.",
         variant: "destructive",
+        duration: 2000,
       });
     },
   });
 
-  const confirmDelete = () => {
-    if (budgetToDelete) {
-      deleteBudgetMutation.mutate(budgetToDelete.id);
+  const handleEdit = (budget: Budget) => {
+    setSelectedBudget(budget);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleDelete = (budget: Budget) => {
+    setSelectedBudget(budget);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleBudgetClick = (budget: Budget) => {
+    if (budget.id !== activeBudgetId) {
+      // Agregar clase de animación antes del cambio
+      const cards = document.querySelectorAll('[data-budget-card]');
+      cards.forEach(card => card.classList.add('animate-pulse'));
+      
+      setTimeout(() => {
+        setActiveBudgetId(budget.id);
+        toast({
+          title: "Presupuesto activo cambiado",
+          description: `Ahora trabajas en: ${budget.name}`,
+          duration: 2000,
+        });
+        
+        // Remover animación después del cambio
+        setTimeout(() => {
+          cards.forEach(card => card.classList.remove('animate-pulse'));
+        }, 300);
+      }, 150);
     }
   };
 
-  if (budgetsLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-96 mt-2" />
-          </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <div className="grid gap-4">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32" />
-          ))}
-        </div>
-      </div>
-    );
+  const confirmDelete = () => {
+    if (selectedBudget) {
+      deleteMutation.mutate(selectedBudget.id);
+    }
+  };
+
+  const getStatusVariant = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'default';
+      case 'draft':
+        return 'secondary';
+      case 'rejected':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
+
+  if (isLoading) {
+    return <BudgetsListSkeleton />;
   }
 
+  // Filtrar y ordenar presupuestos
+  const filteredBudgets = budgets
+    .filter((budget: Budget) =>
+      budget.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      budget.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      // First, sort by active budget (active budget comes first)
+      if (a.id === activeBudgetId && b.id !== activeBudgetId) return -1;
+      if (b.id === activeBudgetId && a.id !== activeBudgetId) return 1;
+      
+      // Then sort by creation date
+      const dateA = new Date(a.created_at);
+      const dateB = new Date(b.created_at);
+      return sortOrder === 'newest' ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+    });
+
+  // Calcular estadísticas del dashboard
+  const totalBudgets = budgets.length;
+  const draftBudgets = budgets.filter(b => b.status === 'draft').length;
+  const approvedBudgets = budgets.filter(b => b.status === 'approved').length;
+  const currentBudget = budgets.find(b => b.id === activeBudgetId);
+
   return (
-    <div className="space-y-4">
+    <div className="flex-1 p-6 space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-medium text-foreground">Lista de Presupuestos</h3>
-          <p className="text-sm text-muted-foreground">
-            Gestiona todos los presupuestos de tu proyecto
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Presupuestos
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Dashboard general de tus presupuestos de construcción
+            </p>
+          </div>
         </div>
-        <Button 
-          className="flex items-center gap-2"
-          onClick={() => setIsCreateBudgetModalOpen(true)}
+      </div>
+
+      {/* Cards de Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Presupuestos</p>
+              <p className="text-3xl font-bold text-foreground">{totalBudgets}</p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Borradores</p>
+              <p className="text-3xl font-bold text-yellow-500">{draftBudgets}</p>
+            </div>
+            <div className="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center">
+              <Edit className="h-5 w-5 text-yellow-500" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Aprobados</p>
+              <p className="text-3xl font-bold text-emerald-500">{approvedBudgets}</p>
+            </div>
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-emerald-500" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Presupuesto Activo</p>
+              <p className="text-xl font-bold text-primary truncate">
+                {currentBudget?.name || 'Ninguno'}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Input
+            placeholder="Buscar presupuestos..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
+          className="flex items-center gap-2 whitespace-nowrap"
         >
-          <Plus className="h-4 w-4" />
-          Nuevo Presupuesto
+          <ArrowUpDown size={16} />
+          {sortOrder === 'newest' ? 'Más recientes' : 'Más antiguos'}
         </Button>
       </div>
 
-      <div className="grid gap-4">
-        {budgets.length === 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center text-muted-foreground">
-                No hay presupuestos creados
-              </CardTitle>
-              <CardDescription className="text-center">
-                Usa el botón flotante para crear tu primer presupuesto
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        ) : (
-          budgets.map((budget: any) => (
-            <Card key={budget.id} className="cursor-pointer hover:bg-muted/50">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1" onClick={() => setActiveBudgetId(budget.id)}>
-                    <CardTitle className="text-lg">{budget.name}</CardTitle>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={budget.status === 'approved' ? 'default' : 'secondary'}>
-                      {budget.status === 'draft' ? 'Borrador' : 
-                       budget.status === 'approved' ? 'Aprobado' : 
-                       budget.status === 'rejected' ? 'Rechazado' : budget.status}
-                    </Badge>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+      {/* Budgets List */}
+      {filteredBudgets.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <Calculator className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-medium text-foreground">
+              {searchQuery ? 'No se encontraron presupuestos' : 'No hay presupuestos'}
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {searchQuery 
+                ? 'Intenta con un término de búsqueda diferente.'
+                : 'Comienza creando tu primer presupuesto de construcción.'
+              }
+            </p>
+            {!searchQuery && (
+              <Button 
+                className="mt-4 bg-primary hover:bg-primary/90"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                <Plus size={16} className="mr-2" />
+                Crear Presupuesto
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredBudgets.map((budget: Budget) => {
+            const isActiveBudget = budget.id === activeBudgetId;
+            return (
+              <div key={budget.id} className="relative">
+                <Card 
+                  data-budget-card
+                  className={`transition-all duration-300 relative cursor-pointer hover:border-border/60 ${
+                    isActiveBudget ? 'ring-2 ring-orange-500/50 bg-orange-500/5 border-transparent' : 'border-border'
+                  } ${!isActiveBudget ? 'hover:shadow-md hover:ring-1 hover:ring-orange-500/30 hover:bg-orange-500/5' : ''}`}
+                  onClick={() => handleBudgetClick(budget)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <CardTitle className="text-xl font-semibold text-foreground truncate">
+                            {budget.name}
+                          </CardTitle>
+                          {isActiveBudget && (
+                            <Badge 
+                              variant="default" 
+                              className="bg-orange-500 hover:bg-orange-600 text-white shrink-0"
+                            >
+                              Activo
+                            </Badge>
+                          )}
+                          <Badge variant={getStatusVariant(budget.status)} className="shrink-0">
+                            {budget.status === 'draft' ? 'Borrador' : 
+                             budget.status === 'approved' ? 'Aprobado' : 
+                             budget.status === 'rejected' ? 'Rechazado' : budget.status}
+                          </Badge>
+                        </div>
+                        {budget.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {budget.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 ml-4">
                         <Button
                           variant="ghost"
-                          className="h-8 w-8 p-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {
-                          setEditingBudget(budget);
-                          setIsCreateBudgetModalOpen(true);
-                        }}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => {
-                            setBudgetToDelete(budget);
-                            setIsDeleteModalOpen(true);
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(budget);
                           }}
-                          className="text-destructive"
+                          className="h-8 w-8 p-0"
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                {budget.description && (
-                  <CardDescription onClick={() => setActiveBudgetId(budget.id)}>
-                    {budget.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent onClick={() => setActiveBudgetId(budget.id)}>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Creado: {new Date(budget.created_at).toLocaleDateString()}</span>
-                  {activeBudgetId === budget.id && (
-                    <Badge variant="outline">Seleccionado</Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(budget);
+                          }}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Creado: {new Date(budget.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Modals */}
+      {/* Create Budget Modal */}
       <CreateBudgetModal
-        budget={editingBudget}
-        isOpen={isCreateBudgetModalOpen}
+        budget={selectedBudget}
+        isOpen={isCreateModalOpen}
         onClose={() => {
-          setIsCreateBudgetModalOpen(false);
-          setEditingBudget(null);
+          setIsCreateModalOpen(false);
+          setSelectedBudget(null);
         }}
       />
 
-      <ConfirmDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setBudgetToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        title="¿Eliminar presupuesto?"
-        description={`Esta acción no se puede deshacer. Se eliminará permanentemente el presupuesto "${budgetToDelete?.name}" y todas sus tareas asociadas.`}
-        isLoading={deleteBudgetMutation.isPending}
-      />
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar presupuesto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el presupuesto "{selectedBudget?.name}" y todas sus tareas asociadas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
