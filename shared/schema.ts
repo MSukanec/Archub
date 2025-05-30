@@ -145,6 +145,17 @@ export const budgetTasks = pgTable("budget_tasks", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Task materials table - junction table for tasks and materials
+export const taskMaterials = pgTable("task_materials", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  task_id: integer("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  material_id: uuid("material_id").notNull().references(() => materials.id, { onDelete: "cascade" }),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull().default("0"),
+  unit_cost: decimal("unit_cost", { precision: 12, scale: 2 }).default("0"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Site logs tables
 export const siteLogs = pgTable("site_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -289,6 +300,13 @@ export const insertBudgetTaskSchema = createInsertSchema(budgetTasks).pick({
   budget_id: true,
   task_id: true,
   quantity: true,
+});
+
+export const insertTaskMaterialSchema = createInsertSchema(taskMaterials).pick({
+  task_id: true,
+  material_id: true,
+  quantity: true,
+  unit_cost: true,
 });
 
 export const insertSiteLogSchema = createInsertSchema(siteLogs).pick({

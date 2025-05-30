@@ -309,8 +309,8 @@ export default function BudgetsList() {
                 <Card 
                   data-budget-card
                   className={`transition-all duration-300 relative cursor-pointer hover:border-border/60 ${
-                    isActiveBudget ? 'ring-2 ring-orange-500/50 bg-orange-500/5 border-transparent' : 'border-border'
-                  } ${!isActiveBudget ? 'hover:shadow-md hover:ring-1 hover:ring-orange-500/30 hover:bg-orange-500/5' : ''}`}
+                    isActiveBudget ? 'ring-2 ring-primary/50 bg-primary/5 border-transparent' : 'border-border'
+                  } ${!isActiveBudget ? 'hover:shadow-md hover:ring-1 hover:ring-primary/30 hover:bg-primary/5' : ''}`}
                   onClick={() => handleBudgetClick(budget)}
                 >
                   <CardHeader className="pb-3">
@@ -323,7 +323,7 @@ export default function BudgetsList() {
                           {isActiveBudget && (
                             <Badge 
                               variant="default" 
-                              className="bg-orange-500 hover:bg-orange-600 text-white shrink-0"
+                              className="bg-primary hover:bg-primary/90 text-white shrink-0"
                             >
                               Activo
                             </Badge>

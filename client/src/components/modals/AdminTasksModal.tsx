@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { tasksService, Task, CreateTaskData } from '@/lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
+import { X, Settings, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const createTaskSchema = insertTaskSchema.extend({
   unit_labor_price: z.string().optional().or(z.literal('')),
@@ -34,11 +37,24 @@ interface TaskCategory {
   position: number;
 }
 
+interface TaskMaterial {
+  id?: string;
+  material_id: string;
+  material_name: string;
+  quantity: number;
+  unit_cost: number;
+}
+
 export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState(0);
+  const [taskMaterials, setTaskMaterials] = useState<TaskMaterial[]>([]);
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string>('');
+  const [materialQuantity, setMaterialQuantity] = useState<string>('');
+  const [materialUnitCost, setMaterialUnitCost] = useState<string>('');
 
   // Fetch task categories from Supabase
   const { data: allCategories = [] } = useQuery({
@@ -51,6 +67,36 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       
       if (error) throw error;
       return data as TaskCategory[];
+    },
+    enabled: isOpen,
+  });
+
+  // Fetch materials from Supabase
+  const { data: materials = [] } = useQuery({
+    queryKey: ['materials'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('materials')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
+  // Fetch units from Supabase
+  const { data: units = [] } = useQuery({
+    queryKey: ['units'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('units')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
     },
     enabled: isOpen,
   });
