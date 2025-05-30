@@ -154,7 +154,9 @@ export default function BudgetTasks() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Tabla de Cómputo</span>
-            <Badge variant="secondary">Total: ${totalAmount.toFixed(2)}</Badge>
+            <Badge variant="secondary">
+              Total: ${budgetTasks.reduce((sum: number, task: any) => sum + (task.unit_price * task.quantity), 0).toFixed(2)}
+            </Badge>
           </CardTitle>
           <CardDescription>
             Agrega tareas y cantidades para calcular el presupuesto total
