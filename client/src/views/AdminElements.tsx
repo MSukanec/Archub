@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Shapes, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { Shapes, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -28,6 +28,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import AdminElementsModal from '@/components/modals/AdminElementsModal';
@@ -35,10 +42,14 @@ import AdminElementsModal from '@/components/modals/AdminElementsModal';
 export default function AdminElements() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedElement, setSelectedElement] = useState<any>(null);
+  
+  const ITEMS_PER_PAGE = 10;
 
   // Event listener for floating action button
   useEffect(() => {
@@ -100,13 +111,35 @@ export default function AdminElements() {
     setIsEditModalOpen(true);
   };
 
-  const filteredElements = elements.filter((element: any) => {
-    const matchesSearch = (element.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (element.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = !dateFilter || 
-                       format(new Date(element.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-    return matchesSearch && matchesDate;
-  });
+  const filteredAndSortedElements = elements
+    .filter((element: any) => {
+      const matchesSearch = (element.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesDate = !dateFilter || 
+                         format(new Date(element.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+      return matchesSearch && matchesDate;
+    })
+    .sort((a: any, b: any) => {
+      switch (sortOrder) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+  const totalPages = Math.ceil(filteredAndSortedElements.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedElements = filteredAndSortedElements.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, dateFilter, sortOrder]);
 
   if (isLoading) {
     return <AdminElementsSkeleton />;
@@ -138,17 +171,29 @@ export default function AdminElements() {
               className="pl-10 bg-background border-border rounded-xl"
             />
           </div>
+          
+          <Select value={sortOrder} onValueChange={(value: 'newest' | 'oldest' | 'name') => setSortOrder(value)}>
+            <SelectTrigger className="w-[160px] rounded-xl border-border text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Más reciente primero</SelectItem>
+              <SelectItem value="oldest">Más antiguo primero</SelectItem>
+              <SelectItem value="name">Por nombre</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
+                  "w-[160px] justify-start text-left font-normal rounded-xl border-border text-sm",
                   !dateFilter && "text-muted-foreground"
                 )}
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+                {dateFilter ? format(dateFilter, "dd/MM/yyyy") : "Filtro por fecha"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -184,9 +229,9 @@ export default function AdminElements() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredElements.length === 0 ? (
+            {paginatedElements.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-4 h-8">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron elementos que coincidan con los filtros.'
                     : 'No hay elementos registrados.'
@@ -194,12 +239,12 @@ export default function AdminElements() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredElements.map((element: any) => (
+              paginatedElements.map((element: any) => (
                 <TableRow key={element.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4 text-center">
+                  <TableCell className="py-2 text-center h-8">
                     <div className="font-medium text-foreground">{element.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2 h-8">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -224,6 +269,48 @@ export default function AdminElements() {
             )}
           </TableBody>
         </Table>
+        
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+            <div className="text-sm text-muted-foreground">
+              Mostrando {startIndex + 1} a {Math.min(endIndex, filteredAndSortedElements.length)} de {filteredAndSortedElements.length} elementos
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="rounded-lg"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className="w-8 h-8 p-0 rounded-lg"
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="rounded-lg"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
