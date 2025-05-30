@@ -84,10 +84,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         .select('*')
         .order('position');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching task categories:', error);
+        return [];
+      }
       return data as TaskCategory[];
     },
     enabled: isOpen,
+    retry: 1,
   });
 
   // Fetch materials from Supabase
@@ -113,10 +117,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         .select('id, name')
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching actions:', error);
+        return [];
+      }
       return data;
     },
     enabled: isOpen,
+    retry: 1,
   });
 
   // Fetch task elements from Supabase
@@ -128,10 +136,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         .select('id, name')
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching task elements:', error);
+        return [];
+      }
       return data;
     },
     enabled: isOpen,
+    retry: 1,
   });
 
   // Fetch units from Supabase
@@ -143,10 +155,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         .select('*')
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching units:', error);
+        return [];
+      }
       return data;
     },
     enabled: isOpen,
+    retry: 1,
   });
 
   const form = useForm<FormData>({
@@ -293,6 +309,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const onSubmit = (data: FormData) => {
     console.log('Form submitted with data:', data);
     console.log('Form errors:', form.formState.errors);
+    console.log('Organization ID from context:', organizationId);
+    console.log('Selected action ID:', selectedActionId);
+    console.log('Selected element ID:', selectedElementId);
     
     const taskData = {
       name: data.name,
@@ -308,6 +327,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     };
 
     console.log('Task data to send:', taskData);
+    console.log('Task data keys:', Object.keys(taskData));
+    console.log('Task data values:', Object.values(taskData));
 
     if (task) {
       updateMutation.mutate({ id: task.id, updates: taskData });
