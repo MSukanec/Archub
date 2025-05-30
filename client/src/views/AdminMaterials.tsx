@@ -141,8 +141,8 @@ export default function AdminMaterials() {
     }
   };
 
-  // Filter and sort materials
-  const filteredMaterials = materials.filter((material: any) => {
+  // Filter, sort and paginate materials
+  const filteredAndSortedMaterials = materials.filter((material: any) => {
     const matchesSearch = (material.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (material.unit?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -154,6 +154,16 @@ export default function AdminMaterials() {
       return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
     }
   });
+
+  const totalPages = Math.ceil(filteredAndSortedMaterials.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedMaterials = filteredAndSortedMaterials.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminMaterialsSkeleton />;
