@@ -220,6 +220,7 @@ export default function AdminMaterials() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Material</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Precio</TableHead>
@@ -229,7 +230,7 @@ export default function AdminMaterials() {
           <TableBody>
             {filteredMaterials.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm 
                     ? 'No se encontraron materiales que coincidan con los filtros.'
                     : 'No hay materiales registrados.'
@@ -239,6 +240,11 @@ export default function AdminMaterials() {
             ) : (
               filteredMaterials.map((material: any) => (
                 <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="text-center py-4">
+                    <Badge variant="secondary" className="bg-muted/50">
+                      {material.category?.name || 'Sin categoría'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{material.name}</div>
                   </TableCell>
