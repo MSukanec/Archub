@@ -64,32 +64,9 @@ export default function BudgetTasks() {
     enabled: !!projectId,
   });
 
-  // Fetch budget tasks for current budget
-  const { data: budgetTasks = [], isLoading: tasksLoading } = useQuery({
-    queryKey: ['budget-tasks', budgetId],
-    queryFn: async () => {
-      if (!budgetId) return [];
-      
-      const { data, error } = await supabase
-        .from('budget_tasks')
-        .select(`
-          *,
-          task:tasks (
-            id,
-            name,
-            unit,
-            unit_labor_price,
-            unit_material_price
-          )
-        `)
-        .eq('budget_id', Number(budgetId))
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!budgetId,
-  });
+  // Temporary: Return empty array until budget_tasks table is created
+  const budgetTasks: any[] = [];
+  const tasksLoading = false;
 
 
 
