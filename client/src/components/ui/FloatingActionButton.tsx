@@ -135,7 +135,7 @@ export default function FloatingActionButton() {
     'admin-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
     'admin-units': { label: 'Crear Unidad', action: modalActions.openCreateUnitModal },
     'admin-elements': { label: 'Crear Elemento', action: modalActions.openCreateElementModal },
-    'admin-actions': { label: 'Crear Acción', action: () => console.log('Crear Acción') },
+    'admin-actions': { label: 'Crear Acción', action: modalActions.openCreateActionModal },
     'admin-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
     'admin-permissions': null,
     'profile-info': null,
