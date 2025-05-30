@@ -249,12 +249,11 @@ export default function BudgetTasks() {
       </Card>
 
       {/* Task Modal */}
-      <TaskModalNew
-        budgetId={budgetId ? Number(budgetId) : null}
+      <TaskModalSimple
         isOpen={isTaskModalOpen}
-        onClose={() => {
-          setIsTaskModalOpen(false);
-          setEditingTask(null);
+        onOpenChange={(open) => {
+          setIsTaskModalOpen(open);
+          if (!open) setEditingTask(null);
         }}
       />
     </div>
