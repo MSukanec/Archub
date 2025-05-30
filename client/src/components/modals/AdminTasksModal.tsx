@@ -362,7 +362,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                             <SelectValue placeholder="Seleccionar rubro" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                           {getMainCategories().map((category, index) => (
                             <SelectItem key={category.id || `category-${index}`} value={category.id?.toString() || `category-${index}`}>
                               {category.name}
@@ -395,7 +395,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                               <SelectValue placeholder="Seleccionar subrubro" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                             {subcategories.map((subcategory) => (
                               <SelectItem key={subcategory.id} value={String(subcategory.id)}>
                                 {subcategory.name}
@@ -428,7 +428,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                               <SelectValue placeholder="Seleccionar element" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                             {elementCategories.map((element) => (
                               <SelectItem key={element.id} value={element.id.toString()}>
                                 {element.name}
@@ -452,7 +452,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar acción" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                       {actions.map((action) => (
                         <SelectItem key={action.id} value={action.id}>
                           {action.name}
@@ -472,7 +472,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar elemento" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                       {taskElements.map((element) => (
                         <SelectItem key={element.id} value={element.id}>
                           {element.name}
@@ -502,7 +502,17 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                   )}
                 />
 
-                {/* Precios */}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="pricing" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <FolderTree className="w-4 h-4" />
+                  Precios
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="space-y-2 pt-1">
                 <div className="grid grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
