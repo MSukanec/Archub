@@ -145,6 +145,8 @@ export default function SecondarySidebar() {
             icon={FolderOpen}
             isActive={currentView === 'projects-list'}
             onClick={() => setView('projects-list')}
+            label="Proyectos"
+            tooltipDirection="left"
           />
         </div>
         
