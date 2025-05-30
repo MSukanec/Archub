@@ -86,14 +86,17 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
 
   // Fetch available tasks
   const { data: tasks = [] } = useQuery({
-    queryKey: ['/api/tasks', organizationId],
+    queryKey: ['/api/tasks'],
     queryFn: async () => {
-      if (!organizationId) return [];
-      console.log('Fetching tasks for organization:', organizationId);
+      console.log('Fetching all tasks...');
       const { data, error } = await supabase
         .from('tasks')
-        .select('*')
-        .eq('organization_id', organizationId)
+        .select(`
+          *,
+          category:task_categories!category_id(name),
+          subcategory:task_categories!subcategory_id(name),
+          element_category:task_categories!element_category_id(name)
+        `)
         .order('name');
       
       if (error) {
@@ -103,7 +106,7 @@ export default function TaskModal({ budgetId, task, isOpen, onClose }: TaskModal
       console.log('Tasks fetched:', data);
       return data;
     },
-    enabled: !!organizationId && isOpen,
+    enabled: isOpen,
   });
 
   const saveTaskMutation = useMutation({
