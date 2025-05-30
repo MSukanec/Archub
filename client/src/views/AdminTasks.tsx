@@ -146,18 +146,18 @@ export default function AdminTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-6">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold h-6">Tarea</TableHead>
-              <TableHead className="text-foreground font-semibold h-6">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-6">Precio Mano de Obra</TableHead>
-              <TableHead className="text-foreground font-semibold h-6">Precio Material</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-6">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Precio Mano de Obra</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Precio Material</TableHead>
+              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-2 h-8">
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron tareas que coincidan con los filtros.'
                     : 'No hay tareas registradas.'
@@ -166,27 +166,27 @@ export default function AdminTasks() {
               </TableRow>
             ) : (
               filteredTasks.map((task: any) => (
-                <TableRow key={task.id} className="border-border hover:bg-muted/50 transition-colors">
-                  <TableCell className="py-1 h-6">
-                    <Badge variant="outline" className="bg-muted/50 text-xs">
+                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4">
+                    <Badge variant="outline" className="bg-muted/50">
                       {task.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-1 h-6">
-                    <div className="font-medium text-foreground text-xs">{task.name}</div>
+                  <TableCell className="py-4">
+                    <div className="font-medium text-foreground">{task.name}</div>
                   </TableCell>
-                  <TableCell className="py-1 h-6">
-                    <Badge variant="outline" className="bg-muted/50 text-xs">
+                  <TableCell className="py-4">
+                    <Badge variant="outline" className="bg-muted/50">
                       {task.unit?.name || 'Sin unidad'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-foreground py-1 h-6">
-                    <div className="flex items-center gap-2 text-xs">
-                      <DollarSign className="w-3 h-3 text-muted-foreground" />
+                  <TableCell className="text-foreground py-4">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground py-1 h-6">
+                  <TableCell className="text-foreground py-4">
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Ruler, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Ruler, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -36,9 +36,6 @@ import AdminUnitsModal from '@/components/modals/AdminUnitsModal';
 export default function AdminUnits() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
-  const [currentPage, setCurrentPage] = useState(1);
-  
-  const ITEMS_PER_PAGE = 10;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -108,7 +105,7 @@ export default function AdminUnits() {
     }
   };
 
-  const filteredAndSortedUnits = units.filter((unit: any) => {
+  const filteredUnits = units.filter((unit: any) => {
     const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (unit.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -120,16 +117,6 @@ export default function AdminUnits() {
       return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
     }
   });
-
-  const totalPages = Math.ceil(filteredAndSortedUnits.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedUnits = filteredAndSortedUnits.slice(startIndex, endIndex);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminUnitsSkeleton />;
@@ -208,7 +195,7 @@ export default function AdminUnits() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedUnits.length === 0 ? (
+            {filteredUnits.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm 
@@ -218,17 +205,17 @@ export default function AdminUnits() {
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedUnits.map((unit: any) => (
-                <TableRow key={unit.id} className="border-border hover:bg-muted/50 transition-colors">
-                  <TableCell className="py-1 text-center h-6">
-                    <span className="font-mono bg-muted/50 px-2 py-1 rounded text-xs">
+              filteredUnits.map((unit: any) => (
+                <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4 text-center">
+                    <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
                       {unit.name || 'N/A'}
                     </span>
                   </TableCell>
-                  <TableCell className="text-center py-1 h-6">
-                    <div className="font-medium text-foreground text-xs">{unit.description || unit.name}</div>
+                  <TableCell className="text-center py-4">
+                    <div className="font-medium text-foreground">{unit.description || unit.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-1 h-6">
+                  <TableCell className="text-center py-4">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -256,48 +243,6 @@ export default function AdminUnits() {
             )}
           </TableBody>
         </Table>
-        
-        {/* Paginación centrada */}
-        {totalPages > 1 && (
-          <div className="flex flex-col items-center gap-3 px-6 py-4 border-t border-border">
-            <div className="text-sm text-muted-foreground">
-              Mostrando {startIndex + 1} a {Math.min(endIndex, filteredAndSortedUnits.length)} de {filteredAndSortedUnits.length} elementos
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="rounded-lg"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className="w-8 h-8 p-0 rounded-lg"
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="rounded-lg"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

@@ -222,14 +222,14 @@ export default function AdminCategories() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-6 text-center">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold text-center h-6">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredCategories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={2} className="text-center text-muted-foreground py-2 h-8">
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron categorías que coincidan con los filtros.'
                     : 'No hay categorías registradas.'
@@ -238,11 +238,11 @@ export default function AdminCategories() {
               </TableRow>
             ) : (
               filteredCategories.map((category: any, index: number) => (
-                <TableRow key={category.id || `category-${index}`} className="border-border hover:bg-muted/50 transition-colors">
-                  <TableCell className="py-1 text-center h-6">
-                    <div className="font-medium text-foreground text-xs">{category.name}</div>
+                <TableRow key={category.id || `category-${index}`} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4 text-center">
+                    <div className="font-medium text-foreground">{category.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-1 h-6">
+                  <TableCell className="text-center py-4">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
