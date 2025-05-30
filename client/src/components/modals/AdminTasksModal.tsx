@@ -20,9 +20,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 const createTaskSchema = insertTaskSchema.extend({
   unit_labor_price: z.string().optional().or(z.literal('')),
   unit_material_price: z.string().optional().or(z.literal('')),
-  category_id: z.number().nullable().optional(),
-  subcategory_id: z.number().nullable().optional(),
-  element_category_id: z.number().nullable().optional(),
+  category_id: z.number().min(1, "Rubro es requerido"),
+  subcategory_id: z.number().min(1, "Subrubro es requerido"),
+  element_category_id: z.number().min(1, "Elemento es requerido"),
+  unit_id: z.number().min(1, "Unidad es requerida"),
 });
 
 type FormData = z.infer<typeof createTaskSchema>;
@@ -381,7 +382,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           setSelectedCategoryId(value);
                           setSelectedSubcategoryId('');
                           setSelectedElementCategoryId('');
-                          field.onChange(value);
+                          field.onChange(value ? parseInt(value) : null);
                           form.setValue('subcategory_id', null);
                           form.setValue('element_category_id', null);
                         }} 
@@ -416,7 +417,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         onValueChange={(value) => {
                           setSelectedSubcategoryId(value);
                           setSelectedElementCategoryId('');
-                          field.onChange(value);
+                          field.onChange(value ? parseInt(value) : null);
                           form.setValue('element_category_id', null);
                         }} 
                         value={selectedSubcategoryId}
@@ -450,7 +451,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <Select 
                         onValueChange={(value) => {
                           setSelectedElementCategoryId(value);
-                          field.onChange(value);
+                          field.onChange(value ? parseInt(value) : null);
                         }} 
                         value={selectedElementCategoryId}
                         disabled={!selectedSubcategoryId}
