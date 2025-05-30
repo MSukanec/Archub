@@ -118,12 +118,14 @@ export const materials = pgTable("materials", {
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  unit_id: integer("unit_id").references(() => units.id),
+  unit_id: uuid("unit_id").references(() => units.id),
   unit_labor_price: decimal("unit_labor_price", { precision: 12, scale: 2 }),
   unit_material_price: decimal("unit_material_price", { precision: 12, scale: 2 }),
   category_id: uuid("category_id").references(() => taskCategories.id),
   subcategory_id: uuid("subcategory_id").references(() => taskCategories.id),
   element_category_id: uuid("element_category_id").references(() => taskCategories.id),
+  action_id: uuid("action_id"),
+  element_id: uuid("element_id"),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -294,6 +296,8 @@ export const insertTaskSchema = createInsertSchema(tasks).pick({
   category_id: true,
   subcategory_id: true,
   element_category_id: true,
+  action_id: true,
+  element_id: true,
 });
 
 export const insertBudgetSchema = createInsertSchema(budgets).pick({

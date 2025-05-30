@@ -25,6 +25,8 @@ const createTaskSchema = z.object({
   subcategory_id: z.string().min(1, "Subrubro es requerido"),
   element_category_id: z.string().min(1, "Elemento es requerido"),
   unit_id: z.string().min(1, "Unidad es requerida"),
+  action_id: z.string().optional().or(z.literal('')),
+  element_id: z.string().optional().or(z.literal('')),
 });
 
 type FormData = z.infer<typeof createTaskSchema>;
@@ -148,6 +150,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       subcategory_id: task?.subcategory_id || '',
       element_category_id: task?.element_category_id || '',
       unit_id: task?.unit_id?.toString() || '',
+      action_id: task?.action_id || '',
+      element_id: task?.element_id || '',
     },
   });
 
@@ -201,6 +205,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         subcategory_id: task.subcategory_id || '',
         element_category_id: task.element_category_id || '',
         unit_id: task.unit_id?.toString() || '',
+        action_id: task.action_id || '',
+        element_id: task.element_id || '',
       });
       
       // Set the selected IDs for the dropdowns
@@ -222,6 +228,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         subcategory_id: '',
         element_category_id: '',
         unit_id: '',
+        action_id: '',
+        element_id: '',
       });
       setSelectedCategoryId('');
       setSelectedSubcategoryId('');
@@ -301,6 +309,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       subcategory_id: '',
       element_category_id: '',
       unit_id: '',
+      action_id: '',
+      element_id: '',
     });
     
     setSelectedCategoryId('');
