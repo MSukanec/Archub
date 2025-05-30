@@ -219,6 +219,12 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       if (task.element_category_id) {
         setSelectedElementCategoryId(task.element_category_id);
       }
+      if (task.action_id) {
+        setSelectedActionId(task.action_id);
+      }
+      if (task.element_id) {
+        setSelectedElementId(task.element_id);
+      }
     } else {
       form.reset({
         name: '',
@@ -287,6 +293,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       category_id: data.category_id || undefined,
       subcategory_id: data.subcategory_id || undefined,
       element_category_id: data.element_category_id || undefined,
+      unit_id: data.unit_id || undefined,
+      action_id: data.action_id || undefined,
+      element_id: data.element_id || undefined,
     };
 
     console.log('Task data to send:', taskData);
