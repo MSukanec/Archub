@@ -120,34 +120,24 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
   setBudgetId: (budgetId: string) => {
     console.log('setBudgetId called with:', budgetId);
-    const currentState = get();
     set({ budgetId });
     
-    // Update preferences in Supabase
+    // Use the same update logic as setUserContext but only for budget
     const updatePreferences = async () => {
       try {
         console.log('Starting budget preference update...');
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError) {
-          console.error('Auth error:', authError);
-          return;
-        }
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           console.log('No authenticated user found');
           return;
         }
 
         console.log('Auth user found:', user.id);
-        const { data: internalUser, error: userError } = await supabase
+        const { data: internalUser } = await supabase
           .from('users')
           .select('id')
           .eq('auth_id', user.id)
           .single();
-
-        if (userError) {
-          console.error('Error fetching internal user:', userError);
-          return;
-        }
 
         if (!internalUser) {
           console.log('No internal user found');
@@ -157,16 +147,27 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         console.log('Internal user found:', internalUser.id);
         console.log('Updating budget preference to:', budgetId);
         
-        const { data, error } = await supabase
+        // Try to update existing record first
+        const { error: updateError } = await supabase
           .from('user_preferences')
           .update({ last_budget_id: budgetId })
-          .eq('user_id', internalUser.id)
-          .select();
+          .eq('user_id', internalUser.id);
 
-        if (error) {
-          console.error('Supabase update error:', error);
+        if (updateError) {
+          console.error('Update failed, trying upsert:', updateError);
+          // If update failed, try upsert with current context
+          const currentState = get();
+          await supabase
+            .from('user_preferences')
+            .upsert({
+              user_id: internalUser.id,
+              last_organization_id: currentState.organizationId,
+              last_project_id: currentState.projectId,
+              last_budget_id: budgetId,
+            });
+          console.log('Upsert completed');
         } else {
-          console.log('Budget preference updated successfully:', data);
+          console.log('Budget preference updated successfully');
         }
       } catch (error) {
         console.error('Error updating budget preference:', error);
