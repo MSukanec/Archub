@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 import { FolderOpen, Search, Plus, Edit, Trash2, ChevronRight, ChevronDown, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -244,13 +245,13 @@ const AdminCategories = () => {
 
     if (over && active.id !== over.id) {
       try {
-        // Update parent_id of the dragged item
-        await apiRequest(`/api/admin/task-categories/${active.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify({
-            parent_id: over.id
-          }),
-        });
+        // Update parent_id of the dragged item using Supabase
+        const { error } = await supabase
+          .from('task_categories')
+          .update({ parent_id: over.id })
+          .eq('id', active.id);
+
+        if (error) throw error;
 
         // Refresh the data
         queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });

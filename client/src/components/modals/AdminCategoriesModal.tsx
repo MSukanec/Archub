@@ -228,7 +228,7 @@ export default function AdminCategoriesModal({
                       <SelectValue placeholder="Seleccionar categoría padre" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-50">
+                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                     <SelectItem value="none">Sin categoría padre</SelectItem>
                     {allCategories
                       .filter(cat => cat.id !== category?.id) // No mostrar la categoría actual
