@@ -197,11 +197,22 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   useEffect(() => {
     if (task && isOpen) {
       console.log('Initializing form for task:', task);
-      setSelectedCategoryId(task.category_id || '');
-      setSelectedSubcategoryId(task.subcategory_id || '');
-      setSelectedElementCategoryId(task.element_category_id || '');
-      setSelectedActionId(task.action_id || '');
-      setSelectedElementId(task.element_id || '');
+      const categoryId = task.category_id || '';
+      const subcategoryId = task.subcategory_id || '';
+      const elementCategoryId = task.element_category_id || '';
+      const actionId = task.action_id || '';
+      const elementId = task.element_id || '';
+      
+      setSelectedCategoryId(categoryId);
+      setSelectedSubcategoryId(subcategoryId);
+      setSelectedElementCategoryId(elementCategoryId);
+      setSelectedActionId(actionId);
+      setSelectedElementId(elementId);
+      
+      // Update form values as well
+      form.setValue('category_id', categoryId);
+      form.setValue('subcategory_id', subcategoryId);
+      form.setValue('element_category_id', elementCategoryId);
     } else if (!task && isOpen) {
       // Reset form when creating new task
       setSelectedCategoryId('');
@@ -210,7 +221,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       setSelectedActionId('');
       setSelectedElementId('');
     }
-  }, [task, isOpen]);
+  }, [task, isOpen, form]);
 
   // Debug logs
   console.log('All categories:', allCategories);
