@@ -243,7 +243,7 @@ export default function AdminCategories() {
                     <div className="font-medium text-foreground">{category.name}</div>
                   </TableCell>
                   <TableCell className="text-center py-4">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
