@@ -3,6 +3,7 @@ import { supabase } from './supabase';
 export interface Element {
   id: number;
   name: string;
+  created_at?: string;
 }
 
 export interface CreateElementData {
@@ -14,7 +15,7 @@ export const elementsService = {
     const { data, error } = await supabase
       .from('task_elements')
       .select('*')
-      .order('id', { ascending: false });
+      .order('created_at', { ascending: false });
     
     if (error) {
       console.error('Error fetching elements:', error);

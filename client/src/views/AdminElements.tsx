@@ -58,7 +58,7 @@ export default function AdminElements() {
       const { data, error } = await supabase
         .from('task_elements')
         .select('*')
-        .order('name', { ascending: true });
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data || [];

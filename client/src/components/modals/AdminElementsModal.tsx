@@ -13,7 +13,6 @@ import { supabase } from '@/lib/supabase';
 
 const elementSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
-  description: z.string().optional(),
 });
 
 type ElementFormData = z.infer<typeof elementSchema>;
@@ -37,7 +36,6 @@ export default function AdminElementsModal({
     resolver: zodResolver(elementSchema),
     defaultValues: {
       name: '',
-      description: '',
     },
   });
 
@@ -46,7 +44,6 @@ export default function AdminElementsModal({
     if (isOpen) {
       form.reset({
         name: element?.name || '',
-        description: element?.description || '',
       });
     }
   }, [element, isOpen, form]);
@@ -176,23 +173,7 @@ export default function AdminElementsModal({
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Descripción (Opcional)</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Descripción del elemento"
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
         </form>
       </Form>
     </ModernModal>
