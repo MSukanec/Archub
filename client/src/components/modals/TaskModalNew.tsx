@@ -76,97 +76,29 @@ export default function TaskModalNew({ budgetId, isOpen, onClose }: TaskModalNew
     }
   }, [isOpen, form]);
 
-  // Fetch categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ['task-categories', organizationId],
-    queryFn: async () => {
-      if (!organizationId) return [];
-      const { data, error } = await supabase
-        .from('task_categories')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!organizationId && isOpen,
-  });
-
-  // Fetch subcategories
-  const { data: subcategories = [] } = useQuery({
-    queryKey: ['task-subcategories', organizationId, selectedCategory],
-    queryFn: async () => {
-      if (!organizationId || !selectedCategory) return [];
-      const { data, error } = await supabase
-        .from('task_subcategories')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .eq('parent_category_id', selectedCategory)
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!organizationId && !!selectedCategory && isOpen,
-  });
-
-  // Fetch elements
-  const { data: elements = [] } = useQuery({
-    queryKey: ['task-elements', organizationId, selectedSubcategory],
-    queryFn: async () => {
-      if (!organizationId || !selectedSubcategory) return [];
-      const { data, error } = await supabase
-        .from('task_elements')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .eq('parent_subcategory_id', selectedSubcategory)
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!organizationId && !!selectedSubcategory && isOpen,
-  });
-
-  // Fetch tasks based on search or filters
-  const shouldFetchTasks = !!organizationId && isOpen && (
-    (searchQuery && searchQuery.length >= 3) ||
-    !!selectedCategory ||
-    !!selectedSubcategory ||
-    !!selectedElement
-  );
-
+  // Buscar tareas solo cuando la búsqueda sea válida
   const { data: tasks = [] } = useQuery({
-    queryKey: ['filtered-tasks', organizationId, searchQuery, selectedCategory, selectedSubcategory, selectedElement],
+    queryKey: ['search-tasks', organizationId, searchQuery],
     queryFn: async () => {
-      if (!organizationId) return [];
+      console.log('Buscando tareas con query:', searchQuery);
+      if (!organizationId || !searchQuery || searchQuery.length < 3) return [];
       
-      let query = supabase
+      const { data, error } = await supabase
         .from('tasks')
         .select('*')
-        .eq('organization_id', organizationId);
-
-      if (searchQuery && searchQuery.length >= 3) {
-        query = query.ilike('name', `%${searchQuery}%`);
-      } else {
-        if (selectedCategory) {
-          query = query.eq('category_id', selectedCategory);
-        }
-        if (selectedSubcategory) {
-          query = query.eq('subcategory_id', selectedSubcategory);
-        }
-        if (selectedElement) {
-          query = query.eq('element_category_id', selectedElement);
-        }
+        .eq('organization_id', organizationId)
+        .ilike('name', `%${searchQuery}%`)
+        .order('name')
+        .limit(20);
+      
+      if (error) {
+        console.error('Error buscando tareas:', error);
+        throw error;
       }
-      
-      const { data, error } = await query.order('name').limit(20);
-      
-      if (error) throw error;
-      return data;
+      console.log('Tareas encontradas:', data);
+      return data || [];
     },
-    enabled: shouldFetchTasks,
+    enabled: Boolean(organizationId && isOpen && searchQuery && searchQuery.length >= 3),
   });
 
   const saveTaskMutation = useMutation({
@@ -246,100 +178,22 @@ export default function TaskModalNew({ budgetId, isOpen, onClose }: TaskModalNew
           {/* Búsqueda por nombre */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
-              Buscar por nombre (mínimo 3 caracteres)
+              Buscar tarea por nombre (mínimo 3 caracteres)
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Escribir nombre de la tarea..."
                 value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  if (e.target.value.length >= 3) {
-                    setSelectedCategory('');
-                    setSelectedSubcategory('');
-                    setSelectedElement('');
-                  }
-                }}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary"
               />
             </div>
-          </div>
-
-          {/* Separador */}
-          <div className="text-center text-sm text-muted-foreground">
-            <span className="bg-[#e0e0e0] px-4">O filtrar por categorías</span>
-          </div>
-
-          {/* Filtros por categorías */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Rubro</label>
-              <Select 
-                value={selectedCategory} 
-                onValueChange={(value) => {
-                  setSelectedCategory(value);
-                  setSelectedSubcategory('');
-                  setSelectedElement('');
-                  setSearchQuery('');
-                }}
-                disabled={searchQuery.length >= 3}
-              >
-                <SelectTrigger className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary">
-                  <SelectValue placeholder="Seleccionar rubro" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Subrubro</label>
-              <Select 
-                value={selectedSubcategory} 
-                onValueChange={(value) => {
-                  setSelectedSubcategory(value);
-                  setSelectedElement('');
-                }}
-                disabled={!selectedCategory || searchQuery.length >= 3}
-              >
-                <SelectTrigger className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary">
-                  <SelectValue placeholder="Seleccionar subrubro" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subcategories.map((subcategory) => (
-                    <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                      {subcategory.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Elemento</label>
-              <Select 
-                value={selectedElement} 
-                onValueChange={setSelectedElement}
-                disabled={!selectedSubcategory || searchQuery.length >= 3}
-              >
-                <SelectTrigger className="bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary">
-                  <SelectValue placeholder="Seleccionar elemento" />
-                </SelectTrigger>
-                <SelectContent>
-                  {elements.map((element) => (
-                    <SelectItem key={element.id} value={element.id.toString()}>
-                      {element.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {searchQuery && searchQuery.length < 3 && (
+              <p className="text-sm text-orange-600">
+                Escribe al menos 3 caracteres para buscar tareas
+              </p>
+            )}
           </div>
 
           {/* Lista de tareas */}
