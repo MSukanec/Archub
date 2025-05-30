@@ -73,8 +73,8 @@ export default function FloatingHeader() {
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 h-9 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-95 active:scale-90",
                 currentView === view.id
-                  ? "bg-black text-white shadow-lg"
-                  : "text-[#919191] hover:text-[#8fc700] hover:bg-[#8fc700]/10"
+                  ? "bg-black text-white shadow-lg hover:shadow-xl"
+                  : "text-[#919191] hover:text-[#919191] hover:bg-[#d2d2d2]"
               )}
             >
               {view.label}
