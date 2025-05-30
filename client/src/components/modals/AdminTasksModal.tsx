@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { tasksService, Task, CreateTaskData } from '@/lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
 import { supabase } from '@/lib/supabase';
-import { useUserContext } from '@/contexts/UserContext';
+
 import { z } from 'zod';
 import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -297,7 +297,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       name: data.name,
       unit_labor_price: data.unit_labor_price ? parseFloat(data.unit_labor_price) : undefined,
       unit_material_price: data.unit_material_price ? parseFloat(data.unit_material_price) : undefined,
-      organization_id: userContext.organizationId,
+      // organization_id: will be handled by database if needed,
       category_id: data.category_id || undefined,
       subcategory_id: data.subcategory_id || undefined,
       element_category_id: data.element_category_id || undefined,
