@@ -134,6 +134,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           related_task_id: '',
         });
       }
+    } else {
+      // Clear all states when modal closes
+      setCurrentStep(0);
+      setSelectedTypeId('');
+      setContactOpen(false);
+      setContactSearch('');
+      setSelectedFile(null);
     }
   }, [isOpen, movement, isEditing, form]);
 

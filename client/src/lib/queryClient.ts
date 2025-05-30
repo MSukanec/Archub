@@ -45,12 +45,19 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1, // Allow one retry
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes - longer cache
+      gcTime: 15 * 60 * 1000, // 15 minutes (replaces cacheTime in v5)
+      retry: 1,
       retryDelay: 1000,
+      // Avoid background refetches that can cause performance issues
+      refetchInterval: false,
     },
     mutations: {
       retry: 1,
+      // Prevent automatic retries on mutations that might cause duplicates
+      retryDelay: 2000,
     },
   },
 });

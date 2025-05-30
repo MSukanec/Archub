@@ -77,8 +77,13 @@ export default function AppLayout() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
+    let isInitialized = false;
+    
     // Check initial auth state
     authService.getCurrentUser().then(async ({ user }) => {
+      if (isInitialized) return; // Prevent double initialization
+      isInitialized = true;
+      
       console.log('Initial auth check:', user);
       if (user) {
         // Get user data from database table
@@ -109,8 +114,11 @@ export default function AppLayout() {
       setUser(user);
     });
 
-    return () => subscription.unsubscribe();
-  }, [setUser, setLoading]);
+    return () => {
+      subscription.unsubscribe();
+      isInitialized = true; // Mark as cleanup
+    };
+  }, []); // Remove dependencies to prevent re-runs
 
   // Listen for create project modal event
   useEffect(() => {

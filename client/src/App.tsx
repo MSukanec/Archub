@@ -39,16 +39,8 @@ function Router() {
 }
 
 function App() {
-  const { setLoading } = useAuthStore();
-
-  useEffect(() => {
-    // Initialize app
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [setLoading]);
+  // Remove the problematic useEffect that sets loading to false after 1 second
+  // This was causing issues with auth state management
 
   return (
     <QueryClientProvider client={queryClient}>

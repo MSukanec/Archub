@@ -46,13 +46,12 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   setUserContext: (context) => {
     set((state) => ({ ...state, ...context }));
     
-    // Update user_preferences in Supabase when context changes
+    // Debounce the update to avoid multiple simultaneous calls
     const updatePreferences = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Get internal user ID first
         const { data: internalUser } = await supabase
           .from('users')
           .select('id')
@@ -61,41 +60,28 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
         if (!internalUser) return;
 
-        // Try to update existing record first
-        const { error: updateError } = await supabase
+        await supabase
           .from('user_preferences')
-          .update({
+          .upsert({
+            user_id: internalUser.id,
             last_organization_id: context.organizationId || get().organizationId,
             last_project_id: context.projectId || get().projectId,
             last_budget_id: context.budgetId || get().budgetId,
-          })
-          .eq('user_id', internalUser.id);
-
-        // If update failed, try upsert
-        if (updateError) {
-          await supabase
-            .from('user_preferences')
-            .upsert({
-              user_id: internalUser.id,
-              last_organization_id: context.organizationId || get().organizationId,
-              last_project_id: context.projectId || get().projectId,
-              last_budget_id: context.budgetId || get().budgetId,
-            });
-        }
+          });
       } catch (error) {
         console.error('Error updating user preferences:', error);
       }
     };
 
-    updatePreferences();
+    // Use setTimeout to debounce rapid context changes
+    setTimeout(updatePreferences, 100);
   },
 
   setProjectId: (projectId: string) => {
-    const currentState = get();
     set({ projectId });
     
-    // Update preferences in Supabase
-    const updatePreferences = async () => {
+    // Debounced update to avoid rapid fire calls
+    setTimeout(async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
@@ -110,22 +96,21 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
         await supabase
           .from('user_preferences')
-          .update({ last_project_id: projectId })
-          .eq('user_id', internalUser.id);
+          .upsert({
+            user_id: internalUser.id,
+            last_project_id: projectId
+          });
       } catch (error) {
         console.error('Error updating project preference:', error);
       }
-    };
-
-    updatePreferences();
+    }, 100);
   },
 
   setBudgetId: (budgetId: string) => {
-    const currentState = get();
     set({ budgetId });
     
-    // Update preferences in Supabase - exact copy of setProjectId logic
-    const updatePreferences = async () => {
+    // Debounced update to avoid rapid fire calls
+    setTimeout(async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
@@ -140,14 +125,14 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
         await supabase
           .from('user_preferences')
-          .update({ last_budget_id: budgetId })
-          .eq('user_id', internalUser.id);
+          .upsert({
+            user_id: internalUser.id,
+            last_budget_id: budgetId
+          });
       } catch (error) {
         console.error('Error updating budget preference:', error);
       }
-    };
-
-    updatePreferences();
+    }, 100);
   },
 
   clearUserContext: () => {
