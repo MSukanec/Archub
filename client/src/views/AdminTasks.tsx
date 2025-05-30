@@ -1,202 +1,331 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
-import { tasksService, Task } from '@/lib/tasksService';
-import AdminTasksModal from '@/components/modals/AdminTasksModal';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminTasks() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
-  const { data: tasks = [], isLoading } = useQuery({
-    queryKey: ['/api/tasks'],
-    queryFn: () => tasksService.getAll(),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => tasksService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      toast({
-        title: "Tarea eliminada",
-        description: "La tarea ha sido eliminada exitosamente.",
-      });
-      setIsDeleteDialogOpen(false);
-      setSelectedTask(null);
+  const { data: tasks = [], isLoading, error } = useQuery({
+    queryKey: ['/api/admin/tasks'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          category:categories(name),
+          subcategory:subcategories(name),
+          element_category:element_categories(name)
+        `)
+        .order('name', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
     },
-    onError: () => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No se pudo eliminar la tarea.",
-      });
-    }
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
-  const handleEdit = (task: Task) => {
-    setSelectedTask(task);
-    setIsCreateModalOpen(true);
-  };
+  if (error) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <CheckSquare className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
+            <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar tareas</h3>
+            <p className="text-muted-foreground max-w-md">No se pudieron cargar las tareas. Intenta recargar la página.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const handleDelete = (task: Task) => {
+  const handleDelete = (task: any) => {
     setSelectedTask(task);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsCreateModalOpen(false);
-    setSelectedTask(null);
-  };
+  const filteredTasks = tasks.filter((task: any) => {
+    const matchesSearch = (task.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (task.subcategory?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDate = !dateFilter || 
+                       format(new Date(task.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
+    return matchesSearch && matchesDate;
+  });
 
-  const filteredTasks = tasks.filter(task =>
-    task.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const formatPrice = (price: string | number | null | undefined) => {
-    if (!price) return '-';
-    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 2,
-    }).format(numPrice);
-  };
+  if (isLoading) {
+    return <AdminTasksSkeleton />;
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
-          <p className="text-sm text-muted-foreground">
-            Administra las tareas de construcción del sistema
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <CheckSquare className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
+            <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
+          </div>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Nueva Tarea</span>
+        <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6">
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva Tarea
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Buscar tareas..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar tareas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background border-border rounded-xl"
+            />
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
+                  !dateFilter && "text-muted-foreground"
+                )}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <CalendarComponent
+                mode="single"
+                selected={dateFilter}
+                onSelect={setDateFilter}
+                initialFocus
+              />
+              {dateFilter && (
+                <div className="p-3 border-t border-border">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setDateFilter(undefined)}
+                    className="w-full"
+                  >
+                    Limpiar filtro
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="border rounded-lg bg-card">
-        {isLoading ? (
-          <div className="p-6 space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center space-x-4">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[100px]" />
-                <Skeleton className="h-4 w-[100px]" />
-                <Skeleton className="h-4 w-[80px]" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Precio Mano de Obra</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Precio Material</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Fecha</TableHead>
+              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredTasks.length === 0 ? (
               <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Precio Mano de Obra</TableHead>
-                <TableHead>Precio Material</TableHead>
-                <TableHead>Categoría</TableHead>
-                <TableHead>Subcategoría</TableHead>
-                <TableHead>Elemento</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8 h-16">
+                  {searchTerm || dateFilter 
+                    ? 'No se encontraron tareas que coincidan con los filtros.'
+                    : 'No hay tareas registradas.'
+                  }
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTasks.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    <div className="text-muted-foreground">
-                      {searchQuery ? 'No se encontraron tareas que coincidan con la búsqueda.' : 'No hay tareas registradas.'}
+            ) : (
+              filteredTasks.map((task: any) => (
+                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        <CheckSquare className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">{task.name}</div>
+                        <div className="text-sm text-muted-foreground">ID: {task.id.slice(0, 8)}...</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="bg-muted/50">
+                        {task.category?.name || 'Sin categoría'}
+                      </Badge>
+                      {task.subcategory?.name && (
+                        <div className="text-xs text-muted-foreground">
+                          {task.subcategory.name}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-foreground py-4">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-muted-foreground" />
+                      {task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-foreground py-4">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-muted-foreground" />
+                      {task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-foreground py-4">
+                    {format(new Date(task.created_at), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell className="text-right py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(task)}
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
-              ) : (
-                filteredTasks.map((task) => (
-                  <TableRow key={task.id}>
-                    <TableCell className="font-medium">{task.name}</TableCell>
-                    <TableCell>{formatPrice(task.unit_labor_price)}</TableCell>
-                    <TableCell>{formatPrice(task.unit_material_price)}</TableCell>
-                    <TableCell>{(task as any).category?.name || '-'}</TableCell>
-                    <TableCell>{(task as any).subcategory?.name || '-'}</TableCell>
-                    <TableCell>{(task as any).element_category?.name || '-'}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(task)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(task)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        )}
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
 
-      <AdminTasksModal
-        isOpen={isCreateModalOpen}
-        onClose={handleCloseModal}
-        task={selectedTask}
-      />
-
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-card border-border rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar tarea?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. La tarea "{selectedTask?.name}" será eliminada permanentemente.
+            <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Esta acción no se puede deshacer. Esto eliminará permanentemente la tarea
+              <span className="font-semibold text-foreground"> "{selectedTask?.name}"</span> y 
+              todos sus datos asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="bg-background border-border text-foreground hover:bg-muted rounded-xl">
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedTask && deleteMutation.mutate(selectedTask.id)}
-              disabled={deleteMutation.isPending}
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setSelectedTask(null);
+              }}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
             >
-              {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function AdminTasksSkeleton() {
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+          <div>
+            <div className="h-8 w-64 bg-muted rounded animate-pulse"></div>
+            <div className="h-4 w-48 bg-muted rounded animate-pulse mt-2"></div>
+          </div>
+        </div>
+        <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
+      </div>
+      
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex gap-4">
+          <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
+          <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+      
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="p-6">
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+                    <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
