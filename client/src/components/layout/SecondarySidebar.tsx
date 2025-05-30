@@ -1,4 +1,4 @@
-import { Calendar, Shield, FolderOpen, Plus, Calculator, Package, Hammer } from 'lucide-react';
+import { Calendar, Shield, FolderOpen, Plus, Calculator, Package, Hammer, UserCheck, Library } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -157,13 +157,22 @@ export default function SecondarySidebar() {
             onClick={() => setView('dashboard-main')}
           />
           
-          {/* Admin button - only for admin users */}
+          {/* Admin buttons - only for admin users */}
           {user?.role === 'admin' && (
-            <CircularButton
-              icon={Shield}
-              isActive={false}
-              onClick={() => setView('admin-organizations')}
-            />
+            <>
+              <CircularButton
+                icon={UserCheck}
+                isActive={currentSection === 'admin-community'}
+                onClick={() => setView('admin-organizations')}
+                label="Administración de Comunidad"
+              />
+              <CircularButton
+                icon={Library}
+                isActive={currentSection === 'admin-library'}
+                onClick={() => setView('admin-tasks')}
+                label="Administración de Biblioteca"
+              />
+            </>
           )}
         </div>
       </div>

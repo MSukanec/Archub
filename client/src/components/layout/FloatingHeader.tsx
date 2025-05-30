@@ -38,9 +38,9 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
   ],
   'admin-library': [
     { id: 'admin-tasks', label: 'Tareas' },
-    { id: 'admin-categories', label: 'Categorías de Tareas' },
-    { id: 'admin-material-categories', label: 'Categorías de Materiales' },
+    { id: 'admin-categories', label: 'Tareas (Categorías)' },
     { id: 'admin-materials', label: 'Materiales' },
+    { id: 'admin-material-categories', label: 'Materiales (Categorías)' },
     { id: 'admin-units', label: 'Unidades' },
     { id: 'admin-elements', label: 'Elementos' },
     { id: 'admin-actions', label: 'Acciones' }

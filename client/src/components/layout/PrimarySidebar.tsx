@@ -111,26 +111,6 @@ export default function PrimarySidebar() {
 
       </div>
       
-      {/* Admin buttons section */}
-      <div className="flex flex-col items-center space-y-6 pb-6 pl-2.5">
-        {/* Admin Community button */}
-        <CircularButton
-          icon={UserCheck}
-          isActive={currentSection === 'admin-community'}
-          onClick={() => setSection('admin-community')}
-          section="admin-community"
-          label="Administración de Comunidad"
-        />
-        {/* Admin Library button */}
-        <CircularButton
-          icon={Library}
-          isActive={currentSection === 'admin-library'}
-          onClick={() => setSection('admin-library')}
-          section="admin-library"
-          label="Administración de Biblioteca"
-        />
-      </div>
-      
       {/* Bottom buttons section */}
       <div className="flex items-center pb-2.5 pl-2.5">
         {/* Profile button */}
