@@ -592,11 +592,11 @@ function DashboardTimeline() {
                 }}
               />
 
-              {/* Date labels - top (positioned below HOY button area) */}
+              {/* Date labels - top (positioned further from center) */}
               <div 
                 className="absolute flex flex-col items-center text-center z-30"
                 style={{
-                  top: '90px', // Fixed position below HOY button
+                  top: 'calc(10% - 50px)', // Further from center (10% from top minus 50px)
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
@@ -611,17 +611,19 @@ function DashboardTimeline() {
                     </div>
                   </div>
                 ) : (
-                  <div className="date-label-engraved text-xs font-medium">
-                    {formatDate(node.date)}
+                  <div className="date-label-container">
+                    <div className="date-label-engraved text-xs font-medium">
+                      {formatDate(node.date)}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Date labels - bottom (positioned at bottom with same margin as top) */}
+              {/* Date labels - bottom (positioned further from center) */}
               <div 
                 className="absolute flex flex-col items-center text-center z-30"
                 style={{
-                  bottom: '90px', // Fixed position at bottom with same margin
+                  bottom: 'calc(10% - 50px)', // Further from center (10% from bottom minus 50px)
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
@@ -636,8 +638,10 @@ function DashboardTimeline() {
                     </div>
                   </div>
                 ) : (
-                  <div className="date-label-engraved text-xs font-medium">
-                    {formatDate(node.date)}
+                  <div className="date-label-container">
+                    <div className="date-label-engraved text-xs font-medium">
+                      {formatDate(node.date)}
+                    </div>
                   </div>
                 )}
               </div>
