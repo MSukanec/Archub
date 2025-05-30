@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Home, FolderKanban, FileText, DollarSign, Target, Users, Calendar } from 'lucide-react';
+import { Home, FolderKanban, FileText, DollarSign, Target, Users, Calendar, Wrench, ClipboardList, MessageSquare } from 'lucide-react';
 import CircularButton from '@/components/ui/CircularButton';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -28,6 +28,41 @@ interface TimelineNode {
   events: TimelineEvent[];
   position: number;
 }
+
+// Helper functions for event type icons and labels
+const getEventTypeIcon = (eventType: string) => {
+  switch (eventType?.toLowerCase()) {
+    case 'task':
+    case 'tarea':
+      return <Wrench className="w-3 h-3" />;
+    case 'meeting':
+    case 'reunión':
+      return <Users className="w-3 h-3" />;
+    case 'reminder':
+    case 'recordatorio':
+      return <ClipboardList className="w-3 h-3" />;
+    case 'appointment':
+    case 'cita':
+      return <Calendar className="w-3 h-3" />;
+    default:
+      return <MessageSquare className="w-3 h-3" />;
+  }
+};
+
+const getEventTypeLabel = (eventType: string) => {
+  switch (eventType?.toLowerCase()) {
+    case 'task':
+      return 'Tarea';
+    case 'meeting':
+      return 'Reunión';
+    case 'reminder':
+      return 'Recordatorio';
+    case 'appointment':
+      return 'Cita';
+    default:
+      return eventType;
+  }
+};
 
 function DashboardTimeline() {
   const [timelineMode, setTimelineMode] = useState<TimelineMode>('days');
@@ -372,7 +407,7 @@ function DashboardTimeline() {
           <div className="absolute bottom-4 right-4 z-[60]">
             {/* Detailed event info card */}
             {hoveredEvent && (
-              <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4">
+              <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4 animate-in slide-in-from-right-2 fade-in duration-300">
                 <h3 className="text-sm font-semibold text-[#919191] mb-3">INFORMACIÓN DEL EVENTO</h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -385,21 +420,25 @@ function DashboardTimeline() {
                     </div>
                   )}
                   <div className="text-xs text-[#919191]/70">
-                    <span className="font-medium">Fecha:</span> {hoveredEvent.date.toLocaleDateString('es-ES')}
+                    <span className="font-medium">Fecha:</span> {hoveredEvent.date.toLocaleDateString('es-ES', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long'
+                    })}
+                    {hoveredEvent.time && `, ${hoveredEvent.time}`}
                   </div>
-                  {hoveredEvent.time && (
-                    <div className="text-xs text-[#919191]/70">
-                      <span className="font-medium">Hora:</span> {hoveredEvent.time}
-                    </div>
-                  )}
                   {hoveredEvent.location && (
                     <div className="text-xs text-[#919191]/70">
                       <span className="font-medium">Ubicación:</span> {hoveredEvent.location}
                     </div>
                   )}
                   {hoveredEvent.eventType && (
-                    <div className="text-xs text-[#919191]/70 capitalize">
-                      <span className="font-medium">Tipo:</span> {hoveredEvent.eventType}
+                    <div className="text-xs text-[#919191]/70 flex items-center gap-2">
+                      <span className="font-medium">Tipo:</span> 
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-[#919191]/10 text-[#919191]">
+                        {getEventTypeIcon(hoveredEvent.eventType)}
+                        {getEventTypeLabel(hoveredEvent.eventType)}
+                      </span>
                     </div>
                   )}
                   {hoveredEvent.amount && (
@@ -684,7 +723,7 @@ function DashboardTimeline() {
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
-                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center border-2 border-background">
+                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-background">
                                 <span className="text-xs text-white font-bold">
                                   {events.length}
                                 </span>
