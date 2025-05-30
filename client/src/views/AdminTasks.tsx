@@ -151,7 +151,35 @@ export default function AdminTasks() {
   }, [searchTerm, categoryFilter, sortOrder]);
 
   if (isLoading) {
-    return <AdminTasksSkeleton />;
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <CheckSquare className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
+              <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="rounded-2xl shadow-md bg-card border-0 p-6">
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="animate-pulse flex space-x-4">
+                <div className="rounded-full bg-muted h-10 w-10"></div>
+                <div className="flex-1 space-y-2 py-1">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -219,19 +247,19 @@ export default function AdminTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Tarea</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Precio Mano de Obra</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Precio Material</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Precio M.O.</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Precio Mat.</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedTasks.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground py-4 h-8">
-                  {searchTerm || dateFilter 
+                  {searchTerm || categoryFilter 
                     ? 'No se encontraron tareas que coincidan con los filtros.'
                     : 'No hay tareas registradas.'
                   }
@@ -239,33 +267,33 @@ export default function AdminTasks() {
               </TableRow>
             ) : (
               paginatedTasks.map((task: any) => (
-                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-2">
+                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors h-12">
+                  <TableCell className="py-1 text-center">
+                    <div className="font-medium text-foreground">{task.name}</div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
                       {task.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-2">
-                    <div className="font-medium text-foreground">{task.name}</div>
-                  </TableCell>
-                  <TableCell className="py-2">
+                  <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
                       {task.unit?.name || 'Sin unidad'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-foreground py-2">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-muted-foreground" />
-                      {task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1">
+                      <DollarSign className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-sm">{task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground py-2">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-muted-foreground" />
-                      {task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1">
+                      <DollarSign className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-sm">{task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right py-2">
+                  <TableCell className="text-center py-1">
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
