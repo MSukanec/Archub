@@ -557,21 +557,33 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
                 {/* Campo de Unidad */}
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Unidad</FormLabel>
-                  <Select>
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                      <SelectValue placeholder="Seleccionar unidad" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                      {units.map((unit) => (
-                        <SelectItem key={unit.id} value={unit.id}>
-                          {unit.symbol} {unit.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
+                <FormField
+                  control={form.control}
+                  name="unit_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Unidad</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        value={field.value?.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                            <SelectValue placeholder="Seleccionar unidad" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          {units.map((unit) => (
+                            <SelectItem key={unit.id} value={unit.id.toString()}>
+                              {unit.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="grid grid-cols-2 gap-3">
                   <FormField
