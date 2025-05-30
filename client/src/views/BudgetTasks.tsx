@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,19 +85,35 @@ export default function BudgetTasks() {
         const taskIds = budgetTasksData.map(bt => bt.task_id);
         const { data: tasksData, error: tasksError } = await supabase
           .from('tasks')
-          .select('id, name, unit, unit_labor_price, unit_material_price')
+          .select('id, name, unit, unit_labor_price, unit_material_price, category_id')
           .in('id', taskIds);
         
         if (tasksError) throw tasksError;
 
+        // Obtenemos las categorías por separado si hay tareas
+        let categoriesData = [];
+        if (tasksData && tasksData.length > 0) {
+          const categoryIds = [...new Set(tasksData.map(t => t.category_id).filter(Boolean))];
+          if (categoryIds.length > 0) {
+            const { data: catData } = await supabase
+              .from('task_categories')
+              .select('id, name')
+              .in('id', categoryIds);
+            categoriesData = catData || [];
+          }
+        }
+
         // Combinamos los datos
         const combinedData = budgetTasksData.map(budgetTask => {
           const task = tasksData?.find(t => t.id === budgetTask.task_id);
+          const category = categoriesData.find(c => c.id === task?.category_id);
           return {
             ...budgetTask,
             task_name: task?.name || 'Tarea no encontrada',
-            unit_price: task ? (task.unit_labor_price + task.unit_material_price) : 0,
-            unit: task?.unit || 1
+            unit_labor_price: task?.unit_labor_price || 0,
+            unit_material_price: task?.unit_material_price || 0,
+            unit: task?.unit || '',
+            category_name: category?.name || 'Sin categoría'
           };
         });
 
@@ -107,6 +124,54 @@ export default function BudgetTasks() {
       }
     },
     enabled: !!budgetId,
+  });
+
+  // Mutation to update task quantity
+  const updateQuantityMutation = useMutation({
+    mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
+      const { error } = await supabase
+        .from('budget_tasks')
+        .update({ quantity })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['budget-tasks', budgetId] });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: 'No se pudo actualizar la cantidad',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Mutation to delete budget task
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('budget_tasks')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['budget-tasks', budgetId] });
+      toast({
+        title: 'Éxito',
+        description: 'Tarea eliminada del presupuesto',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: 'No se pudo eliminar la tarea',
+        variant: 'destructive',
+      });
+    },
   });
 
 
@@ -168,21 +233,21 @@ export default function BudgetTasks() {
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-[#e1e1e1]">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Tabla de Cómputo</span>
             <Badge variant="secondary">
-              Total: ${budgetTasks.reduce((sum: number, task: any) => sum + (task.unit_price * task.quantity), 0).toFixed(2)}
+              Total: ${budgetTasks.reduce((sum: number, task: any) => sum + (task.unit_labor_price * task.quantity), 0).toFixed(2)}
             </Badge>
           </CardTitle>
           <CardDescription>
             Agrega tareas y cantidades para calcular el presupuesto total
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {tasksLoading ? (
-            <div className="space-y-3">
+            <div className="p-6 space-y-3">
               {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="h-16" />
               ))}
@@ -207,46 +272,69 @@ export default function BudgetTasks() {
               )}
             </div>
           ) : (
-            <div className="space-y-3">
-              {budgetTasks.map((budgetTask: any) => (
-                <div key={budgetTask.id} className="bg-[#e1e1e1] rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <h4 className="font-medium text-foreground">
-                            {budgetTask.task?.name || 'Tarea eliminada'}
-                          </h4>
-                          <p className="text-sm text-muted-foreground">
-                            Cantidad: {budgetTask.quantity} {budgetTask.task?.unit || 'unidad'}
-                          </p>
-                        </div>
-                      </div>
+            <div className="overflow-hidden">
+              {/* Table Header */}
+              <div className="grid grid-cols-12 gap-4 p-4 bg-gray-100 border-b border-gray-300 font-medium text-sm text-gray-700">
+                <div className="col-span-2">Rubro</div>
+                <div className="col-span-3">Descripción</div>
+                <div className="col-span-1">Unidad</div>
+                <div className="col-span-2">Cantidad</div>
+                <div className="col-span-2">Costo Mano de Obra</div>
+                <div className="col-span-2">Subtotal</div>
+              </div>
+              
+              {/* Table Rows */}
+              <div className="max-h-[500px] overflow-y-auto">
+                {budgetTasks.map((budgetTask: any, index: number) => (
+                  <div 
+                    key={budgetTask.id} 
+                    className={`grid grid-cols-12 gap-4 p-4 border-b border-gray-200 hover:bg-gray-50 ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="col-span-2 text-sm font-medium">
+                      {budgetTask.category_name}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <p className="font-medium text-foreground">
-                          ${(budgetTask.unit_price * budgetTask.quantity).toFixed(2)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          ${budgetTask.unit_price.toFixed(2)} c/u
-                        </p>
-                      </div>
+                    <div className="col-span-3 text-sm">
+                      {budgetTask.task_name}
+                    </div>
+                    <div className="col-span-1 text-sm">
+                      {budgetTask.unit}
+                    </div>
+                    <div className="col-span-2">
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={budgetTask.quantity}
+                        onChange={(e) => {
+                          const newQuantity = parseFloat(e.target.value) || 0;
+                          updateQuantityMutation.mutate({ 
+                            id: budgetTask.id, 
+                            quantity: newQuantity 
+                          });
+                        }}
+                        className="h-8 text-sm bg-white border-gray-300"
+                      />
+                    </div>
+                    <div className="col-span-2 text-sm font-medium">
+                      ${budgetTask.unit_labor_price.toFixed(2)}
+                    </div>
+                    <div className="col-span-2 flex items-center justify-between">
+                      <span className="text-sm font-bold">
+                        ${(budgetTask.unit_labor_price * budgetTask.quantity).toFixed(2)}
+                      </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                            <MoreHorizontal className="h-3 w-3" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => {
-                            setEditingTask(budgetTask);
-                            setIsTaskModalOpen(true);
-                          }}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem 
+                            onClick={() => deleteTaskMutation.mutate(budgetTask.id)}
+                            className="text-destructive"
+                          >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Eliminar
                           </DropdownMenuItem>
@@ -254,13 +342,20 @@ export default function BudgetTasks() {
                       </DropdownMenu>
                     </div>
                   </div>
-                  {budgetTask.notes && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {budgetTask.notes}
-                    </p>
-                  )}
+                ))}
+              </div>
+              
+              {/* Total Row */}
+              <div className="grid grid-cols-12 gap-4 p-4 bg-green-50 border-t-2 border-green-200 font-bold">
+                <div className="col-span-9 text-right text-lg">
+                  TOTAL:
                 </div>
-              ))}
+                <div className="col-span-3 text-lg text-green-600">
+                  ${budgetTasks.reduce((sum: number, task: any) => 
+                    sum + (task.unit_labor_price * task.quantity), 0
+                  ).toFixed(2)}
+                </div>
+              </div>
             </div>
           )}
         </CardContent>
