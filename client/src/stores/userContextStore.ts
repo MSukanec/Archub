@@ -16,6 +16,8 @@ interface UserContext {
 interface UserContextStore extends UserContext {
   isLoading: boolean;
   isInitialized: boolean;
+  updateInProgress: boolean;
+  pendingUpdates: NodeJS.Timeout | null;
   setUserContext: (context: Partial<UserContext>) => void;
   setProjectId: (projectId: string) => void;
   setBudgetId: (budgetId: string) => void;
@@ -38,6 +40,8 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   lastDataFetch: null,
   isLoading: false,
   isInitialized: false,
+  updateInProgress: false,
+  pendingUpdates: null,
 
   getOrganizationId: () => get().organizationId,
   getProjectId: () => get().projectId,
@@ -46,93 +50,56 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   setUserContext: (context) => {
     set((state) => ({ ...state, ...context }));
     
-    // Debounce the update to avoid multiple simultaneous calls
-    const updatePreferences = async () => {
+    const currentState = get();
+    if (currentState.updateInProgress) return;
+    
+    // Clear any pending updates
+    if (currentState.pendingUpdates) {
+      clearTimeout(currentState.pendingUpdates);
+    }
+    
+    // Set up debounced update
+    const timeout = setTimeout(async () => {
+      const state = get();
+      if (state.updateInProgress || !state.userId) return;
+      
+      set({ updateInProgress: true });
+      
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: internalUser } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .single();
-
-        if (!internalUser) return;
-
         await supabase
           .from('user_preferences')
-          .upsert({
-            user_id: internalUser.id,
-            last_organization_id: context.organizationId || get().organizationId,
-            last_project_id: context.projectId || get().projectId,
-            last_budget_id: context.budgetId || get().budgetId,
-          });
+          .update({
+            last_organization_id: context.organizationId || state.organizationId,
+            last_project_id: context.projectId || state.projectId,
+            last_budget_id: context.budgetId || state.budgetId,
+          })
+          .eq('user_id', state.userId);
       } catch (error) {
         console.error('Error updating user preferences:', error);
+      } finally {
+        set({ updateInProgress: false, pendingUpdates: null });
       }
-    };
-
-    // Use setTimeout to debounce rapid context changes
-    setTimeout(updatePreferences, 100);
+    }, 500);
+    
+    set({ pendingUpdates: timeout });
   },
 
   setProjectId: (projectId: string) => {
+    const currentState = get();
     set({ projectId });
     
-    // Debounced update to avoid rapid fire calls
-    setTimeout(async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: internalUser } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .single();
-
-        if (!internalUser) return;
-
-        await supabase
-          .from('user_preferences')
-          .upsert({
-            user_id: internalUser.id,
-            last_project_id: projectId
-          });
-      } catch (error) {
-        console.error('Error updating project preference:', error);
-      }
-    }, 100);
+    if (!currentState.userId || currentState.updateInProgress) return;
+    
+    get().setUserContext({ projectId });
   },
 
   setBudgetId: (budgetId: string) => {
+    const currentState = get();
     set({ budgetId });
     
-    // Debounced update to avoid rapid fire calls
-    setTimeout(async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: internalUser } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .single();
-
-        if (!internalUser) return;
-
-        await supabase
-          .from('user_preferences')
-          .upsert({
-            user_id: internalUser.id,
-            last_budget_id: budgetId
-          });
-      } catch (error) {
-        console.error('Error updating budget preference:', error);
-      }
-    }, 100);
+    if (!currentState.userId || currentState.updateInProgress) return;
+    
+    get().setUserContext({ budgetId });
   },
 
   clearUserContext: () => {
@@ -222,7 +189,28 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
       if (prefsError || !prefs) {
         console.log('Preferencias no encontradas para usuario:', dbUser.id);
         
-        // Try to create default preferences by finding user's first organization
+        // Check for existing preferences again to avoid race conditions
+        const { data: existingPrefs } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('user_id', dbUser.id)
+          .maybeSingle();
+
+        if (existingPrefs) {
+          console.log('Preferencias encontradas en segunda verificación:', existingPrefs);
+          set({
+            organizationId: existingPrefs.last_organization_id,
+            projectId: existingPrefs.last_project_id,
+            budgetId: existingPrefs.last_budget_id,
+            planId: null,
+            userId: dbUser.id,
+            isLoading: false,
+            isInitialized: true,
+          });
+          return;
+        }
+        
+        // Only create if absolutely no preferences exist
         const { data: orgMembership } = await supabase
           .from('organization_members')
           .select('organization_id')
@@ -231,8 +219,9 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
           .maybeSingle();
 
         if (orgMembership?.organization_id) {
-          console.log('Creando preferencias por defecto con organización:', orgMembership.organization_id);
+          console.log('Intentando crear preferencias por defecto con organización:', orgMembership.organization_id);
           
+          // Try to insert, but handle potential duplicates gracefully
           const { data: newPrefs, error: createError } = await supabase
             .from('user_preferences')
             .insert({
@@ -240,32 +229,63 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
               last_organization_id: orgMembership.organization_id,
             })
             .select()
-            .single();
+            .maybeSingle();
 
           if (createError) {
-            console.error('Error creando preferencias:', createError);
-            set({ isLoading: false, isInitialized: true });
+            console.log('No se pudo crear preferencias (posiblemente ya existen):', createError.message);
+            
+            // Try one more time to fetch existing preferences
+            const { data: finalCheck } = await supabase
+              .from('user_preferences')
+              .select('*')
+              .eq('user_id', dbUser.id)
+              .limit(1)
+              .maybeSingle();
+
+            if (finalCheck) {
+              console.log('Usando preferencias existentes encontradas:', finalCheck);
+              set({
+                organizationId: finalCheck.last_organization_id,
+                projectId: finalCheck.last_project_id,
+                budgetId: finalCheck.last_budget_id,
+                planId: null,
+                userId: dbUser.id,
+                isLoading: false,
+                isInitialized: true,
+              });
+              return;
+            }
+
+            // If still no preferences, continue with basic setup
+            set({
+              organizationId: orgMembership.organization_id,
+              userId: dbUser.id,
+              isLoading: false,
+              isInitialized: true,
+            });
             return;
           }
 
-          console.log('Preferencias creadas exitosamente:', newPrefs);
-          
-          set({
-            organizationId: newPrefs.last_organization_id,
-            projectId: null,
-            budgetId: null,
-            planId: null,
-            userId: dbUser.id,
-            isLoading: false,
-            isInitialized: true,
-          });
+          if (newPrefs) {
+            console.log('Preferencias creadas exitosamente:', newPrefs);
+            
+            set({
+              organizationId: newPrefs.last_organization_id,
+              projectId: newPrefs.last_project_id,
+              budgetId: newPrefs.last_budget_id,
+              planId: null,
+              userId: dbUser.id,
+              isLoading: false,
+              isInitialized: true,
+            });
 
-          console.log('User context initialized successfully with new preferences');
-          return;
+            console.log('User context initialized successfully');
+            return;
+          }
         }
         
         console.log('No se encontró membresía de organización para el usuario');
-        set({ isLoading: false, isInitialized: true });
+        set({ userId: dbUser.id, isLoading: false, isInitialized: true });
         return;
       }
 
