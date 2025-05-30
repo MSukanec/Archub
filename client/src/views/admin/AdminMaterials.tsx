@@ -215,7 +215,7 @@ export default function AdminMaterials() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
