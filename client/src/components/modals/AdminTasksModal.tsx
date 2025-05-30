@@ -135,12 +135,19 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
   // Helper functions to filter categories
   const getMainCategories = () => allCategories.filter(cat => cat.parent_id === null);
-  const getSubcategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parseInt(parentId));
-  const getElementCategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parseInt(parentId));
+  const getSubcategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parentId);
+  const getElementCategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parentId);
 
   // Calculate filtered categories based on current selection
   const subcategoriesFiltered = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
   const elementCategoriesFiltered = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
+
+  // Debug logs
+  console.log('All categories:', allCategories);
+  console.log('Selected category ID:', selectedCategoryId);
+  console.log('Subcategories filtered:', subcategoriesFiltered);
+  console.log('Selected subcategory ID:', selectedSubcategoryId);
+  console.log('Element categories filtered:', elementCategoriesFiltered);
 
   // Generate task name from action and element
   const generateTaskName = (actionId: string, elementId: string) => {
