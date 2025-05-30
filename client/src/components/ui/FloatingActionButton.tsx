@@ -69,6 +69,10 @@ const useModalActions = () => {
     window.dispatchEvent(new CustomEvent('openCreateActionModal'));
   };
 
+  const openCreateEventModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateEventModal'));
+  };
+
   return {
     openCreateProjectModal,
     openCreateMovementModal,
@@ -83,6 +87,7 @@ const useModalActions = () => {
     openCreateUnitModal,
     openCreateElementModal,
     openCreateActionModal,
+    openCreateEventModal,
     openInviteTeamMemberModal,
   };
 };
@@ -117,6 +122,7 @@ export default function FloatingActionButton() {
     'movements-main': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
     'transactions': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
     'contacts': { label: 'Crear Contacto', action: modalActions.openCreateContactModal },
+    'calendar': { label: 'Crear Evento', action: modalActions.openCreateEventModal },
     'admin-organizations': { label: 'Crear Organización', action: modalActions.openCreateOrganizationModal },
     'admin-users': { label: 'Crear Usuario', action: modalActions.openCreateUserModal },
     'admin-categories': { label: 'Crear Categoría', action: modalActions.openCreateCategoryModal },

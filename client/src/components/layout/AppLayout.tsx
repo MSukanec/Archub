@@ -28,6 +28,7 @@ import AdminUsers from '@/views/AdminUsers';
 import AdminCategories from '@/views/AdminCategories';
 import AdminMaterials from '@/views/AdminMaterials';
 import AdminTasks from '@/views/AdminTasks';
+import Calendar from '@/views/Calendar';
 
 import ProfileInfo from '@/views/ProfileInfo';
 import ProfileSubscription from '@/views/ProfileSubscription';
@@ -54,6 +55,7 @@ const viewComponents = {
   'movements-main': Movements,
   'transactions': Movements,
   'contacts': Contacts,
+  'calendar': Calendar,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
   'admin-categories': AdminCategories,

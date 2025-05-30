@@ -16,6 +16,7 @@ export type View =
   | 'movements-main'
   | 'transactions'
   | 'contacts'
+  | 'calendar'
   | 'admin-organizations'
   | 'admin-users'
   | 'admin-categories'
