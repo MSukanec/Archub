@@ -389,20 +389,14 @@ const AdminCategories = () => {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <AdminCategoriesModal
-          category={editingCategory}
-          onClose={() => {
-            setShowModal(false);
-            setEditingCategory(null);
-          }}
-          onSuccess={() => {
-            setShowModal(false);
-            setEditingCategory(null);
-            queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-          }}
-        />
-      )}
+      <AdminCategoriesModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingCategory(null);
+        }}
+        category={editingCategory}
+      />
     </div>
   );
 };
