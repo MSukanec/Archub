@@ -7,19 +7,19 @@ import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 
-import Dashboard from '@/views/Dashboard';
-import DashboardTimeline from '@/views/DashboardTimeline';
+import Dashboard from '@/views/dashboard/Dashboard';
+import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
 
-import Organization from '@/views/Organization';
-import OrganizationTeam from '@/views/OrganizationTeam';
-import ProjectsList from '@/views/ProjectsList';
-import SiteLogs from '@/views/SiteLogs';
-import Budgets from '@/views/Budgets';
-import BudgetTasks from '@/views/BudgetTasks';
-import BudgetMaterials from '@/views/BudgetMaterials';
-import Movements from '@/views/Movements';
-import Contacts from '@/views/Contacts';
-import Organizations from '@/views/Organizations';
+import Organization from '@/views/organization/Organization';
+import OrganizationTeam from '@/views/organization/OrganizationTeam';
+import ProjectsList from '@/views/project/ProjectsList';
+import SiteLogs from '@/views/sitelog/SiteLogs';
+import Budgets from '@/views/budget/Budgets';
+import BudgetTasks from '@/views/budget/BudgetTasks';
+import BudgetMaterials from '@/views/budget/BudgetMaterials';
+import Movements from '@/views/movements/Movements';
+import Contacts from '@/views/contacts/Contacts';
+import Organizations from '@/views/organization/Organizations';
 import AdminOrganizations from '@/views/admin/AdminOrganizations';
 import AdminUnits from '@/views/admin/AdminUnits';
 import AdminElements from '@/views/admin/AdminElements';
@@ -29,11 +29,11 @@ import AdminCategories from '@/views/admin/AdminCategories';
 import AdminMaterialCategories from '@/views/admin/AdminMaterialCategories';
 import AdminMaterials from '@/views/admin/AdminMaterials';
 import AdminTasks from '@/views/admin/AdminTasks';
-import Calendar from '@/views/Calendar';
+import Calendar from '@/views/dashboard/Calendar';
 
-import ProfileInfo from '@/views/ProfileInfo';
-import ProfileSubscription from '@/views/ProfileSubscription';
-import SubscriptionTables from '@/views/SubscriptionTables';
+import ProfileInfo from '@/views/profile/ProfileInfo';
+import ProfileSubscription from '@/views/profile/ProfileSubscription';
+import SubscriptionTables from '@/views/profile/SubscriptionTables';
 
 import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
