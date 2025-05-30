@@ -19,7 +19,10 @@ const materialSchema = z.object({
     required_error: 'Debes seleccionar una unidad',
     invalid_type_error: 'Debes seleccionar una unidad',
   }).min(1, 'La unidad es obligatoria'),
-  category_id: z.string().optional(),
+  category_id: z.string({
+    required_error: 'Debes seleccionar una categoría',
+    invalid_type_error: 'Debes seleccionar una categoría',
+  }).min(1, 'La categoría es obligatoria'),
   cost: z.coerce.number().min(0, 'El costo debe ser mayor o igual a 0').optional(),
 });
 
@@ -39,7 +42,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     defaultValues: {
       name: '',
       unit_id: '',
-      category_id: 'none',
+      category_id: '',
       cost: 0,
     },
   });
