@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, Calendar } from 'lucide-react';
+import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -36,10 +36,14 @@ import AdminTasksModal from '@/components/modals/AdminTasksModal';
 export default function AdminTasks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
+  
+  const ITEMS_PER_PAGE = 10;
 
   // Event listener for floating action button
   useEffect(() => {
@@ -103,14 +107,30 @@ export default function AdminTasks() {
     setIsDeleteDialogOpen(true);
   };
 
-  const filteredTasks = tasks.filter((task: any) => {
+  const filteredAndSortedTasks = tasks.filter((task: any) => {
     const matchesSearch = (task.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (task.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (task.unit?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesSearch;
+  }).sort((a: any, b: any) => {
+    if (sortOrder === 'newest') {
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    } else {
+      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+    }
   });
+
+  const totalPages = Math.ceil(filteredAndSortedTasks.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedTasks = filteredAndSortedTasks.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminTasksSkeleton />;
@@ -131,14 +151,57 @@ export default function AdminTasks() {
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Buscar tareas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-background border-border rounded-xl"
-          />
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar tareas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-background border-border rounded-xl"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-2">
+              <div className="space-y-2">
+                <Button
+                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('newest')}
+                  className="w-full justify-start"
+                >
+                  Más reciente primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('oldest')}
+                  className="w-full justify-start"
+                >
+                  Más antiguo primero
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -155,7 +218,7 @@ export default function AdminTasks() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTasks.length === 0 ? (
+            {paginatedTasks.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
@@ -165,7 +228,7 @@ export default function AdminTasks() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredTasks.map((task: any) => (
+              paginatedTasks.map((task: any) => (
                 <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
                     <Badge variant="outline" className="bg-muted/50">
