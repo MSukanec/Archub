@@ -43,7 +43,11 @@ export default function AdminTasks() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')
-        .select('*')
+        .select(`
+          *,
+          category:task_categories!category_id(name),
+          unit:units!unit_id(name, symbol)
+        `)
         .order('name', { ascending: true });
       
       if (error) {
@@ -86,21 +90,11 @@ export default function AdminTasks() {
 
   const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch = (task.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+                         (task.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (task.unit?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    let matchesDate = true;
-    if (dateFilter && task.created_at) {
-      try {
-        const taskDate = new Date(task.created_at);
-        if (!isNaN(taskDate.getTime())) {
-          matchesDate = format(taskDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-        }
-      } catch (e) {
-        matchesDate = false;
-      }
-    }
-    
-    return matchesSearch && matchesDate;
+    return matchesSearch;
   });
 
   if (isLoading) {
@@ -126,50 +120,14 @@ export default function AdminTasks() {
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar tareas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
-            />
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
-                  !dateFilter && "text-muted-foreground"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar tareas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-background border-border rounded-xl"
+          />
         </div>
       </div>
 
@@ -177,11 +135,11 @@ export default function AdminTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Tarea</TableHead>
               <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-12">Unidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12">Precio Mano de Obra</TableHead>
               <TableHead className="text-foreground font-semibold h-12">Precio Material</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha</TableHead>
               <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -199,19 +157,23 @@ export default function AdminTasks() {
               filteredTasks.map((task: any) => (
                 <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {task.category?.name || 'Sin categoría'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
                         <CheckSquare className="w-5 h-5 text-primary" />
                       </div>
                       <div>
                         <div className="font-medium text-foreground">{task.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {task.id.slice(0, 8)}...</div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="py-4">
                     <Badge variant="outline" className="bg-muted/50">
-                      {task.category_id ? `Categoría: ${task.category_id.slice(0, 8)}...` : 'Sin categoría'}
+                      {task.unit?.name || 'Sin unidad'} ({task.unit?.symbol || 'N/A'})
                     </Badge>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
@@ -225,9 +187,6 @@ export default function AdminTasks() {
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}
                     </div>
-                  </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    {task.created_at ? format(new Date(task.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
                   </TableCell>
                   <TableCell className="text-right py-4">
                     <div className="flex items-center justify-end gap-2">
