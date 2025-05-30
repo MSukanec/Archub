@@ -592,41 +592,89 @@ function DashboardTimeline() {
                 }}
               />
 
-              {/* Date labels - top */}
+              {/* Date labels - top (aligned with dashboard button) */}
               <div 
-                className="absolute flex flex-col items-center z-30"
+                className="absolute flex flex-col items-center text-center z-30"
                 style={{
-                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2 + 10}px` : '-350px',
+                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2 - 15}px` : '-380px',
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
                 {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
-                  <>
-                    <div className="text-xs font-bold text-foreground/40">{(formatDate(node.date) as any).dayName}</div>
-                    <div className="text-lg font-bold text-foreground/60">{(formatDate(node.date) as any).dayNumber}</div>
-                  </>
+                  <div className="bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset">
+                    <div 
+                      className="text-xs font-medium text-foreground/50"
+                      style={{ 
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+                        fontWeight: 500
+                      }}
+                    >
+                      {(formatDate(node.date) as any).dayName}
+                    </div>
+                    <div 
+                      className="text-lg font-bold text-foreground/70"
+                      style={{ 
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+                        fontWeight: 600
+                      }}
+                    >
+                      {(formatDate(node.date) as any).dayNumber}
+                    </div>
+                  </div>
                 ) : (
-                  <div className="text-xs font-medium text-foreground/40">{formatDate(node.date)}</div>
+                  <div 
+                    className="text-xs font-medium text-foreground/50 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset"
+                    style={{ 
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+                      fontWeight: 500
+                    }}
+                  >
+                    {formatDate(node.date)}
+                  </div>
                 )}
               </div>
 
-              {/* Date labels - bottom */}
+              {/* Date labels - bottom (aligned with profile button) */}
               <div 
-                className="absolute flex flex-col items-center z-30"
+                className="absolute flex flex-col items-center text-center z-30"
                 style={{
-                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile + 10}px` : '50px',
+                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile - 15}px` : '20px',
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
                 {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
-                  <>
-                    <div className="text-lg font-bold text-foreground/60">{(formatDate(node.date) as any).dayNumber}</div>
-                    <div className="text-xs font-bold text-foreground/40">{(formatDate(node.date) as any).dayName}</div>
-                  </>
+                  <div className="bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset">
+                    <div 
+                      className="text-lg font-bold text-foreground/70"
+                      style={{ 
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+                        fontWeight: 600
+                      }}
+                    >
+                      {(formatDate(node.date) as any).dayNumber}
+                    </div>
+                    <div 
+                      className="text-xs font-medium text-foreground/50"
+                      style={{ 
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+                        fontWeight: 500
+                      }}
+                    >
+                      {(formatDate(node.date) as any).dayName}
+                    </div>
+                  </div>
                 ) : (
-                  <div className="text-xs font-medium text-foreground/40">{formatDate(node.date)}</div>
+                  <div 
+                    className="text-xs font-medium text-foreground/50 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-inset"
+                    style={{ 
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+                      fontWeight: 500
+                    }}
+                  >
+                    {formatDate(node.date)}
+                  </div>
                 )}
               </div>
 
