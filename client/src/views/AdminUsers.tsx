@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Users, Search, Plus, Edit, Trash2, Shield, Mail, Calendar } from 'lucide-react';
@@ -42,8 +42,22 @@ export default function AdminUsers() {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   
   // State for modals
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateUserModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateUserModal', handleOpenCreateUserModal);
+    return () => {
+      window.removeEventListener('openCreateUserModal', handleOpenCreateUserModal);
+    };
+  }, []);
 
   // Fetch users
   const { data: users = [], isLoading, error } = useQuery({
