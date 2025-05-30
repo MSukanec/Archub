@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Ruler } from 'lucide-react';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -118,7 +119,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="flex-1 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+        className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
       >
         Cancelar
       </Button>
@@ -126,7 +127,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
         type="submit"
         form="unit-form"
         disabled={isSubmitting}
-        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+        className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
       >
         {isSubmitting ? 'Guardando...' : (unit ? 'Actualizar' : 'Crear')}
       </Button>
@@ -138,6 +139,8 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
       isOpen={isOpen}
       onClose={handleClose}
       title={unit ? 'Editar Unidad' : 'Crear Nueva Unidad'}
+      subtitle="Gestiona las unidades de medida utilizadas en el proyecto"
+      icon={<Ruler className="w-5 h-5" />}
       footer={footer}
     >
       <Form {...form}>
@@ -147,10 +150,10 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-foreground">Nombre</FormLabel>
+                <FormLabel className="text-sm font-medium text-foreground">Símbolo</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ej: Metro, Kilogramo, etc."
+                    placeholder="Ej: m, kg, etc."
                     className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
@@ -168,7 +171,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
                 <FormLabel className="text-sm font-medium text-foreground">Descripción</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ej: m, kg, etc."
+                    placeholder="Ej: Metro, Kilogramo, etc."
                     className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />

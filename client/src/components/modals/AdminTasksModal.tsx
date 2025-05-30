@@ -93,9 +93,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       name: task?.name || '',
       unit_labor_price: task?.unit_labor_price?.toString() || '',
       unit_material_price: task?.unit_material_price?.toString() || '',
-      category_id: task?.category_id || null,
-      subcategory_id: task?.subcategory_id || null,
-      element_category_id: task?.element_category_id || null,
+      category_id: task?.category_id || undefined,
+      subcategory_id: task?.subcategory_id || undefined,
+      element_category_id: task?.element_category_id || undefined,
     },
   });
 
@@ -111,9 +111,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         name: task.name || '',
         unit_labor_price: task.unit_labor_price?.toString() || '',
         unit_material_price: task.unit_material_price?.toString() || '',
-        category_id: task.category_id || null,
-        subcategory_id: task.subcategory_id || null,
-        element_category_id: task.element_category_id || null,
+        category_id: task.category_id || undefined,
+        subcategory_id: task.subcategory_id || undefined,
+        element_category_id: task.element_category_id || undefined,
       });
       
       if (task.category_id) {
@@ -200,9 +200,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       name: '',
       unit_labor_price: '',
       unit_material_price: '',
-      category_id: null,
-      subcategory_id: null,
-      element_category_id: null,
+      category_id: undefined,
+      subcategory_id: undefined,
+      element_category_id: undefined,
     });
     
     setSelectedCategoryId('');
