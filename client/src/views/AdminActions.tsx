@@ -140,13 +140,6 @@ export default function AdminActions() {
             <p className="text-sm text-muted-foreground">Administra todas las acciones del sistema</p>
           </div>
         </div>
-
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="fixed bottom-6 right-[calc(50%-90px)] bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 z-50 flex items-center justify-center"
-        >
-          <Plus className="w-6 h-6" />
-        </Button>
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">

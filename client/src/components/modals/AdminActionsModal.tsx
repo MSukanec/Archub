@@ -14,7 +14,6 @@ import { supabase } from '@/lib/supabase';
 
 const actionSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
-  description: z.string().optional(),
 });
 
 type ActionFormData = z.infer<typeof actionSchema>;
@@ -38,7 +37,6 @@ export default function AdminActionsModal({
     resolver: zodResolver(actionSchema),
     defaultValues: {
       name: '',
-      description: '',
     },
   });
 
@@ -47,7 +45,6 @@ export default function AdminActionsModal({
     if (isOpen) {
       form.reset({
         name: action?.name || '',
-        description: action?.description || '',
       });
     }
   }, [action, isOpen, form]);
@@ -56,7 +53,10 @@ export default function AdminActionsModal({
     mutationFn: async (data: ActionFormData) => {
       const { error } = await supabase
         .from('actions')
-        .insert([data]);
+        .insert([{
+          ...data,
+          created_at: new Date().toISOString()
+        }]);
       
       if (error) throw error;
     },
@@ -171,23 +171,7 @@ export default function AdminActionsModal({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Descripción (Opcional)</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Describe el propósito de esta acción..."
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
         </form>
       </Form>
     </ModernModal>
