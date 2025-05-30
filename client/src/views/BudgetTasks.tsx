@@ -290,7 +290,7 @@ export default function BudgetTasks() {
             <div className="overflow-hidden border border-gray-300 rounded-lg">
               {/* Table Header */}
               <div className="bg-gray-100 border-b border-gray-300 p-4">
-                <div className="grid grid-cols-8 gap-4 font-medium text-sm text-gray-700">
+                <div className="grid grid-cols-9 gap-4 font-medium text-sm text-gray-700">
                   <div className="col-span-1 text-center">Rubro</div>
                   <div className="col-span-2 text-center">Descripción</div>
                   <div className="col-span-1 text-center">Unidad</div>
@@ -298,6 +298,7 @@ export default function BudgetTasks() {
                   <div className="col-span-1 text-center">Costo M.O.</div>
                   <div className="col-span-1 text-center">Subtotal</div>
                   <div className="col-span-1 text-center">% Inc.</div>
+                  <div className="col-span-1 text-center">Acciones</div>
                 </div>
               </div>
               
@@ -312,7 +313,7 @@ export default function BudgetTasks() {
                   return (
                     <div key={categoryName}>
                       {/* Category Header */}
-                      <div className="bg-blue-100 border-b border-blue-200 p-3 font-bold text-sm text-blue-800">
+                      <div className="bg-[#787878] border-b border-gray-400 p-3 font-bold text-sm text-white">
                         <div className="flex justify-between items-center">
                           <span>{categoryName.toUpperCase()}</span>
                           <span>${categoryTotal.toFixed(2)}</span>
@@ -329,7 +330,7 @@ export default function BudgetTasks() {
                         return (
                           <div 
                             key={budgetTask.id} 
-                            className={`grid grid-cols-8 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 ${
+                            className={`grid grid-cols-9 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 ${
                               index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                             }`}
                           >
@@ -361,19 +362,21 @@ export default function BudgetTasks() {
                             <div className="col-span-1 text-sm font-medium text-center">
                               ${budgetTask.unit_labor_price?.toFixed(2) || '0.00'}
                             </div>
-                            <div className="col-span-1 text-sm font-bold text-center flex items-center justify-center">
-                              <span>${subtotal.toFixed(2)}</span>
+                            <div className="col-span-1 text-sm font-bold text-center">
+                              ${subtotal.toFixed(2)}
+                            </div>
+                            <div className="col-span-1 text-sm text-center">
+                              {incidencePercentage.toFixed(1)}%
+                            </div>
+                            <div className="col-span-1 flex justify-center">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => deleteTaskMutation.mutate(budgetTask.id)}
-                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 ml-2"
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                               >
                                 <Trash2 className="h-3 w-3" />
                               </Button>
-                            </div>
-                            <div className="col-span-1 text-sm text-center">
-                              {incidencePercentage.toFixed(1)}%
                             </div>
                           </div>
                         );
@@ -384,15 +387,16 @@ export default function BudgetTasks() {
               </div>
               
               {/* Total Row */}
-              <div className="bg-green-50 border-t-2 border-green-200 p-4 font-bold">
-                <div className="grid grid-cols-8 gap-4">
-                  <div className="col-span-5 text-right text-lg">
+              <div className="bg-black border-t-2 border-gray-600 p-4 font-bold">
+                <div className="grid grid-cols-9 gap-4">
+                  <div className="col-span-5"></div>
+                  <div className="col-span-1 text-lg text-white text-center">
                     TOTAL GENERAL:
                   </div>
-                  <div className="col-span-1 text-lg text-green-600 text-center">
+                  <div className="col-span-1 text-lg text-white text-center">
                     ${totalGeneral.toFixed(2)}
                   </div>
-                  <div className="col-span-1 text-lg text-green-600 text-center">
+                  <div className="col-span-1 text-lg text-white text-center">
                     100%
                   </div>
                   <div className="col-span-1"></div>
