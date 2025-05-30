@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Package, Search, Plus, Edit, Trash2, DollarSign, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Package, Search, Plus, Edit, Trash2, DollarSign, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -248,7 +248,7 @@ export default function AdminMaterials() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredMaterials.length === 0 ? (
+            {paginatedMaterials.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm 
@@ -258,7 +258,7 @@ export default function AdminMaterials() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredMaterials.map((material: any) => (
+              paginatedMaterials.map((material: any) => (
                 <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="text-center py-4">
                     <Badge variant="secondary" className="bg-muted/50">
