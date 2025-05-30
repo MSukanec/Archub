@@ -448,7 +448,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
                 <div className="space-y-2">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
                       <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                         <SelectValue placeholder="Material" />

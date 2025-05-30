@@ -71,7 +71,7 @@ export default function FloatingHeader() {
               key={view.id}
               onClick={() => setView(view.id as any)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 h-9 whitespace-nowrap",
+                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 h-9 whitespace-nowrap shadow-lg hover:shadow-xl",
                 currentView === view.id
                   ? "bg-black text-white shadow-md"
                   : "text-[#919191] hover:text-[#8fc700] hover:bg-[#8fc700]/10"
