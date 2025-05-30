@@ -123,24 +123,24 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
           <Badge variant="outline" className="font-mono text-xs bg-primary/10 text-primary border-primary/20">
             {category.code}
           </Badge>
-          <span className="font-medium text-gray-900">{category.name}</span>
+          <span className="font-normal text-gray-900">{category.name}</span>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => onEdit(category)}
-            className="h-8 w-8 p-0 text-gray-500 hover:text-blue-600"
+            className="h-8 w-8 p-0 border-[#919191]/20 bg-[#e1e1e1] hover:bg-gray-300 text-blue-600 hover:text-blue-700"
           >
             <Edit className="h-4 w-4" />
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => onDelete(category.id)}
-            className="h-8 w-8 p-0 text-gray-500 hover:text-red-600"
+            className="h-8 w-8 p-0 border-[#919191]/20 bg-[#e1e1e1] hover:bg-red-200 text-red-600 hover:text-red-700"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -443,10 +443,37 @@ const AdminCategories = () => {
     setShowModal(true);
   };
 
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (categoryId: string) => {
+      const { error } = await supabase
+        .from('task_categories')
+        .delete()
+        .eq('id', categoryId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
+      toast({
+        title: "Éxito",
+        description: "Categoría eliminada correctamente.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la categoría.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Handle delete
   const handleDelete = (categoryId: string) => {
-    // Implement delete logic
-    console.log('Delete category:', categoryId);
+    if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
+      deleteMutation.mutate(categoryId);
+    }
   };
 
   // Handle add new
