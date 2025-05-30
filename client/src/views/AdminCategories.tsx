@@ -144,12 +144,7 @@ export default function AdminCategories() {
             </p>
           </div>
         </div>
-        <Button
-          className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva Categoría
-        </Button>
+
       </div>
 
       {/* Search and Filters */}
@@ -206,16 +201,14 @@ export default function AdminCategories() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Descripción</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha de creación</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredCategories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron categorías que coincidan con los filtros.'
                     : 'No hay categorías registradas.'
@@ -225,18 +218,10 @@ export default function AdminCategories() {
             ) : (
               filteredCategories.map((category: any) => (
                 <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{category.name}</div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4 max-w-xs">
-                    <div className="truncate">
-                      {category.description || 'Sin descripción'}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    {category.created_at ? format(new Date(category.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
-                  </TableCell>
-                  <TableCell className="text-right py-4">
+                  <TableCell className="text-center py-4">
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"

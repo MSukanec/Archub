@@ -141,12 +141,7 @@ export default function AdminMaterials() {
             </p>
           </div>
         </div>
-        <Button
-          className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Material
-        </Button>
+
       </div>
 
       {/* Search and Filters */}
@@ -203,17 +198,16 @@ export default function AdminMaterials() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Material</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Precio</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Material</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Precio</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredMaterials.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron materiales que coincidan con los filtros.'
                     : 'No hay materiales registrados.'
@@ -223,25 +217,22 @@ export default function AdminMaterials() {
             ) : (
               filteredMaterials.map((material: any) => (
                 <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{material.name}</div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
+                  <TableCell className="text-center py-4">
                     <Badge variant="outline" className="bg-muted/50">
                       {material.unit || 'No especificada'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {material.price ? material.price.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    {material.created_at ? format(new Date(material.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
-                  </TableCell>
-                  <TableCell className="text-right py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
