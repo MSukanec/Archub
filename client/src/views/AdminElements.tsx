@@ -181,8 +181,8 @@ export default function AdminElements() {
             <Shapes className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Gestión de Elementos</h1>
-            <p className="text-sm text-muted-foreground">Administra todos los elementos del sistema</p>
+            <h1 className="text-2xl font-semibold text-foreground">Gestión de Acciones</h1>
+            <p className="text-sm text-muted-foreground">Administra todas las acciones del sistema</p>
           </div>
         </div>
 
@@ -199,7 +199,7 @@ export default function AdminElements() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Buscar elementos..."
+              placeholder="Buscar acciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-10 bg-background border-border rounded-xl"
