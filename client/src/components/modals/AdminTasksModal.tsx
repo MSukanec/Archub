@@ -180,8 +180,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
   // Generate task name from action and element
   const generateTaskName = (actionId: string, elementId: string) => {
-    const action = actions.find(a => a.id === actionId);
-    const element = taskElements.find(e => e.id === elementId);
+    const action = actions.find((a: any) => a.id === actionId);
+    const element = taskElements.find((e: any) => e.id === elementId);
     
     if (action && element) {
       return `${action.name} de ${element.name}.`;
@@ -226,12 +226,9 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       if (task.element_category_id) {
         setSelectedElementCategoryId(task.element_category_id);
       }
-      if (task.action_id) {
-        setSelectedActionId(task.action_id);
-      }
-      if (task.element_id) {
-        setSelectedElementId(task.element_id);
-      }
+      // Set text fields for action and element
+      setActionText(task.action_id || '');
+      setElementText(task.element_id || '');
     } else {
       form.reset({
         name: '',
@@ -247,6 +244,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       setSelectedCategoryId('');
       setSelectedSubcategoryId('');
       setSelectedElementCategoryId('');
+      setActionText('');
+      setElementText('');
     }
   }, [task, form]);
 
