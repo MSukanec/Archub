@@ -32,6 +32,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminCategoriesModal from '@/components/modals/AdminCategoriesModal';
 
 export default function AdminCategories() {
   const { toast } = useToast();
@@ -115,6 +116,12 @@ export default function AdminCategories() {
   const handleDelete = (category: any) => {
     setSelectedCategory(category);
     setIsDeleteDialogOpen(true);
+  };
+
+  // Handle edit
+  const handleEdit = (category: any) => {
+    setSelectedCategory(category);
+    setIsEditModalOpen(true);
   };
 
   // Filter categories based on search and date
@@ -291,6 +298,22 @@ export default function AdminCategories() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Category Modal */}
+      <AdminCategoriesModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Category Modal */}
+      <AdminCategoriesModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedCategory(null);
+        }}
+        category={selectedCategory}
+      />
     </div>
   );
 }
