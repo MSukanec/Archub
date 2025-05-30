@@ -53,6 +53,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const queryClient = useQueryClient();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
+  const [selectedElementCategoryId, setSelectedElementCategoryId] = useState<string>('');
+  const [selectedActionId, setSelectedActionId] = useState<string>('');
+  const [selectedElementId, setSelectedElementId] = useState<string>('');
+  const [generatedName, setGeneratedName] = useState<string>('');
   const [taskMaterials, setTaskMaterials] = useState<TaskMaterial[]>([]);
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>('');
   const [materialQuantity, setMaterialQuantity] = useState<string>('');
@@ -87,6 +91,36 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     enabled: isOpen,
   });
 
+  // Fetch actions from Supabase
+  const { data: actions = [] } = useQuery({
+    queryKey: ['actions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('actions')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
+  // Fetch task elements from Supabase
+  const { data: taskElements = [] } = useQuery({
+    queryKey: ['task-elements'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('task_elements')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
   const form = useForm<FormData>({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
@@ -103,6 +137,29 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const getMainCategories = () => allCategories.filter(cat => cat.parent_id === null);
   const getSubcategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parseInt(parentId));
   const getElementCategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parseInt(parentId));
+
+  // Generate task name from action and element
+  const generateTaskName = (actionId: string, elementId: string) => {
+    const action = actions.find(a => a.id === actionId);
+    const element = taskElements.find(e => e.id === elementId);
+    
+    if (action && element) {
+      return `${action.name} de ${element.name}.`;
+    }
+    return '';
+  };
+
+  // Update generated name when action or element changes
+  useEffect(() => {
+    if (selectedActionId && selectedElementId) {
+      const name = generateTaskName(selectedActionId, selectedElementId);
+      setGeneratedName(name);
+      form.setValue('name', name);
+    } else {
+      setGeneratedName('');
+      form.setValue('name', '');
+    }
+  }, [selectedActionId, selectedElementId, actions, taskElements, form]);
 
   // Reset form when task changes
   useEffect(() => {
