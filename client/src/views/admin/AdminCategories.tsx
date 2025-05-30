@@ -1,135 +1,191 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { FolderOpen, Search, Plus, Edit, Trash2, Tag, ChevronDown } from 'lucide-react';
+import { FolderOpen, Search, Plus, Edit, Trash2, ChevronRight, ChevronDown, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import AdminCategoriesModal from '@/components/modals/AdminCategoriesModal';
 
-export default function AdminCategories() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  
-  // State for search and filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  
-  // State for modals
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+interface Category {
+  id: string;
+  name: string;
+  code: string;
+  parent_id: string | null;
+  position: number;
+  children?: Category[];
+}
 
-  // Event listener for floating action button
-  useEffect(() => {
-    const handleOpenCreateCategoryModal = () => {
-      setIsCreateModalOpen(true);
-    };
+interface TreeNodeProps {
+  category: Category;
+  level: number;
+  onEdit: (category: Category) => void;
+  onDelete: (categoryId: string) => void;
+  expandedNodes: Set<string>;
+  onToggleExpand: (nodeId: string) => void;
+}
 
-    window.addEventListener('openCreateCategoryModal', handleOpenCreateCategoryModal);
-    return () => {
-      window.removeEventListener('openCreateCategoryModal', handleOpenCreateCategoryModal);
-    };
-  }, []);
+const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleExpand }: TreeNodeProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
 
-  // Fetch categories
-  const { data: categories = [], isLoading, error } = useQuery({
-    queryKey: ['/api/admin/categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('task_categories')
-        .select('*')
-        .order('name', { ascending: true });
-      
-      if (error) throw error;
-      return data || [];
-    },
-    retry: 1,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
-  // Handle errors
-  if (error) {
-    console.error('Error loading categories:', error);
-    return (
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <FolderOpen className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                Gestión de Categorías
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Administra todas las categorías del sistema
-              </p>
-            </div>
-          </div>
+  const hasChildren = category.children && category.children.length > 0;
+  const isExpanded = expandedNodes.has(category.id);
+  const paddingLeft = level * 24 + 12;
+
+  return (
+    <div ref={setNodeRef} style={style} className="w-full">
+      <div 
+        className="flex items-center gap-2 p-3 bg-white border-b border-gray-100 hover:bg-gray-50 group"
+        style={{ paddingLeft: `${paddingLeft}px` }}
+      >
+        {/* Drag Handle */}
+        <div 
+          {...attributes} 
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <GripVertical className="h-4 w-4 text-gray-400" />
         </div>
-        
-        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              Error al cargar categorías
-            </h3>
-            <p className="text-muted-foreground max-w-md">
-              No se pudieron cargar las categorías. Intenta recargar la página.
-            </p>
-          </div>
+
+        {/* Expand/Collapse Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0"
+          onClick={() => hasChildren && onToggleExpand(category.id)}
+          disabled={!hasChildren}
+        >
+          {hasChildren ? (
+            isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )
+          ) : (
+            <div className="h-4 w-4" />
+          )}
+        </Button>
+
+        {/* Category Info */}
+        <div className="flex-1 flex items-center gap-3">
+          <Badge variant="outline" className="font-mono text-xs bg-blue-50 text-blue-700 border-blue-200">
+            {category.code}
+          </Badge>
+          <span className="font-medium text-gray-900">{category.name}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(category)}
+            className="h-8 w-8 p-0 text-gray-500 hover:text-blue-600"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(category.id)}
+            className="h-8 w-8 p-0 text-gray-500 hover:text-red-600"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       </div>
-    );
-  }
 
-  // Handle delete
-  const handleDelete = (category: any) => {
-    setSelectedCategory(category);
-    setIsDeleteDialogOpen(true);
+      {/* Children */}
+      {hasChildren && isExpanded && (
+        <div>
+          {category.children!.map((child) => (
+            <TreeNode
+              key={child.id}
+              category={child}
+              level={level + 1}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              expandedNodes={expandedNodes}
+              onToggleExpand={onToggleExpand}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AdminCategories = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [showModal, setShowModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch categories
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ['/api/categories'],
+  });
+
+  // Build tree structure
+  const buildTree = (categories: Category[]): Category[] => {
+    const categoryMap = new Map<string, Category>();
+    const rootCategories: Category[] = [];
+
+    // First pass: create map and initialize children arrays
+    categories.forEach(category => {
+      categoryMap.set(category.id, { ...category, children: [] });
+    });
+
+    // Second pass: build tree structure
+    categories.forEach(category => {
+      const node = categoryMap.get(category.id)!;
+      if (category.parent_id && categoryMap.has(category.parent_id)) {
+        const parent = categoryMap.get(category.parent_id)!;
+        parent.children!.push(node);
+      } else {
+        rootCategories.push(node);
+      }
+    });
+
+    // Sort by position
+    const sortByPosition = (items: Category[]) => {
+      items.sort((a, b) => a.position - b.position);
+      items.forEach(item => {
+        if (item.children && item.children.length > 0) {
+          sortByPosition(item.children);
+        }
+      });
+    };
+
+    sortByPosition(rootCategories);
+    return rootCategories;
   };
 
-  // Handle edit
-  const handleEdit = (category: any) => {
-    setSelectedCategory(category);
-    setIsEditModalOpen(true);
-  };
+  const treeData = buildTree(categories as Category[]);
 
-  // Get unique parent categories for filter
-  const parentCategories = categories.filter((cat: any) => !cat.parent_id);
-  
-  // Filter categories based on search and parent category
-  const filteredCategories = categories.filter((category: any) => {
+  // Filter tree data
+  const filteredTreeData = treeData.filter((category: any) => {
     const matchesSearch = (category.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (category.code || '').toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -145,8 +201,95 @@ export default function AdminCategories() {
     return matchesSearch && matchesCategory;
   });
 
+  // Get all category IDs for sortable context
+  const getAllCategoryIds = (categories: Category[]): string[] => {
+    const ids: string[] = [];
+    const traverse = (cats: Category[]) => {
+      cats.forEach(cat => {
+        ids.push(cat.id);
+        if (cat.children) {
+          traverse(cat.children);
+        }
+      });
+    };
+    traverse(categories);
+    return ids;
+  };
+
+  const sortableIds = getAllCategoryIds(filteredTreeData);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      // Here you would implement the logic to update positions
+      // This would involve calling an API to update the position values
+      console.log('Moving', active.id, 'over', over.id);
+      
+      toast({
+        title: "Funcionalidad en desarrollo",
+        description: "El reordenamiento por drag and drop se implementará próximamente.",
+      });
+    }
+  };
+
+  // Handle expand/collapse
+  const handleToggleExpand = (nodeId: string) => {
+    const newExpanded = new Set(expandedNodes);
+    if (newExpanded.has(nodeId)) {
+      newExpanded.delete(nodeId);
+    } else {
+      newExpanded.add(nodeId);
+    }
+    setExpandedNodes(newExpanded);
+  };
+
+  // Collapse all nodes
+  const collapseAll = () => {
+    setExpandedNodes(new Set());
+  };
+
+  // Expand all nodes
+  const expandAll = () => {
+    const allIds = getAllCategoryIds(treeData);
+    setExpandedNodes(new Set(allIds));
+  };
+
+  // Handle edit
+  const handleEdit = (category: Category) => {
+    setEditingCategory(category);
+    setShowModal(true);
+  };
+
+  // Handle delete
+  const handleDelete = (categoryId: string) => {
+    // Implement delete logic
+    console.log('Delete category:', categoryId);
+  };
+
+  // Handle add new
+  const handleAddNew = () => {
+    setEditingCategory(null);
+    setShowModal(true);
+  };
+
   if (isLoading) {
-    return <AdminCategoriesSkeleton />;
+    return (
+      <div className="p-6 space-y-6">
+        <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    );
   }
 
   return (
@@ -162,11 +305,14 @@ export default function AdminCategories() {
               Gestión de Categorías
             </h1>
             <p className="text-sm text-muted-foreground">
-              Administra todas las categorías del sistema
+              Organiza las categorías jerárquicamente
             </p>
           </div>
         </div>
-
+        <Button onClick={handleAddNew} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Nueva Categoría
+        </Button>
       </div>
 
       {/* Search and Filters */}
@@ -188,162 +334,77 @@ export default function AdminCategories() {
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="root">Solo categorías padre</SelectItem>
-              {parentCategories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
             </SelectContent>
           </Select>
-        </div>
-      </div>
-
-      {/* Categories Table */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredCategories.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
-                  {searchTerm || categoryFilter 
-                    ? 'No se encontraron categorías que coincidan con los filtros.'
-                    : 'No hay categorías registradas.'
-                  }
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredCategories.map((category: any, index: number) => (
-                <TableRow key={category.id || `category-${index}`} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4 text-center">
-                    <div className="font-medium text-foreground">{category.name}</div>
-                  </TableCell>
-                  <TableCell className="text-center py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(category)}
-                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-card border-border rounded-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
-              Esta acción no se puede deshacer. Esto eliminará permanentemente la categoría
-              <span className="font-semibold text-foreground"> "{selectedCategory?.name}"</span> y 
-              todos sus datos asociados.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel 
-              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
-            >
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                // Add delete logic here
-                setIsDeleteDialogOpen(false);
-                setSelectedCategory(null);
-              }}
-              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Create Category Modal */}
-      <AdminCategoriesModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      />
-
-      {/* Edit Category Modal */}
-      <AdminCategoriesModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedCategory(null);
-        }}
-        category={selectedCategory}
-      />
-    </div>
-  );
-}
-
-function AdminCategoriesSkeleton() {
-  return (
-    <div className="p-6 space-y-6">
-      {/* Header skeleton */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
-          <div>
-            <div className="h-8 w-64 bg-muted rounded animate-pulse"></div>
-            <div className="h-4 w-48 bg-muted rounded animate-pulse mt-2"></div>
-          </div>
-        </div>
-        <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
-      </div>
-      
-      {/* Search skeleton */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="flex gap-4">
-          <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
-          <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
-        </div>
-      </div>
-      
-      {/* Table skeleton */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
-        <div className="p-6">
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between py-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
-                    <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
-                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
-                </div>
-              </div>
-            ))}
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={expandAll}>
+              Expandir Todo
+            </Button>
+            <Button variant="outline" size="sm" onClick={collapseAll}>
+              Colapsar Todo
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Tree View */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
+            <div className="min-h-[400px]">
+              {filteredTreeData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <FolderOpen className="w-12 h-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    No hay categorías
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    Crea tu primera categoría para comenzar
+                  </p>
+                  <Button onClick={handleAddNew} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Nueva Categoría
+                  </Button>
+                </div>
+              ) : (
+                filteredTreeData.map((category) => (
+                  <TreeNode
+                    key={category.id}
+                    category={category}
+                    level={0}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    expandedNodes={expandedNodes}
+                    onToggleExpand={handleToggleExpand}
+                  />
+                ))
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <AdminCategoriesModal
+          category={editingCategory}
+          onClose={() => {
+            setShowModal(false);
+            setEditingCategory(null);
+          }}
+          onSuccess={() => {
+            setShowModal(false);
+            setEditingCategory(null);
+            queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+          }}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default AdminCategories;
