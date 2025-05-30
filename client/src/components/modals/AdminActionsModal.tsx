@@ -2,25 +2,27 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useEffect, useState } from 'react';
+import { Zap } from 'lucide-react';
+import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
+import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { actionsService, CreateActionData } from '@/lib/actionsService';
+import { supabase } from '@/lib/supabase';
 
-const actionFormSchema = z.object({
+const actionSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
+  description: z.string().optional(),
 });
 
-type ActionFormData = z.infer<typeof actionFormSchema>;
+type ActionFormData = z.infer<typeof actionSchema>;
 
 interface AdminActionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  action?: any; // Para edición
+  action?: any | null;
 }
 
 export default function AdminActionsModal({ 
@@ -30,71 +32,82 @@ export default function AdminActionsModal({
 }: AdminActionsModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<ActionFormData>({
-    resolver: zodResolver(actionFormSchema),
+    resolver: zodResolver(actionSchema),
     defaultValues: {
-      name: action?.name || '',
+      name: '',
+      description: '',
     },
   });
 
-  // Reset form when action changes (for editing)
+  // Reset form when action changes or modal opens
   useEffect(() => {
-    if (action) {
+    if (isOpen) {
       form.reset({
-        name: action.name,
-      });
-    } else {
-      form.reset({
-        name: '',
+        name: action?.name || '',
+        description: action?.description || '',
       });
     }
-  }, [action, form]);
+  }, [action, isOpen, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ActionFormData) => {
-      return actionsService.create(data);
+      const { error } = await supabase
+        .from('actions')
+        .insert([data]);
+      
+      if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['actions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/actions'] });
       toast({
-        title: 'Éxito',
-        description: 'Acción creada correctamente',
+        title: "Acción creada",
+        description: "La acción se ha creado exitosamente.",
       });
-      onClose();
-      form.reset();
+      handleClose();
     },
     onError: (error: any) => {
       toast({
-        title: 'Error',
-        description: error.message || 'Error al crear la acción',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "No se pudo crear la acción.",
+        variant: "destructive",
       });
     },
+    onSettled: () => setIsSubmitting(false),
   });
 
   const updateMutation = useMutation({
     mutationFn: async (data: ActionFormData) => {
-      return actionsService.update(action.id, data);
+      const { error } = await supabase
+        .from('actions')
+        .update(data)
+        .eq('id', action!.id);
+      
+      if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['actions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/actions'] });
       toast({
-        title: 'Éxito',
-        description: 'Acción actualizada correctamente',
+        title: "Acción actualizada",
+        description: "La acción se ha actualizado exitosamente.",
       });
-      onClose();
+      handleClose();
     },
     onError: (error: any) => {
       toast({
-        title: 'Error',
-        description: error.message || 'Error al actualizar la acción',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "No se pudo actualizar la acción.",
+        variant: "destructive",
       });
     },
+    onSettled: () => setIsSubmitting(false),
   });
 
   const onSubmit = (data: ActionFormData) => {
+    setIsSubmitting(true);
+    
     if (action) {
       updateMutation.mutate(data);
     } else {
@@ -102,50 +115,81 @@ export default function AdminActionsModal({
     }
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
-            {action ? 'Editar Acción' : 'Nueva Acción'}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre de la acción" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
+  const handleClose = () => {
+    onClose();
+    form.reset();
+  };
 
-            
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancelar
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                {createMutation.isPending || updateMutation.isPending 
-                  ? 'Guardando...' 
-                  : action ? 'Actualizar' : 'Crear'
-                }
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+  const footer = (
+    <div className="flex gap-3 w-full">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleClose}
+        disabled={isSubmitting}
+        className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+      >
+        Cancelar
+      </Button>
+      <Button
+        type="submit"
+        form="action-form"
+        disabled={isSubmitting}
+        className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+      >
+        {isSubmitting ? 'Guardando...' : (action ? 'Actualizar' : 'Crear')}
+      </Button>
+    </div>
+  );
+
+  return (
+    <ModernModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={action ? 'Editar Acción' : 'Crear Nueva Acción'}
+      subtitle="Gestiona las acciones del sistema"
+      icon={Zap}
+      footer={footer}
+    >
+      <Form {...form}>
+        <form id="action-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-medium text-foreground">Nombre de la Acción</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Ej: Revisar Documentos" 
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-medium text-foreground">Descripción (Opcional)</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Describe el propósito de esta acción..."
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </ModernModal>
   );
 }

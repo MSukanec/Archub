@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Zap, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { Zap, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -30,12 +30,18 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminActionsModal from '@/components/modals/AdminActionsModal';
 
 export default function AdminActions() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<any>(null);
+  
+  const ITEMS_PER_PAGE = 10;
 
   const { data: actions = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/actions'],
@@ -84,13 +90,39 @@ export default function AdminActions() {
     setIsDeleteDialogOpen(true);
   };
 
-  const filteredActions = actions.filter((action: any) => {
-    const matchesSearch = (action.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (action.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = !dateFilter || 
-                       format(new Date(action.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-    return matchesSearch && matchesDate;
-  });
+  const handleEdit = (action: any) => {
+    setSelectedAction(action);
+    setIsEditModalOpen(true);
+  };
+
+  const filteredAndSortedActions = actions
+    .filter((action: any) => {
+      const matchesSearch = (action.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (action.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    })
+    .sort((a: any, b: any) => {
+      switch (sortOrder) {
+        case 'newest':
+          return new Date(b.created_at || b.id).getTime() - new Date(a.created_at || a.id).getTime();
+        case 'oldest':
+          return new Date(a.created_at || a.id).getTime() - new Date(b.created_at || b.id).getTime();
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+  const totalPages = Math.ceil(filteredAndSortedActions.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedActions = filteredAndSortedActions.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminActionsSkeleton />;
@@ -109,6 +141,12 @@ export default function AdminActions() {
           </div>
         </div>
 
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="fixed bottom-6 right-[calc(50%-90px)] bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 z-50 flex items-center justify-center"
+        >
+          <Plus className="w-6 h-6" />
+        </Button>
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">
@@ -119,41 +157,56 @@ export default function AdminActions() {
               placeholder="Buscar acciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-background border-border rounded-xl"
             />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
-                  !dateFilter && "text-muted-foreground"
-                )}
+                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+                {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Por nombre"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
+            <PopoverContent className="w-auto p-2">
+              <div className="space-y-2">
+                <Button
+                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('newest')}
+                  className="w-full justify-start"
+                >
+                  Más reciente primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('oldest')}
+                  className="w-full justify-start"
+                >
+                  Más antiguo primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'name' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('name')}
+                  className="w-full justify-start"
+                >
+                  Por nombre
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>
@@ -168,26 +221,27 @@ export default function AdminActions() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredActions.length === 0 ? (
+            {paginatedActions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
-                  {searchTerm || dateFilter 
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-4 h-8">
+                  {searchTerm 
                     ? 'No se encontraron acciones que coincidan con los filtros.'
                     : 'No hay acciones registradas.'
                   }
                 </TableCell>
               </TableRow>
             ) : (
-              filteredActions.map((action: any) => (
+              paginatedActions.map((action: any) => (
                 <TableRow key={action.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4 text-center">
+                  <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">{action.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => handleEdit(action)}
                         className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
@@ -207,6 +261,53 @@ export default function AdminActions() {
             )}
           </TableBody>
         </Table>
+        
+        {/* Paginación */}
+        {filteredAndSortedActions.length > 0 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedActions.length)} de {filteredAndSortedActions.length} elementos
+            </div>
+            
+            {totalPages > 1 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8 h-8 p-0 rounded-lg"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
@@ -235,6 +336,22 @@ export default function AdminActions() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Action Modal */}
+      <AdminActionsModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Action Modal */}
+      <AdminActionsModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedAction(null);
+        }}
+        action={selectedAction}
+      />
     </div>
   );
 }
