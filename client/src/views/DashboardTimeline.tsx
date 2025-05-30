@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Home, FolderKanban, FileText, DollarSign, Target, Users } from 'lucide-react';
+import { Home, FolderKanban, FileText, DollarSign, Target, Users, Calendar } from 'lucide-react';
 import CircularButton from '@/components/ui/CircularButton';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -11,11 +11,14 @@ type TimelineMode = 'hours' | 'days' | 'weeks' | 'months';
 interface TimelineEvent {
   id: string;
   date: Date;
-  type: 'sitelog' | 'task' | 'movement' | 'milestone';
+  type: 'sitelog' | 'task' | 'movement' | 'milestone' | 'calendar';
   title: string;
   description?: string;
   amount?: number;
   currency?: string;
+  time?: string;
+  location?: string;
+  eventType?: string;
   icon: React.ComponentType<any>;
   color: string;
 }
@@ -31,6 +34,8 @@ function DashboardTimeline() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [sidebarButtonPositions, setSidebarButtonPositions] = useState<Record<string, number>>({});
+  const [hoveredEvent, setHoveredEvent] = useState<TimelineEvent | null>(null);
+  const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const timelineRef = useRef<HTMLDivElement>(null);
   
   // Days per page based on mode
@@ -65,6 +70,13 @@ function DashboardTimeline() {
         .from('site_movements')
         .select('*')
         .eq('project_id', projectId)
+        .order('created_at', { ascending: true });
+
+      // Get calendar events
+      const { data: calendarEvents } = await supabase
+        .from('calendar_events')
+        .select('*')
+        .eq('organization_id', organizationId)
         .order('date', { ascending: true });
 
       // Convert to timeline events
@@ -93,6 +105,24 @@ function DashboardTimeline() {
           currency: movement.currency,
           icon: DollarSign,
           color: '#10B981'
+        });
+      });
+
+      calendarEvents?.forEach(event => {
+        // Combinar fecha y hora del evento
+        const eventDateTime = new Date(`${event.date}T${event.time}`);
+        
+        events.push({
+          id: `calendar-${event.id}`,
+          date: eventDateTime,
+          type: 'calendar',
+          title: event.title,
+          description: event.description,
+          time: event.time,
+          location: event.location,
+          eventType: event.type,
+          icon: Calendar,
+          color: '#6366F1'
         });
       });
 
@@ -617,6 +647,21 @@ function DashboardTimeline() {
                                           ? `${event.description.substring(0, 20)}...` 
                                           : event.description}
                                       </div>
+                                      {event.time && (
+                                        <div className="text-xs text-[#919191]/70">
+                                          Hora: {event.time}
+                                        </div>
+                                      )}
+                                      {event.location && (
+                                        <div className="text-xs text-[#919191]/70 truncate">
+                                          📍 {event.location}
+                                        </div>
+                                      )}
+                                      {event.eventType && (
+                                        <div className="text-xs text-[#919191]/70 capitalize">
+                                          {event.eventType}
+                                        </div>
+                                      )}
                                       {event.amount && (
                                         <div className="text-xs text-[#919191]/70">
                                           ${event.amount.toLocaleString()}
