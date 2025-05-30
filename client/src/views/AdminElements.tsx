@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Shapes, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
@@ -30,12 +30,27 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminElementsModal from '@/components/modals/AdminElementsModal';
 
 export default function AdminElements() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedElement, setSelectedElement] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateElementModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateElementModal', handleOpenCreateElementModal);
+    return () => {
+      window.removeEventListener('openCreateElementModal', handleOpenCreateElementModal);
+    };
+  }, []);
 
   const { data: elements = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/elements'],

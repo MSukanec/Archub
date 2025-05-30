@@ -60,7 +60,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
   const createMutation = useMutation({
     mutationFn: (data: UnitFormData) => unitsService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/units'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/units'] });
       toast({
         title: "Unidad creada",
         description: "La unidad se ha creado exitosamente.",
@@ -80,7 +80,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
   const updateMutation = useMutation({
     mutationFn: (data: UnitFormData) => unitsService.update(unit!.id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/units'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/units'] });
       toast({
         title: "Unidad actualizada",
         description: "La unidad se ha actualizado exitosamente.",

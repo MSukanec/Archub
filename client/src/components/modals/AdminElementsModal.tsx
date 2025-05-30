@@ -1,39 +1,27 @@
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { useEffect, useState } from 'react';
+import { Shapes } from 'lucide-react';
+import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { elementsService } from '@/lib/elementsService';
+import { supabase } from '@/lib/supabase';
 
-const elementFormSchema = z.object({
+const elementSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
+  description: z.string().optional(),
 });
 
-type ElementFormData = z.infer<typeof elementFormSchema>;
+type ElementFormData = z.infer<typeof elementSchema>;
 
 interface AdminElementsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  element?: any; // Para edición
+  element?: any | null;
 }
 
 export default function AdminElementsModal({ 
@@ -43,142 +31,170 @@ export default function AdminElementsModal({
 }: AdminElementsModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const isEditing = !!element;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ElementFormData>({
-    resolver: zodResolver(elementFormSchema),
+    resolver: zodResolver(elementSchema),
     defaultValues: {
       name: '',
+      description: '',
     },
   });
 
+  // Reset form when element changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        name: element?.name || '',
+        description: element?.description || '',
+      });
+    }
+  }, [element, isOpen, form]);
+
   const createMutation = useMutation({
     mutationFn: async (data: ElementFormData) => {
-      return elementsService.create(data);
+      const { data: result, error } = await supabase
+        .from('task_elements')
+        .insert([data])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/elements'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/elements'] });
       toast({
         title: "Elemento creado",
         description: "El elemento se ha creado exitosamente.",
       });
-      onClose();
+      handleClose();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: `Error al crear el elemento: ${error.message}`,
+        description: error.message || "No se pudo crear el elemento.",
         variant: "destructive",
       });
     },
+    onSettled: () => setIsSubmitting(false),
   });
 
   const updateMutation = useMutation({
     mutationFn: async (data: ElementFormData) => {
-      if (!element?.id) throw new Error('ID de elemento no válido');
-      return elementsService.update(element.id, data);
+      const { data: result, error } = await supabase
+        .from('task_elements')
+        .update(data)
+        .eq('id', element!.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/elements'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/elements'] });
       toast({
         title: "Elemento actualizado",
         description: "El elemento se ha actualizado exitosamente.",
       });
-      onClose();
+      handleClose();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: `Error al actualizar el elemento: ${error.message}`,
+        description: error.message || "No se pudo actualizar el elemento.",
         variant: "destructive",
       });
     },
+    onSettled: () => setIsSubmitting(false),
   });
 
   const onSubmit = (data: ElementFormData) => {
-    console.log('Form submitted with data:', data);
-    console.log('isEditing:', isEditing);
-    console.log('element:', element);
+    setIsSubmitting(true);
     
-    if (isEditing && element?.id) {
+    if (element) {
       updateMutation.mutate(data);
     } else {
       createMutation.mutate(data);
     }
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      if (isEditing && element) {
-        form.reset({
-          name: element.name || '',
-        });
-      } else {
-        form.reset({
-          name: '',
-        });
-      }
-    }
-  }, [isOpen, isEditing, element, form]);
+  const handleClose = () => {
+    onClose();
+    form.reset();
+  };
+
+  const footer = (
+    <div className="flex gap-3 w-full">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleClose}
+        disabled={isSubmitting}
+        className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+      >
+        Cancelar
+      </Button>
+      <Button
+        type="submit"
+        form="element-form"
+        disabled={isSubmitting}
+        className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+      >
+        {isSubmitting ? 'Guardando...' : (element ? 'Actualizar' : 'Crear')}
+      </Button>
+    </div>
+  );
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-[#282828] border border-gray-700">
-        <DialogHeader>
-          <DialogTitle className="text-white">
-            {isEditing ? 'Editar Elemento' : 'Nuevo Elemento'}
-          </DialogTitle>
-          <DialogDescription className="text-gray-400">
-            {isEditing 
-              ? 'Modifica los datos del elemento'
-              : 'Crea un nuevo elemento en el sistema'
-            }
-          </DialogDescription>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Nombre del Elemento</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Ej: Muros, Pisos, Carpetas de Nivelación"
-                      className="bg-[#1e1e1e] border-gray-600 text-white placeholder:text-gray-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={onClose}
-                className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={createMutation.isPending || updateMutation.isPending}
-                className="bg-[#4f9eff] hover:bg-[#3d8ce6] text-white"
-              >
-                {createMutation.isPending || updateMutation.isPending 
-                  ? 'Guardando...' 
-                  : isEditing ? 'Actualizar' : 'Crear'
-                }
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <ModernModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={element ? 'Editar Elemento' : 'Nuevo Elemento'}
+      subtitle="Gestiona los elementos utilizados en las tareas"
+      icon={Shapes}
+      footer={footer}
+    >
+      <Form {...form}>
+        <form id="element-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-medium text-foreground">Nombre</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Ej: Columna, Viga, etc."
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-medium text-foreground">Descripción (Opcional)</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Descripción del elemento"
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </ModernModal>
   );
 }
