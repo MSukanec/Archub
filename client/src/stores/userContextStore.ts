@@ -121,37 +121,33 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   },
 
   setBudgetId: (budgetId: string) => {
-    console.log('setBudgetId called with:', budgetId);
     const currentState = get();
     set({ budgetId });
     
-    // Use userId directly from store
-    if (currentState.userId) {
-      const updatePreferences = async () => {
-        try {
-          console.log('Updating budget preference for userId:', currentState.userId);
-          console.log('Setting budget to:', budgetId);
-          
-          const { data, error } = await supabase
-            .from('user_preferences')
-            .update({ last_budget_id: budgetId })
-            .eq('user_id', currentState.userId)
-            .select();
+    // Update preferences in Supabase - exact copy of setProjectId logic
+    const updatePreferences = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-          if (error) {
-            console.error('Error updating budget preference:', error);
-          } else {
-            console.log('Budget preference updated successfully:', data);
-          }
-        } catch (error) {
-          console.error('Error in budget preference update:', error);
-        }
-      };
-      
-      updatePreferences();
-    } else {
-      console.log('No userId available in store');
-    }
+        const { data: internalUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (!internalUser) return;
+
+        await supabase
+          .from('user_preferences')
+          .update({ last_budget_id: budgetId })
+          .eq('user_id', internalUser.id);
+      } catch (error) {
+        console.error('Error updating budget preference:', error);
+      }
+    };
+
+    updatePreferences();
   },
 
   clearUserContext: () => {
