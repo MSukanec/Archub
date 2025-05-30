@@ -10,6 +10,7 @@ interface CircularButtonProps {
   size?: 'sm' | 'md' | 'lg';
   label?: string;
   section?: string;
+  tooltipDirection?: 'left' | 'right';
 }
 
 export default function CircularButton({ 
@@ -19,7 +20,8 @@ export default function CircularButton({
   className = '',
   size = 'md',
   section,
-  label
+  label,
+  tooltipDirection = 'right'
 }: CircularButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -93,9 +95,10 @@ export default function CircularButton({
       {/* Tooltip */}
       {showTooltip && label && (
         <div className={`
-          absolute left-full ml-2 top-1/2 transform -translate-y-1/2
+          absolute top-1/2 transform -translate-y-1/2
           px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap
           shadow-lg z-50 pointer-events-none
+          ${tooltipDirection === 'right' ? 'left-full ml-2' : 'right-full mr-2'}
           ${isActive 
             ? 'bg-black text-white' 
             : 'bg-[#e1e1e1] text-[#919191]'
@@ -104,9 +107,12 @@ export default function CircularButton({
           {label}
           {/* Arrow */}
           <div className={`
-            absolute right-full top-1/2 transform -translate-y-1/2
-            w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent
-            ${isActive ? 'border-r-black' : 'border-r-[#e1e1e1]'}
+            absolute top-1/2 transform -translate-y-1/2
+            w-0 h-0 border-t-4 border-b-4 border-transparent
+            ${tooltipDirection === 'right' 
+              ? `right-full border-r-4 ${isActive ? 'border-r-black' : 'border-r-[#e1e1e1]'}`
+              : `left-full border-l-4 ${isActive ? 'border-l-black' : 'border-l-[#e1e1e1]'}`
+            }
           `} />
         </div>
       )}

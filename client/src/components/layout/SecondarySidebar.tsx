@@ -165,12 +165,14 @@ export default function SecondarySidebar() {
                 isActive={currentSection === 'admin-community'}
                 onClick={() => setView('admin-organizations')}
                 label="Administración de Comunidad"
+                tooltipDirection="left"
               />
               <CircularButton
                 icon={Library}
                 isActive={currentSection === 'admin-library'}
                 onClick={() => setView('admin-tasks')}
                 label="Administración de Biblioteca"
+                tooltipDirection="left"
               />
             </>
           )}
