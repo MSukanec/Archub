@@ -246,13 +246,22 @@ function DashboardTimeline() {
       case 'hours':
         return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       case 'days':
-        return date.getDate().toString();
+        return {
+          dayName: date.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase(),
+          dayNumber: date.getDate().toString()
+        };
       case 'weeks':
-        return `S${Math.ceil(date.getDate() / 7)}`;
+        return {
+          dayName: 'SEM',
+          dayNumber: `${Math.ceil(date.getDate() / 7)}`
+        };
       case 'months':
-        return date.toLocaleDateString('es-ES', { month: 'short' });
+        return {
+          dayName: date.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase(),
+          dayNumber: date.getFullYear().toString().slice(-2)
+        };
       default:
-        return '';
+        return { dayName: '', dayNumber: '' };
     }
   };
 
@@ -572,26 +581,53 @@ function DashboardTimeline() {
                 transform: 'translateY(-50%)'
               }}
             >
-              {/* Date labels - positioned absolutely within the timeline container */}
+              {/* Vertical separator line */}
               <div 
-                className="absolute text-xs font-medium text-foreground/25 z-30"
+                className="absolute w-px bg-border/30 z-20"
                 style={{
-                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2 + 30}px` : '-300px',
+                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2}px` : '-400px',
+                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile}px` : '40px',
+                  left: '0',
+                  transform: 'translateX(-50%)'
+                }}
+              />
+
+              {/* Date labels - top */}
+              <div 
+                className="absolute flex flex-col items-center z-30"
+                style={{
+                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2 + 10}px` : '-350px',
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
-                {formatDate(node.date)}
+                {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
+                  <>
+                    <div className="text-xs font-bold text-foreground/40">{(formatDate(node.date) as any).dayName}</div>
+                    <div className="text-lg font-bold text-foreground/60">{(formatDate(node.date) as any).dayNumber}</div>
+                  </>
+                ) : (
+                  <div className="text-xs font-medium text-foreground/40">{formatDate(node.date)}</div>
+                )}
               </div>
+
+              {/* Date labels - bottom */}
               <div 
-                className="absolute text-xs font-medium text-foreground/25 z-30"
+                className="absolute flex flex-col items-center z-30"
                 style={{
-                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile - 20}px` : '60px',
+                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile + 10}px` : '50px',
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
-                {formatDate(node.date)}
+                {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
+                  <>
+                    <div className="text-lg font-bold text-foreground/60">{(formatDate(node.date) as any).dayNumber}</div>
+                    <div className="text-xs font-bold text-foreground/40">{(formatDate(node.date) as any).dayName}</div>
+                  </>
+                ) : (
+                  <div className="text-xs font-medium text-foreground/40">{formatDate(node.date)}</div>
+                )}
               </div>
 
               {/* Events positioned by type */}
@@ -600,7 +636,8 @@ function DashboardTimeline() {
                 {(() => {
                   const eventsByType = {
                     sitelog: node.events.filter(e => e.type === 'sitelog'),     // Bitácora line
-                    task: node.events.filter(e => e.type === 'task'),           // Agenda line  
+                    calendar: node.events.filter(e => e.type === 'calendar'),   // Agenda line (calendar events)
+                    task: node.events.filter(e => e.type === 'task'),           // Agenda line (tasks)
                     movement: node.events.filter(e => e.type === 'movement'),   // Finanzas line
                     milestone: node.events.filter(e => e.type === 'milestone')  // Presupuestos line
                   };
@@ -615,6 +652,10 @@ function DashboardTimeline() {
                         }
                         return -64;
                       case 'task':
+                        return sidebarButtonPositions.contacts 
+                          ? sidebarButtonPositions.contacts - (window.innerHeight / 2)
+                          : 0;
+                      case 'calendar':
                         return sidebarButtonPositions.contacts 
                           ? sidebarButtonPositions.contacts - (window.innerHeight / 2)
                           : 0;
