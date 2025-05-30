@@ -117,6 +117,7 @@ export const materials = pgTable("materials", {
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  unit_id: integer("unit_id").references(() => units.id),
   unit_labor_price: decimal("unit_labor_price", { precision: 12, scale: 2 }),
   unit_material_price: decimal("unit_material_price", { precision: 12, scale: 2 }),
   category_id: integer("category_id").references(() => taskCategories.id),

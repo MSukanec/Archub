@@ -81,11 +81,19 @@ export default function BudgetTasks() {
         if (budgetTasksError) throw budgetTasksError;
         if (!budgetTasksData || budgetTasksData.length === 0) return [];
 
-        // Luego obtenemos los detalles de las tareas
+        // Luego obtenemos los detalles de las tareas con sus unidades
         const taskIds = budgetTasksData.map(bt => bt.task_id);
         const { data: tasksData, error: tasksError } = await supabase
           .from('tasks')
-          .select('id, name, unit, unit_labor_price, unit_material_price, category_id')
+          .select(`
+            id, 
+            name, 
+            unit_id, 
+            unit_labor_price, 
+            unit_material_price, 
+            category_id,
+            units!inner(name)
+          `)
           .in('id', taskIds);
         
         if (tasksError) throw tasksError;
@@ -112,7 +120,7 @@ export default function BudgetTasks() {
             task_name: task?.name || 'Tarea no encontrada',
             unit_labor_price: task?.unit_labor_price || 0,
             unit_material_price: task?.unit_material_price || 0,
-            unit: task?.unit || '',
+            unit: task?.units?.name || '',
             category_name: category?.name || 'Sin categoría'
           };
         });
