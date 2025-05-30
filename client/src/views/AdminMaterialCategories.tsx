@@ -119,10 +119,10 @@ export default function AdminMaterialCategories() {
   };
 
   // Handle edit
-  const   const handleEdit = (category: any) => {
+  const handleEdit = (category: any) => {
     setSelectedCategory(category);
     setIsEditModalOpen(true);
-  };;
+  };
 
   // Handle delete confirmation
   const handleDeleteConfirm = () => {

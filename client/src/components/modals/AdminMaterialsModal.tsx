@@ -166,13 +166,13 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
       footer={footer}
     >
       <Form {...form}>
-        <form id="material-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form id="material-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-foreground">Nombre del Material</FormLabel>
+                <FormLabel className="text-xs font-medium text-foreground">Nombre del Material</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="Ej: Ladrillo Visto" 
@@ -190,7 +190,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
             name="category_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-foreground">Categoría <span className="text-primary">*</span></FormLabel>
+                <FormLabel className="text-xs font-medium text-foreground">Categoría <span className="text-primary">*</span></FormLabel>
                 <Select 
                   value={field.value} 
                   onValueChange={field.onChange}
