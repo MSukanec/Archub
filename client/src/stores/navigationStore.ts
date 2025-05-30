@@ -20,6 +20,7 @@ export type View =
   | 'admin-organizations'
   | 'admin-users'
   | 'admin-categories'
+  | 'admin-material-categories'
   | 'admin-materials'
   | 'admin-units'
   | 'admin-elements'

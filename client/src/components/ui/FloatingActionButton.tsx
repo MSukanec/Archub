@@ -49,6 +49,10 @@ const useModalActions = () => {
     window.dispatchEvent(new CustomEvent('openCreateCategoryModal'));
   };
 
+  const openCreateMaterialCategoryModal = () => {
+    window.dispatchEvent(new CustomEvent('openCreateMaterialCategoryModal'));
+  };
+
   const openCreateMaterialModal = () => {
     window.dispatchEvent(new CustomEvent('openCreateMaterialModal'));
   };

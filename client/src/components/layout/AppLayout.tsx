@@ -26,6 +26,7 @@ import AdminElements from '@/views/AdminElements';
 import AdminActions from '@/views/AdminActions';
 import AdminUsers from '@/views/AdminUsers';
 import AdminCategories from '@/views/AdminCategories';
+import AdminMaterialCategories from '@/views/AdminMaterialCategories';
 import AdminMaterials from '@/views/AdminMaterials';
 import AdminTasks from '@/views/AdminTasks';
 import Calendar from '@/views/Calendar';
@@ -61,6 +62,7 @@ const viewComponents = {
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
   'admin-categories': AdminCategories,
+  'admin-material-categories': AdminMaterialCategories,
   'admin-materials': AdminMaterials,
   'admin-units': AdminUnits,
   'admin-elements': AdminElements,
