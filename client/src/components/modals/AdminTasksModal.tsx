@@ -401,7 +401,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                          {subcategories.map((subcategory) => (
+                          {subcategoriesFiltered.map((subcategory) => (
                             <SelectItem key={subcategory.id} value={String(subcategory.id)}>
                               {subcategory.code} - {subcategory.name}
                             </SelectItem>
@@ -434,7 +434,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                          {elementCategories.map((element) => (
+                          {elementCategoriesFiltered.map((element) => (
                             <SelectItem key={element.id} value={element.id.toString()}>
                               {element.code} - {element.name}
                             </SelectItem>
