@@ -78,13 +78,10 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
       if (!budgetId) throw new Error('No hay presupuesto seleccionado');
 
       const budgetTasks = tasksToAdd.map(task => ({
-        budget_id: budgetId, // Asegurarse de que sea el tipo correcto
+        budget_id: budgetId,
         task_id: task.id,
         quantity: task.quantity,
       }));
-
-      console.log('Budget ID:', budgetId, 'Type:', typeof budgetId);
-      console.log('Budget tasks to insert:', budgetTasks);
 
       const { error } = await supabase
         .from('budget_tasks')
