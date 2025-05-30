@@ -13,7 +13,7 @@ import { tasksService, Task, CreateTaskData } from '@/lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
-import { CheckSquare, X } from 'lucide-react';
+import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -272,11 +272,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       footer={footer}
     >
       <Form {...form}>
-        <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Accordion type="single" collapsible defaultValue="basic-info" className="w-full">
+        <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
             <AccordionItem value="basic-info" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-                Información Básica
+                <div className="flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  Información Básica
+                </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-3 pt-2">
                 <FormField
@@ -362,7 +365,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
                           {getMainCategories().map((category, index) => (
-                            <SelectItem key={category.id || `category-${index}`} value={category.id ? category.id.toString() : `none-${index}`}>
+                            <SelectItem key={category.id || `category-${index}`} value={category.id.toString()}>
                               {category.name}
                             </SelectItem>
                           ))}
@@ -438,7 +441,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
             <AccordionItem value="materials" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-                Materiales
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Materiales
+                </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-3 pt-2">
                 <div className="space-y-2">
@@ -484,7 +490,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         <div className="flex-1">
                           <p className="text-xs font-medium">{material.material_name}</p>
                           <p className="text-xs text-muted-foreground">
-                            Cantidad: {material.quantity} | Costo: ${material.unit_cost}
+                            Cantidad: {material.quantity}
                           </p>
                         </div>
                         <Button
