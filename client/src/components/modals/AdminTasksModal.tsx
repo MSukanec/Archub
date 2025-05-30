@@ -138,6 +138,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const getSubcategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parseInt(parentId));
   const getElementCategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parseInt(parentId));
 
+  // Calculate filtered categories based on current selection
+  const subcategoriesFiltered = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
+  const elementCategoriesFiltered = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
+
   // Generate task name from action and element
   const generateTaskName = (actionId: string, elementId: string) => {
     const action = actions.find(a => a.id === actionId);
@@ -249,8 +253,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     }
   };
 
-  const subcategories = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
-  const elementCategories = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
+
 
   const handleClose = () => {
     form.reset({
