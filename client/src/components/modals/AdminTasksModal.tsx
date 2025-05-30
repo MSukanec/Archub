@@ -195,8 +195,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
   // Initialize form states when editing a task
   useEffect(() => {
-    if (task && isOpen) {
-      console.log('Initializing form for task:', task);
+    if (task && isOpen && allCategories.length > 0 && actions.length > 0 && taskElements.length > 0) {
+      console.log('Initializing form for task with all data loaded:', task);
       const categoryId = task.category_id || '';
       const subcategoryId = task.subcategory_id || '';
       const elementCategoryId = task.element_category_id || '';
@@ -221,7 +221,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       setSelectedActionId('');
       setSelectedElementId('');
     }
-  }, [task, isOpen, form]);
+  }, [task, isOpen, allCategories, actions, taskElements, form]);
 
   // Debug logs
   console.log('All categories:', allCategories);
