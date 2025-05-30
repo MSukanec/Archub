@@ -182,15 +182,7 @@ export default function AdminElements() {
               filteredElements.map((element: any) => (
                 <TableRow key={element.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Shapes className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-foreground">{element.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {element.id}</div>
-                      </div>
-                    </div>
+                    <div className="font-medium text-foreground">{element.name}</div>
                   </TableCell>
                   <TableCell className="text-foreground py-4 max-w-xs">
                     <div className="truncate">

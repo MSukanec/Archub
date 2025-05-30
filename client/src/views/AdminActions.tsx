@@ -186,15 +186,7 @@ export default function AdminActions() {
               filteredActions.map((action: any) => (
                 <TableRow key={action.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Zap className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-foreground">{action.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {action.id}</div>
-                      </div>
-                    </div>
+                    <div className="font-medium text-foreground">{action.name}</div>
                   </TableCell>
                   <TableCell className="text-foreground py-4 max-w-xs">
                     <div className="truncate">
