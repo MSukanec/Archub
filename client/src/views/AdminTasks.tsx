@@ -31,6 +31,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminTasksModal from '@/components/modals/AdminTasksModal';
 
 export default function AdminTasks() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -243,6 +244,22 @@ export default function AdminTasks() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Task Modal */}
+      <AdminTasksModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Task Modal */}
+      <AdminTasksModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedTask(null);
+        }}
+        task={selectedTask}
+      />
     </div>
   );
 }

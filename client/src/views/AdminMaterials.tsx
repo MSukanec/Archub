@@ -301,6 +301,22 @@ export default function AdminMaterials() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Material Modal */}
+      <AdminMaterialsModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Material Modal */}
+      <AdminMaterialsModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedMaterial(null);
+        }}
+        material={selectedMaterial}
+      />
     </div>
   );
 }
