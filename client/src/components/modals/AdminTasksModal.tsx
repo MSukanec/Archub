@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { tasksService, Task, CreateTaskData } from '@/lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
 import { supabase } from '@/lib/supabase';
+import { useUserContextStore } from '@/stores/userContextStore';
 
 import { z } from 'zod';
 import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
@@ -62,6 +63,7 @@ interface TaskMaterial {
 function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { organizationId } = useUserContextStore();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
   const [selectedElementCategoryId, setSelectedElementCategoryId] = useState<string>('');
@@ -296,7 +298,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       name: data.name,
       unit_labor_price: data.unit_labor_price ? parseFloat(data.unit_labor_price) : undefined,
       unit_material_price: data.unit_material_price ? parseFloat(data.unit_material_price) : undefined,
-      // organization_id: will be handled by database if needed,
+      organization_id: organizationId,
       category_id: data.category_id || undefined,
       subcategory_id: data.subcategory_id || undefined,
       element_category_id: data.element_category_id || undefined,
