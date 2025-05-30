@@ -183,102 +183,106 @@ export default function Contacts() {
   };
 
   return (
-    <div className="flex-1 p-6 space-y-6">
+    <div className="flex-1 space-y-4" style={{ padding: '37px' }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Users className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Agenda</h1>
-            <p className="text-sm text-muted-foreground">
-              Gestiona los contactos de proveedores, contratistas y otros colaboradores del proyecto
-            </p>
+      <div className="bg-[#e1e1e1] rounded-lg p-6 border border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#919191]/10 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-[#919191]" />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-[#919191]">Gestión de Equipo</h1>
+              <p className="text-sm text-[#919191]/70">
+                Administra contactos de proveedores, contratistas y colaboradores
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Input
-            placeholder="Buscar contactos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
-          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+      <div className="bg-[#e1e1e1] rounded-lg p-4 border border-gray-200 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
+            <Input
+              placeholder="Buscar contactos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 bg-white border-gray-300"
+            />
+            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#919191]/60" />
+          </div>
+          <Select value={selectedType} onValueChange={setSelectedType}>
+            <SelectTrigger className="w-48 bg-white border-gray-300">
+              <SelectValue placeholder="Todos los tipos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los tipos</SelectItem>
+              {availableTypes.map((type) => (
+                <SelectItem key={type.id} value={type.id}>
+                  {type.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={sortOrder} onValueChange={setSortOrder}>
+            <SelectTrigger className="w-40 bg-white border-gray-300">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">A - Z</SelectItem>
+              <SelectItem value="desc">Z - A</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Select value={selectedType} onValueChange={setSelectedType}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Todos los tipos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos los tipos</SelectItem>
-            {availableTypes.map((type) => (
-              <SelectItem key={type.id} value={type.id}>
-                {type.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={sortOrder} onValueChange={setSortOrder}>
-          <SelectTrigger className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="asc">A - Z</SelectItem>
-            <SelectItem value="desc">Z - A</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Contacts Table */}
-      <div className="border rounded-lg">
+      <div className="bg-[#e1e1e1] rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Apellido</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Contacto</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+            <TableRow className="bg-white/50">
+              <TableHead className="text-center font-medium text-[#919191]">Nombre</TableHead>
+              <TableHead className="text-center font-medium text-[#919191]">Apellido</TableHead>
+              <TableHead className="text-center font-medium text-[#919191]">Tipo</TableHead>
+              <TableHead className="text-center font-medium text-[#919191]">Contacto</TableHead>
+              <TableHead className="text-center font-medium text-[#919191]">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center text-[#919191]/70">
                   Cargando contactos...
                 </TableCell>
               </TableRow>
             ) : filteredContacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center text-[#919191]/70">
                   {contactsWithTypes.length === 0 ? 'No hay contactos registrados.' : 'No se encontraron contactos que coincidan con los filtros.'}
                 </TableCell>
               </TableRow>
             ) : (
-              filteredContacts.map((contact) => (
-                <TableRow key={contact.id}>
-                  <TableCell className="font-medium">{contact.first_name}</TableCell>
-                  <TableCell>{contact.last_name || '-'}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
+              filteredContacts.map((contact, index) => (
+                <TableRow key={contact.id} className={index % 2 === 0 ? 'bg-white/30' : 'bg-white/10'}>
+                  <TableCell className="font-medium text-center text-[#919191]">{contact.first_name}</TableCell>
+                  <TableCell className="text-center text-[#919191]">{contact.last_name || '-'}</TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex flex-wrap gap-1 justify-center">
                       {contact.contact_types && contact.contact_types.length > 0 ? (
                         contact.contact_types.map((type, index) => (
-                          <Badge key={type.id} className={getTypeColor(index)}>
+                          <Badge key={type.id} className="bg-[#919191]/20 text-[#919191] text-xs">
                             {type.name}
                           </Badge>
                         ))
                       ) : (
-                        <span className="text-muted-foreground text-sm">Sin tipo</span>
+                        <span className="text-[#919191]/50 text-sm">Sin tipo</span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
+                  <TableCell className="text-center">
+                    <div className="flex items-center gap-2 justify-center">
                       {contact.phone && (
                         <TooltipProvider>
                           <Tooltip>
@@ -291,7 +295,7 @@ export default function Contacts() {
                                   const whatsappUrl = `https://wa.me/${formattedPhone}`;
                                   window.open(whatsappUrl, '_blank');
                                 }}
-                                className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                className="h-8 w-8 p-0 border-[#919191]/30 text-green-600 hover:text-green-700 hover:bg-green-50"
                               >
                                 <MessageCircle className="h-4 w-4" />
                                 <span className="sr-only">WhatsApp</span>
@@ -314,7 +318,7 @@ export default function Contacts() {
                                   const mailtoUrl = `mailto:${contact.email}`;
                                   window.location.href = mailtoUrl;
                                 }}
-                                className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                className="h-8 w-8 p-0 border-[#919191]/30 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                               >
                                 <Mail className="h-4 w-4" />
                                 <span className="sr-only">Email</span>
@@ -327,17 +331,17 @@ export default function Contacts() {
                         </TooltipProvider>
                       )}
                       {!contact.phone && !contact.email && (
-                        <span className="text-muted-foreground text-sm">Sin contacto</span>
+                        <span className="text-[#919191]/50 text-sm">Sin contacto</span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(contact)}
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        className="h-8 w-8 p-0 border-[#919191]/30 text-[#919191] hover:text-[#919191] hover:bg-[#919191]/10"
                       >
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Editar contacto</span>
@@ -346,7 +350,7 @@ export default function Contacts() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleDelete(contact)}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        className="h-8 w-8 p-0 border-[#919191]/30 text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Eliminar contacto</span>
