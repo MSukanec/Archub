@@ -121,16 +121,10 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
   const onSubmit = (data: CreateMaterialData) => {
     setIsSubmitting(true);
     
-    // Handle "none" category selection - convert to undefined
-    const processedData = {
-      ...data,
-      category_id: data.category_id === 'none' ? undefined : data.category_id,
-    };
-    
     if (material) {
-      updateMutation.mutate(processedData);
+      updateMutation.mutate(data);
     } else {
-      createMutation.mutate(processedData);
+      createMutation.mutate(data);
     }
   };
 
@@ -193,7 +187,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
             name="category_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-foreground">Categoría (Opcional)</FormLabel>
+                <FormLabel className="text-sm font-medium text-foreground">Categoría <span className="text-primary">*</span></FormLabel>
                 <Select 
                   value={field.value} 
                   onValueChange={field.onChange}
@@ -204,7 +198,6 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
-                    <SelectItem value="none">Sin categoría</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
