@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Ruler, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
@@ -30,12 +30,27 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import AdminUnitsModal from '@/components/modals/AdminUnitsModal';
 
 export default function AdminUnits() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<any>(null);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenCreateUnitModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateUnitModal', handleOpenCreateUnitModal);
+    return () => {
+      window.removeEventListener('openCreateUnitModal', handleOpenCreateUnitModal);
+    };
+  }, []);
 
   const { data: units = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/units'],
@@ -201,6 +216,10 @@ export default function AdminUnits() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => {
+                          setSelectedUnit(unit);
+                          setIsEditModalOpen(true);
+                        }}
                         className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
@@ -248,6 +267,22 @@ export default function AdminUnits() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Unit Modal */}
+      <AdminUnitsModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Unit Modal */}
+      <AdminUnitsModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedUnit(null);
+        }}
+        unit={selectedUnit}
+      />
     </div>
   );
 }

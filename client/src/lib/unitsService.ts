@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 export interface Unit {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
