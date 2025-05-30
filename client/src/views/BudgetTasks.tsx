@@ -31,7 +31,7 @@ export default function BudgetTasks() {
   // Set navigation state when component mounts
   useEffect(() => {
     setSection('budgets');
-    setView('tasks');
+    setView('budgets-tasks');
   }, [setSection, setView]);
 
   // Listen for floating action button events
@@ -50,7 +50,18 @@ export default function BudgetTasks() {
   // Fetch budgets for current project
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
     queryKey: ['budgets', projectId],
-    queryFn: () => projectsService.getBudgets(projectId!),
+    queryFn: async () => {
+      if (!projectId) return [];
+      
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
     enabled: !!projectId,
   });
 

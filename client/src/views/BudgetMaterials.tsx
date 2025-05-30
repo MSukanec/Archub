@@ -20,7 +20,7 @@ export default function BudgetMaterials() {
   // Set navigation state when component mounts
   useEffect(() => {
     setSection('budgets');
-    setView('materials');
+    setView('budgets-materials');
   }, [setSection, setView]);
 
   // Listen for floating action button events

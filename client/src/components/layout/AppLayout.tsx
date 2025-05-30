@@ -15,6 +15,8 @@ import OrganizationTeam from '@/views/OrganizationTeam';
 import ProjectsList from '@/views/ProjectsList';
 import SiteLogs from '@/views/SiteLogs';
 import Budgets from '@/views/Budgets';
+import BudgetTasks from '@/views/BudgetTasks';
+import BudgetMaterials from '@/views/BudgetMaterials';
 import Movements from '@/views/Movements';
 import Contacts from '@/views/Contacts';
 import Organizations from '@/views/Organizations';
@@ -47,8 +49,8 @@ const viewComponents = {
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
   'budgets-list': Budgets,
-  'budgets-tasks': Budgets,
-  'budgets-materials': Budgets,
+  'budgets-tasks': BudgetTasks,
+  'budgets-materials': BudgetMaterials,
   'sitelog-main': SiteLogs,
   'movements-main': Movements,
   'transactions': Movements,
