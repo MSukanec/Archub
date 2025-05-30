@@ -17,7 +17,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
-import TaskModal from '@/components/modals/TaskModal';
+import TaskModalNew from '@/components/modals/TaskModalNew';
 
 export default function BudgetTasks() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
@@ -249,9 +249,8 @@ export default function BudgetTasks() {
       </Card>
 
       {/* Task Modal */}
-      <TaskModal
+      <TaskModalNew
         budgetId={budgetId ? Number(budgetId) : null}
-        task={editingTask}
         isOpen={isTaskModalOpen}
         onClose={() => {
           setIsTaskModalOpen(false);
