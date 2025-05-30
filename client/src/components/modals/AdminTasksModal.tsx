@@ -353,7 +353,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           form.setValue('subcategory_id', null);
                           form.setValue('element_category_id', null);
                         }} 
-                        value={field.value?.toString() || ''}
+                        value={field.value ? field.value.toString() : ''}
                       >
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
@@ -386,7 +386,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                             field.onChange(parseInt(value));
                             form.setValue('element_category_id', null);
                           }} 
-                          value={field.value?.toString() || ''}
+                          value={field.value ? field.value.toString() : ''}
                         >
                           <FormControl>
                             <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
@@ -414,7 +414,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || ''}>
+                        <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value ? field.value.toString() : ''}>
                           <FormControl>
                             <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                               <SelectValue placeholder="Seleccionar elemento" />
