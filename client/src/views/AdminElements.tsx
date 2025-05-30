@@ -95,6 +95,11 @@ export default function AdminElements() {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleEdit = (element: any) => {
+    setSelectedElement(element);
+    setIsEditModalOpen(true);
+  };
+
   const filteredElements = elements.filter((element: any) => {
     const matchesSearch = (element.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (element.description || '').toLowerCase().includes(searchTerm.toLowerCase());
@@ -199,6 +204,7 @@ export default function AdminElements() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => handleEdit(element)}
                         className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
@@ -246,6 +252,22 @@ export default function AdminElements() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Element Modal */}
+      <AdminElementsModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Edit Element Modal */}
+      <AdminElementsModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedElement(null);
+        }}
+        element={selectedElement}
+      />
     </div>
   );
 }
