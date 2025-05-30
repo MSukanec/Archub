@@ -134,7 +134,7 @@ export default function FloatingActionButton() {
     'admin-material-categories': { label: 'Crear Categoría de Material', action: modalActions.openCreateMaterialCategoryModal },
     'admin-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
     'admin-units': { label: 'Crear Unidad', action: modalActions.openCreateUnitModal },
-    'admin-elements': { label: 'Crear Elemento', action: () => console.log('Crear Elemento') },
+    'admin-elements': { label: 'Crear Elemento', action: modalActions.openCreateElementModal },
     'admin-actions': { label: 'Crear Acción', action: () => console.log('Crear Acción') },
     'admin-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
     'admin-permissions': null,
