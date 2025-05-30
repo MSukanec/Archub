@@ -6,6 +6,7 @@ interface UserContext {
   projectId: string | null;
   budgetId: string | null;
   planId: string | null;
+  userId: string | null; // Internal user ID
   // Cache for loaded data to avoid repeated queries
   organization: any | null;
   currentProjects: any[] | null;
@@ -31,6 +32,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   projectId: null,
   budgetId: null,
   planId: null,
+  userId: null,
   organization: null,
   currentProjects: null,
   lastDataFetch: null,
@@ -120,61 +122,35 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
   setBudgetId: (budgetId: string) => {
     console.log('setBudgetId called with:', budgetId);
+    const currentState = get();
     set({ budgetId });
     
-    // Use the same update logic as setUserContext but only for budget
-    const updatePreferences = async () => {
-      try {
-        console.log('Starting budget preference update...');
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log('No authenticated user found');
-          return;
-        }
-
-        console.log('Auth user found:', user.id);
-        const { data: internalUser } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .single();
-
-        if (!internalUser) {
-          console.log('No internal user found');
-          return;
-        }
-
-        console.log('Internal user found:', internalUser.id);
-        console.log('Updating budget preference to:', budgetId);
-        
-        // Try to update existing record first
-        const { error: updateError } = await supabase
-          .from('user_preferences')
-          .update({ last_budget_id: budgetId })
-          .eq('user_id', internalUser.id);
-
-        if (updateError) {
-          console.error('Update failed, trying upsert:', updateError);
-          // If update failed, try upsert with current context
-          const currentState = get();
-          await supabase
+    // Use userId directly from store
+    if (currentState.userId) {
+      const updatePreferences = async () => {
+        try {
+          console.log('Updating budget preference for userId:', currentState.userId);
+          console.log('Setting budget to:', budgetId);
+          
+          const { error } = await supabase
             .from('user_preferences')
-            .upsert({
-              user_id: internalUser.id,
-              last_organization_id: currentState.organizationId,
-              last_project_id: currentState.projectId,
-              last_budget_id: budgetId,
-            });
-          console.log('Upsert completed');
-        } else {
-          console.log('Budget preference updated successfully');
-        }
-      } catch (error) {
-        console.error('Error updating budget preference:', error);
-      }
-    };
+            .update({ last_budget_id: budgetId })
+            .eq('user_id', currentState.userId);
 
-    updatePreferences();
+          if (error) {
+            console.error('Error updating budget preference:', error);
+          } else {
+            console.log('Budget preference updated successfully');
+          }
+        } catch (error) {
+          console.error('Error in budget preference update:', error);
+        }
+      };
+      
+      updatePreferences();
+    } else {
+      console.log('No userId available in store');
+    }
   },
 
   clearUserContext: () => {
@@ -183,6 +159,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
       projectId: null,
       budgetId: null,
       planId: null,
+      userId: null,
       organization: null,
       currentProjects: null,
       lastDataFetch: null,
@@ -317,6 +294,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         projectId: prefs.last_project_id,
         budgetId: prefs.last_budget_id,
         planId: null,
+        userId: dbUser.id,
         isLoading: false,
         isInitialized: true,
       });
