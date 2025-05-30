@@ -127,7 +127,7 @@ export default function FloatingActionButton() {
     'admin-users': { label: 'Crear Usuario', action: modalActions.openCreateUserModal },
     'admin-categories': { label: 'Crear Categoría', action: modalActions.openCreateCategoryModal },
     'admin-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
-    'admin-units': { label: 'Crear Unidad', action: () => console.log('Crear Unidad') },
+    'admin-units': { label: 'Crear Unidad', action: modalActions.openCreateUnitModal },
     'admin-elements': { label: 'Crear Elemento', action: () => console.log('Crear Elemento') },
     'admin-actions': { label: 'Crear Acción', action: () => console.log('Crear Acción') },
     'admin-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
@@ -158,14 +158,14 @@ export default function FloatingActionButton() {
 
   return (
     <div 
-      className="fixed bottom-[37px] right-[25px] z-50 p-2"
+      className="fixed bottom-[37px] right-[37px] z-50"
       onMouseEnter={() => !isBlocked && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <button
         onClick={!isBlocked ? handleClick : undefined}
         className={cn(
-          "w-12 h-12 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
+          "w-18 h-18 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center",
           "transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(82_100%_39%)] focus-visible:ring-offset-2",
           isBlocked 
             ? "opacity-75 cursor-not-allowed" 
@@ -173,7 +173,7 @@ export default function FloatingActionButton() {
           actionConfig.isMultiple && isHovered && !isBlocked && "bg-[#8fc700]"
         )}
       >
-        <Plus className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
+        <Plus className="w-6 h-6 text-[#919191]" strokeWidth={1.5} />
       </button>
       
       {/* Tooltip cuando hover */}

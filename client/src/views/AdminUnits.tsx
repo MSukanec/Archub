@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Ruler, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { unitsService } from '@/lib/unitsService';
 import AdminUnitsModal from '@/components/modals/AdminUnitsModal';
 
 export default function AdminUnits() {
@@ -39,6 +40,7 @@ export default function AdminUnits() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<any>(null);
+  const queryClient = useQueryClient();
 
   // Event listener for floating action button
   useEffect(() => {
@@ -51,6 +53,16 @@ export default function AdminUnits() {
       window.removeEventListener('openCreateUnitModal', handleOpenCreateUnitModal);
     };
   }, []);
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (unitId: string) => unitsService.delete(unitId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/units'] });
+      setIsDeleteDialogOpen(false);
+      setSelectedUnit(null);
+    },
+  });
 
   const { data: units = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/units'],
@@ -256,10 +268,7 @@ export default function AdminUnits() {
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                setIsDeleteDialogOpen(false);
-                setSelectedUnit(null);
-              }}
+              onClick={handleDeleteUnit}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
             >
               Eliminar
