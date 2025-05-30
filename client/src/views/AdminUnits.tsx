@@ -195,7 +195,7 @@ export default function AdminUnits() {
             {filteredUnits.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center text-muted-foreground py-8 h-16">
-                  {searchTerm || dateFilter 
+                  {searchTerm 
                     ? 'No se encontraron unidades que coincidan con los filtros.'
                     : 'No hay unidades registradas.'
                   }
