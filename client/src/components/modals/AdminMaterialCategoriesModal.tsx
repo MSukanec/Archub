@@ -51,7 +51,6 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
       queryClient.invalidateQueries({ queryKey: ['/api/material-categories'] });
       toast({ title: 'Categoría creada exitosamente' });
       onClose();
-      form.reset();
     },
     onError: (error) => {
       toast({
@@ -95,61 +94,56 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
     form.reset();
   };
 
+  const footer = (
+    <div className="flex gap-3 justify-end">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleClose}
+        disabled={isSubmitting}
+        className="bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+      >
+        Cancelar
+      </Button>
+      <Button
+        type="submit"
+        form="category-form"
+        disabled={isSubmitting}
+        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+      >
+        {isSubmitting ? 'Guardando...' : (category ? 'Actualizar' : 'Crear')}
+      </Button>
+    </div>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogOverlay className="fixed inset-0 z-50 modal-backdrop" />
-      <DialogContent className="fixed right-0 top-0 h-screen w-[400px] max-w-none rounded-none border-l border-border bg-[#e0e0e0] p-6 shadow-2xl data-[state=open]:animate-slide-in-right data-[state=closed]:animate-slide-out-right z-50 flex flex-col">
-        <DialogHeader className="pb-6">
-          <DialogTitle className="text-xl font-semibold text-foreground">
-            {category ? 'Editar Categoría' : 'Crear Nueva Categoría'}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Nombre de la Categoría</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Ej: Estructurales, Acabados, etc." 
-                        className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </div>
-
-        <div className="border-t border-[#919191]/20 pt-6 mt-6">
-          <div className="flex justify-end space-x-3">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={handleClose}
-              className="bg-transparent border-[#919191] text-[#919191] hover:bg-[#919191]/10 rounded-lg"
-            >
-              Cancelar
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              onClick={form.handleSubmit(onSubmit)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              {isSubmitting ? 'Guardando...' : category ? 'Actualizar' : 'Crear'}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <ModernModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={category ? 'Editar Categoría' : 'Crear Nueva Categoría'}
+      footer={footer}
+    >
+      <Form {...form}>
+        <form id="category-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-foreground">Nombre de la Categoría</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Ej: Estructurales, Acabados, etc." 
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </ModernModal>
   );
 }
