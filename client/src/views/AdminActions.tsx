@@ -43,6 +43,19 @@ export default function AdminActions() {
   
   const ITEMS_PER_PAGE = 10;
 
+  // Listener para el botón flotante
+  useEffect(() => {
+    const handleOpenCreateActionModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateActionModal', handleOpenCreateActionModal);
+    
+    return () => {
+      window.removeEventListener('openCreateActionModal', handleOpenCreateActionModal);
+    };
+  }, []);
+
   const { data: actions = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/actions'],
     queryFn: async () => {
@@ -170,10 +183,10 @@ export default function AdminActions() {
                 className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Por nombre"}
+                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#f5f5f5]">
+            <PopoverContent className="w-[200px] p-2 bg-[#d2d2d2]">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}
@@ -191,14 +204,7 @@ export default function AdminActions() {
                 >
                   Más antiguo primero
                 </Button>
-                <Button
-                  variant={sortOrder === 'name' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setSortOrder('name')}
-                  className="w-full justify-start text-sm h-8"
-                >
-                  Por nombre
-                </Button>
+
               </div>
             </PopoverContent>
           </Popover>

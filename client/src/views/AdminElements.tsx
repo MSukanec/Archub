@@ -219,7 +219,7 @@ export default function AdminElements() {
                 {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Por nombre"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#f5f5f5]">
+            <PopoverContent className="w-[200px] p-2 bg-[#d2d2d2]">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}
