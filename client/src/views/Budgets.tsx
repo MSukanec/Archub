@@ -61,10 +61,9 @@ export default function BudgetsList() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [activeBudgetId, setActiveBudgetId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { projectId } = useUserContextStore();
+  const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
 
   // Set navigation state when component mounts
@@ -130,13 +129,13 @@ export default function BudgetsList() {
   };
 
   const handleBudgetClick = (budget: Budget) => {
-    if (budget.id !== activeBudgetId) {
+    if (budget.id !== budgetId) {
       // Agregar clase de animación antes del cambio
       const cards = document.querySelectorAll('[data-budget-card]');
       cards.forEach(card => card.classList.add('animate-pulse'));
       
       setTimeout(() => {
-        setActiveBudgetId(budget.id);
+        setBudgetId(budget.id);
         toast({
           title: "Presupuesto activo cambiado",
           description: `Ahora trabajas en: ${budget.name}`,
@@ -182,8 +181,8 @@ export default function BudgetsList() {
     )
     .sort((a, b) => {
       // First, sort by active budget (active budget comes first)
-      if (a.id === activeBudgetId && b.id !== activeBudgetId) return -1;
-      if (b.id === activeBudgetId && a.id !== activeBudgetId) return 1;
+      if (a.id === budgetId && b.id !== budgetId) return -1;
+      if (b.id === budgetId && a.id !== budgetId) return 1;
       
       // Then sort by creation date
       const dateA = new Date(a.created_at);
@@ -195,7 +194,7 @@ export default function BudgetsList() {
   const totalBudgets = budgets.length;
   const draftBudgets = budgets.filter(b => b.status === 'draft').length;
   const approvedBudgets = budgets.filter(b => b.status === 'approved').length;
-  const currentBudget = budgets.find(b => b.id === activeBudgetId);
+  const currentBudget = budgets.find(b => b.id === budgetId);
 
   return (
     <div className="flex-1 p-6 space-y-6">
@@ -304,7 +303,7 @@ export default function BudgetsList() {
       ) : (
         <div className="space-y-4">
           {filteredBudgets.map((budget: Budget) => {
-            const isActiveBudget = budget.id === activeBudgetId;
+            const isActiveBudget = budget.id === budgetId;
             return (
               <div key={budget.id} className="relative">
                 <Card 

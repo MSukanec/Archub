@@ -307,11 +307,4 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
       });
     }
   },
-
-  setUserContext,
-  setProjectId,
-  setBudgetId,
-  clearUserContext,
-  refreshData,
-  initializeUserContext,
 }));
