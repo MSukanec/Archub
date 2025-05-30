@@ -19,6 +19,7 @@ const materialSchema = z.object({
     required_error: 'Debes seleccionar una unidad',
     invalid_type_error: 'Debes seleccionar una unidad',
   }).min(1, 'La unidad es obligatoria'),
+  category_id: z.string().optional(),
   cost: z.coerce.number().min(0, 'El costo debe ser mayor o igual a 0').optional(),
 });
 
@@ -38,6 +39,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     defaultValues: {
       name: '',
       unit_id: '',
+      category_id: '',
       cost: 0,
     },
   });
@@ -48,18 +50,26 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
     queryFn: () => unitsService.getAll(),
   });
 
+  // Fetch material categories for the select dropdown
+  const { data: categories = [] } = useQuery({
+    queryKey: ['/api/material-categories'],
+    queryFn: () => materialCategoriesService.getAll(),
+  });
+
   // Set form values when editing
   useEffect(() => {
     if (material) {
       form.reset({
         name: material.name,
         unit_id: material.unit_id,
+        category_id: material.category_id || '',
         cost: material.cost || 0,
       });
     } else {
       form.reset({
         name: '',
         unit_id: '',
+        category_id: 'none',
         cost: 0,
       });
     }
@@ -103,10 +113,16 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
   const onSubmit = (data: CreateMaterialData) => {
     setIsSubmitting(true);
     
+    // Handle "none" category selection - convert to undefined
+    const processedData = {
+      ...data,
+      category_id: data.category_id === 'none' ? undefined : data.category_id,
+    };
+    
     if (material) {
-      updateMutation.mutate(data);
+      updateMutation.mutate(processedData);
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(processedData);
     }
   };
 
@@ -141,6 +157,35 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                         {...field} 
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="category_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-foreground">Categoría (Opcional)</FormLabel>
+                    <Select 
+                      value={field.value} 
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                          <SelectValue placeholder="Selecciona una categoría" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                        <SelectItem value="none">Sin categoría</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
