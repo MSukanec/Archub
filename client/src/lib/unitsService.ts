@@ -1,16 +1,7 @@
 import { supabase } from './supabase';
+import { Unit, InsertUnit } from '@shared/schema';
 
-export interface Unit {
-  id: string;
-  name: string;
-  description: string;
-  created_at?: string;
-}
-
-export interface CreateUnitData {
-  name: string;
-  description: string;
-}
+export type CreateUnitData = InsertUnit;
 
 export const unitsService = {
   async getAll(): Promise<Unit[]> {

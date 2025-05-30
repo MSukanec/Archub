@@ -74,6 +74,7 @@ export const units = pgTable("units", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const contacts = pgTable("contacts", {
@@ -275,6 +276,11 @@ export const insertTaskCategorySchema = createInsertSchema(taskCategories).pick(
   parent_id: true,
 });
 
+export const insertUnitSchema = createInsertSchema(units).pick({
+  name: true,
+  description: true,
+});
+
 export const insertMaterialSchema = createInsertSchema(materials).pick({
   name: true,
   unit_id: true,
@@ -390,7 +396,7 @@ export type TaskCategory = typeof taskCategories.$inferSelect;
 export type InsertTaskCategory = z.infer<typeof insertTaskCategorySchema>;
 
 export type Unit = typeof units.$inferSelect;
-export type InsertUnit = z.infer<typeof insertActionSchema>; // We'll use existing schema for now
+export type InsertUnit = z.infer<typeof insertUnitSchema>;
 
 export type Material = typeof materials.$inferSelect;
 export type InsertMaterial = z.infer<typeof insertMaterialSchema>;
