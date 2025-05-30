@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Package, Search, Plus, Edit, Trash2, DollarSign, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,18 +31,30 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { materialsService } from '@/lib/materialsService';
 import AdminMaterialsModal from '@/components/modals/AdminMaterialsModal';
 
 export default function AdminMaterials() {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   
   // State for modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
+  const queryClient = useQueryClient();
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (materialId: string) => materialsService.delete(materialId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
+      setIsDeleteDialogOpen(false);
+      setSelectedMaterial(null);
+    },
+  });
 
   // Event listener for floating action button
   useEffect(() => {
@@ -56,18 +68,10 @@ export default function AdminMaterials() {
     };
   }, []);
 
-  // Fetch materials
+  // Fetch materials with units
   const { data: materials = [], isLoading, error } = useQuery({
-    queryKey: ['/api/admin/materials'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('materials')
-        .select('*')
-        .order('name', { ascending: true });
-      
-      if (error) throw error;
-      return data || [];
-    },
+    queryKey: ['/api/materials'],
+    queryFn: () => materialsService.getAll(),
     retry: 1,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -114,25 +118,18 @@ export default function AdminMaterials() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Filter materials based on search and date
+  // Filter and sort materials
   const filteredMaterials = materials.filter((material: any) => {
     const matchesSearch = (material.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (material.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (material.unit || '').toLowerCase().includes(searchTerm.toLowerCase());
+                         (material.unit?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    let matchesDate = true;
-    if (dateFilter && material.created_at) {
-      try {
-        const materialDate = new Date(material.created_at);
-        if (!isNaN(materialDate.getTime())) {
-          matchesDate = format(materialDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-        }
-      } catch (e) {
-        matchesDate = false;
-      }
+    return matchesSearch;
+  }).sort((a: any, b: any) => {
+    if (sortOrder === 'newest') {
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    } else {
+      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
     }
-    
-    return matchesSearch && matchesDate;
   });
 
   if (isLoading) {
@@ -175,34 +172,31 @@ export default function AdminMaterials() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
-                  !dateFilter && "text-muted-foreground"
-                )}
+                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
+                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
+            <PopoverContent className="w-auto p-2">
+              <div className="space-y-2">
+                <Button
+                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('newest')}
+                  className="w-full justify-start"
+                >
+                  Más reciente primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('oldest')}
+                  className="w-full justify-start"
+                >
+                  Más antiguo primero
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>
@@ -223,7 +217,7 @@ export default function AdminMaterials() {
             {filteredMaterials.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
-                  {searchTerm || dateFilter 
+                  {searchTerm 
                     ? 'No se encontraron materiales que coincidan con los filtros.'
                     : 'No hay materiales registrados.'
                   }
