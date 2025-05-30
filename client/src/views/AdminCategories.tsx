@@ -211,7 +211,7 @@ export default function AdminCategories() {
             {filteredCategories.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
-                  {searchTerm || dateFilter 
+                  {searchTerm || categoryFilter 
                     ? 'No se encontraron categorías que coincidan con los filtros.'
                     : 'No hay categorías registradas.'
                   }

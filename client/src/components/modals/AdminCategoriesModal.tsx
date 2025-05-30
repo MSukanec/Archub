@@ -64,16 +64,21 @@ export default function AdminCategoriesModal({
       form.reset({
         name: category?.name || '',
         code: category?.code || '',
-        parent_id: category?.parent_id?.toString() || '',
+        parent_id: category?.parent_id || '',
       });
     }
   }, [category, isOpen, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: CategoryFormData) => {
+      const insertData = {
+        ...data,
+        parent_id: data.parent_id || null,
+      };
+      
       const { error } = await supabase
         .from('task_categories')
-        .insert([data]);
+        .insert([insertData]);
       
       if (error) throw error;
     },
@@ -97,9 +102,14 @@ export default function AdminCategoriesModal({
 
   const updateMutation = useMutation({
     mutationFn: async (data: CategoryFormData) => {
+      const updateData = {
+        ...data,
+        parent_id: data.parent_id || null,
+      };
+      
       const { error } = await supabase
         .from('task_categories')
-        .update(data)
+        .update(updateData)
         .eq('id', category!.id);
       
       if (error) throw error;
@@ -219,11 +229,11 @@ export default function AdminCategoriesModal({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
-                    <SelectItem value="none">Sin categoría padre</SelectItem>
+                    <SelectItem value="">Sin categoría padre</SelectItem>
                     {allCategories
                       .filter(cat => cat.id !== category?.id) // No mostrar la categoría actual
                       .map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                        <SelectItem key={cat.id} value={cat.id}>
                           {cat.name} ({cat.code})
                         </SelectItem>
                       ))}
