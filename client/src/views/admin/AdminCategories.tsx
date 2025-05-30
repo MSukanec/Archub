@@ -7,9 +7,29 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverEvent, DragOverlay } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
+import { 
+  DndContext, 
+  closestCenter, 
+  KeyboardSensor, 
+  PointerSensor, 
+  useSensor, 
+  useSensors, 
+  DragEndEvent, 
+  DragOverEvent, 
+  DragStartEvent,
+  DragOverlay,
+  MeasuringStrategy,
+  getFirstCollision,
+  pointerWithin,
+  rectIntersection
+} from '@dnd-kit/core';
+import { 
+  arrayMove, 
+  SortableContext, 
+  sortableKeyboardCoordinates, 
+  verticalListSortingStrategy,
+  useSortable 
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import AdminCategoriesModal from '@/components/modals/AdminCategoriesModal';
 
@@ -31,9 +51,10 @@ interface TreeNodeProps {
   onToggleExpand: (nodeId: string) => void;
   isOver?: boolean;
   isDragging?: boolean;
+  dropPosition?: 'before' | 'after' | 'inside' | null;
 }
 
-const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleExpand, isOver, isDragging }: TreeNodeProps) => {
+const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleExpand, isOver, isDragging, dropPosition }: TreeNodeProps) => {
   const {
     attributes,
     listeners,
@@ -55,17 +76,17 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
 
   return (
     <div ref={setNodeRef} style={style} className="w-full">
-      {/* Drop zone indicator */}
-      {isOver && (
+      {/* Drop indicator before */}
+      {isOver && dropPosition === 'before' && (
         <div 
-          className="h-2 mx-4 mb-1 border-2 border-dashed border-primary bg-primary/10 rounded"
+          className="h-0.5 mx-4 mb-1 bg-primary"
           style={{ marginLeft: `${paddingLeft}px` }}
         />
       )}
       
       <div 
         className={`flex items-center gap-2 p-3 bg-white border-b border-gray-100 hover:bg-gray-50 group transition-colors ${
-          isOver ? 'ring-2 ring-primary ring-opacity-50 bg-primary/5' : ''
+          isOver && dropPosition === 'inside' ? 'ring-2 ring-primary ring-opacity-50 bg-primary/10' : ''
         }`}
         style={{ paddingLeft: `${paddingLeft}px` }}
       >
@@ -126,6 +147,14 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
         </div>
       </div>
 
+      {/* Drop indicator after */}
+      {isOver && dropPosition === 'after' && (
+        <div 
+          className="h-0.5 mx-4 mt-1 bg-primary"
+          style={{ marginLeft: `${paddingLeft}px` }}
+        />
+      )}
+
       {/* Children */}
       {hasChildren && isExpanded && (
         <div>
@@ -140,6 +169,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
               onToggleExpand={onToggleExpand}
               isOver={isOver}
               isDragging={isDragging}
+              dropPosition={dropPosition}
             />
           ))}
         </div>
@@ -156,6 +186,9 @@ const AdminCategories = () => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [draggedCategory, setDraggedCategory] = useState<Category | null>(null);
+  const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
+  const [autoExpandTimeout, setAutoExpandTimeout] = useState<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -255,38 +288,95 @@ const AdminCategories = () => {
     })
   );
 
+  // Find category by ID
+  const findCategory = (id: string, categories: Category[]): Category | null => {
+    for (const category of categories) {
+      if (category.id === id) return category;
+      if (category.children) {
+        const found = findCategory(id, category.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
   // Handle drag start
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+    
+    const category = findCategory(active.id as string, treeData);
+    setDraggedCategory(category);
   };
 
-  // Handle drag over
+  // Handle drag over with auto-expand
   const handleDragOver = (event: DragOverEvent) => {
-    const { over } = event;
-    setOverId(over ? over.id as string : null);
+    const { over, active } = event;
+    
+    if (!over || !active) {
+      setOverId(null);
+      setDropPosition(null);
+      return;
+    }
+
+    const overId = over.id as string;
+    setOverId(overId);
+
+    // Auto-expand parent nodes after hovering for 1 second
+    if (autoExpandTimeout) {
+      clearTimeout(autoExpandTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      const overCategory = findCategory(overId, treeData);
+      if (overCategory && overCategory.children && overCategory.children.length > 0) {
+        if (!expandedNodes.has(overId)) {
+          const newExpanded = new Set(expandedNodes);
+          newExpanded.add(overId);
+          setExpandedNodes(newExpanded);
+        }
+      }
+    }, 1000);
+
+    setAutoExpandTimeout(timeout);
+
+    // Determine drop position based on mouse position
+    if (over.rect) {
+      const overRect = over.rect;
+      const dragRect = active.rect.current.translated;
+      
+      if (dragRect) {
+        const overCenter = overRect.top + overRect.height / 2;
+        const dragCenter = dragRect.top + dragRect.height / 2;
+        
+        if (dragCenter < overCenter - 10) {
+          setDropPosition('before');
+        } else if (dragCenter > overCenter + 10) {
+          setDropPosition('after');
+        } else {
+          setDropPosition('inside');
+        }
+      }
+    }
   };
 
-  // Handle drag end with optimistic updates
+  // Handle drag end
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     
+    if (autoExpandTimeout) {
+      clearTimeout(autoExpandTimeout);
+      setAutoExpandTimeout(null);
+    }
+    
     setActiveId(null);
     setOverId(null);
+    setDraggedCategory(null);
+    setDropPosition(null);
 
     if (over && active.id !== over.id) {
-      // Optimistic update - update UI immediately
-      queryClient.setQueryData(['/api/admin/task-categories'], (oldData: any[]) => {
-        if (!oldData) return oldData;
-        
-        return oldData.map(cat => 
-          cat.id === active.id 
-            ? { ...cat, parent_id: over.id }
-            : cat
-        );
-      });
-
       try {
-        // Update parent_id of the dragged item using Supabase
+        // Update parent_id of the dragged item
         const { error } = await supabase
           .from('task_categories')
           .update({ parent_id: over.id })
@@ -294,17 +384,17 @@ const AdminCategories = () => {
 
         if (error) throw error;
 
-        toast({
-          title: "Éxito",
-          description: "Categoría movida correctamente en la jerarquía.",
-        });
-      } catch (error) {
-        // Revert optimistic update on error
+        // Refresh data
         queryClient.invalidateQueries({ queryKey: ['/api/admin/task-categories'] });
         
         toast({
+          title: "Éxito",
+          description: "Categoría movida correctamente.",
+        });
+      } catch (error) {
+        toast({
           title: "Error",
-          description: "No se pudo mover la categoría. Inténtalo de nuevo.",
+          description: "No se pudo mover la categoría.",
           variant: "destructive",
         });
       }
@@ -453,6 +543,7 @@ const AdminCategories = () => {
                     onToggleExpand={handleToggleExpand}
                     isOver={overId === category.id}
                     isDragging={activeId === category.id}
+                    dropPosition={overId === category.id ? dropPosition : null}
                   />
                 ))
               )}
