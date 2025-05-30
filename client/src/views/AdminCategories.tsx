@@ -226,15 +226,7 @@ export default function AdminCategories() {
               filteredCategories.map((category: any) => (
                 <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Tag className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-foreground">{category.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {category.id}</div>
-                      </div>
-                    </div>
+                    <div className="font-medium text-foreground">{category.name}</div>
                   </TableCell>
                   <TableCell className="text-foreground py-4 max-w-xs">
                     <div className="truncate">

@@ -46,7 +46,7 @@ export default function AdminTasks() {
         .select(`
           *,
           category:task_categories!category_id(name),
-          unit:units!unit_id(name, symbol)
+          unit:units!unit_id(name)
         `)
         .order('name', { ascending: true });
       
@@ -162,18 +162,11 @@ export default function AdminTasks() {
                     </Badge>
                   </TableCell>
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <CheckSquare className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-foreground">{task.name}</div>
-                      </div>
-                    </div>
+                    <div className="font-medium text-foreground">{task.name}</div>
                   </TableCell>
                   <TableCell className="py-4">
                     <Badge variant="outline" className="bg-muted/50">
-                      {task.unit?.name || 'Sin unidad'} ({task.unit?.symbol || 'N/A'})
+                      {task.unit?.name || 'Sin unidad'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-foreground py-4">

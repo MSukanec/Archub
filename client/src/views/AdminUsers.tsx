@@ -213,19 +213,11 @@ export default function AdminUsers() {
               filteredUsers.map((user: any) => (
                 <TableRow key={user.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Users className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-foreground">
-                          {user.first_name && user.last_name 
-                            ? `${user.first_name} ${user.last_name}` 
-                            : user.full_name || 'Sin nombre'
-                          }
-                        </div>
-                        <div className="text-sm text-muted-foreground">ID: {user.id.slice(0, 8)}...</div>
-                      </div>
+                    <div className="font-medium text-foreground">
+                      {user.first_name && user.last_name 
+                        ? `${user.first_name} ${user.last_name}` 
+                        : user.full_name || 'Sin nombre'
+                      }
                     </div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">

@@ -193,15 +193,7 @@ export default function AdminUnits() {
               filteredUnits.map((unit: any) => (
                 <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <Ruler className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-foreground">{unit.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {unit.id}</div>
-                      </div>
-                    </div>
+                    <div className="font-medium text-foreground">{unit.name}</div>
                   </TableCell>
                   <TableCell className="text-foreground py-4">
                     <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
