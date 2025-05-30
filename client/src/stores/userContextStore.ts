@@ -119,27 +119,46 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   },
 
   setBudgetId: (budgetId: string) => {
+    console.log('setBudgetId called with:', budgetId);
     const currentState = get();
     set({ budgetId });
     
     // Update preferences in Supabase
     const updatePreferences = async () => {
       try {
+        console.log('Starting budget preference update...');
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          console.log('No authenticated user found');
+          return;
+        }
 
+        console.log('Auth user found:', user.id);
         const { data: internalUser } = await supabase
           .from('users')
           .select('id')
           .eq('auth_id', user.id)
           .single();
 
-        if (!internalUser) return;
+        if (!internalUser) {
+          console.log('No internal user found');
+          return;
+        }
 
-        await supabase
+        console.log('Internal user found:', internalUser.id);
+        console.log('Updating budget preference to:', budgetId);
+        
+        const { data, error } = await supabase
           .from('user_preferences')
           .update({ last_budget_id: budgetId })
-          .eq('user_id', internalUser.id);
+          .eq('user_id', internalUser.id)
+          .select();
+
+        if (error) {
+          console.error('Supabase update error:', error);
+        } else {
+          console.log('Budget preference updated successfully:', data);
+        }
       } catch (error) {
         console.error('Error updating budget preference:', error);
       }
