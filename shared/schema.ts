@@ -298,6 +298,19 @@ export const insertSiteMovementSchema = createInsertSchema(siteMovements).pick({
   file_url: true,
 });
 
+export const insertCalendarEventSchema = createInsertSchema(calendarEvents).pick({
+  title: true,
+  description: true,
+  date: true,
+  time: true,
+  duration: true,
+  location: true,
+  attendees: true,
+  type: true,
+  priority: true,
+  organization_id: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -346,3 +359,6 @@ export type InsertSiteLogFile = z.infer<typeof insertSiteLogFileSchema>;
 
 export type SiteMovement = typeof siteMovements.$inferSelect;
 export type InsertSiteMovement = z.infer<typeof insertSiteMovementSchema>;
+
+export type CalendarEvent = typeof calendarEvents.$inferSelect;
+export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
