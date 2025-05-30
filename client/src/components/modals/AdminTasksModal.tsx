@@ -283,34 +283,34 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       isOpen={isOpen}
       onClose={handleClose}
       title={task ? 'Editar Tarea' : 'Nueva Tarea'}
+      subtitle="Gestiona tareas de construcción y sus materiales asociados"
+      icon={CheckSquare}
       footer={
-        <div className="flex justify-between">
-          <div className="flex gap-2">
+        <div className="flex gap-3 w-full">
+          <div className="flex gap-2 w-1/4">
             <Button
               type="button"
               variant="outline"
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="bg-[#d2d2d2] border-[#cccccc] text-[#666666] hover:bg-[#c2c2c2]"
+              className="flex-1 bg-[#d2d2d2] border-[#cccccc] text-[#666666] hover:bg-[#c2c2c2]"
             >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Anterior
+              <ChevronLeft className="w-4 h-4" />
             </Button>
             <Button
               type="button"
               onClick={handleNext}
               disabled={currentStep === steps.length - 1}
-              className="bg-[#d2d2d2] border-[#cccccc] text-[#666666] hover:bg-[#c2c2c2]"
+              className="flex-1 bg-[#d2d2d2] border-[#cccccc] text-[#666666] hover:bg-[#c2c2c2]"
             >
-              Siguiente
-              <ChevronRight className="w-4 h-4 ml-2" />
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
           <Button
             type="submit"
             onClick={form.handleSubmit(onSubmit)}
             disabled={isLoading}
-            className="bg-[#8fc700] hover:bg-[#7db600] text-white"
+            className="w-3/4 bg-[#8fc700] hover:bg-[#7db600] text-white"
           >
             {isLoading
               ? 'Guardando...'

@@ -161,6 +161,8 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
       isOpen={isOpen}
       onClose={handleClose}
       title={material ? 'Editar Material' : 'Crear Nuevo Material'}
+      subtitle="Gestiona los materiales de construcción del sistema"
+      icon={Package}
       footer={footer}
     >
       <Form {...form}>

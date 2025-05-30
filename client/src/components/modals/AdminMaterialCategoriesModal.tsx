@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { materialCategoriesService, type MaterialCategory, type CreateMaterialCategoryData } from '@/lib/materialCategoriesService';
+import { FolderOpen } from 'lucide-react';
 
 const materialCategorySchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
@@ -101,7 +102,7 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="flex-1 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+        className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
       >
         Cancelar
       </Button>
@@ -109,7 +110,7 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
         type="submit"
         form="category-form"
         disabled={isSubmitting}
-        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+        className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
       >
         {isSubmitting ? 'Guardando...' : (category ? 'Actualizar' : 'Crear')}
       </Button>
@@ -121,6 +122,8 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
       isOpen={isOpen}
       onClose={handleClose}
       title={category ? 'Editar Categoría' : 'Crear Nueva Categoría'}
+      subtitle="Organiza los materiales en categorías del sistema"
+      icon={FolderOpen}
       footer={footer}
     >
       <Form {...form}>
