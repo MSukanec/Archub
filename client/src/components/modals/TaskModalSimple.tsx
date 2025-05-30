@@ -47,25 +47,29 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
     }
   }, [isOpen]);
 
-  // Buscar tareas
-  const { data: tasks = [] } = useQuery({
-    queryKey: ['search-tasks', organizationId, searchQuery],
+  // Obtener todas las tareas
+  const { data: allTasks = [] } = useQuery({
+    queryKey: ['all-tasks', organizationId],
     queryFn: async () => {
-      if (!organizationId || !searchQuery || searchQuery.length < 3) return [];
+      if (!organizationId) return [];
       
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('organization_id', organizationId)
-        .ilike('name', `%${searchQuery}%`)
-        .order('name')
-        .limit(20);
+        .order('name');
       
       if (error) throw error;
       return data || [];
     },
-    enabled: Boolean(organizationId && isOpen && searchQuery && searchQuery.length >= 3),
+    enabled: Boolean(organizationId && isOpen),
   });
+
+  // Filtrar tareas basado en la búsqueda
+  const filteredTasks = allTasks.filter(task =>
+    searchQuery.length === 0 || 
+    task.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Agregar tareas al presupuesto
   const addTasksMutation = useMutation({
@@ -150,40 +154,39 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
           {/* Campo de búsqueda */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
-              Buscar tarea por nombre (mínimo 3 caracteres)
+              Filtrar tareas por nombre
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Escribir nombre de la tarea..."
+                placeholder="Filtrar por nombre de tarea..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary"
               />
             </div>
-            {searchQuery && searchQuery.length < 3 && (
-              <p className="text-sm text-orange-600">
-                Escribe al menos 3 caracteres para buscar tareas
-              </p>
-            )}
           </div>
 
-          {/* Tabla de tareas encontradas */}
-          {tasks.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-foreground">
-                Tareas encontradas ({tasks.length})
-              </h3>
-              <div className="border border-gray-300 rounded-lg bg-[#d2d2d2]">
-                <div className="grid grid-cols-12 gap-2 p-3 border-b border-gray-300 bg-gray-100 font-medium text-sm">
-                  <div className="col-span-1">Seleccionar</div>
-                  <div className="col-span-6">Nombre de la tarea</div>
-                  <div className="col-span-2">Precio unitario</div>
-                  <div className="col-span-1">Unidad</div>
-                  <div className="col-span-2">Cantidad</div>
+          {/* Tabla de todas las tareas */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground">
+              Tareas disponibles ({filteredTasks.length}{allTasks.length > 0 && allTasks.length !== filteredTasks.length ? ` de ${allTasks.length}` : ''})
+            </h3>
+            <div className="border border-gray-300 rounded-lg bg-[#d2d2d2] max-h-[400px] overflow-y-auto">
+              <div className="grid grid-cols-12 gap-2 p-3 border-b border-gray-300 bg-gray-100 font-medium text-sm sticky top-0">
+                <div className="col-span-1">Seleccionar</div>
+                <div className="col-span-6">Nombre de la tarea</div>
+                <div className="col-span-2">Precio unitario</div>
+                <div className="col-span-1">Unidad</div>
+                <div className="col-span-2">Cantidad</div>
+              </div>
+              {filteredTasks.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">
+                  {allTasks.length === 0 ? 'No hay tareas disponibles' : 'No se encontraron tareas con ese filtro'}
                 </div>
-                {tasks.map((task) => (
-                  <div key={task.id} className="grid grid-cols-12 gap-2 p-3 border-b border-gray-200 last:border-b-0">
+              ) : (
+                filteredTasks.map((task) => (
+                  <div key={task.id} className="grid grid-cols-12 gap-2 p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                     <div className="col-span-1 flex items-center">
                       <Checkbox
                         checked={isTaskSelected(task.id)}
@@ -211,10 +214,10 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
             </div>
-          )}
+          </div>
 
           {/* Resumen de tareas seleccionadas */}
           {selectedTasks.length > 0 && (
