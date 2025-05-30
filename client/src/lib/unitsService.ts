@@ -33,6 +33,7 @@ export const unitsService = {
       .insert([{
         name: unitData.name,
         description: unitData.description,
+        // No incluimos created_at para que use el valor por defecto de la DB
       }])
       .select()
       .single();
