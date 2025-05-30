@@ -102,10 +102,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         .from('materials')
         .select('id, name, unit, cost');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching materials:', error);
+        return [];
+      }
       return data;
     },
     enabled: isOpen,
+    retry: 1,
   });
 
   // Fetch actions from Supabase
