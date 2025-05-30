@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, FolderOpen, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -24,18 +24,19 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import AdminTasksModal from '@/components/modals/AdminTasksModal';
 
 export default function AdminTasks() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -57,6 +58,7 @@ export default function AdminTasks() {
     };
   }, []);
 
+  // Fetch tasks
   const { data: tasks = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/tasks'],
     queryFn: async () => {
@@ -78,6 +80,20 @@ export default function AdminTasks() {
     retry: 1,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+  });
+
+  // Fetch categories for filter
+  const { data: categories = [] } = useQuery({
+    queryKey: ['/api/admin/task-categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('task_categories')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
   });
 
   if (error) {
@@ -113,7 +129,9 @@ export default function AdminTasks() {
                          (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (task.unit?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    return matchesSearch;
+    const matchesCategory = !categoryFilter || categoryFilter === 'all' || task.category_id === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
   }).sort((a: any, b: any) => {
     if (sortOrder === 'newest') {
       return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
@@ -130,7 +148,7 @@ export default function AdminTasks() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, sortOrder]);
+  }, [searchTerm, categoryFilter, sortOrder]);
 
   if (isLoading) {
     return <AdminTasksSkeleton />;
@@ -171,37 +189,29 @@ export default function AdminTasks() {
               </Button>
             )}
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
-              <div className="space-y-1">
-                <Button
-                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setSortOrder('newest')}
-                  className="w-full justify-start text-sm h-8"
-                >
-                  Más reciente primero
-                </Button>
-                <Button
-                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setSortOrder('oldest')}
-                  className="w-full justify-start text-sm h-8"
-                >
-                  Más antiguo primero
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Filtrar por categoría" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={sortOrder} onValueChange={setSortOrder as any}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="newest">Más reciente primero</SelectItem>
+              <SelectItem value="oldest">Más antiguo primero</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
