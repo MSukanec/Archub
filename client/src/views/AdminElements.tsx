@@ -195,7 +195,7 @@ export default function AdminElements() {
               placeholder="Buscar acciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
             />
             {searchTerm && (
               <Button

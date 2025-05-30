@@ -178,12 +178,12 @@ export default function AdminCategories() {
               placeholder="Buscar categorías..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-              <SelectValue placeholder="Filtrar por categoría" />
+              <SelectValue placeholder="Todas las Categorías" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="all">Todas las categorías</SelectItem>
