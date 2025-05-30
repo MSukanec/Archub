@@ -143,9 +143,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       name: task?.name || '',
       unit_labor_price: task?.unit_labor_price?.toString() || '',
       unit_material_price: task?.unit_material_price?.toString() || '',
-      category_id: task?.category_id || undefined,
-      subcategory_id: task?.subcategory_id || undefined,
-      element_category_id: task?.element_category_id || undefined,
+      category_id: task?.category_id || '',
+      subcategory_id: task?.subcategory_id || '',
+      element_category_id: task?.element_category_id || '',
+      unit_id: task?.unit_id || 0,
     },
   });
 
@@ -195,28 +196,35 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         name: task.name || '',
         unit_labor_price: task.unit_labor_price?.toString() || '',
         unit_material_price: task.unit_material_price?.toString() || '',
-        category_id: task.category_id || undefined,
-        subcategory_id: task.subcategory_id || undefined,
-        element_category_id: task.element_category_id || undefined,
+        category_id: task.category_id || '',
+        subcategory_id: task.subcategory_id || '',
+        element_category_id: task.element_category_id || '',
+        unit_id: task.unit_id || 0,
       });
       
+      // Set the selected IDs for the dropdowns
       if (task.category_id) {
-        setSelectedCategoryId(task.category_id.toString());
+        setSelectedCategoryId(task.category_id);
       }
       if (task.subcategory_id) {
-        setSelectedSubcategoryId(task.subcategory_id.toString());
+        setSelectedSubcategoryId(task.subcategory_id);
+      }
+      if (task.element_category_id) {
+        setSelectedElementCategoryId(task.element_category_id);
       }
     } else {
       form.reset({
         name: '',
         unit_labor_price: '',
         unit_material_price: '',
-        category_id: null,
-        subcategory_id: null,
-        element_category_id: null,
+        category_id: '',
+        subcategory_id: '',
+        element_category_id: '',
+        unit_id: 0,
       });
       setSelectedCategoryId('');
       setSelectedSubcategoryId('');
+      setSelectedElementCategoryId('');
     }
   }, [task, form]);
 
