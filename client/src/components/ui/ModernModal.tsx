@@ -22,58 +22,43 @@ export default function ModernModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex">
+    <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/60" 
+        className="fixed inset-0 bg-black/60 z-40" 
         onClick={onClose}
       />
       
       {/* Modal positioned to the right */}
-      <div className="ml-auto flex h-screen">
-        <div className={`
-          ${width} max-w-[90vw] sm:max-w-none
-          sm:w-[420px] 
-          sm:min-w-[400px] 
-          sm:max-w-[500px]
-          h-full 
-          bg-[#e0e0e0] 
-          shadow-2xl 
-          flex 
-          flex-col
-          relative
-          border-l 
-          border-border/20
-        `}>
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">
-            <h2 className="text-xl font-semibold text-foreground">
-              {title}
-            </h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-8 w-8 p-0 rounded-lg hover:bg-[#d0d0d0] text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Body - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-6 bg-[#e0e0e0]">
-            {children}
-          </div>
-          
-          {/* Footer */}
-          {footer && (
-            <div className="p-6 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
-              {footer}
-            </div>
-          )}
+      <div className="fixed top-0 right-0 h-screen w-[420px] max-w-[90vw] bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20 z-50">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">
+          <h2 className="text-xl font-semibold text-foreground">
+            {title}
+          </h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="h-8 w-8 p-0 rounded-lg hover:bg-[#d0d0d0] text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
+        
+        {/* Body - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-6 bg-[#e0e0e0]">
+          {children}
+        </div>
+        
+        {/* Footer */}
+        {footer && (
+          <div className="p-6 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
+            {footer}
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }
 
