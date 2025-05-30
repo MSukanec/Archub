@@ -381,7 +381,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           setSelectedCategoryId(value);
                           setSelectedSubcategoryId('');
                           setSelectedElementCategoryId('');
-                          field.onChange(value ? parseInt(value) : null);
+                          field.onChange(value);
                           form.setValue('subcategory_id', null);
                           form.setValue('element_category_id', null);
                         }} 
@@ -416,7 +416,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         onValueChange={(value) => {
                           setSelectedSubcategoryId(value);
                           setSelectedElementCategoryId('');
-                          field.onChange(value ? parseInt(value) : null);
+                          field.onChange(value);
                           form.setValue('element_category_id', null);
                         }} 
                         value={selectedSubcategoryId}
