@@ -158,8 +158,18 @@ export default function AdminUnits() {
               placeholder="Buscar unidades..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 pr-10 bg-background border-border rounded-xl"
             />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           
 
@@ -208,9 +218,9 @@ export default function AdminUnits() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUnits.length === 0 ? (
+            {paginatedUnits.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={3} className="text-center text-muted-foreground py-4 h-8">
                   {searchTerm 
                     ? 'No se encontraron unidades que coincidan con los filtros.'
                     : 'No hay unidades registradas.'
@@ -218,17 +228,17 @@ export default function AdminUnits() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredUnits.map((unit: any) => (
+              paginatedUnits.map((unit: any) => (
                 <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4 text-center">
+                  <TableCell className="py-2 text-center">
                     <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
                       {unit.name || 'N/A'}
                     </span>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <div className="font-medium text-foreground">{unit.description || unit.name}</div>
                   </TableCell>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-2">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -257,6 +267,45 @@ export default function AdminUnits() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="rounded-xl border-border"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+                className="w-8 h-8 p-0 rounded-lg"
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="rounded-xl border-border"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-card border-border rounded-2xl">
