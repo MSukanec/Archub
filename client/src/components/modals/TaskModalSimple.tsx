@@ -121,7 +121,9 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
         title: 'Tareas agregadas',
         description: `Se agregaron ${selectedTasks.length} tarea(s) al presupuesto correctamente`,
       });
-      queryClient.invalidateQueries({ queryKey: ['budget-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['budget-tasks', budgetId] });
+      queryClient.invalidateQueries({ queryKey: ['budget-tasks-with-categories', budgetId] });
+      setSelectedTasks([]);
       onOpenChange(false);
     },
     onError: (error) => {

@@ -290,14 +290,14 @@ export default function BudgetTasks() {
             <div className="overflow-hidden border border-gray-300 rounded-lg">
               {/* Table Header */}
               <div className="bg-gray-100 border-b border-gray-300 p-4">
-                <div className="grid grid-cols-12 gap-4 font-medium text-sm text-gray-700">
-                  <div className="col-span-2">Rubro</div>
-                  <div className="col-span-3">Descripción</div>
-                  <div className="col-span-1">Unidad</div>
-                  <div className="col-span-2">Cantidad</div>
-                  <div className="col-span-2">Costo Mano de Obra</div>
-                  <div className="col-span-1">Subtotal</div>
-                  <div className="col-span-1">% Incidencia</div>
+                <div className="grid grid-cols-8 gap-4 font-medium text-sm text-gray-700">
+                  <div className="col-span-1 text-center">Rubro</div>
+                  <div className="col-span-2 text-center">Descripción</div>
+                  <div className="col-span-1 text-center">Unidad</div>
+                  <div className="col-span-1 text-center">Cantidad</div>
+                  <div className="col-span-1 text-center">Costo M.O.</div>
+                  <div className="col-span-1 text-center">Subtotal</div>
+                  <div className="col-span-1 text-center">% Inc.</div>
                 </div>
               </div>
               
@@ -321,26 +321,28 @@ export default function BudgetTasks() {
                       
                       {/* Tasks in Category */}
                       {categoryTasks.map((budgetTask: any, index: number) => {
-                        const subtotal = budgetTask.unit_labor_price * budgetTask.quantity;
+                        const unitPrice = budgetTask.unit_labor_price || 0;
+                        const quantity = budgetTask.quantity || 0;
+                        const subtotal = unitPrice * quantity;
                         const incidencePercentage = totalGeneral > 0 ? (subtotal / totalGeneral) * 100 : 0;
                         
                         return (
                           <div 
                             key={budgetTask.id} 
-                            className={`grid grid-cols-12 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 ${
+                            className={`grid grid-cols-8 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 ${
                               index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                             }`}
                           >
-                            <div className="col-span-2 text-sm font-medium text-gray-500">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 text-center">
                               {/* Empty for rubro since it's in header */}
                             </div>
-                            <div className="col-span-3 text-sm">
+                            <div className="col-span-2 text-sm text-center">
                               {budgetTask.task_name}
                             </div>
-                            <div className="col-span-1 text-sm">
+                            <div className="col-span-1 text-sm text-center">
                               {budgetTask.unit}
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-1 flex justify-center">
                               <Input
                                 type="number"
                                 min="0"
@@ -353,13 +355,13 @@ export default function BudgetTasks() {
                                     quantity: newQuantity 
                                   });
                                 }}
-                                className="h-8 text-sm bg-white border-gray-300"
+                                className="h-8 text-sm bg-white border-gray-300 text-center w-full max-w-[80px]"
                               />
                             </div>
-                            <div className="col-span-2 text-sm font-medium">
-                              ${budgetTask.unit_labor_price.toFixed(2)}
+                            <div className="col-span-1 text-sm font-medium text-center">
+                              ${budgetTask.unit_labor_price?.toFixed(2) || '0.00'}
                             </div>
-                            <div className="col-span-1 text-sm font-bold flex items-center justify-between">
+                            <div className="col-span-1 text-sm font-bold text-center flex items-center justify-center">
                               <span>${subtotal.toFixed(2)}</span>
                               <Button
                                 variant="ghost"
@@ -370,7 +372,7 @@ export default function BudgetTasks() {
                                 <Trash2 className="h-3 w-3" />
                               </Button>
                             </div>
-                            <div className="col-span-1 text-sm">
+                            <div className="col-span-1 text-sm text-center">
                               {incidencePercentage.toFixed(1)}%
                             </div>
                           </div>
@@ -383,16 +385,17 @@ export default function BudgetTasks() {
               
               {/* Total Row */}
               <div className="bg-green-50 border-t-2 border-green-200 p-4 font-bold">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-9 text-right text-lg">
+                <div className="grid grid-cols-8 gap-4">
+                  <div className="col-span-5 text-right text-lg">
                     TOTAL GENERAL:
                   </div>
-                  <div className="col-span-2 text-lg text-green-600">
+                  <div className="col-span-1 text-lg text-green-600 text-center">
                     ${totalGeneral.toFixed(2)}
                   </div>
-                  <div className="col-span-1 text-lg text-green-600">
+                  <div className="col-span-1 text-lg text-green-600 text-center">
                     100%
                   </div>
+                  <div className="col-span-1"></div>
                 </div>
               </div>
             </div>
