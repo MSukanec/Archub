@@ -22,7 +22,7 @@ interface TaskModalSimpleProps {
 }
 
 interface Task {
-  id: number;
+  id: string;
   name: string;
   unit_labor_price: number;
   unit_material_price: number;
@@ -114,7 +114,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
     }
   };
 
-  const handleQuantityChange = (taskId: number, quantity: number) => {
+  const handleQuantityChange = (taskId: string, quantity: number) => {
     setSelectedTasks(prev => 
       prev.map(task => 
         task.id === taskId ? { ...task, quantity: Math.max(1, quantity) } : task
@@ -134,7 +134,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
     addTasksMutation.mutate(selectedTasks);
   };
 
-  const isTaskSelected = (taskId: number) => {
+  const isTaskSelected = (taskId: string) => {
     return selectedTasks.some(task => task.id === taskId);
   };
 

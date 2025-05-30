@@ -64,9 +64,50 @@ export default function BudgetTasks() {
     enabled: !!projectId,
   });
 
-  // Temporary: Return empty array until budget_tasks table is created
-  const budgetTasks: any[] = [];
-  const tasksLoading = false;
+  // Fetch budget tasks for current budget
+  const { data: budgetTasks = [], isLoading: tasksLoading } = useQuery({
+    queryKey: ['budget-tasks', budgetId],
+    queryFn: async () => {
+      if (!budgetId) return [];
+      
+      try {
+        // Primero obtenemos las budget_tasks
+        const { data: budgetTasksData, error: budgetTasksError } = await supabase
+          .from('budget_tasks')
+          .select('*')
+          .eq('budget_id', budgetId);
+        
+        if (budgetTasksError) throw budgetTasksError;
+        if (!budgetTasksData || budgetTasksData.length === 0) return [];
+
+        // Luego obtenemos los detalles de las tareas
+        const taskIds = budgetTasksData.map(bt => bt.task_id);
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('id, name, unit, unit_labor_price, unit_material_price')
+          .in('id', taskIds);
+        
+        if (tasksError) throw tasksError;
+
+        // Combinamos los datos
+        const combinedData = budgetTasksData.map(budgetTask => {
+          const task = tasksData?.find(t => t.id === budgetTask.task_id);
+          return {
+            ...budgetTask,
+            task_name: task?.name || 'Tarea no encontrada',
+            unit_price: task ? (task.unit_labor_price + task.unit_material_price) : 0,
+            unit: task?.unit || 1
+          };
+        });
+
+        return combinedData;
+      } catch (error) {
+        console.error('Error fetching budget tasks:', error);
+        return [];
+      }
+    },
+    enabled: !!budgetId,
+  });
 
 
 
