@@ -22,15 +22,15 @@ export default function ModernModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 z-50 w-screen h-screen overflow-hidden">
-      {/* Backdrop */}
+    <>
+      {/* Backdrop - covers everything */}
       <div 
-        className="absolute inset-0 bg-black/60" 
+        className="fixed inset-0 bg-black/60 z-50" 
         onClick={onClose}
       />
       
-      {/* Modal positioned to the right */}
-      <div className="modern-modal absolute top-0 right-0 bottom-0 w-[420px] max-w-[90vw] bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20">
+      {/* Modal - fixed positioning, right edge, full height */}
+      <div className="modern-modal fixed top-0 right-0 bottom-0 w-[420px] max-w-[90vw] bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20 z-50">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">
           <h2 className="text-xl font-semibold text-foreground">
@@ -58,7 +58,7 @@ export default function ModernModal({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
