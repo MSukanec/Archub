@@ -1,4 +1,4 @@
-import { Calendar, Shield, FolderOpen, Plus } from 'lucide-react';
+import { Calendar, Shield, FolderOpen, Plus, Calculator, Package, Hammer } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -7,7 +7,7 @@ import CircularButton from '@/components/ui/CircularButton';
 import { useState, useEffect } from 'react';
 
 export default function SecondarySidebar() {
-  const { setView } = useNavigationStore();
+  const { setView, currentSection, currentView } = useNavigationStore();
   const { user } = useAuthStore();
   const { organizationId, projectId, setUserContext, currentProjects } = useUserContextStore();
   const [showProjectMenu, setShowProjectMenu] = useState(false);
@@ -140,6 +140,27 @@ export default function SecondarySidebar() {
         
         {/* Additional buttons section */}
         <div className="flex flex-col items-center space-y-2 pt-2">
+          {/* Budget navigation - only show when in budgets section */}
+          {currentSection === 'budgets' && (
+            <>
+              <CircularButton
+                icon={Calculator}
+                isActive={currentView === 'budgets-list'}
+                onClick={() => setView('budgets-list')}
+              />
+              <CircularButton
+                icon={Hammer}
+                isActive={currentView === 'budgets-tasks'}
+                onClick={() => setView('budgets-tasks')}
+              />
+              <CircularButton
+                icon={Package}
+                isActive={currentView === 'budgets-materials'}
+                onClick={() => setView('budgets-materials')}
+              />
+            </>
+          )}
+          
           {/* Dashboard button */}
           <CircularButton
             icon={Calendar}
