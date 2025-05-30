@@ -173,13 +173,13 @@ export default function AdminActions() {
                 {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Por nombre"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-2">
-              <div className="space-y-2">
+            <PopoverContent className="w-[200px] p-2 bg-[#f5f5f5]">
+              <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setSortOrder('newest')}
-                  className="w-full justify-start"
+                  className="w-full justify-start text-sm h-8"
                 >
                   Más reciente primero
                 </Button>
@@ -187,7 +187,7 @@ export default function AdminActions() {
                   variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setSortOrder('oldest')}
-                  className="w-full justify-start"
+                  className="w-full justify-start text-sm h-8"
                 >
                   Más antiguo primero
                 </Button>
@@ -195,7 +195,7 @@ export default function AdminActions() {
                   variant={sortOrder === 'name' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setSortOrder('name')}
-                  className="w-full justify-start"
+                  className="w-full justify-start text-sm h-8"
                 >
                   Por nombre
                 </Button>
