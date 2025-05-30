@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Ruler, Search, Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { Ruler, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -36,6 +36,9 @@ import AdminUnitsModal from '@/components/modals/AdminUnitsModal';
 export default function AdminUnits() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const ITEMS_PER_PAGE = 10;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -105,7 +108,7 @@ export default function AdminUnits() {
     }
   };
 
-  const filteredUnits = units.filter((unit: any) => {
+  const filteredAndSortedUnits = units.filter((unit: any) => {
     const matchesSearch = (unit.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (unit.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -117,6 +120,16 @@ export default function AdminUnits() {
       return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
     }
   });
+
+  const totalPages = Math.ceil(filteredAndSortedUnits.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedUnits = filteredAndSortedUnits.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminUnitsSkeleton />;
@@ -195,7 +208,7 @@ export default function AdminUnits() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUnits.length === 0 ? (
+            {paginatedUnits.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm 
@@ -205,7 +218,7 @@ export default function AdminUnits() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredUnits.map((unit: any) => (
+              paginatedUnits.map((unit: any) => (
                 <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4 text-center">
                     <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
