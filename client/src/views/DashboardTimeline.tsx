@@ -592,58 +592,42 @@ function DashboardTimeline() {
                 }}
               />
 
-              {/* Date labels - top (positioned further from center) */}
+              {/* Date label - top (positioned at extreme top) */}
               <div 
-                className="absolute flex flex-col items-center text-center z-30"
+                className="absolute flex items-center text-center z-30"
                 style={{
-                  top: 'calc(10% - 50px)', // Further from center (10% from top minus 50px)
+                  top: '20px', // Very close to top edge
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
-                {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
-                  <div className="date-label-container">
-                    <div className="date-label-engraved text-xs font-medium">
-                      {(formatDate(node.date) as any).dayName}
-                    </div>
-                    <div className="date-label-engraved text-lg font-bold">
-                      {(formatDate(node.date) as any).dayNumber}
-                    </div>
+                <div className="date-label-container">
+                  <div className="date-label-engraved text-sm font-medium">
+                    {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
+                      `${(formatDate(node.date) as any).dayName} ${(formatDate(node.date) as any).dayNumber}` :
+                      formatDate(node.date)
+                    }
                   </div>
-                ) : (
-                  <div className="date-label-container">
-                    <div className="date-label-engraved text-xs font-medium">
-                      {formatDate(node.date)}
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
 
-              {/* Date labels - bottom (positioned further from center) */}
+              {/* Date label - bottom (positioned at extreme bottom) */}
               <div 
-                className="absolute flex flex-col items-center text-center z-30"
+                className="absolute flex items-center text-center z-30"
                 style={{
-                  bottom: 'calc(10% - 50px)', // Further from center (10% from bottom minus 50px)
+                  bottom: '20px', // Very close to bottom edge
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
               >
-                {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? (
-                  <div className="date-label-container">
-                    <div className="date-label-engraved text-lg font-bold">
-                      {(formatDate(node.date) as any).dayNumber}
-                    </div>
-                    <div className="date-label-engraved text-xs font-medium">
-                      {(formatDate(node.date) as any).dayName}
-                    </div>
+                <div className="date-label-container">
+                  <div className="date-label-engraved text-sm font-medium">
+                    {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
+                      `${(formatDate(node.date) as any).dayNumber} ${(formatDate(node.date) as any).dayName}` :
+                      formatDate(node.date)
+                    }
                   </div>
-                ) : (
-                  <div className="date-label-container">
-                    <div className="date-label-engraved text-xs font-medium">
-                      {formatDate(node.date)}
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
 
               {/* Events positioned by type */}
