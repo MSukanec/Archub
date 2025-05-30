@@ -179,7 +179,8 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   },
 
   initializeUserContext: async () => {
-    if (get().isInitialized) return;
+    const currentState = get();
+    if (currentState.isInitialized || currentState.isLoading) return;
     
     set({ isLoading: true });
     console.log('Starting user context initialization...');
@@ -254,6 +255,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
             projectId: null,
             budgetId: null,
             planId: null,
+            userId: dbUser.id,
             isLoading: false,
             isInitialized: true,
           });
@@ -283,7 +285,6 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
       console.log('User context initialized successfully');
 
-      // Don't refresh data immediately to avoid more complexity
     } catch (error) {
       console.error('Error initializing user context:', error);
       set({ 
@@ -291,6 +292,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         projectId: null,
         budgetId: null,
         planId: null,
+        userId: null,
         isLoading: false, 
         isInitialized: true 
       });

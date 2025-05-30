@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Dialog,
@@ -89,11 +89,15 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
   // Filtrar tareas excluyendo las ya agregadas
   const availableTasks = allTasks.filter(task => !existingTaskIds.includes(task.id));
 
-  // Filtrar tareas basado en la búsqueda
-  const filteredTasks = availableTasks.filter(task =>
-    searchQuery.length === 0 || 
-    task.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtrar tareas basado en la búsqueda con debounce mediante useMemo
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery.trim()) return availableTasks;
+    
+    const lowerSearch = searchQuery.toLowerCase();
+    return availableTasks.filter(task =>
+      task.name.toLowerCase().includes(lowerSearch)
+    );
+  }, [availableTasks, searchQuery]);
 
   // Agregar tareas al presupuesto
   const addTasksMutation = useMutation({

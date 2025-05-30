@@ -213,62 +213,78 @@ export default function Movements() {
     }, 300);
   };
 
-  // Filter and sort movements
+  // Filter and sort movements with optimized performance
   const filteredMovements = useMemo(() => {
-    if (!movements) return [];
+    if (!movements || !Array.isArray(movements)) return [];
     
-    let filtered = movements.filter(movement => {
-      const searchTermLower = searchTerm.toLowerCase();
-      const matchesSearch = 
-        movement.description?.toLowerCase().includes(searchTermLower) ||
-        movement.movement_concepts?.name?.toLowerCase().includes(searchTermLower) ||
-        movement.movement_concepts?.movement_concepts?.name?.toLowerCase().includes(searchTermLower) ||
-        movement.amount.toString().includes(searchTermLower);
-      
-      // Filter by date
-      const movementDate = movement.created_at_local ? new Date(movement.created_at_local) : new Date();
-      
-      let matchesDate = true;
-      if (filterType !== 'all') {
-        switch (filterType) {
-          case 'year':
-            if (dateFilter && dateFilter !== 'all') {
-              const filterYear = parseInt(dateFilter);
-              if (!isNaN(filterYear)) {
-                matchesDate = movementDate.getFullYear() === filterYear;
-              }
+    try {
+      let filtered = movements.filter(movement => {
+        if (!movement) return false;
+        
+        // Optimize search by checking if searchTerm exists first
+        const searchTermLower = searchTerm.toLowerCase();
+        const matchesSearch = !searchTerm || 
+          movement.description?.toLowerCase().includes(searchTermLower) ||
+          movement.movement_concepts?.name?.toLowerCase().includes(searchTermLower) ||
+          movement.movement_concepts?.parent_concept?.name?.toLowerCase().includes(searchTermLower) ||
+          movement.amount?.toString().includes(searchTermLower);
+        
+        // Early return if search doesn't match to avoid unnecessary processing
+        if (!matchesSearch) return false;
+        
+        // Filter by date with safe error handling
+        let matchesDate = true;
+        if (filterType !== 'all' && movement.created_at_local) {
+          try {
+            const movementDate = new Date(movement.created_at_local);
+            
+            switch (filterType) {
+              case 'year':
+                if (dateFilter && dateFilter !== 'all') {
+                  const filterYear = parseInt(dateFilter);
+                  if (!isNaN(filterYear)) {
+                    matchesDate = movementDate.getFullYear() === filterYear;
+                  }
+                }
+                break;
+              case 'date':
+                if (customDate) {
+                  const selectedDate = new Date(customDate);
+                  const movementDateOnly = new Date(movementDate.getFullYear(), movementDate.getMonth(), movementDate.getDate());
+                  const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                  matchesDate = movementDateOnly.getTime() === selectedDateOnly.getTime();
+                }
+                break;
             }
-            break;
-          case 'date':
-            if (customDate) {
-              const selectedDate = new Date(customDate);
-              const movementDateOnly = new Date(movementDate.getFullYear(), movementDate.getMonth(), movementDate.getDate());
-              const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-              matchesDate = movementDateOnly.getTime() === selectedDateOnly.getTime();
-            }
-            break;
-          case 'custom':
-            // Para filtros personalizados se puede extender más tarde
-            matchesDate = true;
-            break;
+          } catch (error) {
+            matchesDate = true; // Don't filter out due to date parsing errors
+          }
         }
-      }
-      
-      const movementType = movement.movement_concepts?.movement_concepts?.name?.toLowerCase();
-      const matchesType = typeFilter === 'all' || 
-        (typeFilter === 'ingreso' && movementType === 'ingresos') ||
-        (typeFilter === 'egreso' && movementType === 'egresos') ||
-        (typeFilter === 'ajuste' && movementType === 'ajustes');
-      
-      return matchesSearch && matchesDate && matchesType;
-    });
+        
+        // Type filtering with safe property access
+        const movementType = movement.movement_concepts?.parent_concept?.name?.toLowerCase();
+        const matchesType = typeFilter === 'all' || 
+          (typeFilter === 'ingreso' && movementType === 'ingresos') ||
+          (typeFilter === 'egreso' && movementType === 'egresos') ||
+          (typeFilter === 'ajuste' && movementType === 'ajustes');
+        
+        return matchesDate && matchesType;
+      });
 
-    // Sort by date (newest first) - ensure sorting is correct
-    return filtered.sort((a, b) => {
-      const dateA = new Date(a.created_at_local || a.created_at);
-      const dateB = new Date(b.created_at_local || b.created_at);
-      return dateB.getTime() - dateA.getTime(); // Newest first
-    });
+      // Sort by date (newest first) with error handling
+      return filtered.sort((a, b) => {
+        try {
+          const dateA = new Date(a.created_at_local || a.created_at || 0);
+          const dateB = new Date(b.created_at_local || b.created_at || 0);
+          return dateB.getTime() - dateA.getTime();
+        } catch (error) {
+          return 0; // Keep original order if dates can't be compared
+        }
+      });
+    } catch (error) {
+      console.error('Error filtering movements:', error);
+      return movements; // Return original data if filtering fails
+    }
   }, [movements, searchTerm, dateFilter, typeFilter, filterType, customDate]);
 
   // Calculate totals by currency
