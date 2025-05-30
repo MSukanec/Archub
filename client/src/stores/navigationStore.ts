@@ -51,6 +51,20 @@ const sectionViewMap: Record<Section, View> = {
   profile: 'profile-info',
 };
 
+// Helper function to get section from view
+const getSectionFromView = (view: View): Section => {
+  if (view.startsWith('dashboard-')) return 'dashboard';
+  if (view.startsWith('organization-')) return 'organization';
+  if (view.startsWith('projects-')) return 'projects';
+  if (view.startsWith('budgets-')) return 'budgets';
+  if (view.startsWith('sitelog-')) return 'sitelog';
+  if (view.startsWith('movements-') || view === 'transactions') return 'movements';
+  if (view === 'contacts') return 'contacts';
+  if (view.startsWith('admin-')) return 'admin';
+  if (view.startsWith('profile-') || view === 'subscription-tables') return 'profile';
+  return 'dashboard';
+};
+
 export const useNavigationStore = create<NavigationState>((set) => ({
   currentSection: 'dashboard',
   currentView: 'dashboard-timeline',
@@ -63,6 +77,10 @@ export const useNavigationStore = create<NavigationState>((set) => ({
         currentView: view,
       };
     }),
-  setView: (view) => set({ currentView: view }),
+  setView: (view) => 
+    set({ 
+      currentView: view,
+      currentSection: getSectionFromView(view)
+    }),
   setHoveredSection: (section) => set({ hoveredSection: section }),
 }));

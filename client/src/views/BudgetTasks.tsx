@@ -314,9 +314,14 @@ export default function BudgetTasks() {
                     <div key={categoryName}>
                       {/* Category Header */}
                       <div className="bg-[#787878] border-b border-gray-400 p-3 font-bold text-sm text-white">
-                        <div className="flex justify-between items-center">
-                          <span>{categoryName.toUpperCase()}</span>
-                          <span>${categoryTotal.toFixed(2)}</span>
+                        <div className="grid grid-cols-9 gap-4 items-center">
+                          <div className="col-span-1 text-center">{categoryName.toUpperCase()}</div>
+                          <div className="col-span-5"></div>
+                          <div className="col-span-1 text-center">${categoryTotal.toFixed(2)}</div>
+                          <div className="col-span-1 text-center">
+                            {totalGeneral > 0 ? ((categoryTotal / totalGeneral) * 100).toFixed(1) : '0.0'}%
+                          </div>
+                          <div className="col-span-1"></div>
                         </div>
                       </div>
                       

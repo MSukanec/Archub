@@ -34,6 +34,16 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'budgets-list', label: 'Lista de Presupuestos' },
     { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
     { id: 'budgets-materials', label: 'Lista de Materiales' }
+  ],
+  admin: [
+    { id: 'admin-organizations', label: 'Organizaciones' },
+    { id: 'admin-users', label: 'Usuarios' },
+    { id: 'admin-categories', label: 'Categorías' },
+    { id: 'admin-materials', label: 'Materiales' },
+    { id: 'admin-units', label: 'Unidades' },
+    { id: 'admin-elements', label: 'Elementos' },
+    { id: 'admin-actions', label: 'Acciones' },
+    { id: 'admin-tasks', label: 'Tareas' }
   ]
 };
 
