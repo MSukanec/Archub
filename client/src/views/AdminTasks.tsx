@@ -220,7 +220,7 @@ export default function AdminTasks() {
           <TableBody>
             {paginatedTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-4 h-8">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron tareas que coincidan con los filtros.'
                     : 'No hay tareas registradas.'
@@ -230,32 +230,32 @@ export default function AdminTasks() {
             ) : (
               paginatedTasks.map((task: any) => (
                 <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
+                  <TableCell className="py-2">
                     <Badge variant="outline" className="bg-muted/50">
                       {task.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-4">
+                  <TableCell className="py-2">
                     <div className="font-medium text-foreground">{task.name}</div>
                   </TableCell>
-                  <TableCell className="py-4">
+                  <TableCell className="py-2">
                     <Badge variant="outline" className="bg-muted/50">
                       {task.unit?.name || 'Sin unidad'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
+                  <TableCell className="text-foreground py-2">
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
+                  <TableCell className="text-foreground py-2">
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground" />
                       {task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right py-4">
+                  <TableCell className="text-right py-2">
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
@@ -283,6 +283,53 @@ export default function AdminTasks() {
             )}
           </TableBody>
         </Table>
+        
+        {/* Paginación */}
+        {filteredAndSortedTasks.length > 0 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedTasks.length)} de {filteredAndSortedTasks.length} elementos
+            </div>
+            
+            {totalPages > 1 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8 h-8 p-0 rounded-lg"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
