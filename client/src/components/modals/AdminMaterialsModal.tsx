@@ -133,7 +133,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogOverlay className="fixed inset-0 z-50 modal-backdrop" />
+      <DialogOverlay className="fixed inset-0 z-50 bg-black/10" />
       <DialogContent className="fixed right-0 top-0 h-screen w-[400px] max-w-none rounded-none border-l border-border bg-[#e0e0e0] p-6 shadow-2xl data-[state=open]:animate-slide-in-right data-[state=closed]:animate-slide-out-right z-50 flex flex-col">
         <DialogHeader className="pb-6">
           <DialogTitle className="text-xl font-semibold text-foreground">
