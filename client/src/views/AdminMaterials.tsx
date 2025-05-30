@@ -45,6 +45,9 @@ export default function AdminMaterials() {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const ITEMS_PER_PAGE = 10;
   
   // State for modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

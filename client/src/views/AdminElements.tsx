@@ -41,7 +41,7 @@ import AdminElementsModal from '@/components/modals/AdminElementsModal';
 
 export default function AdminElements() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name'>('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -114,9 +114,7 @@ export default function AdminElements() {
   const filteredAndSortedElements = elements
     .filter((element: any) => {
       const matchesSearch = (element.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesDate = !dateFilter || 
-                         format(new Date(element.created_at), 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-      return matchesSearch && matchesDate;
+      return matchesSearch;
     })
     .sort((a: any, b: any) => {
       switch (sortOrder) {
@@ -139,7 +137,7 @@ export default function AdminElements() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, dateFilter, sortOrder]);
+  }, [searchTerm, sortOrder]);
 
   if (isLoading) {
     return <AdminElementsSkeleton />;
@@ -172,49 +170,43 @@ export default function AdminElements() {
             />
           </div>
           
-          <Select value={sortOrder} onValueChange={(value: 'newest' | 'oldest' | 'name') => setSortOrder(value)}>
-            <SelectTrigger className="w-[160px] rounded-xl border-border text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Más reciente primero</SelectItem>
-              <SelectItem value="oldest">Más antiguo primero</SelectItem>
-              <SelectItem value="name">Por nombre</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={cn(
-                  "w-[160px] justify-start text-left font-normal rounded-xl border-border text-sm",
-                  !dateFilter && "text-muted-foreground"
-                )}
+                className="w-[200px] justify-start text-left font-normal rounded-xl border-border"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "dd/MM/yyyy") : "Filtro por fecha"}
+                {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Por nombre"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
+            <PopoverContent className="w-auto p-2">
+              <div className="space-y-2">
+                <Button
+                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('newest')}
+                  className="w-full justify-start"
+                >
+                  Más reciente primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('oldest')}
+                  className="w-full justify-start"
+                >
+                  Más antiguo primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'name' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('name')}
+                  className="w-full justify-start"
+                >
+                  Por nombre
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>
@@ -232,7 +224,7 @@ export default function AdminElements() {
             {paginatedElements.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={2} className="text-center text-muted-foreground py-4 h-8">
-                  {searchTerm || dateFilter 
+                  {searchTerm 
                     ? 'No se encontraron elementos que coincidan con los filtros.'
                     : 'No hay elementos registrados.'
                   }
@@ -270,9 +262,9 @@ export default function AdminElements() {
           </TableBody>
         </Table>
         
-        {/* Paginación */}
+        {/* Paginación centrada */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+          <div className="flex flex-col items-center gap-3 px-6 py-4 border-t border-border">
             <div className="text-sm text-muted-foreground">
               Mostrando {startIndex + 1} a {Math.min(endIndex, filteredAndSortedElements.length)} de {filteredAndSortedElements.length} elementos
             </div>
