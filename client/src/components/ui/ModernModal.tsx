@@ -30,7 +30,7 @@ export default function ModernModal({
       />
       
       {/* Modal - fixed positioning, right edge, full height */}
-      <div className="modern-modal fixed top-0 right-0 bottom-0 w-[420px] max-w-[90vw] bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20 z-50">
+      <div className="modern-modal fixed top-0 right-0 w-[420px] max-w-[90vw] h-screen bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20 z-50">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">
           <h2 className="text-xl font-semibold text-foreground">
