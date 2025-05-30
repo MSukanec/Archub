@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { FolderOpen, Search, Plus, Edit, Trash2, Tag, Calendar } from 'lucide-react';
+import { FolderOpen, Search, Plus, Edit, Trash2, Tag, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -24,11 +24,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -40,7 +41,7 @@ export default function AdminCategories() {
   
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   
   // State for modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -124,24 +125,24 @@ export default function AdminCategories() {
     setIsEditModalOpen(true);
   };
 
-  // Filter categories based on search and date
+  // Get unique parent categories for filter
+  const parentCategories = categories.filter((cat: any) => !cat.parent_id);
+  
+  // Filter categories based on search and parent category
   const filteredCategories = categories.filter((category: any) => {
     const matchesSearch = (category.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (category.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+                         (category.code || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    let matchesDate = true;
-    if (dateFilter && category.created_at) {
-      try {
-        const categoryDate = new Date(category.created_at);
-        if (!isNaN(categoryDate.getTime())) {
-          matchesDate = format(categoryDate, 'yyyy-MM-dd') === format(dateFilter, 'yyyy-MM-dd');
-        }
-      } catch (e) {
-        matchesDate = false;
+    let matchesCategory = true;
+    if (categoryFilter && categoryFilter !== 'all') {
+      if (categoryFilter === 'root') {
+        matchesCategory = !category.parent_id;
+      } else {
+        matchesCategory = category.parent_id === categoryFilter;
       }
     }
     
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesCategory;
   });
 
   if (isLoading) {
@@ -180,40 +181,20 @@ export default function AdminCategories() {
               className="pl-10 bg-background border-border rounded-xl"
             />
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal rounded-xl border-border",
-                  !dateFilter && "text-muted-foreground"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "PPP") : "Filtro por fecha"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-              {dateFilter && (
-                <div className="p-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDateFilter(undefined)}
-                    className="w-full"
-                  >
-                    Limpiar filtro
-                  </Button>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Filtrar por categoría" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectItem value="root">Solo categorías padre</SelectItem>
+              {parentCategories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
