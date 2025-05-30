@@ -17,11 +17,13 @@ interface UserContextStore extends UserContext {
   isInitialized: boolean;
   setUserContext: (context: Partial<UserContext>) => void;
   setProjectId: (projectId: string) => void;
+  setBudgetId: (budgetId: string) => void;
   clearUserContext: () => void;
   initializeUserContext: () => Promise<void>;
   refreshData: () => Promise<void>;
   getOrganizationId: () => string | null;
   getProjectId: () => string | null;
+  getBudgetId: () => string | null;
 }
 
 export const useUserContextStore = create<UserContextStore>((set, get) => ({
@@ -37,6 +39,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
 
   getOrganizationId: () => get().organizationId,
   getProjectId: () => get().projectId,
+  getBudgetId: () => get().budgetId,
 
   setUserContext: (context) => {
     set((state) => ({ ...state, ...context }));
@@ -109,6 +112,36 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
           .eq('user_id', internalUser.id);
       } catch (error) {
         console.error('Error updating project preference:', error);
+      }
+    };
+
+    updatePreferences();
+  },
+
+  setBudgetId: (budgetId: string) => {
+    const currentState = get();
+    set({ budgetId });
+    
+    // Update preferences in Supabase
+    const updatePreferences = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: internalUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (!internalUser) return;
+
+        await supabase
+          .from('user_preferences')
+          .update({ last_budget_id: budgetId })
+          .eq('user_id', internalUser.id);
+      } catch (error) {
+        console.error('Error updating budget preference:', error);
       }
     };
 
@@ -274,4 +307,11 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
       });
     }
   },
+
+  setUserContext,
+  setProjectId,
+  setBudgetId,
+  clearUserContext,
+  refreshData,
+  initializeUserContext,
 }));

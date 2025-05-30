@@ -42,7 +42,7 @@ export default function CircularButton({
     if (label) {
       hoverTimeoutRef.current = setTimeout(() => {
         setShowTooltip(true);
-      }, 500);
+      }, 250);
     }
   };
 

@@ -217,7 +217,7 @@ export default function BudgetsList() {
       </div>
 
       {/* Cards de Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
@@ -251,19 +251,7 @@ export default function BudgetsList() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Presupuesto Activo</p>
-              <p className="text-xl font-bold text-primary truncate">
-                {currentBudget?.name || 'Ninguno'}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-primary" />
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Search and Filters */}
