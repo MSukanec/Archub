@@ -38,12 +38,12 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
   admin: [
     { id: 'admin-organizations', label: 'Organizaciones' },
     { id: 'admin-users', label: 'Usuarios' },
+    { id: 'admin-tasks', label: 'Tareas' },
     { id: 'admin-categories', label: 'Categorías' },
     { id: 'admin-materials', label: 'Materiales' },
     { id: 'admin-units', label: 'Unidades' },
     { id: 'admin-elements', label: 'Elementos' },
-    { id: 'admin-actions', label: 'Acciones' },
-    { id: 'admin-tasks', label: 'Tareas' }
+    { id: 'admin-actions', label: 'Acciones' }
   ]
 };
 

@@ -211,11 +211,11 @@ export default function AdminOrganizations() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Organización</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Propietario</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha de creación</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Estado</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Organización</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Propietario</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Fecha de creación</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Estado</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -231,19 +231,19 @@ export default function AdminOrganizations() {
             ) : (
               filteredOrganizations.map((organization: any) => (
                 <TableRow key={organization.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{organization.name || 'Sin nombre'}</div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Users className="w-4 h-4 text-muted-foreground" />
                       {organization.owner_name || 'Sin asignar'}
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
+                  <TableCell className="text-center py-4">
                     {organization.created_at ? format(new Date(organization.created_at), 'dd/MM/yyyy') : 'N/A'}
                   </TableCell>
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <Badge 
                       variant={organization.is_active ? "default" : "secondary"}
                       className={organization.is_active 
@@ -254,8 +254,8 @@ export default function AdminOrganizations() {
                       {organization.is_active ? 'Activa' : 'Inactiva'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"

@@ -192,11 +192,11 @@ export default function AdminUsers() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Usuario</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Email</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Rol</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha de registro</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Usuario</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Email</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Rol</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Fecha de registro</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -212,7 +212,7 @@ export default function AdminUsers() {
             ) : (
               filteredUsers.map((user: any) => (
                 <TableRow key={user.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">
                       {user.first_name && user.last_name 
                         ? `${user.first_name} ${user.last_name}` 
@@ -220,13 +220,13 @@ export default function AdminUsers() {
                       }
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Mail className="w-4 h-4 text-muted-foreground" />
                       {user.email}
                     </div>
                   </TableCell>
-                  <TableCell className="py-4">
+                  <TableCell className="py-4 text-center">
                     <Badge 
                       variant={user.role === 'admin' ? "default" : "secondary"}
                       className={user.role === 'admin'
@@ -238,11 +238,11 @@ export default function AdminUsers() {
                       {user.role || 'Usuario'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
+                  <TableCell className="text-center py-4">
                     {format(new Date(user.created_at), 'dd/MM/yyyy')}
                   </TableCell>
-                  <TableCell className="text-right py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
