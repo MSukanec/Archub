@@ -115,10 +115,7 @@ export default function AdminUnits() {
             <p className="text-sm text-muted-foreground">Administra todas las unidades del sistema</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6">
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva Unidad
-        </Button>
+
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">
@@ -173,16 +170,15 @@ export default function AdminUnits() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Símbolo</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Símbolo</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Descripción</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredUnits.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={3} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron unidades que coincidan con los filtros.'
                     : 'No hay unidades registradas.'
@@ -192,19 +188,16 @@ export default function AdminUnits() {
             ) : (
               filteredUnits.map((unit: any) => (
                 <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
-                  <TableCell className="py-4">
-                    <div className="font-medium text-foreground">{unit.name}</div>
-                  </TableCell>
-                  <TableCell className="text-foreground py-4">
+                  <TableCell className="py-4 text-center">
                     <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
                       {unit.symbol || 'N/A'}
                     </span>
                   </TableCell>
-                  <TableCell className="text-foreground py-4">
-                    {unit.created_at ? format(new Date(unit.created_at), 'dd/MM/yyyy') : 'Sin fecha'}
+                  <TableCell className="text-center py-4">
+                    <div className="font-medium text-foreground">{unit.description || unit.name}</div>
                   </TableCell>
-                  <TableCell className="text-right py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell className="text-center py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"

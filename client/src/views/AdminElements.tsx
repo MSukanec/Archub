@@ -104,10 +104,7 @@ export default function AdminElements() {
             <p className="text-sm text-muted-foreground">Administra todos los elementos del sistema</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6">
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Elemento
-        </Button>
+
       </div>
 
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">
@@ -162,16 +159,14 @@ export default function AdminElements() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12">Elemento</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Descripción</TableHead>
-              <TableHead className="text-foreground font-semibold h-12">Fecha</TableHead>
-              <TableHead className="text-foreground font-semibold text-right h-12">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Elemento</TableHead>
+              <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredElements.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={2} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron elementos que coincidan con los filtros.'
                     : 'No hay elementos registrados.'
