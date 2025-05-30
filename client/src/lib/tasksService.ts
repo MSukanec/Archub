@@ -5,9 +5,10 @@ export interface CreateTaskData {
   name: string;
   unit_labor_price?: number;
   unit_material_price?: number;
-  category_id?: number;
-  subcategory_id?: number;
-  element_category_id?: number;
+  category_id?: string;
+  subcategory_id?: string;
+  element_category_id?: string;
+  unit_id?: number;
 }
 
 export { Task };

@@ -288,9 +288,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       name: '',
       unit_labor_price: '',
       unit_material_price: '',
-      category_id: undefined,
-      subcategory_id: undefined,
-      element_category_id: undefined,
+      category_id: '',
+      subcategory_id: '',
+      element_category_id: '',
+      unit_id: 0,
     });
     
     setSelectedCategoryId('');
@@ -451,12 +452,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <Select 
                         onValueChange={(value) => {
                           setSelectedElementCategoryId(value);
-                          if (!value) {
-                            field.onChange(null);
-                          } else {
-                            const numValue = parseInt(value);
-                            field.onChange(isNaN(numValue) ? null : numValue);
-                          }
+                          field.onChange(value);
                         }} 
                         value={selectedElementCategoryId}
                         disabled={!selectedSubcategoryId}
