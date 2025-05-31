@@ -523,31 +523,10 @@ export default function Movements() {
         </Card>
       </div>
 
-      {/* Search and Filters */}
+      {/* Filters and Search */}
       <div className="space-y-4">
-        {/* Desktop: Search and Filters in one row */}
+        {/* Desktop: Filters first row */}
         <div className="hidden lg:flex items-center gap-4">
-          {/* Search Bar */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar movimientos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
-            />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-
           {/* Filters */}
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
             <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
@@ -603,8 +582,68 @@ export default function Movements() {
           </Button>
         </div>
 
-        {/* Mobile: Compact inline layout */}
-        <div className="sm:hidden flex items-center gap-2">
+        {/* Desktop: Search bar second row */}
+        <div className="hidden lg:block">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar movimientos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Tablet/Mobile: Filters first, then search */}
+        <div className="lg:hidden space-y-3">
+          {/* Export button for tablet/mobile */}
+          <div className="flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleExportToExcel}
+              className="rounded-xl shadow-lg bg-[#e1e1e1] border-[#919191]/20 hover:bg-[#c8c8c8] h-9 px-3"
+            >
+              <Download className="w-4 h-4 mr-1" />
+              Exportar
+            </Button>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar movimientos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile: Compact inline layout - DEPRECATED */}
+        <div className="hidden flex items-center gap-2">
           {/* Search Bar */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
