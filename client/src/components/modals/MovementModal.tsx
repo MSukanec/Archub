@@ -527,10 +527,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       isOpen={isOpen}
       onClose={handleClose}
       title={isEditing ? 'Editar Movimiento' : 'Nuevo Movimiento'}
-      description="Gestiona ingresos, egresos y ajustes financieros del proyecto"
+      subtitle="Gestiona ingresos, egresos y ajustes financieros del proyecto"
       icon={DollarSign}
-      content={content}
       footer={footer}
-    />
+    >
+      {content}
+    </ModernModal>
   );
 }
