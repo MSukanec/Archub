@@ -530,12 +530,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Ciudad</FormLabel>
+                        <FormLabel className="text-xs font-medium text-muted-foreground">Ciudad</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="Ej: Buenos Aires"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            placeholder="Se completa automáticamente"
+                            disabled
+                            className="bg-[#f0f0f0] border-[#919191]/20 text-muted-foreground rounded-lg text-sm cursor-not-allowed"
                           />
                         </FormControl>
                         <FormMessage />
@@ -549,12 +550,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     name="zip_code"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Código Postal</FormLabel>
+                        <FormLabel className="text-xs font-medium text-muted-foreground">Código Postal</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="Ej: C1001"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            placeholder="Se completa automáticamente"
+                            disabled
+                            className="bg-[#f0f0f0] border-[#919191]/20 text-muted-foreground rounded-lg text-sm cursor-not-allowed"
                           />
                         </FormControl>
                         <FormMessage />
