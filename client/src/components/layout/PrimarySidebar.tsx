@@ -13,49 +13,57 @@ const topNavigationItems = [
     section: 'dashboard' as Section, 
     icon: Home, 
     label: 'Dashboard',
-    description: 'Vista general del proyecto, métricas y acceso rápido a funciones principales.'
-  },
-  { 
-    section: 'projects' as Section, 
-    icon: FolderOpen, 
-    label: 'Proyectos',
-    description: 'Gestión y administración de proyectos de construcción.'
+    description: 'Vista general del proyecto, métricas y acceso rápido a funciones principales.',
+    hasTimeline: true
   },
   { 
     section: 'organization' as Section, 
     icon: Building2, 
     label: 'Organización',
-    description: 'Gestión de la empresa, equipos de trabajo y estructura organizacional.'
+    description: 'Gestión de la empresa, equipos de trabajo y estructura organizacional.',
+    hasTimeline: false
+  },
+  { 
+    section: 'projects' as Section, 
+    icon: FolderOpen, 
+    label: 'Proyectos',
+    description: 'Gestión y administración de proyectos de construcción.',
+    hasTimeline: true
   },
   { 
     section: 'sitelog' as Section, 
     icon: ClipboardList, 
     label: 'Bitácora',
-    description: 'Registro diario de actividades, eventos y seguimiento del progreso de obra.'
+    description: 'Registro diario de actividades, eventos y seguimiento del progreso de obra.',
+    hasTimeline: true
   },
   { 
     section: 'calendar' as Section, 
     icon: Calendar, 
     label: 'Calendario',
-    description: 'Calendario de eventos, reuniones y citas del proyecto.'
+    description: 'Calendario de eventos, reuniones y citas del proyecto.',
+    hasTimeline: true
   },
   { 
     section: 'movements' as Section, 
     icon: DollarSign, 
     label: 'Finanzas',
-    description: 'Control de ingresos, egresos y movimientos financieros del proyecto.'
+    description: 'Control de ingresos, egresos y movimientos financieros del proyecto.',
+    hasTimeline: true
   },
   { 
     section: 'budgets' as Section, 
     icon: CreditCard, 
     label: 'Presupuestos',
-    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.'
+    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
+    hasTimeline: true
   },
   { 
     section: 'contacts' as Section, 
     icon: UserCheck, 
     label: 'Contactos',
-    description: 'Gestión de contactos, clientes y proveedores del proyecto.'
+    description: 'Gestión de contactos, clientes y proveedores del proyecto.',
+    hasTimeline: false
   },
 ];
 
@@ -140,16 +148,21 @@ export default function PrimarySidebar() {
       
       {/* Center navigation buttons */}
       <div className="flex-1 flex flex-col items-center justify-center space-y-6 pl-2.5">
-        {topNavigationItems.slice(1).map(({ section, icon, label, description }) => (
-          <CircularButton
-            key={section}
-            icon={icon}
-            isActive={currentSection === section}
-            onClick={() => setSection(section)}
-            section={section}
-            label={label}
-            description={description}
-          />
+        {topNavigationItems.slice(1).map(({ section, icon, label, description, hasTimeline }) => (
+          <div key={section} className="relative">
+            <CircularButton
+              icon={icon}
+              isActive={currentSection === section}
+              onClick={() => setSection(section)}
+              section={section}
+              label={label}
+              description={description}
+            />
+            {/* Timeline line extending to the right for sections that have timeline */}
+            {hasTimeline && (
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-[calc(100vw-112px)] h-0.5 bg-border/20 pointer-events-none" />
+            )}
+          </div>
         ))}
 
       </div>

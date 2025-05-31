@@ -139,17 +139,6 @@ export default function SecondarySidebar() {
           )}
         </div>
         
-        {/* Projects button */}
-        <div className="flex flex-col items-center pt-2">
-          <CircularButton
-            icon={FolderOpen}
-            isActive={currentView === 'projects-list'}
-            onClick={() => setView('projects-list')}
-            label="Proyectos"
-            tooltipDirection="left"
-          />
-        </div>
-        
         {/* Additional buttons section */}
         <div className="flex flex-col items-center space-y-2 pt-2">
           {/* Dashboard button */}
