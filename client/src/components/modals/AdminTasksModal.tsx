@@ -273,6 +273,29 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           .single();
 
         if (error) throw error;
+
+        // Update task materials - first delete existing ones
+        await supabase
+          .from('task_materials')
+          .delete()
+          .eq('task_id', task.id);
+
+        // Insert new materials if any
+        if (selectedMaterials.length > 0) {
+          const taskMaterialsData = selectedMaterials.map(material => ({
+            task_id: parseInt(task.id),
+            material_id: material.material_id,
+            quantity: parseFloat(material.quantity) || 0,
+            unit_cost: parseFloat(material.unit_cost) || 0,
+          }));
+
+          const { error: materialsError } = await supabase
+            .from('task_materials')
+            .insert(taskMaterialsData);
+
+          if (materialsError) throw materialsError;
+        }
+
         return result;
       } else {
         const { data: result, error } = await supabase
@@ -282,6 +305,23 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           .single();
 
         if (error) throw error;
+
+        // Insert task materials if any
+        if (selectedMaterials.length > 0) {
+          const taskMaterialsData = selectedMaterials.map(material => ({
+            task_id: result.id,
+            material_id: material.material_id,
+            quantity: parseFloat(material.quantity) || 0,
+            unit_cost: parseFloat(material.unit_cost) || 0,
+          }));
+
+          const { error: materialsError } = await supabase
+            .from('task_materials')
+            .insert(taskMaterialsData);
+
+          if (materialsError) throw materialsError;
+        }
+
         return result;
       }
     },
