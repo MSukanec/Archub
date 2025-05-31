@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download, ChevronLeft, ChevronRight, X, Filter, Tag, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -525,29 +525,164 @@ export default function Movements() {
 
       {/* Search and Filters */}
       <div className="space-y-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Buscar movimientos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+        {/* Desktop: Search and Filters in one row */}
+        <div className="hidden sm:flex items-center gap-4">
+          {/* Search Bar */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar movimientos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+
+          {/* Filters */}
+          <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
+            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+              <SelectValue placeholder="Todas las monedas" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las monedas</SelectItem>
+              <SelectItem value="ARS">ARS</SelectItem>
+              <SelectItem value="USD">USD</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-[160px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+              <SelectValue placeholder="Todos los tipos" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todos los tipos</SelectItem>
+              <SelectItem value="ingresos">Ingresos</SelectItem>
+              <SelectItem value="egresos">Egresos</SelectItem>
+              <SelectItem value="ajustes">Ajustes</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+              <SelectValue placeholder="Todas las categorías" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectItem value="movimientos">Movimientos</SelectItem>
+              <SelectItem value="cuotas">Cuotas</SelectItem>
+              <SelectItem value="herramientas">Herramientas y Equipos</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={sortOrder} onValueChange={setSortOrder}>
+            <SelectTrigger className="w-[160px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="newest">Más reciente primero</SelectItem>
+              <SelectItem value="oldest">Más antiguo primero</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button
+            variant="outline"
+            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-muted shadow-lg"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Exportar
+          </Button>
         </div>
 
-        {/* Filters Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+        {/* Mobile: Compact inline layout */}
+        <div className="sm:hidden flex items-center gap-2">
+          {/* Search Bar */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg h-9"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+
+          {/* Filter Buttons */}
+          <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
+            <SelectTrigger className="w-9 h-9 bg-[#e1e1e1] border-[#919191]/20 rounded-full shadow-lg p-0 flex items-center justify-center">
+              <DollarSign className="h-4 w-4" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las monedas</SelectItem>
+              <SelectItem value="ARS">ARS</SelectItem>
+              <SelectItem value="USD">USD</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-9 h-9 bg-[#e1e1e1] border-[#919191]/20 rounded-full shadow-lg p-0 flex items-center justify-center">
+              <Filter className="h-4 w-4" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todos los tipos</SelectItem>
+              <SelectItem value="ingresos">Ingresos</SelectItem>
+              <SelectItem value="egresos">Egresos</SelectItem>
+              <SelectItem value="ajustes">Ajustes</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-9 h-9 bg-[#e1e1e1] border-[#919191]/20 rounded-full shadow-lg p-0 flex items-center justify-center">
+              <Tag className="h-4 w-4" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectItem value="movimientos">Movimientos</SelectItem>
+              <SelectItem value="cuotas">Cuotas</SelectItem>
+              <SelectItem value="herramientas">Herramientas y Equipos</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={sortOrder} onValueChange={setSortOrder}>
+            <SelectTrigger className="w-9 h-9 bg-[#e1e1e1] border-[#919191]/20 rounded-full shadow-lg p-0 flex items-center justify-center">
+              <ArrowUpDown className="h-4 w-4" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="newest">Más reciente primero</SelectItem>
+              <SelectItem value="oldest">Más antiguo primero</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-9 h-9 bg-[#e1e1e1] border-[#919191]/20 rounded-full hover:bg-muted shadow-lg p-0"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Legacy filters - hidden now */}
+        <div className="hidden">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
             <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
@@ -773,57 +908,47 @@ export default function Movements() {
           paginatedMovements.map((movement) => (
             <Card 
               key={movement.id} 
-              className="rounded-2xl shadow-md bg-card border-0 p-4 cursor-pointer hover:bg-muted/30 transition-colors"
+              className="rounded-2xl shadow-md bg-card border-0 p-3 cursor-pointer hover:bg-muted/30 transition-colors"
               onClick={() => handleEdit(movement)}
             >
-              <div className="flex justify-between items-start mb-3">
+              <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${
                     movement.movement_concepts?.parent_concept?.name === 'Ingresos' ? 'bg-emerald-500' :
                     movement.movement_concepts?.parent_concept?.name === 'Egresos' ? 'bg-rose-500' :
                     'bg-blue-500'
                   }`} />
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-xs font-medium text-foreground">
                     {movement.movement_concepts?.parent_concept?.name}
                   </span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs text-muted-foreground">
                     {(() => {
                       const dateStr = movement.created_at_local || movement.created_at;
                       const dateParts = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
                       const [year, month, day] = dateParts.split('-');
-                      return `${day}/${month}/${year}`;
+                      return `${day}/${month}`;
                     })()}
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Categoría</span>
-                  <span className="text-sm font-medium">
-                    {movement.movement_concepts?.name || '-'}
+                  <span className="text-xs text-muted-foreground truncate max-w-[40%]">
+                    {movement.movement_concepts?.name || 'Sin categoría'}
                   </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Descripción</span>
-                  <span className="text-sm text-right max-w-[60%] truncate">
+                  <span className="text-xs text-right max-w-[55%] truncate font-medium">
                     {movement.description || 'Sin descripción'}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Billetera</span>
-                  <span className="text-sm font-medium">
-                    {movement.wallets?.name || '-'}
+                <div className="flex justify-between items-center pt-1">
+                  <span className="text-xs text-muted-foreground">
+                    {movement.wallets?.name || 'Sin billetera'}
                   </span>
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t border-border/50">
-                  <span className="text-xs text-muted-foreground">Cantidad</span>
-                  <span className={`text-lg font-bold ${
+                  <span className={`text-sm font-bold ${
                     movement.movement_concepts?.parent_concept?.name === 'Ingresos' ? 'text-emerald-500' :
                     movement.movement_concepts?.parent_concept?.name === 'Egresos' ? 'text-rose-500' :
                     'text-blue-500'
@@ -833,7 +958,7 @@ export default function Movements() {
                 </div>
               </div>
 
-              <div className="flex justify-end mt-3 pt-2 border-t border-border/50">
+              <div className="flex justify-end mt-2 pt-1 border-t border-border/50">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -841,9 +966,9 @@ export default function Movements() {
                     e.stopPropagation();
                     handleDelete(movement);
                   }}
-                  className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
+                  className="text-destructive hover:text-destructive/90 h-6 w-6 p-0 rounded-lg"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
             </Card>
