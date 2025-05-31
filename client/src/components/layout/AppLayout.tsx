@@ -24,7 +24,7 @@ import BudgetTasks from '@/views/budget/BudgetTasks';
 import BudgetMaterials from '@/views/budget/BudgetMaterials';
 import Movements from '@/views/movements/Movements';
 import Contacts from '@/views/contacts/Contacts';
-import Organizations from '@/views/organization/Organizations';
+
 import AdminOrganizations from '@/views/admin/AdminOrganizations';
 import AdminUnits from '@/views/admin/AdminUnits';
 import AdminElements from '@/views/admin/AdminElements';
