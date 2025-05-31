@@ -52,95 +52,88 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
     <ModernModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Información del Proyecto"
+      title={project.name}
+      subtitle="Información completa del proyecto de construcción"
       icon={Building}
     >
-      <div className="space-y-6">
-        {/* Project Name */}
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">{project.name}</h2>
-        </div>
-
-        {/* Project Details */}
-        <div className="space-y-4">
-          {/* Client */}
-          <div className="flex items-start gap-3 p-4 bg-white/50 rounded-lg">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-800 mb-1">Cliente</h3>
-              <p className="text-gray-600 mb-2">{project.client_name || 'No especificado'}</p>
+      <div className="space-y-3">
+        {/* Client */}
+        <div className="flex items-center gap-3 p-3 bg-[#e1e1e1] rounded-lg">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <User className="w-4 h-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-foreground mb-1">Cliente</h3>
+            <p className="text-sm text-muted-foreground truncate">{project.client_name || 'No especificado'}</p>
+            <div className="flex gap-3 mt-1">
               {project.contact_phone && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Phone className="w-4 h-4" />
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Phone className="w-3 h-3" />
                   <span>{project.contact_phone}</span>
                 </div>
               )}
               {project.email && (
-                <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                  <Mail className="w-4 h-4" />
-                  <span>{project.email}</span>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Mail className="w-3 h-3" />
+                  <span className="truncate">{project.email}</span>
                 </div>
               )}
             </div>
           </div>
+        </div>
 
-          {/* Location */}
-          <div className="flex items-start gap-3 p-4 bg-white/50 rounded-lg">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <MapPin className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-800 mb-1">Ubicación</h3>
-              <p className="text-gray-600 mb-2">{project.address || 'No especificada'}</p>
-              <div className="flex gap-4 text-sm text-gray-600">
-                {project.city && (
-                  <span>📍 {project.city}</span>
-                )}
-                {project.zip_code && (
-                  <span>📮 CP: {project.zip_code}</span>
-                )}
-              </div>
-              {(project.lat && project.lng || project.address) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const url = project.lat && project.lng 
-                      ? `https://maps.google.com/?q=${project.lat},${project.lng}`
-                      : `https://maps.google.com/?q=${encodeURIComponent(project.address || '')}`;
-                    window.open(url, '_blank');
-                  }}
-                  className="mt-2 h-8 text-xs"
-                >
-                  <ExternalLink className="w-3 h-3 mr-1" />
-                  Abrir en Maps
-                </Button>
+        {/* Location */}
+        <div className="flex items-center gap-3 p-3 bg-[#e1e1e1] rounded-lg">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <MapPin className="w-4 h-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-foreground mb-1">Ubicación</h3>
+            <p className="text-sm text-muted-foreground truncate">{project.address || 'No especificada'}</p>
+            <div className="flex gap-3 mt-1">
+              {project.city && (
+                <span className="text-xs text-muted-foreground">📍 {project.city}</span>
+              )}
+              {project.zip_code && (
+                <span className="text-xs text-muted-foreground">📮 CP: {project.zip_code}</span>
               )}
             </div>
+            {(project.lat && project.lng || project.address) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const url = project.lat && project.lng 
+                    ? `https://maps.google.com/?q=${project.lat},${project.lng}`
+                    : `https://maps.google.com/?q=${encodeURIComponent(project.address || '')}`;
+                  window.open(url, '_blank');
+                }}
+                className="mt-2 h-6 text-xs px-2"
+              >
+                <ExternalLink className="w-3 h-3 mr-1" />
+                Abrir en Maps
+              </Button>
+            )}
           </div>
-
-
         </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 pt-4">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="w-1/4"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleWhatsAppShare}
-            className="w-3/4 bg-primary hover:bg-primary/90 text-white"
-          >
-            <Share2 className="w-4 h-4 mr-2" />
-            Compartir por WhatsApp
-          </Button>
-        </div>
+      </div>
+      
+      {/* Footer Actions - Como en los modales de admin */}
+      <div className="flex gap-3 pt-6 border-t border-border">
+        <Button
+          variant="outline"
+          onClick={onClose}
+          className="flex-1"
+        >
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleWhatsAppShare}
+          className="flex-[2] bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
+          <Share2 className="w-4 h-4 mr-2" />
+          Compartir por WhatsApp
+        </Button>
       </div>
     </ModernModal>
   );
