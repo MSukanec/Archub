@@ -87,19 +87,23 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         const typeId = movement.movement_concepts?.parent_id || '';
         const conceptId = movement.concept_id || '';
         
+        // Set the selected type first
         setSelectedTypeId(typeId);
         
-        form.reset({
-          type_id: typeId,
-          concept_id: conceptId,
-          created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          description: movement.description || '',
-          amount: movement.amount || 0,
-          currency: movement.currency || 'ARS',
-          wallet_id: movement.wallet_id || '',
-          related_contact_id: movement.related_contact_id || '',
-          related_task_id: movement.related_task_id || '',
-        });
+        // Then reset the form with all values
+        setTimeout(() => {
+          form.reset({
+            type_id: typeId,
+            concept_id: conceptId,
+            created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            description: movement.description || '',
+            amount: movement.amount || 0,
+            currency: movement.currency || 'ARS',
+            wallet_id: movement.wallet_id || '',
+            related_contact_id: movement.related_contact_id || '',
+            related_task_id: movement.related_task_id || '',
+          });
+        }, 100);
       } else {
         setSelectedTypeId('');
         form.reset({
