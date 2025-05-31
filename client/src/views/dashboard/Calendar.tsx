@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, Plus, Clock, MapPin, Users } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EventModal from '@/components/modals/EventModal';
 
@@ -61,37 +60,30 @@ export default function CalendarView() {
     .slice(0, 5);
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <CalendarIcon className="w-6 h-6 text-primary" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <CalendarIcon className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-semibold text-foreground">
               Calendario
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Gestiona eventos y citas del proyecto
             </p>
           </div>
         </div>
-        <Button 
-          onClick={() => setIsEventModalOpen(true)}
-          className="flex items-center space-x-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nuevo Evento</span>
-        </Button>
       </div>
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+        <Card className="lg:col-span-2 rounded-2xl shadow-md bg-[#e1e1e1] border-0">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
               <CalendarIcon className="w-5 h-5" />
               <span>Calendario del Proyecto</span>
             </CardTitle>
@@ -115,9 +107,9 @@ export default function CalendarView() {
 
         {/* Events for selected date */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
+          <Card className="rounded-2xl shadow-md bg-[#e1e1e1] border-0">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base font-semibold text-foreground">
                 {selectedDate ? format(selectedDate, 'dd MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
               </CardTitle>
             </CardHeader>
@@ -169,25 +161,16 @@ export default function CalendarView() {
               ) : (
                 <div className="text-center py-8">
                   <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-                  <p className="text-muted-foreground mb-3">No hay eventos para esta fecha</p>
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEventModalOpen(true)}
-                    className="flex items-center space-x-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Crear evento</span>
-                  </Button>
+                  <p className="text-muted-foreground mb-3 text-sm">No hay eventos para esta fecha</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
           {/* Upcoming events */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Próximos Eventos</CardTitle>
+          <Card className="rounded-2xl shadow-md bg-[#e1e1e1] border-0">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base font-semibold text-foreground">Próximos Eventos</CardTitle>
             </CardHeader>
             <CardContent>
               {upcomingEvents.length > 0 ? (
