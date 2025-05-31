@@ -213,7 +213,7 @@ export default function PrimarySidebar() {
 
         {/* Project menu */}
         {showProjectMenu && (
-          <div className="absolute top-1/2 transform -translate-y-1/2 left-full ml-3 bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
+          <div className="absolute top-0 left-full ml-3 bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
             <div className="p-4">
               {/* Title in black */}
               <div className="font-semibold text-sm text-black mb-2">
@@ -241,8 +241,8 @@ export default function PrimarySidebar() {
                 </button>
               </div>
             </div>
-            {/* Arrow */}
-            <div className="absolute top-1/2 transform -translate-y-1/2 right-full w-0 h-0 border-t-[8px] border-b-[8px] border-transparent border-r-[8px] border-r-[#e1e1e1]" />
+            {/* Arrow pointing to project selector button */}
+            <div className="absolute top-5 right-full w-0 h-0 border-t-[8px] border-b-[8px] border-transparent border-r-[8px] border-r-[#e1e1e1]" />
           </div>
         )}
       </div>
