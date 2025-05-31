@@ -3,14 +3,28 @@ import type { Task, InsertTask } from '@shared/schema';
 
 export interface CreateTaskData {
   name: string;
-  unit_labor_price?: number;
-  unit_material_price?: number;
+  unit_labor_price?: number | null;
+  unit_material_price?: number | null;
   category_id?: string;
   subcategory_id?: string;
   element_category_id?: string;
   unit_id?: string;
   action_id?: string;
   element_id?: string;
+  organization_id?: string;
+}
+
+export interface UpdateTaskData {
+  name?: string;
+  unit_labor_price?: number | null;
+  unit_material_price?: number | null;
+  category_id?: string;
+  subcategory_id?: string;
+  element_category_id?: string;
+  unit_id?: string;
+  action_id?: string;
+  element_id?: string;
+  organization_id?: string;
 }
 
 export { Task };
@@ -56,7 +70,7 @@ export const tasksService = {
     return data;
   },
 
-  async update(id: number, taskData: Partial<CreateTaskData>): Promise<Task> {
+  async update(id: string, taskData: UpdateTaskData): Promise<Task> {
     console.log('Updating task:', id, taskData);
     console.log('Task data object keys:', Object.keys(taskData));
     console.log('Task data values:', Object.values(taskData));
