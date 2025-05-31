@@ -526,7 +526,7 @@ export default function Movements() {
       {/* Search and Filters */}
       <div className="space-y-4">
         {/* Desktop: Search and Filters in one row */}
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-4">
           {/* Search Bar */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -693,8 +693,8 @@ export default function Movements() {
         </div>
       </div>
 
-      {/* History Table - Desktop */}
-      <div className="hidden md:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      {/* History Table - Desktop Only */}
+      <div className="hidden xl:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -851,8 +851,8 @@ export default function Movements() {
         )}
       </div>
 
-      {/* Mobile Cards View */}
-      <div className="md:hidden space-y-3">
+      {/* Tablet Cards View */}
+      <div className="xl:hidden space-y-3">
         {paginatedMovements.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
             {searchTerm || currencyFilter !== 'all' || typeFilter !== 'all'
