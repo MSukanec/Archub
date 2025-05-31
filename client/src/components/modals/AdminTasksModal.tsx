@@ -568,7 +568,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           field.onChange(value);
                           form.setValue('element_category_id', '');
                         }} 
-                        value={selectedSubcategoryId}
+                        value={field.value || ''}
                         disabled={!selectedCategoryId}
                       >
                         <FormControl>
@@ -601,7 +601,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           setSelectedElementCategoryId(value);
                           field.onChange(value);
                         }} 
-                        value={selectedElementCategoryId}
+                        value={field.value || ''}
                         disabled={!selectedSubcategoryId}
                       >
                         <FormControl>
@@ -628,7 +628,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
             <AccordionItem value="task" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
-                  <CheckSquare className="w-4 h-4" />
+                  <CheckSquare className="w-4 h-4 text-primary" />
                   Tarea
                 </div>
               </AccordionTrigger>
@@ -698,7 +698,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
             <AccordionItem value="pricing" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
-                  <FolderTree className="w-4 h-4" />
+                  <FolderTree className="w-4 h-4 text-primary" />
                   Unidad y Precios
                 </div>
               </AccordionTrigger>
