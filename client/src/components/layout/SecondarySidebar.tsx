@@ -13,7 +13,7 @@ export default function SecondarySidebar() {
   }
 
   return (
-    <div className="w-14 h-screen bg-white border-r border-border relative z-10 flex flex-col">
+    <div className="w-[56px] flex flex-col relative z-20">
       {/* Admin buttons section */}
       <div className="flex flex-col items-center space-y-4 pt-4 pl-2.5">
         {/* Dashboard button (old dashboard for admin) */}
