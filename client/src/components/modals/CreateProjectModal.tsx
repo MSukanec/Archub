@@ -508,6 +508,12 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                             setMapLat(lat);
                             setMapLng(lng);
                           }}
+                          onCityChange={(city) => {
+                            form.setValue('city', city);
+                          }}
+                          onZipCodeChange={(zipCode) => {
+                            form.setValue('zip_code', zipCode);
+                          }}
                           placeholder="Buscar dirección..."
                           className="w-full"
                         />

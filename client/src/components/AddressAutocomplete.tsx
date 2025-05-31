@@ -1,8 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from 'use-places-autocomplete';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { MapPin, X } from 'lucide-react';
@@ -11,88 +7,148 @@ interface AddressAutocompleteProps {
   value?: string;
   onChange: (address: string) => void;
   onCoordinatesChange: (lat: number, lng: number) => void;
+  onCityChange?: (city: string) => void;
+  onZipCodeChange?: (zipCode: string) => void;
   placeholder?: string;
   className?: string;
+}
+
+declare global {
+  interface Window {
+    google: any;
+  }
 }
 
 export default function AddressAutocomplete({
   value = '',
   onChange,
   onCoordinatesChange,
+  onCityChange,
+  onZipCodeChange,
   placeholder = 'Buscar dirección...',
   className = ''
 }: AddressAutocompleteProps) {
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const autocompleteRef = useRef<any>(null);
 
-  const {
-    ready,
-    value: searchValue,
-    suggestions: { status, data },
-    setValue,
-    clearSuggestions,
-  } = usePlacesAutocomplete({
-    requestOptions: {
-      /* Configurar según región si necesario */
-    },
-    debounce: 300,
-  });
-
-  // Sincronizar el valor externo con el estado interno
+  // Inicializar Google Maps Autocomplete
   useEffect(() => {
-    if (value !== searchValue) {
-      setValue(value, false);
-    }
-  }, [value, setValue, searchValue]);
+    const initializeAutocomplete = () => {
+      if (!inputRef.current || !window.google?.maps?.places) {
+        return;
+      }
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setValue(inputValue);
-    onChange(inputValue);
-    setShowSuggestions(true);
-  };
+      try {
+        // Crear instancia de Autocomplete
+        autocompleteRef.current = new window.google.maps.places.Autocomplete(
+          inputRef.current,
+          {
+            types: ['address'],
+            fields: ['formatted_address', 'geometry', 'address_components']
+          }
+        );
 
-  const handleSelect = async (description: string) => {
-    setValue(description, false);
-    onChange(description);
-    setShowSuggestions(false);
-    clearSuggestions();
+        // Escuchar evento place_changed
+        autocompleteRef.current.addListener('place_changed', () => {
+          const place = autocompleteRef.current.getPlace();
+          
+          if (!place || !place.geometry) {
+            console.warn('No se encontró información de ubicación para esta dirección');
+            return;
+          }
 
-    try {
-      const results = await getGeocode({ address: description });
-      const { lat, lng } = await getLatLng(results[0]);
-      onCoordinatesChange(lat, lng);
-    } catch (error) {
-      console.error('Error getting coordinates:', error);
-    }
-  };
+          // Obtener dirección formateada
+          const formattedAddress = place.formatted_address || '';
+          onChange(formattedAddress);
 
-  const clearInput = () => {
-    setValue('', false);
-    onChange('');
-    setShowSuggestions(false);
-    clearSuggestions();
-    inputRef.current?.focus();
-  };
+          // Obtener coordenadas
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          setLat(lat);
+          setLng(lng);
+          onCoordinatesChange(lat, lng);
 
-  // Cerrar sugerencias al hacer click fuera
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
-        !inputRef.current?.contains(event.target as Node)
-      ) {
-        setShowSuggestions(false);
+          // Extraer ciudad y código postal de address_components
+          let city = '';
+          let zipCode = '';
+          
+          if (place.address_components) {
+            place.address_components.forEach((component: any) => {
+              const types = component.types;
+              
+              if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+                city = component.long_name;
+              }
+              
+              if (types.includes('postal_code')) {
+                zipCode = component.long_name;
+              }
+            });
+          }
+
+          // Llamar callbacks opcionales
+          if (onCityChange && city) {
+            onCityChange(city);
+          }
+          if (onZipCodeChange && zipCode) {
+            onZipCodeChange(zipCode);
+          }
+        });
+
+        setIsReady(true);
+      } catch (error) {
+        console.error('Error inicializando Google Maps Autocomplete:', error);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    // Verificar si Google Maps ya está cargado
+    if (window.google?.maps?.places) {
+      initializeAutocomplete();
+    } else {
+      // Esperar a que se cargue Google Maps
+      const checkGoogleMaps = setInterval(() => {
+        if (window.google?.maps?.places) {
+          clearInterval(checkGoogleMaps);
+          initializeAutocomplete();
+        }
+      }, 100);
+
+      // Limpiar intervalo después de 10 segundos
+      setTimeout(() => {
+        clearInterval(checkGoogleMaps);
+        if (!isReady) {
+          console.warn('Google Maps no se cargó correctamente');
+        }
+      }, 10000);
+
+      return () => clearInterval(checkGoogleMaps);
+    }
+  }, [onChange, onCoordinatesChange, onCityChange, onZipCodeChange]);
+
+  // Actualizar valor del input cuando cambia la prop value
+  useEffect(() => {
+    if (inputRef.current && value !== inputRef.current.value) {
+      inputRef.current.value = value;
+    }
+  }, [value]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    onChange(inputValue);
+  };
+
+  const clearInput = () => {
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+    onChange('');
+    setLat(null);
+    setLng(null);
+    inputRef.current?.focus();
+  };
 
   return (
     <div className={`relative ${className}`}>
@@ -100,14 +156,13 @@ export default function AddressAutocomplete({
         <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
           ref={inputRef}
-          value={searchValue}
-          onChange={handleInput}
-          disabled={!ready}
-          placeholder={placeholder}
+          defaultValue={value}
+          onChange={handleInputChange}
+          disabled={!isReady}
+          placeholder={isReady ? placeholder : 'Cargando Google Maps...'}
           className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
-          onFocus={() => setShowSuggestions(true)}
         />
-        {searchValue && (
+        {value && (
           <Button
             type="button"
             variant="ghost"
@@ -119,32 +174,6 @@ export default function AddressAutocomplete({
           </Button>
         )}
       </div>
-
-      {showSuggestions && status === 'OK' && data.length > 0 && (
-        <div
-          ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto"
-        >
-          {data.map(({ place_id, description, terms }) => (
-            <button
-              key={place_id}
-              type="button"
-              onClick={() => handleSelect(description)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-start gap-3 border-b border-gray-100 last:border-b-0 transition-colors"
-            >
-              <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-900 truncate">
-                  {terms[0]?.value}
-                </div>
-                <div className="text-xs text-gray-500 truncate">
-                  {description}
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
