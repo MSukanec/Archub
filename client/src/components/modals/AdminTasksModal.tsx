@@ -31,7 +31,17 @@ const createTaskSchema = z.object({
 
 type FormData = z.infer<typeof createTaskSchema>;
 
-type TaskWithNewFields = Task & {
+type TaskWithNewFields = {
+  id: string;
+  name: string;
+  organization_id: string;
+  category_id: string;
+  subcategory_id: string;
+  element_category_id: string;
+  unit_id: string;
+  unit_labor_price?: number | null;
+  unit_material_price?: number | null;
+  created_at: string;
   action_id?: string | null;
   element_id?: string | null;
 };
@@ -151,10 +161,15 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           form.setValue('unit_material_price', task.unit_material_price?.toString() || '');
           form.setValue('unit_id', task.unit_id || '');
           form.setValue('action_id', task.action_id || '');
-          form.setValue('element_id', task.element_id || '');
           
           setSelectedActionId(task.action_id || '');
-          setSelectedElementId(task.element_id || '');
+          
+          // Set element_id with proper timing to ensure UI synchronization
+          setTimeout(() => {
+            form.setValue('element_id', task.element_id || '');
+            setSelectedElementId(task.element_id || '');
+            console.log('Synced element_id after delay:', task.element_id);
+          }, 20);
         }
       } else {
         // Creating new task - reset everything (same as MovementModal)
