@@ -1,15 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Building2, FileText } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -27,13 +21,11 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
-import { useQuery } from '@tanstack/react-query';
+import ModernModal from '@/components/ui/ModernModal';
 
 const budgetSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -213,124 +205,98 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{budget?.id ? 'Editar Presupuesto' : 'Crear Nuevo Presupuesto'}</DialogTitle>
-          <DialogDescription>
-            {budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form 
-            onSubmit={form.handleSubmit(onSubmit)} 
-            className="space-y-4"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                form.handleSubmit(onSubmit)();
-              }
-            }}
-          >
-            {/* Campo del proyecto activo (bloqueado) */}
-            <FormItem>
-              <FormLabel>Proyecto</FormLabel>
-              <FormControl>
-                <Input
-                  value={currentProject?.name || 'Cargando...'}
-                  disabled
-                  className="bg-muted cursor-not-allowed"
-                />
-              </FormControl>
-            </FormItem>
-
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre del Presupuesto *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Ej: Presupuesto General de Obra"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción (opcional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Descripción del presupuesto..."
-                      rows={3}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {budget?.id && (
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estado *</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      value={field.value || 'draft'}
-                      defaultValue="draft"
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona el estado" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="draft">Borrador</SelectItem>
-                        <SelectItem value="approved">Aprobado</SelectItem>
-                        <SelectItem value="rejected">Rechazado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+    <ModernModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={budget?.id ? 'Editar Presupuesto' : 'Crear Nuevo Presupuesto'}
+      description={budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
+      icon={<FileText className="h-6 w-6" />}
+      onConfirm={form.handleSubmit(onSubmit)}
+      confirmText={budget?.id ? 'Actualizar Presupuesto' : 'Crear Presupuesto'}
+      isLoading={budgetMutation.isPending}
+    >
+      <Form {...form}>
+        <div className="space-y-4">
+          {/* Campo del proyecto activo (bloqueado) */}
+          <FormItem>
+            <FormLabel className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              Proyecto
+            </FormLabel>
+            <FormControl>
+              <Input
+                value={currentProject?.name || 'Cargando...'}
+                disabled
+                className="bg-muted cursor-not-allowed"
               />
-            )}
+            </FormControl>
+          </FormItem>
 
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                disabled={budgetMutation.isPending}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={budgetMutation.isPending}
-              >
-                {budgetMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {budget?.id ? 'Actualizar Presupuesto' : 'Crear Presupuesto'}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre del Presupuesto *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ej: Presupuesto General de Obra"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descripción (opcional)</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Descripción del presupuesto..."
+                    rows={3}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {budget?.id && (
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado *</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || 'draft'}
+                    defaultValue="draft"
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona el estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="draft">Borrador</SelectItem>
+                      <SelectItem value="approved">Aprobado</SelectItem>
+                      <SelectItem value="rejected">Rechazado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+        </div>
+      </Form>
+    </ModernModal>
   );
 }

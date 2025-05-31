@@ -72,6 +72,20 @@ export default function BudgetsList() {
     setView('budgets-list');
   }, [setSection, setView]);
 
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateBudgetModal = () => {
+      setSelectedBudget(null);
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
+
+    return () => {
+      window.removeEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
+    };
+  }, []);
+
   const { data: budgets = [], isLoading } = useQuery({
     queryKey: ['budgets', projectId],
     queryFn: async () => {
