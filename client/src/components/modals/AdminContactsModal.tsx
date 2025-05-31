@@ -8,11 +8,12 @@ import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { PhoneInputField } from '@/components/ui/PhoneInput';
+import { MultiSelectContactTypes } from '@/components/ui/MultiSelectContactTypes';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, CreateContactData } from '@/lib/contactsService';
+import { contactTypesService } from '@/lib/contactTypesService';
 
 const contactSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),
@@ -22,7 +23,7 @@ const contactSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
-  contact_type: z.string().min(1, 'El tipo de contacto es requerido'),
+  contact_type_ids: z.array(z.string()).min(1, 'Selecciona al menos un tipo de contacto'),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -52,24 +53,39 @@ export default function AdminContactsModal({
       phone: '',
       location: '',
       notes: '',
-      contact_type: '',
+      contact_type_ids: [],
     },
   });
 
   // Reset form when contact changes or modal opens
   useEffect(() => {
-    if (isOpen) {
-      form.reset({
-        first_name: contact?.first_name || '',
-        last_name: contact?.last_name || '',
-        company_name: contact?.company_name || '',
-        email: contact?.email || '',
-        phone: contact?.phone || '',
-        location: contact?.location || '',
-        notes: contact?.notes || '',
-        contact_type: contact?.contact_type || '',
-      });
-    }
+    const loadContactTypes = async () => {
+      if (isOpen) {
+        let contactTypeIds: string[] = [];
+        
+        if (contact) {
+          try {
+            const types = await contactTypesService.getContactTypesByContactId(contact.id);
+            contactTypeIds = types.map(t => t.id);
+          } catch (error) {
+            console.error('Error loading contact types:', error);
+          }
+        }
+
+        form.reset({
+          first_name: contact?.first_name || '',
+          last_name: contact?.last_name || '',
+          company_name: contact?.company_name || '',
+          email: contact?.email || '',
+          phone: contact?.phone || '',
+          location: contact?.location || '',
+          notes: contact?.notes || '',
+          contact_type_ids: contactTypeIds,
+        });
+      }
+    };
+
+    loadContactTypes();
   }, [contact, isOpen, form]);
 
   const createMutation = useMutation({
@@ -243,27 +259,18 @@ export default function AdminContactsModal({
 
             <FormField
               control={form.control}
-              name="contact_type"
-              render={({ field }) => (
+              name="contact_type_ids"
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
-                        <SelectValue placeholder="Seleccionar tipo" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="proveedor">Proveedor</SelectItem>
-                      <SelectItem value="contratista">Contratista</SelectItem>
-                      <SelectItem value="cliente">Cliente</SelectItem>
-                      <SelectItem value="arquitecto">Arquitecto</SelectItem>
-                      <SelectItem value="ingeniero">Ingeniero</SelectItem>
-                      <SelectItem value="técnico">Técnico</SelectItem>
-                      <SelectItem value="inspector">Inspector</SelectItem>
-                      <SelectItem value="otro">Otro</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <MultiSelectContactTypes
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      error={!!fieldState.error}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

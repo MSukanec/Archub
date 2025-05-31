@@ -24,7 +24,7 @@ export interface CreateContactData {
   company_name?: string | null;
   location?: string | null;
   notes?: string | null;
-  contact_type: string;
+  contact_type_ids?: string[];
 }
 
 export const contactsService = {

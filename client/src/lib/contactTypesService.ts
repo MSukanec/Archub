@@ -9,94 +9,62 @@ export interface ContactTypeLink {
   id: string;
   contact_id: string;
   type_id: string;
-  contact_types?: ContactType;
 }
 
 export const contactTypesService = {
-  async getAll(): Promise<ContactType[]> {
-    try {
-      const { data, error } = await supabase
-        .from('contact_types')
-        .select('*')
-        .order('name', { ascending: true });
-      
-      if (error) {
-        console.error('Error fetching contact types:', error);
-        return [];
-      }
-      
-      return data || [];
-    } catch (error) {
-      console.error('Network error fetching contact types:', error);
-      return [];
-    }
+  // Obtener todos los tipos de contacto
+  async getContactTypes(): Promise<ContactType[]> {
+    const { data, error } = await supabase
+      .from('contact_types')
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
   },
 
-  async getContactTypes(contactId: string): Promise<ContactType[]> {
-    try {
-      const { data, error } = await supabase
-        .from('contact_type_links')
-        .select(`
-          type_id,
-          contact_types!inner (
-            id,
-            name
-          )
-        `)
-        .eq('contact_id', contactId);
-      
-      if (error) {
-        console.error('Error fetching contact types for contact:', error);
-        return [];
-      }
-      
-      // Extract and flatten the contact types data
-      const types = data?.map(link => link.contact_types).filter(Boolean) || [];
-      const flatTypes = types.flat();
-      
-      // Ensure proper typing
-      return flatTypes.map(type => ({
-        id: type.id,
-        name: type.name
-      }));
-    } catch (error) {
-      console.error('Network error fetching contact types for contact:', error);
-      return [];
-    }
+  // Obtener tipos de contacto de un contacto específico
+  async getContactTypesByContactId(contactId: string): Promise<ContactType[]> {
+    const { data, error } = await supabase
+      .from('contact_type_links')
+      .select(`
+        type_id,
+        contact_types (
+          id,
+          name
+        )
+      `)
+      .eq('contact_id', contactId);
+    
+    if (error) throw error;
+    return data?.map(link => ({
+      id: (link.contact_types as any).id,
+      name: (link.contact_types as any).name
+    })) || [];
   },
 
+  // Actualizar tipos de contacto para un contacto
   async updateContactTypes(contactId: string, typeIds: string[]): Promise<void> {
-    try {
-      // First, delete existing links for this contact
-      const { error: deleteError } = await supabase
+    // Primero eliminar todos los tipos existentes
+    const { error: deleteError } = await supabase
+      .from('contact_type_links')
+      .delete()
+      .eq('contact_id', contactId);
+    
+    if (deleteError) throw deleteError;
+
+    // Luego insertar los nuevos tipos
+    if (typeIds.length > 0) {
+      const links = typeIds.map(typeId => ({
+        contact_id: contactId,
+        type_id: typeId
+      }));
+
+      const { error: insertError } = await supabase
         .from('contact_type_links')
-        .delete()
-        .eq('contact_id', contactId);
-
-      if (deleteError) {
-        console.error('Error deleting existing contact type links:', deleteError);
-        throw new Error('Error al actualizar los tipos de contacto');
-      }
-
-      // Then, create new links if there are any types selected
-      if (typeIds.length > 0) {
-        const newLinks = typeIds.map(typeId => ({
-          contact_id: contactId,
-          type_id: typeId
-        }));
-
-        const { error: insertError } = await supabase
-          .from('contact_type_links')
-          .insert(newLinks);
-
-        if (insertError) {
-          console.error('Error creating new contact type links:', insertError);
-          throw new Error('Error al actualizar los tipos de contacto');
-        }
-      }
-    } catch (error) {
-      console.error('Error updating contact types:', error);
-      throw error;
+        .insert(links);
+      
+      if (insertError) throw insertError;
     }
   }
 };
