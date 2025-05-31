@@ -100,7 +100,7 @@ export default function CircularButton({
           absolute top-1/2 transform -translate-y-1/2
           ${tooltipDirection === 'right' ? 'left-full ml-3' : 'right-full mr-3'}
           bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-none
-          min-w-[200px] max-w-[280px]
+          max-w-[280px] whitespace-nowrap
         `}>
           <div className={description ? "p-4" : "px-4 py-2"}>
             {/* Title in black */}
@@ -109,7 +109,7 @@ export default function CircularButton({
             </div>
             {/* Description in sidebar icon color */}
             {description && (
-              <div className="text-xs text-[#919191] leading-relaxed">
+              <div className="text-xs text-[#919191] leading-relaxed whitespace-normal">
                 {description}
               </div>
             )}
