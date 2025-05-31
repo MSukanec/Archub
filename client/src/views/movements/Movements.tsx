@@ -69,6 +69,7 @@ export default function Movements() {
   const [customDate, setCustomDate] = useState<string>('');
   const [filterType, setFilterType] = useState<'all' | 'year' | 'date' | 'custom'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [currencyFilter, setCurrencyFilter] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [currentPage, setCurrentPage] = useState(1);
@@ -276,7 +277,11 @@ export default function Movements() {
         // Currency filtering
         const matchesCurrency = currencyFilter === 'all' || movement.currency === currencyFilter;
         
-        return matchesDate && matchesType && matchesCurrency;
+        // Category filtering
+        const categoryName = movement.movement_concepts?.name?.toLowerCase() || '';
+        const matchesCategory = categoryFilter === 'all' || categoryName.includes(categoryFilter.toLowerCase());
+        
+        return matchesDate && matchesType && matchesCurrency && matchesCategory;
       });
 
       // Sort movements with error handling
@@ -467,12 +472,7 @@ export default function Movements() {
               </span>
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Ajustes</span>
-              <span className="text-xs font-medium text-blue-500">
-                {formatCurrency(totalsByCurrency.pesos.ajustes, 'ARS')}
-              </span>
-            </div>
+
           </div>
         </Card>
 
@@ -518,45 +518,38 @@ export default function Movements() {
               </span>
             </div>
             
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Ajustes</span>
-              <span className="text-xs font-medium text-blue-500">
-                {formatCurrency(totalsByCurrency.dolares.ajustes, 'USD')}
-              </span>
-            </div>
+
           </div>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="space-y-4">
         {/* Search Bar */}
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar movimientos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
-            />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar movimientos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+          />
+          {searchTerm && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* Filters Row */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -567,7 +560,7 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -578,8 +571,19 @@ export default function Movements() {
             </SelectContent>
           </Select>
 
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Todas las categorías" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectItem value="movimientos">Movimientos</SelectItem>
+              <SelectItem value="cuotas">Cuotas</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select value={sortOrder} onValueChange={setSortOrder as any}>
-            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
