@@ -2,6 +2,8 @@ import { Building, MapPin, User, Share2, Phone, Mail, ExternalLink } from 'lucid
 import { Project } from '@/lib/projectsService';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 interface ProjectInfoModalProps {
   isOpen: boolean;
@@ -68,8 +70,31 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
             <div className="flex gap-3 mt-1">
               {project.contact_phone && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Phone className="w-3 h-3" />
-                  <span>{project.contact_phone}</span>
+                  <PhoneInput
+                    value={project.contact_phone}
+                    disabled
+                    containerClass="phone-input-display"
+                    inputClass="!text-xs !p-0 !border-0 !bg-transparent !text-muted-foreground"
+                    buttonClass="!border-0 !bg-transparent !p-0 !w-4 !h-3"
+                    dropdownClass="hidden"
+                    country="ar"
+                    disableDropdown
+                    inputStyle={{
+                      fontSize: '12px',
+                      padding: '0',
+                      border: 'none',
+                      background: 'transparent',
+                      color: 'inherit',
+                      width: 'auto'
+                    }}
+                    buttonStyle={{
+                      border: 'none',
+                      background: 'transparent',
+                      padding: '0',
+                      width: '16px',
+                      height: '12px'
+                    }}
+                  />
                 </div>
               )}
               {project.email && (
@@ -123,7 +148,7 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1"
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
         >
           Cancelar
         </Button>
