@@ -257,53 +257,55 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     }
   }, [selectedActionId, selectedElementId, actions, taskElements, form]);
 
-  // Reset form when task changes
+  // Reset form when modal opens or task changes
   useEffect(() => {
-    if (task) {
-      form.reset({
-        name: task.name || '',
-        unit_labor_price: task.unit_labor_price?.toString() || '',
-        unit_material_price: task.unit_material_price?.toString() || '',
-        category_id: task.category_id || '',
-        subcategory_id: task.subcategory_id || '',
-        element_category_id: task.element_category_id || '',
-        unit_id: task.unit_id?.toString() || '',
-        action_id: task.action_id || '',
-        element_id: task.element_id || '',
-      });
-      
-      // Set the selected IDs for the dropdowns
-      if (task.category_id) {
-        setSelectedCategoryId(task.category_id);
+    if (isOpen) {
+      if (task) {
+        // Editing existing task
+        form.reset({
+          name: task.name || '',
+          unit_labor_price: task.unit_labor_price?.toString() || '',
+          unit_material_price: task.unit_material_price?.toString() || '',
+          category_id: task.category_id || '',
+          subcategory_id: task.subcategory_id || '',
+          element_category_id: task.element_category_id || '',
+          unit_id: task.unit_id?.toString() || '',
+          action_id: task.action_id || '',
+          element_id: task.element_id || '',
+        });
+        
+        // Set the selected IDs for the dropdowns
+        setSelectedCategoryId(task.category_id || '');
+        setSelectedSubcategoryId(task.subcategory_id || '');
+        setSelectedElementCategoryId(task.element_category_id || '');
+        setSelectedActionId(task.action_id || '');
+        setSelectedElementId(task.element_id || '');
+      } else {
+        // Creating new task - clear everything
+        form.reset({
+          name: '',
+          unit_labor_price: '',
+          unit_material_price: '',
+          category_id: '',
+          subcategory_id: '',
+          element_category_id: '',
+          unit_id: '',
+          action_id: '',
+          element_id: '',
+        });
+        setSelectedCategoryId('');
+        setSelectedSubcategoryId('');
+        setSelectedElementCategoryId('');
+        setSelectedActionId('');
+        setSelectedElementId('');
+        setGeneratedName('');
+        setTaskMaterials([]);
+        setSelectedMaterialId('');
+        setMaterialQuantity('');
+        setMaterialUnitCost('');
       }
-      if (task.subcategory_id) {
-        setSelectedSubcategoryId(task.subcategory_id);
-      }
-      if (task.element_category_id) {
-        setSelectedElementCategoryId(task.element_category_id);
-      }
-      // Set action and element IDs
-      setSelectedActionId(task.action_id || '');
-      setSelectedElementId(task.element_id || '');
-    } else {
-      form.reset({
-        name: '',
-        unit_labor_price: '',
-        unit_material_price: '',
-        category_id: '',
-        subcategory_id: '',
-        element_category_id: '',
-        unit_id: '',
-        action_id: '',
-        element_id: '',
-      });
-      setSelectedCategoryId('');
-      setSelectedSubcategoryId('');
-      setSelectedElementCategoryId('');
-      setSelectedActionId('');
-      setSelectedElementId('');
     }
-  }, [task, form]);
+  }, [task, isOpen, allCategories, actions, taskElements, form]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateTaskData) => tasksService.create(data),
@@ -402,8 +404,13 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       element_id: '',
     });
     
+    // Reset all local state
     setSelectedCategoryId('');
     setSelectedSubcategoryId('');
+    setSelectedElementCategoryId('');
+    setSelectedActionId('');
+    setSelectedElementId('');
+    setGeneratedName('');
     setTaskMaterials([]);
     setSelectedMaterialId('');
     setMaterialQuantity('');
