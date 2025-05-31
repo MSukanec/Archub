@@ -292,11 +292,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         form.setValue('concept_id', '');
                       }} value={field.value} disabled={false}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar tipo" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           {movementTypes.map((type) => (
                             <SelectItem key={type.id} value={type.id}>
                               {type.name}
@@ -340,11 +340,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Categoría *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value} disabled={!selectedTypeId}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder={selectedTypeId ? "Seleccionar categoría" : "Primero selecciona un tipo"} />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           {movementCategories.map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                               {category.name}
@@ -366,11 +366,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Moneda *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar moneda" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
                           <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
                         </SelectContent>
@@ -391,11 +391,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Billetera *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar billetera" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           {walletsList.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id}>
                               {wallet.name}
@@ -471,11 +471,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     <FormLabel className="text-xs font-medium text-foreground">Contacto Relacionado</FormLabel>
                     <Select onValueChange={(value) => field.onChange(value === 'none' ? '' : value)} value={field.value || 'none'}>
                       <FormControl>
-                        <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                        <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                           <SelectValue placeholder="Seleccionar contacto (opcional)" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="z-[9999]">
+                      <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                         <SelectItem value="none">Sin contacto</SelectItem>
                         {contactsList.map((contact) => (
                           <SelectItem key={contact.id} value={contact.id}>
