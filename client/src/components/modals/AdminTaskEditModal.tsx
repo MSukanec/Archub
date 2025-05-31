@@ -372,12 +372,8 @@ export function AdminTaskEditModal({ isOpen, onClose, task }: AdminTaskEditModal
   };
 
   return (
-    <ModernModal isOpen={isOpen} onClose={onClose}>
-      <div className="p-6 max-w-2xl mx-auto">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Editar Tarea</h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Gestiona tareas de construcción y sus materiales asociados
-        </p>
+    <ModernModal isOpen={isOpen} onClose={onClose} title="Editar Tarea" subtitle="Gestiona tareas de construcción y sus materiales asociados">
+      <div className="max-w-2xl mx-auto">
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
