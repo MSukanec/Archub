@@ -308,7 +308,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const createMutation = useMutation({
     mutationFn: (data: CreateTaskData) => tasksService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/tasks'] });
       toast({
         title: "Éxito",
         description: "Tarea creada correctamente",
@@ -328,7 +328,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     mutationFn: (data: { id: number; updates: Partial<CreateTaskData> }) => 
       tasksService.update(data.id, data.updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/tasks'] });
       toast({
         title: "Éxito",
         description: "Tarea actualizada correctamente",
