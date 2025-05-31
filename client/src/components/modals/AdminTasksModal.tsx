@@ -246,6 +246,9 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   });
 
   const onSubmit = (data: FormData) => {
+    console.log('Form submission data:', data);
+    console.log('Form errors:', form.formState.errors);
+    console.log('Form values:', form.getValues());
     createMutation.mutate(data);
   };
 
@@ -300,7 +303,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                   name="category_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Rubro</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Rubro *</FormLabel>
                       <Select 
                         onValueChange={(value) => {
                           setSelectedCategoryId(value);
@@ -334,7 +337,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                   name="subcategory_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Subrubro</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Subrubro *</FormLabel>
                       <Select 
                         onValueChange={(value) => {
                           field.onChange(value);
@@ -367,7 +370,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                   name="element_category_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Elemento *</FormLabel>
                       <Select 
                         onValueChange={field.onChange}
                         value={field.value || ''}
@@ -472,7 +475,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Nombre de la Tarea</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Nombre de la Tarea *</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Nombre de la tarea"
@@ -502,7 +505,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                   name="unit_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Unidad</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Unidad *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ''}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
