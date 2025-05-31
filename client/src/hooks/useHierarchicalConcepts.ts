@@ -7,6 +7,8 @@ export interface Concept {
   name: string;
   parent_id: string | null;
   organization_id?: string;
+  code?: string;
+  position?: string;
 }
 
 export interface ConceptPath {
@@ -38,7 +40,7 @@ export function useHierarchicalConcepts(table: string = 'movement_concepts', org
         .order('name');
       
       // Only filter by organization if organizationId is provided and table supports it
-      if (organizationId && table !== 'movement_concepts') {
+      if (organizationId && table !== 'movement_concepts' && table !== 'task_categories') {
         query = query.eq('organization_id', organizationId);
       }
       

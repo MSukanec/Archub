@@ -77,7 +77,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const [materialUnitCost, setMaterialUnitCost] = useState<string>('');
 
   // Use hierarchical concepts hook for optimized task category management
-  const { data: taskCategoriesStructure, isLoading: taskCategoriesLoading } = useHierarchicalConcepts('task_categories', organizationId);
+  const { data: taskCategoriesStructure, isLoading: taskCategoriesLoading } = useHierarchicalConcepts('task_categories');
 
   // Fetch materials from Supabase
   const { data: materials = [] } = useQuery({
@@ -282,11 +282,31 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         element_id: task.element_id || '',
       });
       
-      // IMPORTANT: Synchronize local state with form values after reset
-      // This ensures the Select components show the correct values
-      setSelectedCategoryId(task.category_id || '');
-      setSelectedSubcategoryId(task.subcategory_id || '');
-      setSelectedElementCategoryId(task.element_category_id || '');
+      // Use hierarchical form setter for optimized category handling
+      if (task.element_category_id && taskCategoriesStructure) {
+        const conceptPath = taskCategoriesStructure.getConceptPath(task.element_category_id);
+        console.log('Task hierarchical path:', { 
+          element_category_id: task.element_category_id, 
+          conceptPath,
+          task 
+        });
+        
+        // Set state for dependent selects first
+        setSelectedCategoryId(conceptPath[0] || '');
+        setSelectedSubcategoryId(conceptPath[1] || '');
+        setSelectedElementCategoryId(conceptPath[2] || '');
+        
+        // Then use hierarchical form setter with small delay
+        setTimeout(() => {
+          setHierarchicalFormValues(form, conceptPath, ['category_id', 'subcategory_id', 'element_category_id']);
+        }, 10);
+      } else {
+        // Fallback to manual setting
+        setSelectedCategoryId(task.category_id || '');
+        setSelectedSubcategoryId(task.subcategory_id || '');
+        setSelectedElementCategoryId(task.element_category_id || '');
+      }
+      
       setSelectedActionId(task.action_id || '');
       setSelectedElementId(task.element_id || '');
       
@@ -308,7 +328,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         element_id: '',
       });
     }
-  }, [task, allCategories, form]);
+  }, [task, taskCategoriesStructure, form]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateTaskData) => tasksService.create(data),
@@ -522,7 +542,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                          {getMainCategories().map((category) => (
+                          {mainCategories.map((category: any) => (
                             <SelectItem key={category.id} value={category.id.toString()}>
                               {category.code} - {category.name}
                             </SelectItem>
