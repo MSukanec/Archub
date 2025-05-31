@@ -99,14 +99,14 @@ export default function TimelineSidebar({ className }: TimelineSidebarProps) {
 
                   {/* Horizontal line extending to the right */}
                   <div 
-                    className="absolute left-full w-screen h-px opacity-30 pointer-events-none"
+                    className="absolute left-full w-screen opacity-30 pointer-events-none"
                     style={{ backgroundColor: item.color }}
                   />
                   
                   {/* Dotted line for non-center items */}
                   {item.position !== 'center' && (
                     <div 
-                      className="absolute left-full w-screen h-px opacity-20 pointer-events-none"
+                      className="absolute left-full w-screen opacity-20 pointer-events-none"
                       style={{ 
                         backgroundColor: item.color,
                         backgroundImage: `linear-gradient(to right, ${item.color} 50%, transparent 50%)`,
