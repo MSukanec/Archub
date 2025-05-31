@@ -118,16 +118,21 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   }, [isOpen, movement, isEditing, form]);
 
   // Fetch movement types
-  const { data: movementTypes = [] } = useQuery({
+  const { data: movementTypes = [], isLoading: typesLoading } = useQuery({
     queryKey: ['movement-types'],
     queryFn: async () => {
+      console.log('Fetching movement types...');
       const { data, error } = await supabase
         .from('movement_concepts')
         .select('*')
         .is('parent_id', null)
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching movement types:', error);
+        throw error;
+      }
+      console.log('Movement types fetched:', data);
       return data || [];
     },
     enabled: isOpen,
@@ -285,7 +290,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         field.onChange(value);
                         setSelectedTypeId(value);
                         form.setValue('concept_id', '');
-                      }} value={field.value}>
+                      }} value={field.value} disabled={typesLoading}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar tipo" />
