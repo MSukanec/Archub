@@ -131,7 +131,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   // Initialize form when modal opens (exact same logic as MovementModal)
   useEffect(() => {
-    if (isOpen && taskCategoriesStructure) {
+    if (isOpen && taskCategoriesStructure && actions.length > 0 && taskElements.length > 0 && units.length > 0) {
       if (task && isEditing) {
         const elementCategoryId = task.element_category_id || '';
         
@@ -190,7 +190,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
         });
       }
     }
-  }, [task, isOpen, taskCategoriesStructure, isEditing, form]);
+  }, [task, isOpen, taskCategoriesStructure, isEditing, form, actions, taskElements, units]);
 
   const createMutation = useMutation({
     mutationFn: async (data: FormData) => {
