@@ -73,6 +73,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   const form = useForm<FormData>({
     resolver: zodResolver(createTaskSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       unit_labor_price: '',
@@ -345,23 +346,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   const onSubmit = (data: FormData) => {
     console.log('Form submission data:', data);
     console.log('Form errors:', form.formState.errors);
-    console.log('Form values:', form.getValues());
-    console.log('Name field value:', form.getValues('name'));
-    console.log('Name field length:', form.getValues('name')?.length);
-    
-    // Manual validation check
-    const currentName = form.getValues('name');
-    if (!currentName || currentName.trim().length === 0) {
-      console.log('Name validation failed, setting error');
-      form.setError('name', { 
-        type: 'manual', 
-        message: 'Nombre es requerido' 
-      });
-      return;
-    }
-    
-    // Clear any existing name errors
-    form.clearErrors('name');
+    console.log('Name field value:', data.name);
+    console.log('Name field length:', data.name?.length);
     
     createMutation.mutate(data);
   };
