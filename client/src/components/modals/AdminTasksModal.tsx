@@ -18,7 +18,7 @@ import { Wrench, DollarSign, Package, CheckSquare, Search, X } from 'lucide-reac
 
 // Schema for form validation
 const createTaskSchema = z.object({
-  name: z.string().min(1, "Nombre es requerido"),
+  name: z.string().min(1, "Nombre es requerido").trim(),
   unit_labor_price: z.string().optional().or(z.literal('')),
   unit_material_price: z.string().optional().or(z.literal('')),
   category_id: z.string().min(1, "Rubro es requerido"),
@@ -346,6 +346,23 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     console.log('Form submission data:', data);
     console.log('Form errors:', form.formState.errors);
     console.log('Form values:', form.getValues());
+    console.log('Name field value:', form.getValues('name'));
+    console.log('Name field length:', form.getValues('name')?.length);
+    
+    // Manual validation check
+    const currentName = form.getValues('name');
+    if (!currentName || currentName.trim().length === 0) {
+      console.log('Name validation failed, setting error');
+      form.setError('name', { 
+        type: 'manual', 
+        message: 'Nombre es requerido' 
+      });
+      return;
+    }
+    
+    // Clear any existing name errors
+    form.clearErrors('name');
+    
     createMutation.mutate(data);
   };
 
@@ -697,7 +714,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           onClick={() => addMaterial(material)}
                           className="p-2 hover:bg-[#c2c2c2] cursor-pointer border-b border-[#919191]/10 last:border-b-0 flex items-center justify-between"
                         >
-                          <div className="text-sm font-medium">{material.name}</div>
+                          <div className="text-sm">{material.name}</div>
                           <div className="text-xs text-muted-foreground">
                             {material.units?.name || 'Sin unidad'}
                           </div>
