@@ -167,7 +167,7 @@ export default function FloatingActionButton() {
 
   return (
     <div 
-      className="fixed bottom-[37px] right-[37px] z-50"
+      className="fixed bottom-[18px] right-[18px] z-50"
       onMouseEnter={() => !isBlocked && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

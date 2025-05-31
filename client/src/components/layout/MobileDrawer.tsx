@@ -138,6 +138,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       setOpenAccordion(section);
       setSection(section as any);
     }
+    // Cerrar el drawer automáticamente
+    onClose();
   };
 
   const handleSubItemClick = (viewId: string) => {

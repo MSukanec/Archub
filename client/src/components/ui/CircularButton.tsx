@@ -102,9 +102,9 @@ export default function CircularButton({
           bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-none
           min-w-[200px] max-w-[280px]
         `}>
-          <div className="p-4">
+          <div className={description ? "p-4" : "px-4 py-2"}>
             {/* Title in black */}
-            <div className="font-semibold text-sm text-black mb-2">
+            <div className={`font-semibold text-sm text-black ${description ? "mb-2" : ""}`}>
               {label}
             </div>
             {/* Description in sidebar icon color */}
