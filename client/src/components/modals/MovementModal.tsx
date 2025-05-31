@@ -296,7 +296,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             <SelectValue placeholder="Seleccionar tipo" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="z-[9999]">
                           {movementTypes.map((type) => (
                             <SelectItem key={type.id} value={type.id}>
                               {type.name}
@@ -344,7 +344,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             <SelectValue placeholder={selectedTypeId ? "Seleccionar categoría" : "Primero selecciona un tipo"} />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="z-[9999]">
                           {movementCategories.map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                               {category.name}
@@ -370,7 +370,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             <SelectValue placeholder="Seleccionar moneda" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="z-[9999]">
                           <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
                           <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
                         </SelectContent>
@@ -395,7 +395,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             <SelectValue placeholder="Seleccionar billetera" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="z-[9999]">
                           {walletsList.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id}>
                               {wallet.name}
@@ -475,7 +475,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           <SelectValue placeholder="Seleccionar contacto (opcional)" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[9999]">
                         <SelectItem value="none">Sin contacto</SelectItem>
                         {contactsList.map((contact) => (
                           <SelectItem key={contact.id} value={contact.id}>
