@@ -63,8 +63,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   const [selectedMaterials, setSelectedMaterials] = useState<Array<{
     material_id: string;
     material_name: string;
-    quantity: string;
-    unit_cost: string;
+    amount: string;
   }>>([]);
   const isEditing = !!task;
 
@@ -248,8 +247,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       setSelectedMaterials(prev => [...prev, {
         material_id: material.id,
         material_name: material.name,
-        quantity: '1',
-        unit_cost: '0'
+        amount: '1'
       }]);
     }
     setMaterialSearchTerm('');
@@ -259,15 +257,9 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     setSelectedMaterials(prev => prev.filter(m => m.material_id !== materialId));
   };
 
-  const updateMaterialQuantity = (materialId: string, quantity: string) => {
+  const updateMaterialAmount = (materialId: string, amount: string) => {
     setSelectedMaterials(prev => prev.map(m => 
-      m.material_id === materialId ? { ...m, quantity } : m
-    ));
-  };
-
-  const updateMaterialCost = (materialId: string, unit_cost: string) => {
-    setSelectedMaterials(prev => prev.map(m => 
-      m.material_id === materialId ? { ...m, unit_cost } : m
+      m.material_id === materialId ? { ...m, amount } : m
     ));
   };
 
@@ -305,10 +297,9 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
         // Insert new materials if any
         if (selectedMaterials.length > 0) {
           const taskMaterialsData = selectedMaterials.map(material => ({
-            task_id: parseInt(task.id),
+            task_id: result.id,
             material_id: material.material_id,
-            quantity: parseFloat(material.quantity) || 0,
-            unit_cost: parseFloat(material.unit_cost) || 0,
+            amount: parseFloat(material.amount) || 0,
           }));
 
           const { error: materialsError } = await supabase
@@ -333,8 +324,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           const taskMaterialsData = selectedMaterials.map(material => ({
             task_id: result.id,
             material_id: material.material_id,
-            quantity: parseFloat(material.quantity) || 0,
-            unit_cost: parseFloat(material.unit_cost) || 0,
+            amount: parseFloat(material.amount) || 0,
           }));
 
           const { error: materialsError } = await supabase
@@ -774,18 +764,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                             type="number"
                             step="0.01"
                             placeholder="Cantidad"
-                            value={material.quantity}
-                            onChange={(e) => updateMaterialQuantity(material.material_id, e.target.value)}
-                            className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs"
-                          />
-                        </div>
-                        <div className="w-24">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="Costo"
-                            value={material.unit_cost}
-                            onChange={(e) => updateMaterialCost(material.material_id, e.target.value)}
+                            value={material.amount}
+                            onChange={(e) => updateMaterialAmount(material.material_id, e.target.value)}
                             className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs"
                           />
                         </div>
