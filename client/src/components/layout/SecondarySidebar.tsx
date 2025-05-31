@@ -209,7 +209,13 @@ export default function SecondarySidebar() {
         <div className="flex flex-col items-center pt-2">
           {userPlan && (
             <div 
-              className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group"
+              className={`w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group border-2 ${
+                userPlan.name?.toLowerCase() === 'free'
+                  ? 'border-primary'
+                  : userPlan.name?.toLowerCase() === 'pro'
+                    ? 'border-blue-600'
+                    : 'border-purple-600'
+              }`}
               onClick={handlePlanClick}
               onMouseEnter={(e) => e.currentTarget.classList.add('pressed')}
               onMouseLeave={(e) => e.currentTarget.classList.remove('pressed')}

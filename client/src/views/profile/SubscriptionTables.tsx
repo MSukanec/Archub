@@ -276,8 +276,12 @@ export default function SubscriptionTables() {
                       </span>
                     )}
                     {isAnnual && plan.price > 0 && (
-                      <div className="text-sm text-green-600 font-medium mt-1">
-                        US${plan.price}/mes facturado anualmente
+                      <div className={`text-sm font-medium mt-1 ${
+                        plan.name.toLowerCase() === 'pro' 
+                          ? 'text-blue-600' 
+                          : 'text-purple-600'
+                      }`}>
+                        US${Math.floor(plan.price * 0.8)}/mes facturado anualmente
                       </div>
                     )}
                   </CardDescription>

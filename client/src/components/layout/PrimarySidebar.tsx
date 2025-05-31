@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library, FolderOpen } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library, FolderOpen, ChevronDown, Plus } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -72,6 +72,13 @@ const topNavigationItems = [
 export default function PrimarySidebar() {
   const { currentSection, currentView, setSection, setHoveredSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
+  const { organizationId, projectId, setUserContext, currentProjects } = useUserContextStore();
+  const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [menuTimeout, setMenuTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Use projects from the store instead of fetching again
+  const projects = currentProjects || [];
+  const currentProject = projects.find(p => p.id === projectId);
 
   // Escuchar eventos de navegación desde el timeline
   useEffect(() => {
@@ -87,6 +94,16 @@ export default function PrimarySidebar() {
     };
   }, [setSection, setView]);
 
+  // Get project initials
+  const getProjectInitials = (project?: any) => {
+    if (!project) return 'P';
+    const words = project.name.split(' ');
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return project.name.substring(0, 2).toUpperCase();
+  };
+
   // Function to get the plan icon based on plan name
   const getPlanIcon = (planName: string) => {
     const name = planName?.toLowerCase();
@@ -98,8 +115,47 @@ export default function PrimarySidebar() {
       case 'enterprise':
         return Rocket;
       default:
-        return Zap; // Default to Zap for free
+        return Zap;
     }
+  };
+
+  // Function to get the plan color based on plan name
+  const getPlanColor = (planName: string) => {
+    const name = planName?.toLowerCase();
+    switch (name) {
+      case 'free':
+        return 'text-primary';
+      case 'pro':
+        return 'text-blue-600';
+      case 'enterprise':
+        return 'text-purple-600';
+      default:
+        return 'text-primary';
+    }
+  };
+
+  const handleProjectChange = (newProjectId: string) => {
+    setUserContext({ projectId: newProjectId });
+    setShowProjectMenu(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (menuTimeout) {
+      clearTimeout(menuTimeout);
+      setMenuTimeout(null);
+    }
+    setShowProjectMenu(true);
+  };
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setShowProjectMenu(false);
+    }, 300);
+    setMenuTimeout(timeout);
+  };
+
+  const handlePlanClick = () => {
+    setView('subscription-tables');
   };
 
   // Obtener el plan actual del usuario
@@ -134,8 +190,8 @@ export default function PrimarySidebar() {
   });
 
   return (
-    <div className="w-[56px] flex flex-col relative z-30">
-      {/* Dashboard button - fixed at top */}
+    <div className="w-14 h-screen bg-white border-r border-border relative z-10 flex flex-col">
+      {/* Dashboard button - moved to top */}
       <div className="flex items-center justify-center pt-2.5 pl-2.5">
         <CircularButton
           icon={Home}
@@ -144,6 +200,43 @@ export default function PrimarySidebar() {
           section="dashboard"
           label="Dashboard"
         />
+      </div>
+
+      {/* Project selector */}
+      <div className="flex flex-col items-center pt-2" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group relative">
+          <span className="text-sm font-bold text-gray-700">
+            {getProjectInitials(currentProject)}
+          </span>
+          <ChevronDown className="w-3 h-3 text-gray-600 absolute -bottom-1 -right-1" />
+        </div>
+
+        {/* Project menu */}
+        {showProjectMenu && (
+          <div className="absolute left-full top-0 ml-2 w-80 bg-white rounded-lg shadow-xl border z-50 p-4">
+            <h3 className="font-semibold text-gray-900 mb-3">Seleccionar Proyecto</h3>
+            <div className="space-y-2">
+              {projects.map((project) => (
+                <button
+                  key={project.id}
+                  onClick={() => handleProjectChange(project.id)}
+                  className={`w-full text-left p-3 rounded-lg transition-colors ${
+                    project.id === projectId
+                      ? 'bg-primary/10 border border-primary'
+                      : 'hover:bg-gray-50 border border-transparent'
+                  }`}
+                >
+                  <span className="font-medium text-sm text-gray-900">{project.name}</span>
+                  <p className="text-xs text-gray-500 mt-1">{project.description}</p>
+                </button>
+              ))}
+              <button className="w-full text-left p-3 rounded-lg hover:bg-gray-50 border border-dashed border-gray-300 mt-3">
+                <Plus className="w-4 h-4 inline mr-2 text-gray-400" />
+                <span className="font-medium text-sm text-gray-900">Crear Nuevo Proyecto</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Center navigation buttons */}
@@ -164,11 +257,29 @@ export default function PrimarySidebar() {
             )}
           </div>
         ))}
-
       </div>
       
       {/* Bottom buttons section */}
-      <div className="flex items-center pb-2.5 pl-2.5">
+      <div className="flex flex-col items-center pb-2.5 pl-2.5 space-y-2">
+        {/* Plan button */}
+        {userPlan && (
+          <div 
+            className={`w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group border-2 ${
+              userPlan.name?.toLowerCase() === 'free'
+                ? 'border-primary'
+                : userPlan.name?.toLowerCase() === 'pro'
+                  ? 'border-blue-600'
+                  : 'border-purple-600'
+            }`}
+            onClick={handlePlanClick}
+          >
+            {(() => {
+              const PlanIcon = getPlanIcon(userPlan.name);
+              return <PlanIcon className={`w-5 h-5 ${getPlanColor(userPlan.name)} group-hover:scale-110 transition-transform`} />;
+            })()}
+          </div>
+        )}
+
         {/* Profile button */}
         <CircularButton
           icon={User}
