@@ -1,4 +1,4 @@
-import { Calendar, Shield, FolderOpen, Plus, Calculator, Package, Hammer, UserCheck, Library } from 'lucide-react';
+import { Calendar, Shield, FolderOpen, Plus, Calculator, Package, Hammer, UserCheck, Library, Zap, Crown, Rocket } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import CircularButton from '@/components/ui/CircularButton';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function SecondarySidebar() {
   const { setView, currentSection, currentView } = useNavigationStore();
@@ -18,6 +19,37 @@ export default function SecondarySidebar() {
   const projects = currentProjects || [];
   const currentProject = projects.find(p => p.id === projectId);
 
+  // Obtener el plan actual del usuario
+  const { data: userPlan } = useQuery({
+    queryKey: ['/api/user-plan', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select(`
+          plan_id,
+          plans (
+            name,
+            price
+          )
+        `)
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user plan:', error);
+        return null;
+      }
+      
+      return data?.plans || null;
+    },
+    enabled: !!user?.id,
+    staleTime: 1 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30 * 1000,
+  });
+
   // Get project initials
   const getProjectInitials = (project?: any) => {
     if (!project) return 'P';
@@ -26,6 +58,40 @@ export default function SecondarySidebar() {
       return (words[0][0] + words[1][0]).toUpperCase();
     }
     return project.name.substring(0, 2).toUpperCase();
+  };
+
+  // Function to get the plan icon based on plan name
+  const getPlanIcon = (planName: string) => {
+    const name = planName?.toLowerCase();
+    switch (name) {
+      case 'free':
+        return Zap;
+      case 'pro':
+        return Crown;
+      case 'enterprise':
+        return Rocket;
+      default:
+        return Zap;
+    }
+  };
+
+  // Function to get the plan color based on plan name
+  const getPlanColor = (planName: string) => {
+    const name = planName?.toLowerCase();
+    switch (name) {
+      case 'free':
+        return 'text-gray-600';
+      case 'pro':
+        return 'text-yellow-600';
+      case 'enterprise':
+        return 'text-purple-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const handlePlanClick = () => {
+    setView('subscription-tables');
   };
 
   const handleProjectChange = (newProjectId: string) => {
@@ -135,6 +201,23 @@ export default function SecondarySidebar() {
                   <span className="font-medium text-sm text-gray-900">Crear Nuevo Proyecto</span>
                 </button>
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Plan button */}
+        <div className="flex flex-col items-center pt-2">
+          {userPlan && (
+            <div 
+              className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group"
+              onClick={handlePlanClick}
+              onMouseEnter={(e) => e.currentTarget.classList.add('pressed')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('pressed')}
+            >
+              {(() => {
+                const PlanIcon = getPlanIcon(userPlan.name);
+                return <PlanIcon className={`w-5 h-5 ${getPlanColor(userPlan.name)} group-hover:scale-110 transition-transform`} />;
+              })()}
             </div>
           )}
         </div>
