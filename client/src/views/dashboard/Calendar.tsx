@@ -186,7 +186,39 @@ export default function CalendarView() {
   const { projectId, organizationId } = useUserContextStore();
 
   // TODO: Connect to actual calendar events when table is available
-  const events: Event[] = [];
+  // Temporary demo events to show visual design
+  const events: Event[] = [
+    {
+      id: '1',
+      title: 'Inspección de obra',
+      date: new Date(2025, 4, 31), // May 31, 2025
+      time: '09:00',
+      location: 'Sitio de construcción',
+      type: 'inspection'
+    },
+    {
+      id: '2',
+      title: 'Reunión con cliente',
+      date: new Date(2025, 5, 2), // June 2, 2025
+      time: '14:30',
+      location: 'Oficina central',
+      type: 'meeting'
+    },
+    {
+      id: '3',
+      title: 'Entrega de materiales',
+      date: new Date(2025, 5, 5), // June 5, 2025
+      time: '08:00',
+      type: 'deadline'
+    },
+    {
+      id: '4',
+      title: 'Supervisión estructural',
+      date: new Date(2025, 5, 7), // June 7, 2025
+      time: '10:00',
+      type: 'inspection'
+    }
+  ];
 
   const selectedDateEvents = events.filter(
     event => selectedDate && format(event.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
@@ -268,13 +300,88 @@ export default function CalendarView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <CustomCalendar 
-              currentMonth={currentMonth}
-              onMonthChange={setCurrentMonth}
-              selectedDate={selectedDate}
-              onDateSelect={setSelectedDate}
-              events={events}
-            />
+            <div className="bg-gray-800 rounded-lg p-4">
+              {/* Month Header */}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-white text-lg font-medium">
+                  {format(currentMonth, 'MMMM yyyy', { locale: es })}
+                </h2>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCurrentMonth(addDays(currentMonth, -30))}
+                    className="text-white hover:bg-gray-700"
+                  >
+                    ←
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCurrentMonth(addDays(currentMonth, 30))}
+                    className="text-white hover:bg-gray-700"
+                  >
+                    →
+                  </Button>
+                </div>
+              </div>
+
+              {/* Day Headers */}
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SAB'].map(day => (
+                  <div key={day} className="text-center text-gray-400 text-sm font-medium py-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-1">
+                {eachDayOfInterval({
+                  start: startOfMonth(currentMonth),
+                  end: endOfMonth(currentMonth)
+                }).map((day) => {
+                  const dayEvents = events.filter(event => isSameDay(event.date, day));
+                  const isSelected = selectedDate && isSameDay(day, selectedDate);
+                  const isCurrentMonth = isSameMonth(day, currentMonth);
+
+                  return (
+                    <div
+                      key={day.toISOString()}
+                      onClick={() => setSelectedDate(day)}
+                      className={`
+                        relative h-16 p-1 rounded cursor-pointer transition-colors
+                        ${isSelected ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'}
+                        ${!isCurrentMonth ? 'opacity-50' : ''}
+                      `}
+                    >
+                      <div className="text-white text-sm">
+                        {format(day, 'd')}
+                      </div>
+                      
+                      {/* Event indicators */}
+                      <div className="absolute bottom-1 left-1 right-1 flex gap-1 flex-wrap">
+                        {dayEvents.slice(0, 3).map((event) => (
+                          <div
+                            key={event.id}
+                            className={`
+                              w-2 h-2 rounded-full
+                              ${event.type === 'meeting' ? 'bg-blue-400' : 
+                                event.type === 'inspection' ? 'bg-green-400' : 
+                                event.type === 'deadline' ? 'bg-red-400' : 'bg-purple-400'}
+                            `}
+                            title={event.title}
+                          />
+                        ))}
+                        {dayEvents.length > 3 && (
+                          <div className="text-xs text-gray-300">+{dayEvents.length - 3}</div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
