@@ -43,8 +43,8 @@ export default function ModernModal({
           top: 0, 
           right: 0, 
           bottom: 0, 
-          width: '420px', 
-          maxWidth: '90vw',
+          width: 'min(33.333vw, 90vw)', 
+          minWidth: '420px',
           height: '100vh',
           margin: 0,
           padding: 0

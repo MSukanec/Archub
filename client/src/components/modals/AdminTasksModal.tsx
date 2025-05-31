@@ -383,8 +383,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       footer={footer}
     >
       <Form {...form}>
-        <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Accordion type="single" defaultValue="category" className="w-full">
+        <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
+          <Accordion type="single" defaultValue="category" className="w-full flex-1 flex flex-col">
             {/* Category Section */}
             <AccordionItem value="category" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
@@ -695,7 +695,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                         <div
                           key={material.id}
                           onClick={() => addMaterial(material)}
-                          className="p-2 hover:bg-[#c2c2c2] cursor-pointer border-b border-[#919191]/10 last:border-b-0"
+                          className="p-2 hover:bg-[#c2c2c2] cursor-pointer border-b border-[#919191]/10 last:border-b-0 flex items-center justify-between"
                         >
                           <div className="text-sm font-medium">{material.name}</div>
                           <div className="text-xs text-muted-foreground">
