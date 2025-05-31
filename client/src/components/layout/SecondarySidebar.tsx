@@ -24,14 +24,6 @@ export default function SecondarySidebar() {
           label="Admin Organizaciones"
         />
 
-        {/* Admin Users button */}
-        <CircularButton
-          icon={Users}
-          isActive={currentView === 'admin-users'}
-          onClick={() => setView('admin-users')}
-          label="Admin Usuarios"
-        />
-
         {/* Library button */}
         <CircularButton
           icon={Library}

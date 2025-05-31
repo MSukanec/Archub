@@ -213,28 +213,36 @@ export default function PrimarySidebar() {
 
         {/* Project menu */}
         {showProjectMenu && (
-          <div className="absolute left-full top-0 ml-2 w-80 bg-white rounded-lg shadow-xl border z-50 p-4">
-            <h3 className="font-semibold text-gray-900 mb-3">Seleccionar Proyecto</h3>
-            <div className="space-y-2">
-              {projects.map((project) => (
-                <button
-                  key={project.id}
-                  onClick={() => handleProjectChange(project.id)}
-                  className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    project.id === projectId
-                      ? 'bg-primary/10 border border-primary'
-                      : 'hover:bg-gray-50 border border-transparent'
-                  }`}
-                >
-                  <span className="font-medium text-sm text-gray-900">{project.name}</span>
-                  <p className="text-xs text-gray-500 mt-1">{project.description}</p>
+          <div className="absolute top-1/2 transform -translate-y-1/2 left-full ml-3 bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
+            <div className="p-4">
+              {/* Title in black */}
+              <div className="font-semibold text-sm text-black mb-2">
+                Seleccionar Proyecto
+              </div>
+              {/* Project list */}
+              <div className="space-y-2">
+                {projects.map((project) => (
+                  <button
+                    key={project.id}
+                    onClick={() => handleProjectChange(project.id)}
+                    className={`w-full text-left p-2 rounded-lg transition-colors ${
+                      project.id === projectId
+                        ? 'bg-black/10'
+                        : 'hover:bg-black/5'
+                    }`}
+                  >
+                    <span className="font-medium text-xs text-black">{project.name}</span>
+                    <p className="text-xs text-[#919191] mt-1 leading-relaxed whitespace-normal">{project.description}</p>
+                  </button>
+                ))}
+                <button className="w-full text-left p-2 rounded-lg hover:bg-black/5 border border-dashed border-[#919191] mt-2">
+                  <Plus className="w-3 h-3 inline mr-1 text-[#919191]" />
+                  <span className="font-medium text-xs text-black">Crear Nuevo Proyecto</span>
                 </button>
-              ))}
-              <button className="w-full text-left p-3 rounded-lg hover:bg-gray-50 border border-dashed border-gray-300 mt-3">
-                <Plus className="w-4 h-4 inline mr-2 text-gray-400" />
-                <span className="font-medium text-sm text-gray-900">Crear Nuevo Proyecto</span>
-              </button>
+              </div>
             </div>
+            {/* Arrow */}
+            <div className="absolute top-1/2 transform -translate-y-1/2 right-full w-0 h-0 border-t-[8px] border-b-[8px] border-transparent border-r-[8px] border-r-[#e1e1e1]" />
           </div>
         )}
       </div>
