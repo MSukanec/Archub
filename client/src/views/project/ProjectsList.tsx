@@ -282,10 +282,10 @@ export default function ProjectsOverview() {
             return (
               <div
                 key={project.id}
-                className={`p-4 rounded-2xl shadow-md border-0 cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-[#e1e1e1] hover:bg-primary/5 ${
                   isActiveProject 
-                    ? 'bg-primary/10 border-primary/20' 
-                    : 'bg-[#e1e1e1] hover:bg-primary/5'
+                    ? 'border-4 border-primary' 
+                    : 'border-0'
                 }`}
                 onClick={() => handleProjectClick(project)}
               >
@@ -293,27 +293,33 @@ export default function ProjectsOverview() {
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                            <Building className="w-4 h-4 text-primary" />
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <Building className="w-3.5 h-3.5 text-primary" />
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-foreground">{project.name}</h3>
-                            <Badge variant={getStatusVariant(project.status || 'planning')} className="text-xs">
-                              {project.status === 'active' ? 'Activo' : 
-                               project.status === 'completed' ? 'Completado' : 
-                               project.status === 'planning' ? 'Planificación' : 'En Progreso'}
-                            </Badge>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-foreground">{project.name}</h3>
+                              {isActiveProject && (
+                                <Badge variant="default" className="text-xs bg-primary text-white">
+                                  Activo
+                                </Badge>
+                              )}
+                              <Badge variant={getStatusVariant(project.status || 'planning')} className="text-xs">
+                                {project.status === 'active' ? 'Activo' : 
+                                 project.status === 'completed' ? 'Completado' : 
+                                 project.status === 'planning' ? 'Planificación' : 'En Progreso'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                              {project.client_name && (
+                                <span>Cliente: {project.client_name}</span>
+                              )}
+                              {project.address && (
+                                <span>📍 {project.address}</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="text-sm text-muted-foreground space-y-1">
-                          {project.client_name && (
-                            <p>Cliente: {project.client_name}</p>
-                          )}
-                          {project.address && (
-                            <p>📍 {project.address}</p>
-                          )}
                         </div>
                       </div>
                       
