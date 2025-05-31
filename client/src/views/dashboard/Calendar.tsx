@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, Plus, Clock, MapPin, User, Users, Tag } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Clock, MapPin, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import EventModal from '@/components/modals/EventModal';
 
 interface Event {
@@ -15,45 +18,19 @@ interface Event {
   type: 'meeting' | 'deadline' | 'inspection' | 'other';
 }
 
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: 'Inspección de obra',
-    date: new Date(2025, 4, 31),
-    time: '09:00',
-    location: 'Sitio de construcción',
-    attendees: ['Juan Pérez', 'María García'],
-    type: 'inspection'
-  },
-  {
-    id: '2',
-    title: 'Reunión con cliente',
-    date: new Date(2025, 5, 2),
-    time: '14:30',
-    location: 'Oficina central',
-    attendees: ['Cliente ABC', 'Arquitecto'],
-    type: 'meeting'
-  },
-  {
-    id: '3',
-    title: 'Entrega de materiales',
-    date: new Date(2025, 5, 5),
-    time: '08:00',
-    location: 'Depósito',
-    type: 'deadline'
-  }
-];
+// TODO: Replace with actual calendar events from database
+const events: Event[] = [];
 
 const getEventTypeColor = (type: Event['type']) => {
   switch (type) {
     case 'meeting':
-      return '#3b82f6';
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
     case 'deadline':
-      return '#ef4444';
+      return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
     case 'inspection':
-      return '#10b981';
+      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
     default:
-      return '#6b7280';
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
   }
 };
 
@@ -74,11 +51,11 @@ export default function CalendarView() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
-  const selectedDateEvents = mockEvents.filter(
+  const selectedDateEvents = events.filter(
     event => selectedDate && format(event.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
   );
 
-  const upcomingEvents = mockEvents
+  const upcomingEvents = events
     .filter(event => event.date >= new Date())
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .slice(0, 5);
@@ -88,152 +65,154 @@ export default function CalendarView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-green-100 rounded-lg">
-            <CalendarIcon className="w-6 h-6 text-green-600" />
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <CalendarIcon className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Calendario
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Gestiona eventos y citas del proyecto
             </p>
           </div>
         </div>
-        <button 
+        <Button 
           onClick={() => setIsEventModalOpen(true)}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+          className="flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Nuevo Evento</span>
-        </button>
+        </Button>
       </div>
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
-              <CalendarIcon className="w-5 h-5 text-gray-600" />
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <CalendarIcon className="w-5 h-5" />
               <span>Calendario del Proyecto</span>
-            </h2>
-          </div>
-          <div className="p-6">
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
               locale={es}
-              className="rounded-md"
+              className="rounded-md border"
               modifiers={{
-                hasEvent: mockEvents.map(event => event.date)
+                hasEvent: events.map((event: Event) => event.date)
               }}
               modifiersStyles={{
-                hasEvent: { backgroundColor: '#16a34a', color: 'white', fontWeight: 'bold' }
+                hasEvent: { backgroundColor: 'hsl(var(--primary))', color: 'white', fontWeight: 'bold' }
               }}
             />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Events for selected date */}
         <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800">
+          <Card>
+            <CardHeader>
+              <CardTitle>
                 {selectedDate ? format(selectedDate, 'dd MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
-              </h3>
-            </div>
-            <div className="p-6">
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               {selectedDateEvents.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {selectedDateEvents.map(event => (
                     <div 
                       key={event.id} 
-                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      className="border rounded-lg p-3 hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 mb-2">
+                          <h4 className="font-medium text-foreground mb-2">
                             {event.title}
                           </h4>
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
-                              <Clock className="w-3 h-3 text-gray-500" />
-                              <span className="text-sm text-gray-600">
+                              <Clock className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
                                 {event.time}
                               </span>
                             </div>
                             {event.location && (
                               <div className="flex items-center space-x-2">
-                                <MapPin className="w-3 h-3 text-gray-500" />
-                                <span className="text-sm text-gray-600">
+                                <MapPin className="w-3 h-3 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
                                   {event.location}
                                 </span>
                               </div>
                             )}
                             {event.attendees && event.attendees.length > 0 && (
                               <div className="flex items-center space-x-2">
-                                <Users className="w-3 h-3 text-gray-500" />
-                                <span className="text-sm text-gray-600">
+                                <Users className="w-3 h-3 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
                                   {event.attendees.length} asistente{event.attendees.length > 1 ? 's' : ''}
                                 </span>
                               </div>
                             )}
                           </div>
                         </div>
-                        <div 
-                          className="px-2 py-1 rounded text-xs font-medium text-white ml-2"
-                          style={{ backgroundColor: getEventTypeColor(event.type) }}
-                        >
+                        <Badge className={getEventTypeColor(event.type)}>
                           {getEventTypeBadge(event.type)}
-                        </div>
+                        </Badge>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-gray-400 opacity-50" />
-                  <p className="text-gray-600 mb-3">No hay eventos para esta fecha</p>
-                  <button 
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+                  <p className="text-muted-foreground mb-3">No hay eventos para esta fecha</p>
+                  <Button 
+                    variant="outline"
+                    size="sm"
                     onClick={() => setIsEventModalOpen(true)}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2 mx-auto"
+                    className="flex items-center space-x-2"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Crear evento</span>
-                  </button>
+                  </Button>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Upcoming events */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800">Próximos Eventos</h3>
-            </div>
-            <div className="p-6">
-              <div className="space-y-3">
-                {upcomingEvents.map(event => (
-                  <div key={event.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div 
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: getEventTypeColor(event.type) }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-gray-900 truncate">
-                        {event.title}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        {format(event.date, 'dd MMM', { locale: es })} • {event.time}
-                      </p>
+          <Card>
+            <CardHeader>
+              <CardTitle>Próximos Eventos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {upcomingEvents.length > 0 ? (
+                <div className="space-y-3">
+                  {upcomingEvents.map(event => (
+                    <div key={event.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className={`w-2 h-2 rounded-full ${getEventTypeColor(event.type).includes('blue') ? 'bg-blue-500' : getEventTypeColor(event.type).includes('red') ? 'bg-red-500' : 'bg-green-500'}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-foreground truncate">
+                          {event.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(event.date, 'dd MMM', { locale: es })} • {event.time}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground text-sm py-4">
+                  No hay eventos próximos
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
 
