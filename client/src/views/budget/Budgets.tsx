@@ -303,15 +303,7 @@ export default function BudgetsList() {
                 : 'Comienza creando tu primer presupuesto de construcción.'
               }
             </p>
-            {!searchQuery && (
-              <Button 
-                className="mt-4 bg-primary hover:bg-primary/90"
-                onClick={() => setIsCreateModalOpen(true)}
-              >
-                <Plus size={16} className="mr-2" />
-                Crear Presupuesto
-              </Button>
-            )}
+
           </CardContent>
         </Card>
       ) : (

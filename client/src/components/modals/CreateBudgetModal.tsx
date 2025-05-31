@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -209,11 +210,31 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
       isOpen={isOpen}
       onClose={handleClose}
       title={budget?.id ? 'Editar Presupuesto' : 'Crear Nuevo Presupuesto'}
-      description={budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
-      icon={<FileText className="h-6 w-6" />}
-      onConfirm={form.handleSubmit(onSubmit)}
-      confirmText={budget?.id ? 'Actualizar Presupuesto' : 'Crear Presupuesto'}
-      isLoading={budgetMutation.isPending}
+      subtitle={budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
+      icon={FileText}
+      footer={
+        <div className="flex justify-end space-x-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            disabled={budgetMutation.isPending}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={budgetMutation.isPending}
+            className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
+          >
+            {budgetMutation.isPending && (
+              <div className="mr-2 h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+            )}
+            {budget?.id ? 'Actualizar Presupuesto' : 'Crear Presupuesto'}
+          </Button>
+        </div>
+      }
     >
       <Form {...form}>
         <div className="space-y-4">
