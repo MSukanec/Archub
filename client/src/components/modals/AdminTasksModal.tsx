@@ -321,6 +321,25 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
         // Insert task materials if any
         if (selectedMaterials.length > 0) {
+          // First verify that all materials exist
+          const materialIds = selectedMaterials.map(m => m.material_id);
+          const { data: existingMaterials, error: checkError } = await supabase
+            .from('materials')
+            .select('id')
+            .in('id', materialIds);
+
+          if (checkError) {
+            console.error('Error checking materials:', checkError);
+            throw checkError;
+          }
+
+          const existingIds = existingMaterials?.map(m => m.id) || [];
+          const missingIds = materialIds.filter(id => !existingIds.includes(id));
+          
+          if (missingIds.length > 0) {
+            throw new Error(`Los siguientes materiales no existen: ${missingIds.join(', ')}`);
+          }
+
           const taskMaterialsData = selectedMaterials.map(material => ({
             task_id: result.id,
             material_id: material.material_id,
