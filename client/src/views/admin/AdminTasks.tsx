@@ -32,8 +32,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
-import { AdminTaskCreateModal } from '@/components/modals/AdminTaskCreateModal';
-import { AdminTaskEditModal } from '@/components/modals/AdminTaskEditModal';
+import AdminTasksModal from '@/components/modals/AdminTasksModal';
 
 export default function AdminTasks() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -399,22 +398,20 @@ export default function AdminTasks() {
       </AlertDialog>
 
       {/* Create Task Modal */}
-      <AdminTaskCreateModal
+      <AdminTasksModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
 
       {/* Edit Task Modal */}
-      {selectedTask && (
-        <AdminTaskEditModal
-          isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setSelectedTask(null);
-          }}
-          task={selectedTask}
-        />
-      )}
+      <AdminTasksModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedTask(null);
+        }}
+        task={selectedTask}
+      />
     </div>
   );
 }
