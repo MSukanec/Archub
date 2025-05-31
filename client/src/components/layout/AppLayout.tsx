@@ -9,7 +9,7 @@ import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawer';
-import MobileBottomNav from './MobileBottomNav';
+
 
 import Dashboard from '@/views/dashboard/Dashboard';
 import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
@@ -168,7 +168,7 @@ export default function AppLayout() {
           />
           
           {/* Main Content */}
-          <div className="flex-1 flex flex-col overflow-hidden pt-14 pb-16">
+          <div className="flex-1 flex flex-col overflow-hidden pt-14">
             <main className="flex-1 overflow-auto relative">
               <div className="mx-auto p-4">
                 <ViewComponent />
@@ -176,8 +176,7 @@ export default function AppLayout() {
             </main>
           </div>
           
-          {/* Mobile Bottom Navigation */}
-          <MobileBottomNav />
+
         </>
       ) : (
         // Desktop Layout
