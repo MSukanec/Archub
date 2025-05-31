@@ -325,46 +325,44 @@ export default function AdminContactsModal({
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email"
-                            placeholder="ejemplo@email.com" 
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Email</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email"
+                          placeholder="ejemplo@email.com" 
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field, fieldState }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
-                        <FormControl>
-                          <PhoneInputField
-                            value={field.value}
-                            onChange={field.onChange}
-                            onBlur={field.onBlur}
-                            placeholder="Ingresa tu teléfono"
-                            error={!!fieldState.error}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
+                      <FormControl>
+                        <PhoneInputField
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          placeholder="Ingresa tu teléfono"
+                          error={!!fieldState.error}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </AccordionContent>
             </AccordionItem>
 

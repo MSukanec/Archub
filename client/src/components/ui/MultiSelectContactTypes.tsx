@@ -78,7 +78,10 @@ export function MultiSelectContactTypes({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(newOpen) => {
+      console.log('Popover state changing from', open, 'to', newOpen);
+      setOpen(newOpen);
+    }}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -90,12 +93,15 @@ export function MultiSelectContactTypes({
             selectedIds.length === 0 && "text-muted-foreground"
           )}
           onBlur={onBlur}
+          onClick={() => {
+            console.log('Button clicked, current open state:', open);
+          }}
         >
           <span className="truncate">{getSelectedNames()}</span>
           <ChevronDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <div className="max-h-60 overflow-auto">
           {contactTypes.map((type) => (
             <div
