@@ -470,8 +470,6 @@ export default function Movements() {
               </span>
             </div>
             
-            <div className="h-px bg-border/50 my-2"></div>
-            
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-foreground">Balance Total</span>
               <span className="text-lg font-bold text-blue-500">
@@ -515,8 +513,6 @@ export default function Movements() {
                 {formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}
               </span>
             </div>
-            
-            <div className="h-px bg-border/50 my-2"></div>
             
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-foreground">Balance Total</span>

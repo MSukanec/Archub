@@ -575,7 +575,7 @@ function DashboardTimeline() {
               <div 
                 className="absolute flex items-center text-center z-30 pointer-events-none"
                 style={{
-                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile + 50}px` : '100px', // Aligned with plan button area
+                  bottom: '120px', // Positioned at plan button height
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
