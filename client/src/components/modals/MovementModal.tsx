@@ -290,7 +290,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         field.onChange(value);
                         setSelectedTypeId(value);
                         form.setValue('concept_id', '');
-                      }} value={field.value} disabled={typesLoading}>
+                      }} value={field.value} disabled={false}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar tipo" />
