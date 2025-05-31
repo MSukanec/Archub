@@ -134,6 +134,32 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     enabled: isOpen && materialSearchTerm.length >= 3,
   });
 
+  // Fetch existing materials for the task when editing
+  const { data: existingTaskMaterials = [] } = useQuery({
+    queryKey: ['task-materials', task?.id],
+    queryFn: async () => {
+      if (!task?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('task_materials')
+        .select(`
+          material_id,
+          amount,
+          materials(id, name)
+        `)
+        .eq('task_id', task.id);
+      
+      if (error) throw error;
+      
+      return data.map(item => ({
+        material_id: item.material_id,
+        material_name: item.materials?.name || '',
+        amount: item.amount.toString()
+      }));
+    },
+    enabled: isOpen && isEditing && !!task?.id,
+  });
+
   // Fetch units
   const { data: units = [] } = useQuery({
     queryKey: ['units'],
@@ -239,6 +265,15 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       }
     }
   }, [task, isOpen, taskCategoriesStructure, isEditing, form, actions, taskElements, units]);
+
+  // Load existing materials when editing a task
+  useEffect(() => {
+    if (isEditing && existingTaskMaterials.length > 0) {
+      setSelectedMaterials(existingTaskMaterials);
+    } else if (!isEditing) {
+      setSelectedMaterials([]);
+    }
+  }, [existingTaskMaterials, isEditing]);
 
   // Functions to handle materials
   const addMaterial = async (material: any) => {
