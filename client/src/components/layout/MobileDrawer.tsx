@@ -161,23 +161,6 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           </button>
         </div>
 
-        {/* User Info */}
-        {user && (
-          <div className="p-4 border-b border-[#919191]/20">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">
-                  {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-                </span>
-              </div>
-              <div>
-                <p className="font-medium text-black">{user.firstName} {user.lastName}</p>
-                <p className="text-sm text-[#919191]">{user.email}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Project Selector */}
         {currentProject && (
           <div className="p-4 border-b border-[#919191]/20">
@@ -286,6 +269,23 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             })}
           </ul>
         </nav>
+
+        {/* User Info at bottom */}
+        {user && (
+          <div className="p-4 border-t border-[#919191]/20">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-sm">
+                  {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                </span>
+              </div>
+              <div>
+                <p className="font-medium text-black">{user.firstName} {user.lastName}</p>
+                <p className="text-sm text-[#919191]">{user.email}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
