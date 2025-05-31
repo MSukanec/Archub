@@ -201,11 +201,15 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
+                    {categories
+                      .slice()
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))
+                    }
                   </SelectContent>
                 </Select>
                 <FormMessage />
