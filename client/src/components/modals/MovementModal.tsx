@@ -119,11 +119,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
             movement 
           });
           
-          // Set the selected type for dependent selects
-          setSelectedTypeId(typeId);
-          
-          // Use hierarchical form setter
+          // Use hierarchical form setter first
           setHierarchicalFormValues(form, conceptPath, ['type_id', 'concept_id']);
+          
+          // Then set the selected type for dependent selects
+          setSelectedTypeId(typeId);
           
           // Set other form values
           form.setValue('created_at', movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
@@ -328,7 +328,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground">Categoría <span className="text-primary">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ''} disabled={!selectedTypeId}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value || ''} 
+                        disabled={!selectedTypeId || conceptsLoading}
+                      >
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder={

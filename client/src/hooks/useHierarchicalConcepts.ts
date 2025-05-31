@@ -138,17 +138,28 @@ export function setHierarchicalFormValues(
   conceptPath: string[],
   fieldNames: string[]
 ) {
+  console.log('Setting hierarchical form values:', { conceptPath, fieldNames });
+  
   // Clear all fields first
   fieldNames.forEach(fieldName => {
     form.setValue(fieldName, '');
+    console.log(`Cleared field: ${fieldName}`);
   });
 
   // Set values based on path length
   conceptPath.forEach((conceptId, index) => {
     if (index < fieldNames.length) {
-      form.setValue(fieldNames[index], conceptId);
+      const fieldName = fieldNames[index];
+      form.setValue(fieldName, conceptId);
+      console.log(`Set field: ${fieldName} = ${conceptId}`);
+      
+      // Force trigger change to ensure UI updates
+      form.trigger(fieldName);
     }
   });
+  
+  // Log final form values
+  console.log('Final form values after hierarchical set:', form.getValues());
 }
 
 // Utility function to validate if a concept path is complete
