@@ -60,13 +60,16 @@ export default function AdminUsers() {
     };
   }, []);
 
-  // Fetch users
+  // Fetch users with plan information
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/users'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('users')
-        .select('*')
+        .select(`
+          *,
+          plan:plans(name, price)
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -209,6 +212,7 @@ export default function AdminUsers() {
             <TableRow className="border-border bg-muted/50">
               <TableHead className="text-foreground font-semibold h-12 text-center">Usuario</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Email</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Plan</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Rol</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Fecha de registro</TableHead>
               <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
@@ -217,7 +221,7 @@ export default function AdminUsers() {
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-16">
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8 h-16">
                   {searchTerm || dateFilter 
                     ? 'No se encontraron usuarios que coincidan con los filtros.'
                     : 'No hay usuarios registrados.'
@@ -240,6 +244,20 @@ export default function AdminUsers() {
                       <Mail className="w-4 h-4 text-muted-foreground" />
                       {user.email}
                     </div>
+                  </TableCell>
+                  <TableCell className="py-4 text-center">
+                    <Badge 
+                      variant="outline"
+                      className={
+                        user.plan?.name === 'pro' 
+                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          : user.plan?.name === 'enterprise'
+                          ? "bg-purple-50 text-purple-700 border-purple-200"
+                          : "bg-gray-50 text-gray-700 border-gray-200"
+                      }
+                    >
+                      {user.plan?.name ? user.plan.name.toUpperCase() : 'FREE'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="py-4 text-center">
                     <Badge 
