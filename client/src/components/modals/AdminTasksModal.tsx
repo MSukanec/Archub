@@ -174,26 +174,41 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const subcategoriesFiltered = taskCategoriesStructure?.getChildConcepts(selectedCategoryId) || [];
   const elementCategoriesFiltered = taskCategoriesStructure?.getChildConcepts(selectedSubcategoryId) || [];
 
-  // Initialize form states when editing a task
+  // Initialize form states when editing a task (same logic as MovementModal)
   useEffect(() => {
     if (task && isOpen && taskCategoriesStructure && actions.length > 0 && taskElements.length > 0) {
       console.log('Initializing form for task with all data loaded:', task);
-      const categoryId = task.category_id || '';
-      const subcategoryId = task.subcategory_id || '';
+      
       const elementCategoryId = task.element_category_id || '';
-      const actionId = task.action_id || '';
-      const elementId = task.element_id || '';
       
-      setSelectedCategoryId(categoryId);
-      setSelectedSubcategoryId(subcategoryId);
-      setSelectedElementCategoryId(elementCategoryId);
-      setSelectedActionId(actionId);
-      setSelectedElementId(elementId);
+      if (elementCategoryId && taskCategoriesStructure) {
+        // Use hierarchical path to set category, subcategory and element (same as MovementModal)
+        const conceptPath = taskCategoriesStructure.getConceptPath(elementCategoryId);
+        const categoryId = conceptPath.length >= 1 ? conceptPath[0] : '';
+        const subcategoryId = conceptPath.length >= 2 ? conceptPath[1] : '';
+        
+        console.log('Task hierarchical path:', { 
+          element_category_id: elementCategoryId, 
+          conceptPath, 
+          task 
+        });
+        
+        // Set selectedTypeId first to ensure proper field display timing
+        setSelectedCategoryId(categoryId);
+        
+        // Set form values using the hierarchical helper (same as MovementModal)
+        setTimeout(() => {
+          setHierarchicalFormValues(form, conceptPath, ['category_id', 'subcategory_id', 'element_category_id']);
+        }, 10);
+      } else {
+        // Fallback to manual setting
+        setSelectedCategoryId(task.category_id || '');
+        setSelectedSubcategoryId(task.subcategory_id || '');
+        setSelectedElementCategoryId(task.element_category_id || '');
+      }
       
-      // Update form values as well
-      form.setValue('category_id', categoryId);
-      form.setValue('subcategory_id', subcategoryId);
-      form.setValue('element_category_id', elementCategoryId);
+      setSelectedActionId(task.action_id || '');
+      setSelectedElementId(task.element_id || '');
     } else if (!task && isOpen) {
       // Reset form when creating new task
       setSelectedCategoryId('');
@@ -309,22 +324,6 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       
       setSelectedActionId(task.action_id || '');
       setSelectedElementId(task.element_id || '');
-      
-      console.log('Synchronized local state:');
-      console.log('- Category:', task.category_id);
-      console.log('- Subcategory:', task.subcategory_id);
-      console.log('- Element Category:', task.element_category_id);
-      
-      // Sincronizar estado local después de establecer valores jerárquicos
-      setTimeout(() => {
-        const formValues = form.getValues();
-        console.log('Current form element_category_id:', formValues.element_category_id);
-        console.log('Current selectedElementCategoryId:', selectedElementCategoryId);
-        if (formValues.element_category_id) {
-          console.log('Syncing element category state:', formValues.element_category_id);
-          setSelectedElementCategoryId(formValues.element_category_id);
-        }
-      }, 100);
     } else if (!task && taskCategoriesStructure) {
       // Creating new task - clear form
       form.reset({
