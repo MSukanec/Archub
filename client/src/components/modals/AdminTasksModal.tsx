@@ -13,6 +13,7 @@ import { tasksService, Task, CreateTaskData } from '@/lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useHierarchicalConcepts, setHierarchicalFormValues } from '@/hooks/useHierarchicalConcepts';
 
 import { z } from 'zod';
 import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
@@ -75,24 +76,8 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const [materialQuantity, setMaterialQuantity] = useState<string>('');
   const [materialUnitCost, setMaterialUnitCost] = useState<string>('');
 
-  // Fetch task categories from Supabase
-  const { data: allCategories = [] } = useQuery({
-    queryKey: ['task-categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('task_categories')
-        .select('*')
-        .order('position');
-      
-      if (error) {
-        console.error('Error fetching task categories:', error);
-        return [];
-      }
-      return data as TaskCategory[];
-    },
-    enabled: isOpen,
-    retry: 1,
-  });
+  // Use hierarchical concepts hook for optimized task category management
+  const { data: taskCategoriesStructure, isLoading: taskCategoriesLoading } = useHierarchicalConcepts('task_categories', organizationId);
 
   // Fetch materials from Supabase
   const { data: materials = [] } = useQuery({
@@ -184,18 +169,14 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     },
   });
 
-  // Helper functions to filter categories
-  const getMainCategories = () => allCategories.filter(cat => cat.parent_id === null);
-  const getSubcategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parentId);
-  const getElementCategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parentId);
-
-  // Calculate filtered categories based on current selection
-  const subcategoriesFiltered = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
-  const elementCategoriesFiltered = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
+  // Get categories using hierarchical structure
+  const mainCategories = taskCategoriesStructure?.getRootConcepts() || [];
+  const subcategoriesFiltered = taskCategoriesStructure?.getChildConcepts(selectedCategoryId) || [];
+  const elementCategoriesFiltered = taskCategoriesStructure?.getChildConcepts(selectedSubcategoryId) || [];
 
   // Initialize form states when editing a task
   useEffect(() => {
-    if (task && isOpen && allCategories.length > 0 && actions.length > 0 && taskElements.length > 0) {
+    if (task && isOpen && taskCategoriesStructure && actions.length > 0 && taskElements.length > 0) {
       console.log('Initializing form for task with all data loaded:', task);
       const categoryId = task.category_id || '';
       const subcategoryId = task.subcategory_id || '';
@@ -221,10 +202,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       setSelectedActionId('');
       setSelectedElementId('');
     }
-  }, [task, isOpen, allCategories, actions, taskElements, form]);
+  }, [task, isOpen, taskCategoriesStructure, actions, taskElements, form]);
 
   // Debug logs
-  console.log('All categories:', allCategories);
+  console.log('Task categories structure:', taskCategoriesStructure);
   console.log('Materials:', materials);
   console.log('Actions:', actions);
   console.log('Task elements:', taskElements);
@@ -287,7 +268,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
   // Second effect: Set form values when categories are loaded
   useEffect(() => {
-    if (task && allCategories.length > 0) {
+    if (task && taskCategoriesStructure) {
       console.log('Setting form values with categories loaded');
       form.reset({
         name: task.name || '',
@@ -313,7 +294,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       console.log('- Category:', task.category_id);
       console.log('- Subcategory:', task.subcategory_id);
       console.log('- Element Category:', task.element_category_id);
-    } else if (!task && allCategories.length > 0) {
+    } else if (!task && taskCategoriesStructure) {
       // Creating new task - clear form
       form.reset({
         name: '',
