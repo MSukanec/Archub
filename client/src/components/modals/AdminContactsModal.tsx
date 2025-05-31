@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PhoneInputField } from '@/components/ui/PhoneInput';
-import { MultiSelectContactTypes } from '@/components/ui/MultiSelectContactTypes';
+import { SimpleMultiSelectContactTypes } from '@/components/ui/SimpleMultiSelectContactTypes';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, CreateContactData } from '@/lib/contactsService';
 import { contactTypesService } from '@/lib/contactTypesService';
@@ -284,7 +284,7 @@ export default function AdminContactsModal({
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto</FormLabel>
                       <FormControl>
-                        <MultiSelectContactTypes
+                        <SimpleMultiSelectContactTypes
                           value={field.value || []}
                           onChange={field.onChange}
                           onBlur={field.onBlur}
