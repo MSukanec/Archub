@@ -80,13 +80,13 @@ export default function SecondarySidebar() {
     const name = planName?.toLowerCase();
     switch (name) {
       case 'free':
-        return 'text-gray-600';
-      case 'pro':
         return 'text-primary';
+      case 'pro':
+        return 'text-blue-600';
       case 'enterprise':
         return 'text-purple-600';
       default:
-        return 'text-gray-600';
+        return 'text-primary';
     }
   };
 

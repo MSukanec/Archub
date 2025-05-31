@@ -50,9 +50,9 @@ export default function SubscriptionTables() {
   const getPlanIcon = (planName: string) => {
     switch (planName.toLowerCase()) {
       case 'free':
-        return <Zap className="h-8 w-8 text-gray-600" />;
+        return <Zap className="h-8 w-8 text-primary" />;
       case 'pro':
-        return <Crown className="h-8 w-8 text-primary" />;
+        return <Crown className="h-8 w-8 text-blue-600" />;
       case 'enterprise':
         return <Rocket className="h-8 w-8 text-purple-600" />;
       default:
@@ -62,14 +62,23 @@ export default function SubscriptionTables() {
 
   const getPlanColor = (planName: string, isCurrentPlan: boolean) => {
     if (isCurrentPlan) {
-      return 'border-primary bg-primary/10 shadow-lg shadow-primary/20';
+      switch (planName.toLowerCase()) {
+        case 'free':
+          return 'border-primary bg-primary/10 shadow-lg shadow-primary/20';
+        case 'pro':
+          return 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-200';
+        case 'enterprise':
+          return 'border-purple-500 bg-purple-50 shadow-lg shadow-purple-200';
+        default:
+          return 'border-primary bg-primary/10 shadow-lg shadow-primary/20';
+      }
     }
     
     switch (planName.toLowerCase()) {
       case 'free':
-        return 'border-gray-300 hover:border-gray-400';
-      case 'pro':
         return 'border-green-300 bg-green-50 hover:border-green-400 shadow-lg shadow-green-100';
+      case 'pro':
+        return 'border-blue-300 bg-blue-50 hover:border-blue-400 shadow-lg shadow-blue-100';
       case 'enterprise':
         return 'border-purple-300 bg-purple-50 hover:border-purple-400 shadow-lg shadow-purple-100';
       default:
@@ -132,6 +141,14 @@ export default function SubscriptionTables() {
     const currentIndex = planOrder.indexOf(userPlan.name.toLowerCase());
     const planIndex = planOrder.indexOf(planName.toLowerCase());
     return planIndex > currentIndex;
+  };
+
+  const isNextPlan = (planName: string) => {
+    if (!userPlan || typeof userPlan.name !== 'string') return false;
+    const planOrder = ['free', 'pro', 'enterprise'];
+    const currentIndex = planOrder.indexOf(userPlan.name.toLowerCase());
+    const planIndex = planOrder.indexOf(planName.toLowerCase());
+    return planIndex === currentIndex + 1;
   };
 
   const faqs = [
@@ -213,9 +230,14 @@ export default function SubscriptionTables() {
         {plans.map((plan) => {
           const planIsCurrentPlan = isCurrentPlan(plan.name);
           const planIsUpgrade = isUpgrade(plan.name);
+          const planIsNext = isNextPlan(plan.name);
           
           return (
-            <Card key={plan.id} className={`relative transition-all duration-300 ${getPlanColor(plan.name, planIsCurrentPlan)} ${isPopular(plan.name) && !planIsCurrentPlan ? 'scale-105' : 'hover:scale-105'}`}>
+            <Card key={plan.id} className={`relative transition-all duration-300 ${getPlanColor(plan.name, planIsCurrentPlan)} ${
+              planIsNext ? 'scale-110' : 
+              isPopular(plan.name) && !planIsCurrentPlan ? 'scale-105' : 
+              'hover:scale-105'
+            }`}>
               {planIsCurrentPlan && (
                 <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
                   Plan Actual
@@ -230,7 +252,9 @@ export default function SubscriptionTables() {
                 <Badge className={`absolute -top-2 right-4 text-white ${
                   plan.name.toLowerCase() === 'enterprise' 
                     ? 'bg-purple-500' 
-                    : 'bg-green-500'
+                    : plan.name.toLowerCase() === 'pro'
+                      ? 'bg-blue-500'
+                      : 'bg-primary'
                 }`}>
                   <ArrowRight className="h-3 w-3 mr-1" />
                   Upgrade
@@ -263,9 +287,15 @@ export default function SubscriptionTables() {
                 <div className="space-y-3">
                   {getPlanFeatures(plan.name).map((feature, index) => {
                     const isHeader = feature.includes('Todo lo de');
+                    const planColor = plan.name.toLowerCase() === 'free' 
+                      ? 'text-primary' 
+                      : plan.name.toLowerCase() === 'pro' 
+                        ? 'text-blue-600' 
+                        : 'text-purple-600';
+                    
                     return (
-                      <div key={index} className={`flex items-center gap-2 ${isHeader ? 'font-semibold text-primary mt-4 first:mt-0' : ''}`}>
-                        <CheckCircle className={`h-5 w-5 ${isHeader ? 'text-primary' : 'text-primary'}`} />
+                      <div key={index} className={`flex items-center gap-2 ${isHeader ? `font-semibold ${planColor} mt-4 first:mt-0` : ''}`}>
+                        <CheckCircle className={`h-5 w-5 ${planColor}`} />
                         <span className={isHeader ? 'text-sm' : ''}>{feature}</span>
                       </div>
                     );
@@ -273,8 +303,12 @@ export default function SubscriptionTables() {
                 </div>
                 <Button 
                   className={`w-full ${
-                    plan.name.toLowerCase() === 'enterprise' && planIsUpgrade
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                    planIsUpgrade
+                      ? plan.name.toLowerCase() === 'enterprise'
+                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                        : plan.name.toLowerCase() === 'pro'
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-primary hover:bg-primary/90 text-white'
                       : ''
                   }`}
                   variant={planIsCurrentPlan ? 'secondary' : planIsUpgrade ? 'default' : 'outline'}
