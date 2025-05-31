@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, DollarSign, Activity, CreditCard, TrendingUp, Lock, FolderKanban } from 'lucide-react';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, Activity, TrendingUp, Lock, FolderKanban, Eye } from 'lucide-react';
 import { useFeatures } from '@/hooks/useFeatures';
 import { LimitLock } from '@/components/features';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService } from '@/lib/projectsService';
 import { Project } from '@/lib/projectsService';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
+import ProjectInfoModal from '@/components/modals/ProjectInfoModal';
 
 export default function ProjectsOverview() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +23,8 @@ export default function ProjectsOverview() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [projectToView, setProjectToView] = useState<Project | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { organizationId, projectId, setUserContext } = useUserContextStore();
@@ -42,6 +45,7 @@ export default function ProjectsOverview() {
     mutationFn: (id: string) => projectsService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/projects', organizationId] });
       setIsDeleteDialogOpen(false);
       setSelectedProject(null);
       toast({
@@ -68,6 +72,11 @@ export default function ProjectsOverview() {
   const handleDelete = (project: Project) => {
     setSelectedProject(project);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleViewProject = (project: Project) => {
+    setProjectToView(project);
+    setIsInfoModalOpen(true);
   };
 
   const handleProjectClick = (project: Project) => {
@@ -345,28 +354,13 @@ export default function ProjectsOverview() {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setUserContext({ projectId: project.id });
-                            setView('budgets-main');
+                            handleViewProject(project);
                           }}
                           className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                          title="Ir a Presupuestos"
+                          title="Ver información del proyecto"
                         >
-                          <CreditCard className="h-4 w-4" />
-                          <span className="sr-only">Ir a presupuestos</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setUserContext({ projectId: project.id });
-                            setView('movements-main');
-                          }}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                          title="Ir a Movimientos"
-                        >
-                          <DollarSign className="h-4 w-4" />
-                          <span className="sr-only">Ir a movimientos</span>
+                          <Eye className="h-4 w-4" />
+                          <span className="sr-only">Ver información</span>
                         </Button>
                         <Button
                           variant="outline"
@@ -409,6 +403,15 @@ export default function ProjectsOverview() {
           setSelectedProject(null);
         }}
         project={selectedProject}
+      />
+
+      <ProjectInfoModal
+        isOpen={isInfoModalOpen}
+        onClose={() => {
+          setIsInfoModalOpen(false);
+          setProjectToView(null);
+        }}
+        project={projectToView}
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
