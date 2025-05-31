@@ -626,58 +626,14 @@ export default function Movements() {
             )}
           </div>
 
-          {/* Filter Buttons */}
-          <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <DollarSign className="h-4 w-4 text-foreground" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="all">Todas las monedas</SelectItem>
-              <SelectItem value="ARS">ARS</SelectItem>
-              <SelectItem value="USD">USD</SelectItem>
-            </SelectContent>
-          </Select>
 
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <Filter className="h-4 w-4 text-foreground" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="all">Todos los tipos</SelectItem>
-              <SelectItem value="ingresos">Ingresos</SelectItem>
-              <SelectItem value="egresos">Egresos</SelectItem>
-              <SelectItem value="ajustes">Ajustes</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <Tag className="h-4 w-4 text-foreground" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              <SelectItem value="movimientos">Movimientos</SelectItem>
-              <SelectItem value="cuotas">Cuotas</SelectItem>
-              <SelectItem value="herramientas">Herramientas y Equipos</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={sortOrder} onValueChange={setSortOrder}>
-            <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <ArrowUpDown className="h-4 w-4 text-foreground" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="newest">Más reciente primero</SelectItem>
-              <SelectItem value="oldest">Más antiguo primero</SelectItem>
-            </SelectContent>
-          </Select>
 
           <Button
             variant="outline"
             size="sm"
             className="w-9 h-9 bg-card border-0 rounded-full hover:bg-muted shadow-lg p-0"
           >
-            <Download className="h-4 w-4 text-foreground" />
+            <Download className="h-4 w-4 text-black" />
           </Button>
         </div>
 

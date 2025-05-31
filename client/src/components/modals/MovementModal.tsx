@@ -328,28 +328,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   )}
                 />
 
-                {/* Fecha */}
-                <FormField
-                  control={form.control}
-                  name="created_at"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Fecha *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="date" 
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value)}
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Categoría */}
                 <FormField
                   control={form.control}
@@ -371,6 +349,28 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Fecha */}
+                <FormField
+                  control={form.control}
+                  name="created_at"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Fecha *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
