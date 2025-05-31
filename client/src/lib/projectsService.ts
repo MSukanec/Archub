@@ -16,6 +16,8 @@ export interface Project {
   zip_code: string | null;
   organization_id: string | null;
   is_active: boolean;
+  lat: number | null;
+  lng: number | null;
 }
 
 export interface CreateProjectData {

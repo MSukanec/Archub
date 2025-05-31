@@ -39,6 +39,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import ModernModal from '@/components/ui/ModernModal';
+import AddressAutocomplete from '@/components/AddressAutocomplete';
 
 const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -68,6 +69,8 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const [nameValidation, setNameValidation] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
   const [nameExists, setNameExists] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mapLat, setMapLat] = useState<number | null>(null);
+  const [mapLng, setMapLng] = useState<number | null>(null);
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -130,6 +133,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
           contact_phone: project.contact_phone || '',
           email: project.email || '',
         });
+        // Set coordinates from existing project
+        setMapLat(project.lat || null);
+        setMapLng(project.lng || null);
       } else {
         form.reset({
           name: '',
@@ -142,6 +148,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
           contact_phone: '',
           email: '',
         });
+        // Reset coordinates for new project
+        setMapLat(null);
+        setMapLng(null);
       }
     }
   }, [project, isOpen, form]);
@@ -244,7 +253,9 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     
     const dbData = {
       ...data,
-      status: mapStatusToDB(data.status || 'planning')
+      status: mapStatusToDB(data.status || 'planning'),
+      lat: mapLat,
+      lng: mapLng
     };
     
     createProjectMutation.mutate(dbData);
