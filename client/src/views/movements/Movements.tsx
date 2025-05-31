@@ -429,7 +429,7 @@ export default function Movements() {
       </div>
 
       {/* Summary Cards - Modern Professional Style */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-3 md:gap-6">
         {/* Pesos Argentinos */}
         <Card className="rounded-2xl shadow-md bg-[#e1e1e1] p-4 border-0">
           <div className="flex items-center gap-3 mb-3">
@@ -547,7 +547,7 @@ export default function Movements() {
         </div>
 
         {/* Filters Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
             <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
@@ -602,8 +602,8 @@ export default function Movements() {
         </div>
       </div>
 
-      {/* History Table */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      {/* History Table - Desktop */}
+      <div className="hidden md:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">

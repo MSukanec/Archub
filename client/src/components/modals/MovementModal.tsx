@@ -292,7 +292,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           <AccordionItem value="basic-info" className="border-[#919191]/20">
             <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4" />
+                <FileText className="w-4 h-4 text-primary" />
                 Información Básica
               </div>
             </AccordionTrigger>
@@ -476,7 +476,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           <AccordionItem value="relations" className="border-[#919191]/20">
             <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
+                <User className="w-4 h-4 text-primary" />
                 Relaciones
               </div>
             </AccordionTrigger>

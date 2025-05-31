@@ -512,7 +512,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
             <AccordionItem value="basic-info" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
-                  <Info className="w-4 h-4" />
+                  <Info className="w-4 h-4 text-primary" />
                   Categoría de Rubro
                 </div>
               </AccordionTrigger>
@@ -775,7 +775,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
             <AccordionItem value="materials" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4" />
+                  <Package className="w-4 h-4 text-primary" />
                   Materiales
                 </div>
               </AccordionTrigger>
