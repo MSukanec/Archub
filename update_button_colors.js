@@ -9,12 +9,15 @@ const viewsPath = path.join(__dirname, 'client', 'src', 'views', 'admin');
 
 // Lista de archivos de vistas admin que necesitan actualización
 const adminViews = [
+  'AdminActions.tsx',
   'AdminCategories.tsx',
   'AdminElements.tsx', 
   'AdminMaterialCategories.tsx',
+  'AdminMaterials.tsx',
+  'AdminOrganizations.tsx',
+  'AdminTasks.tsx',
   'AdminUnits.tsx',
-  'AdminUsers.tsx',
-  'AdminOrganizations.tsx'
+  'AdminUsers.tsx'
 ];
 
 adminViews.forEach(fileName => {
@@ -35,6 +38,12 @@ adminViews.forEach(fileName => {
     content = content.replace(
       /className="text-primary hover:text-primary\/80/g,
       'className="text-muted-foreground hover:text-foreground'
+    );
+    
+    // Arreglar botones de eliminar para que tengan efecto sin fondo
+    content = content.replace(
+      /className="text-destructive hover:text-destructive\/80 hover:bg-destructive\/10/g,
+      'className="text-destructive hover:text-destructive/90'
     );
     
     // Manejar text-blue-600 si existe

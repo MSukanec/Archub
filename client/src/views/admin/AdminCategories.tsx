@@ -150,7 +150,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
             variant="ghost"
             size="sm"
             onClick={() => onDelete(category.id)}
-            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
+            className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
