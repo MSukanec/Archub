@@ -33,7 +33,11 @@ export default function ModernModal({
       {/* Backdrop - covers everything */}
       <div 
         className="absolute inset-0 bg-black/60" 
-        onClick={onClose}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }}
       />
       
       {/* Modal - completely ignores layout */}
@@ -49,6 +53,7 @@ export default function ModernModal({
           margin: 0,
           padding: 0
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">

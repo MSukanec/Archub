@@ -266,7 +266,11 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       <Button
         type="button"
         variant="outline"
-        onClick={handleClose}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleClose();
+        }}
         disabled={isSubmitting}
         className="bg-[#d2d2d2] border-[#919191]/20 text-foreground hover:bg-[#c2c2c2] rounded-lg"
       >
