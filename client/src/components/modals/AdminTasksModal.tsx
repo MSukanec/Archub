@@ -301,10 +301,18 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         element_id: task.element_id || '',
       });
       
-      // Also set form values for the dependent selects
-      form.setValue('category_id', task.category_id || '');
-      form.setValue('subcategory_id', task.subcategory_id || '');
-      form.setValue('element_category_id', task.element_category_id || '');
+      // IMPORTANT: Synchronize local state with form values after reset
+      // This ensures the Select components show the correct values
+      setSelectedCategoryId(task.category_id || '');
+      setSelectedSubcategoryId(task.subcategory_id || '');
+      setSelectedElementCategoryId(task.element_category_id || '');
+      setSelectedActionId(task.action_id || '');
+      setSelectedElementId(task.element_id || '');
+      
+      console.log('Synchronized local state:');
+      console.log('- Category:', task.category_id);
+      console.log('- Subcategory:', task.subcategory_id);
+      console.log('- Element Category:', task.element_category_id);
     } else if (!task && allCategories.length > 0) {
       // Creating new task - clear form
       form.reset({
