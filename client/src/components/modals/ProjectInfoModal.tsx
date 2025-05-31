@@ -1,4 +1,4 @@
-import { Building, MapPin, User, Share2 } from 'lucide-react';
+import { Building, MapPin, User, Share2, Phone, Mail, ExternalLink } from 'lucide-react';
 import { Project } from '@/lib/projectsService';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
@@ -13,12 +13,36 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
   if (!project) return null;
 
   const handleWhatsAppShare = () => {
-    const message = `📋 *Información del Proyecto*\n\n` +
+    let locationText = project.address || 'No especificada';
+    if (project.city) {
+      locationText += `, ${project.city}`;
+    }
+    if (project.zip_code) {
+      locationText += ` (CP: ${project.zip_code})`;
+    }
+
+    let message = `📋 *Información del Proyecto*\n\n` +
       `🏗️ *Proyecto:* ${project.name}\n` +
-      `👤 *Cliente:* ${project.client_name || 'No especificado'}\n` +
-      `📍 *Ubicación:* ${project.address || 'No especificada'}\n` +
-      `📞 *Teléfono:* ${project.contact_phone || 'No especificado'}\n` +
-      `📧 *Email:* ${project.email || 'No especificado'}`;
+      `👤 *Cliente:* ${project.client_name || 'No especificado'}\n`;
+    
+    if (project.contact_phone) {
+      message += `📞 *Teléfono:* ${project.contact_phone}\n`;
+    }
+    
+    message += `📍 *Ubicación:* ${locationText}\n`;
+    
+    if (project.email) {
+      message += `📧 *Email:* ${project.email}\n`;
+    }
+
+    // Agregar enlace de Google Maps si hay coordenadas
+    if (project.lat && project.lng) {
+      const googleMapsUrl = `https://maps.google.com/?q=${project.lat},${project.lng}`;
+      message += `🗺️ *Ubicación en Maps:* ${googleMapsUrl}`;
+    } else if (project.address) {
+      const googleMapsUrl = `https://maps.google.com/?q=${encodeURIComponent(project.address)}`;
+      message += `🗺️ *Ubicación en Maps:* ${googleMapsUrl}`;
+    }
     
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -46,7 +70,19 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-800 mb-1">Cliente</h3>
-              <p className="text-gray-600">{project.client_name || 'No especificado'}</p>
+              <p className="text-gray-600 mb-2">{project.client_name || 'No especificado'}</p>
+              {project.contact_phone && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Phone className="w-4 h-4" />
+                  <span>{project.contact_phone}</span>
+                </div>
+              )}
+              {project.email && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                  <Mail className="w-4 h-4" />
+                  <span>{project.email}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -57,27 +93,35 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-800 mb-1">Ubicación</h3>
-              <p className="text-gray-600">{project.address || 'No especificada'}</p>
+              <p className="text-gray-600 mb-2">{project.address || 'No especificada'}</p>
+              <div className="flex gap-4 text-sm text-gray-600">
+                {project.city && (
+                  <span>📍 {project.city}</span>
+                )}
+                {project.zip_code && (
+                  <span>📮 CP: {project.zip_code}</span>
+                )}
+              </div>
+              {(project.lat && project.lng || project.address) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const url = project.lat && project.lng 
+                      ? `https://maps.google.com/?q=${project.lat},${project.lng}`
+                      : `https://maps.google.com/?q=${encodeURIComponent(project.address || '')}`;
+                    window.open(url, '_blank');
+                  }}
+                  className="mt-2 h-8 text-xs"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1" />
+                  Abrir en Maps
+                </Button>
+              )}
             </div>
           </div>
 
-          {/* Contact Info */}
-          {(project.contact_phone || project.email) && (
-            <div className="space-y-3">
-              {project.contact_phone && (
-                <div className="flex items-center justify-between p-3 bg-white/30 rounded-lg">
-                  <span className="text-gray-700">📞 Teléfono</span>
-                  <span className="font-medium text-gray-800">{project.contact_phone}</span>
-                </div>
-              )}
-              {project.email && (
-                <div className="flex items-center justify-between p-3 bg-white/30 rounded-lg">
-                  <span className="text-gray-700">📧 Email</span>
-                  <span className="font-medium text-gray-800">{project.email}</span>
-                </div>
-              )}
-            </div>
-          )}
+
         </div>
 
         {/* Actions */}
