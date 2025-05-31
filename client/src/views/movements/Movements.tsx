@@ -400,6 +400,13 @@ export default function Movements() {
     }).format(amount);
   };
 
+  const handleExportToExcel = () => {
+    toast({
+      title: "Exportar Excel",
+      description: "Función de exportación en desarrollo",
+    });
+  };
+
   if (!projectId) {
     return (
       <div className="flex items-center justify-center h-64">

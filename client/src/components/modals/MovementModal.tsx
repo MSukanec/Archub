@@ -518,15 +518,16 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-full p-0 z-[10000]" align="start">
-                        <Command>
+                      <PopoverContent className="w-full p-0 z-[10000] bg-[#d2d2d2] border-[#919191]/20" align="start">
+                        <Command className="bg-[#d2d2d2]">
                           <CommandInput 
                             placeholder="Escribir al menos 3 caracteres..."
                             value={contactSearchTerm}
                             onValueChange={setContactSearchTerm}
+                            className="bg-[#d2d2d2] border-none"
                           />
-                          <CommandList>
-                            <CommandEmpty>
+                          <CommandList className="bg-[#d2d2d2]">
+                            <CommandEmpty className="text-muted-foreground">
                               {contactSearchTerm.length < 3 
                                 ? "Escribir al menos 3 caracteres para buscar"
                                 : "No se encontraron contactos"}
