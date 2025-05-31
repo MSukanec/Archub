@@ -113,6 +113,12 @@ export default function ProjectsOverview() {
     setIsInfoModalOpen(true);
   };
 
+  const handleProjectClick = (project: Project) => {
+    // Set as active project and move to top
+    const { setUserContext } = useUserContextStore.getState();
+    setUserContext({ projectId: project.id });
+  };
+
   const confirmDelete = () => {
     if (selectedProject) {
       deleteMutation.mutate(selectedProject.id);
@@ -140,7 +146,7 @@ export default function ProjectsOverview() {
     );
   }
 
-  // Filter and sort projects
+  // Filter and sort projects with active project first
   const filteredProjects = projects
     .filter((project: any) =>
       project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -148,6 +154,11 @@ export default function ProjectsOverview() {
       project.address?.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a: any, b: any) => {
+      // Active project first
+      if (a.id === projectId && b.id !== projectId) return -1;
+      if (b.id === projectId && a.id !== projectId) return 1;
+      
+      // Then by date
       if (sortOrder === 'newest') {
         return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
       } else {
@@ -236,120 +247,120 @@ export default function ProjectsOverview() {
             </SelectContent>
           </Select>
         </div>
+      </div>
 
-        {/* Separación entre filtros y lista */}
-        <div className="mt-6 border-t border-gray-200 pt-6">
-          {filteredProjects.length === 0 ? (
-            <div className="p-12 text-center">
-              <Building className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-medium text-foreground">
-                {searchQuery ? 'No se encontraron proyectos' : 'No hay proyectos'}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {searchQuery 
-                  ? 'Intenta con un término de búsqueda diferente.'
-                  : 'Comienza creando tu primer proyecto de construcción.'
-                }
-              </p>
-              {!searchQuery && (
-                <Button 
-                  className="mt-4 bg-primary hover:bg-primary/90"
-                  onClick={() => setIsCreateModalOpen(true)}
-                >
-                  <Plus size={16} className="mr-2" />
-                  Crear Proyecto
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredProjects.map((project: any) => {
-                const isActiveProject = project.id === projectId;
-                
-                return (
-                  <div
-                    key={project.id}
-                    className={`p-4 rounded-2xl shadow-md border-0 cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                      isActiveProject 
-                        ? 'bg-primary/5 border-primary/20' 
-                        : 'bg-[#e1e1e1] hover:bg-[#d1d1d1]'
-                    }`}
-                    onClick={() => handleViewProject(project)}
-                  >
-                    <Card className="border-0 shadow-none bg-transparent">
-                      <CardContent className="p-0">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                                <Building className="w-4 h-4 text-primary" />
-                              </div>
-                              <div>
-                                <h3 className="font-semibold text-foreground">{project.name}</h3>
-                                <Badge variant={getStatusVariant(project.status || 'planning')} className="text-xs">
-                                  {project.status === 'active' ? 'Activo' : 
-                                   project.status === 'completed' ? 'Completado' : 
-                                   project.status === 'planning' ? 'Planificación' : 'En Progreso'}
-                                </Badge>
-                              </div>
-                            </div>
-                            
-                            <div className="text-sm text-muted-foreground space-y-1">
-                              {project.client && (
-                                <p>Cliente: {project.client}</p>
-                              )}
-                              {project.address && (
-                                <p>📍 {project.address}</p>
-                              )}
-                            </div>
+      {/* Projects List - Moved outside the card */}
+      {filteredProjects.length === 0 ? (
+        <Card className="rounded-2xl shadow-md bg-card p-12 border-0">
+          <CardContent className="text-center p-0">
+            <Building className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-medium text-foreground">
+              {searchQuery ? 'No se encontraron proyectos' : 'No hay proyectos'}
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {searchQuery 
+                ? 'Intenta con un término de búsqueda diferente.'
+                : 'Comienza creando tu primer proyecto de construcción.'
+              }
+            </p>
+            {!searchQuery && (
+              <Button 
+                className="mt-4 bg-primary hover:bg-primary/90"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                <Plus size={16} className="mr-2" />
+                Crear Proyecto
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredProjects.map((project: any) => {
+            const isActiveProject = project.id === projectId;
+            
+            return (
+              <div
+                key={project.id}
+                className={`p-4 rounded-2xl shadow-md border-0 cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                  isActiveProject 
+                    ? 'bg-primary/10 border-primary/20' 
+                    : 'bg-[#e1e1e1] hover:bg-primary/5'
+                }`}
+                onClick={() => handleProjectClick(project)}
+              >
+                <Card className="border-0 shadow-none bg-transparent">
+                  <CardContent className="p-0">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <Building className="w-4 h-4 text-primary" />
                           </div>
-                          
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleViewProject(project);
-                              }}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                              title="Ver información del proyecto"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(project);
-                              }}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(project);
-                              }}
-                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                          <div>
+                            <h3 className="font-semibold text-foreground">{project.name}</h3>
+                            <Badge variant={getStatusVariant(project.status || 'planning')} className="text-xs">
+                              {project.status === 'active' ? 'Activo' : 
+                               project.status === 'completed' ? 'Completado' : 
+                               project.status === 'planning' ? 'Planificación' : 'En Progreso'}
+                            </Badge>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                        
+                        <div className="text-sm text-muted-foreground space-y-1">
+                          {project.client_name && (
+                            <p>Cliente: {project.client_name}</p>
+                          )}
+                          {project.address && (
+                            <p>📍 {project.address}</p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewProject(project);
+                          }}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                          title="Ver información del proyecto"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(project);
+                          }}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(project);
+                          }}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
 
       {/* Modales */}
       <CreateProjectModal
