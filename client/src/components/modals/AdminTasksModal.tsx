@@ -852,18 +852,18 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                   <div className="space-y-2">
                     <FormLabel className="text-xs font-medium text-foreground">Materiales Seleccionados</FormLabel>
                     {selectedMaterials.map((material) => (
-                      <div key={material.material_id} className="flex items-center gap-2 p-3 border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                      <div key={material.material_id} className="flex items-center gap-2 p-2 border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
                         <div className="flex-1">
-                          <div className="text-sm font-medium">{material.material_name}</div>
+                          <div className="text-xs font-medium">{material.material_name}</div>
                         </div>
-                        <div className="w-20">
+                        <div className="w-16">
                           <Input
                             type="number"
                             step="0.01"
-                            placeholder="Cantidad"
+                            placeholder="Cant."
                             value={material.amount}
                             onChange={(e) => updateMaterialAmount(material.material_id, e.target.value)}
-                            className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs"
+                            className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs h-7"
                           />
                         </div>
                         <Button
@@ -871,7 +871,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           variant="ghost"
                           size="sm"
                           onClick={() => removeMaterial(material.material_id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 h-auto"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 h-5 w-5 p-0"
                         >
                           <X className="w-4 h-4" />
                         </Button>
