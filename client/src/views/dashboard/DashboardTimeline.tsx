@@ -556,7 +556,18 @@ function DashboardTimeline() {
                 transform: 'translateY(-50%)'
               }}
             >
-
+              {/* Subtle vertical separator line between time periods */}
+              {index < timelineNodes.length - 1 && (
+                <div 
+                  className="absolute w-px bg-gray-200/40 z-10"
+                  style={{
+                    top: '-50vh',
+                    bottom: '-50vh',
+                    right: '-75px', // Position between this node and the next one
+                    transform: 'translateX(50%)'
+                  }}
+                />
+              )}
 
 
 
