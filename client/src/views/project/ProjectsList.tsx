@@ -37,7 +37,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useToast } from '@/hooks/use-toast';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import ProjectInfoModal from '@/components/modals/ProjectInfoModal';
-// Use the existing Project type from projectsService
+
 type Project = any;
 
 export default function ProjectsOverview() {
@@ -83,17 +83,7 @@ export default function ProjectsOverview() {
     },
   });
 
-  // Event listeners for floating action button
-  useEffect(() => {
-    const handleOpenCreateProjectModal = () => {
-      setIsCreateModalOpen(true);
-    };
 
-    window.addEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
-    return () => {
-      window.removeEventListener('openCreateProjectModal', handleOpenCreateProjectModal);
-    };
-  }, []);
 
   const handleEdit = (project: Project) => {
     setSelectedProject(project);

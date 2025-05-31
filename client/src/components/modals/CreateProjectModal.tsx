@@ -227,6 +227,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     form.reset();
     setNameValidation('idle');
     setNameExists(false);
+    setIsSubmitting(false);
     onClose();
   };
 
