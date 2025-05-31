@@ -318,11 +318,13 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       // Sincronizar estado local después de establecer valores jerárquicos
       setTimeout(() => {
         const formValues = form.getValues();
-        if (formValues.element_category_id && formValues.element_category_id !== selectedElementCategoryId) {
+        console.log('Current form element_category_id:', formValues.element_category_id);
+        console.log('Current selectedElementCategoryId:', selectedElementCategoryId);
+        if (formValues.element_category_id) {
           console.log('Syncing element category state:', formValues.element_category_id);
           setSelectedElementCategoryId(formValues.element_category_id);
         }
-      }, 50);
+      }, 100);
     } else if (!task && taskCategoriesStructure) {
       // Creating new task - clear form
       form.reset({
