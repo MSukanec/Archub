@@ -197,6 +197,9 @@ export default function AppLayout() {
           </div>
           
           <SecondarySidebar />
+          
+          {/* Desktop Floating Action Button */}
+          <FloatingActionButton />
         </>
       )}
       
