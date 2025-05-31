@@ -246,122 +246,193 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         )}
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-2">
-            {/* Regular navigation items */}
-            {navigationItems.map((item) => {
+        <nav className="flex-1 px-4 pt-2 overflow-y-auto">
+          <div className="space-y-6">
+            {/* Main navigation section */}
+            <div>
+              <h3 className="text-xs font-medium text-[#666] uppercase tracking-wider mb-3 px-2">Principal</h3>
+              <div className="space-y-1">
+                {navigationItems.slice(0, 6).map((item) => {
+                  const Icon = item.icon;
+                  const isActive = currentSection === item.section;
+                  const isExpanded = openAccordion === item.section;
+                  
+                  return (
+                    <div key={item.section}>
+                      {/* Main section button */}
+                      <button
+                        onClick={() => handleSectionClick(item.section)}
+                        className={cn(
+                          "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-[#333] hover:bg-black/5"
+                        )}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Icon className="w-4 h-4 text-[#666]" />
+                          <span className="font-normal text-sm">{item.label}</span>
+                        </div>
+                        {item.subItems.length > 1 && (
+                          <ChevronRight className={cn(
+                            "w-4 h-4 text-[#999] transition-transform",
+                            isExpanded && "rotate-90"
+                          )} />
+                        )}
+                      </button>
+                      
+                      {/* Sub-items */}
+                      {isExpanded && (
+                        <div className="mt-1 ml-7 space-y-1">
+                          {item.subItems.map((subItem) => {
+                            const isSubActive = currentView === subItem.id;
+                            return (
+                              <button
+                                key={subItem.id}
+                                onClick={() => handleSubItemClick(subItem.id)}
+                                className={cn(
+                                  "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
+                                  isSubActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-[#666] hover:bg-black/5"
+                                )}
+                              >
+                                <span className="text-sm">{subItem.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Profile section */}
+            {navigationItems.slice(6).map((item) => {
               const Icon = item.icon;
               const isActive = currentSection === item.section;
               const isExpanded = openAccordion === item.section;
               
               return (
-                <li key={item.section}>
-                  {/* Main section button */}
-                  <button
-                    onClick={() => handleSectionClick(item.section)}
-                    className={cn(
-                      "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left",
-                      isActive
-                        ? "bg-black text-white"
-                        : "text-black hover:bg-[#919191]/10"
-                    )}
-                    style={!isActive ? { backgroundColor: '#e1e1e1' } : {}}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium flex-1">{item.label}</span>
-                    {item.subItems.length > 1 && (
-                      <ChevronRight className={cn(
-                        "w-4 h-4 transition-transform",
-                        isExpanded && "rotate-90"
-                      )} />
-                    )}
-                  </button>
-                  
-                  {/* Sub-items */}
-                  {isExpanded && (
-                    <ul className="mt-2 ml-4 space-y-1">
-                      {item.subItems.map((subItem) => {
-                        const isSubActive = currentView === subItem.id;
-                        return (
-                          <li key={subItem.id}>
-                            <button
-                              onClick={() => handleSubItemClick(subItem.id)}
-                              className={cn(
-                                "w-full flex items-center px-4 py-2 rounded-lg transition-colors text-left text-sm",
-                                isSubActive
-                                  ? "bg-black text-white"
-                                  : "text-black hover:bg-[#919191]/10"
-                              )}
-                              style={!isSubActive ? { backgroundColor: '#e1e1e1' } : {}}
-                            >
-                              {subItem.label}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </li>
+                <div key={item.section}>
+                  <h3 className="text-xs font-medium text-[#666] uppercase tracking-wider mb-3 px-2">Configuración</h3>
+                  <div className="space-y-1">
+                    <div>
+                      {/* Main section button */}
+                      <button
+                        onClick={() => handleSectionClick(item.section)}
+                        className={cn(
+                          "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-[#333] hover:bg-black/5"
+                        )}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Icon className="w-4 h-4 text-[#666]" />
+                          <span className="font-normal text-sm">{item.label}</span>
+                        </div>
+                        {item.subItems.length > 1 && (
+                          <ChevronRight className={cn(
+                            "w-4 h-4 text-[#999] transition-transform",
+                            isExpanded && "rotate-90"
+                          )} />
+                        )}
+                      </button>
+                      
+                      {/* Sub-items */}
+                      {isExpanded && (
+                        <div className="mt-1 ml-7 space-y-1">
+                          {item.subItems.map((subItem) => {
+                            const isSubActive = currentView === subItem.id;
+                            return (
+                              <button
+                                key={subItem.id}
+                                onClick={() => handleSubItemClick(subItem.id)}
+                                className={cn(
+                                  "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
+                                  isSubActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-[#666] hover:bg-black/5"
+                                )}
+                              >
+                                <span className="text-sm">{subItem.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               );
             })}
 
             {/* Admin navigation items - only for admin users */}
-            {user?.role === 'admin' && adminNavigationItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = currentSection === item.section;
-              const isExpanded = openAccordion === item.section;
-              
-              return (
-                <li key={item.section}>
-                  {/* Main section button */}
-                  <button
-                    onClick={() => handleSectionClick(item.section)}
-                    className={cn(
-                      "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left",
-                      isActive
-                        ? "bg-black text-white"
-                        : "text-black hover:bg-[#919191]/10"
-                    )}
-                    style={!isActive ? { backgroundColor: '#e1e1e1' } : {}}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium flex-1">{item.label}</span>
-                    {item.subItems.length > 1 && (
-                      <ChevronRight className={cn(
-                        "w-4 h-4 transition-transform",
-                        isExpanded && "rotate-90"
-                      )} />
-                    )}
-                  </button>
-                  
-                  {/* Sub-items */}
-                  {isExpanded && (
-                    <ul className="mt-2 ml-4 space-y-1">
-                      {item.subItems.map((subItem) => {
-                        const isSubActive = currentView === subItem.id;
-                        return (
-                          <li key={subItem.id}>
-                            <button
-                              onClick={() => handleSubItemClick(subItem.id)}
-                              className={cn(
-                                "w-full flex items-center px-4 py-2 rounded-lg transition-colors text-left text-sm",
-                                isSubActive
-                                  ? "bg-black text-white"
-                                  : "text-black hover:bg-[#919191]/10"
-                              )}
-                              style={!isSubActive ? { backgroundColor: '#e1e1e1' } : {}}
-                            >
-                              {subItem.label}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+            {user?.role === 'admin' && (
+              <div>
+                <h3 className="text-xs font-medium text-[#666] uppercase tracking-wider mb-3 px-2">Administración</h3>
+                <div className="space-y-1">
+                  {adminNavigationItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = currentSection === item.section;
+                    const isExpanded = openAccordion === item.section;
+                    
+                    return (
+                      <div key={item.section}>
+                        {/* Main section button */}
+                        <button
+                          onClick={() => handleSectionClick(item.section)}
+                          className={cn(
+                            "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
+                            isActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-[#333] hover:bg-black/5"
+                          )}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Icon className="w-4 h-4 text-[#666]" />
+                            <span className="font-normal text-sm">{item.label}</span>
+                          </div>
+                          {item.subItems.length > 1 && (
+                            <ChevronRight className={cn(
+                              "w-4 h-4 text-[#999] transition-transform",
+                              isExpanded && "rotate-90"
+                            )} />
+                          )}
+                        </button>
+                        
+                        {/* Sub-items */}
+                        {isExpanded && (
+                          <div className="mt-1 ml-7 space-y-1">
+                            {item.subItems.map((subItem) => {
+                              const isSubActive = currentView === subItem.id;
+                              return (
+                                <button
+                                  key={subItem.id}
+                                  onClick={() => handleSubItemClick(subItem.id)}
+                                  className={cn(
+                                    "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
+                                    isSubActive
+                                      ? "bg-primary/10 text-primary"
+                                      : "text-[#666] hover:bg-black/5"
+                                  )}
+                                >
+                                  <span className="text-sm">{subItem.label}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* User Info - Fixed at absolute bottom */}
