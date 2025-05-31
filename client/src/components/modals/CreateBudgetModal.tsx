@@ -213,12 +213,13 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
       subtitle={budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
       icon={FileText}
       footer={
-        <div className="flex justify-end space-x-2">
+        <div className="flex gap-2 w-full">
           <Button
             type="button"
             variant="outline"
             onClick={handleClose}
             disabled={budgetMutation.isPending}
+            className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
           >
             Cancelar
           </Button>
@@ -226,12 +227,9 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
             type="button"
             onClick={form.handleSubmit(onSubmit)}
             disabled={budgetMutation.isPending}
-            className="bg-[#8fc700] hover:bg-[#7fb600] text-white"
+            className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
           >
-            {budgetMutation.isPending && (
-              <div className="mr-2 h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
-            )}
-            {budget?.id ? 'Actualizar Presupuesto' : 'Crear Presupuesto'}
+            {budgetMutation.isPending ? 'Guardando...' : (budget?.id ? 'Actualizar' : 'Crear')}
           </Button>
         </div>
       }
