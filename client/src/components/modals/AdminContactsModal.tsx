@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { PhoneInputField } from '@/components/ui/PhoneInput';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, CreateContactData } from '@/lib/contactsService';
 
@@ -292,14 +293,16 @@ export default function AdminContactsModal({
             <FormField
               control={form.control}
               name="phone"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="Ej: +54 9 11 1234-5678" 
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                      {...field} 
+                    <PhoneInputField
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder="Ingresa tu teléfono"
+                      error={!!fieldState.error}
                     />
                   </FormControl>
                   <FormMessage />
