@@ -105,7 +105,7 @@ export default function InviteTeamMemberModal({ isOpen, onClose }: InviteTeamMem
   };
 
   return (
-    <ModernModal isOpen={isOpen} onClose={handleClose}>
+    <ModernModal isOpen={isOpen} onClose={handleClose} title="Invitar Miembro al Equipo">
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">

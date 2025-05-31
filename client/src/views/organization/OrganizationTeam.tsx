@@ -81,6 +81,19 @@ const roleConfig = {
 export default function OrganizationTeam() {
   const { organizationId } = useUserContextStore();
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+  // Event listener for floating action button
+  useEffect(() => {
+    const handleOpenInviteModal = () => {
+      setIsInviteModalOpen(true);
+    };
+
+    window.addEventListener('openInviteTeamMemberModal', handleOpenInviteModal);
+    return () => {
+      window.removeEventListener('openInviteTeamMemberModal', handleOpenInviteModal);
+    };
+  }, []);
 
   const { data: organization, isLoading } = useQuery({
     queryKey: ['organization', organizationId],
@@ -379,6 +392,12 @@ export default function OrganizationTeam() {
           })}
         </div>
       </div>
+
+      {/* Invite Team Member Modal */}
+      <InviteTeamMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+      />
     </div>
   );
 }
