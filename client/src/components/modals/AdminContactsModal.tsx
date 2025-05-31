@@ -24,7 +24,7 @@ const contactSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
-  contact_type_ids: z.array(z.string()).optional().default([]),
+  contact_type_ids: z.array(z.string()).min(1, 'Debe seleccionar al menos un tipo de contacto'),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -227,10 +227,29 @@ export default function AdminContactsModal({
               <AccordionContent className="space-y-2 pt-1">
                 <FormField
                   control={form.control}
+                  name="contact_type_ids"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto *</FormLabel>
+                      <FormControl>
+                        <SimpleMultiSelectContactTypes
+                          value={field.value || []}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          error={!!fieldState.error}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="first_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Nombre</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Nombre *</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Ej: Juan" 
@@ -248,7 +267,7 @@ export default function AdminContactsModal({
                   name="last_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Apellido</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Apellido (Opcional)</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Ej: Pérez" 
@@ -266,7 +285,7 @@ export default function AdminContactsModal({
                   name="company_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Empresa (Opcional)</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Ej: Constructora ABC" 
@@ -281,29 +300,10 @@ export default function AdminContactsModal({
 
                 <FormField
                   control={form.control}
-                  name="contact_type_ids"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto</FormLabel>
-                      <FormControl>
-                        <SimpleMultiSelectContactTypes
-                          value={field.value || []}
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          error={!!fieldState.error}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Ubicación</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Ubicación (Opcional)</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Ej: Buenos Aires, Argentina" 
@@ -332,7 +332,7 @@ export default function AdminContactsModal({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Email</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Email (Opcional)</FormLabel>
                       <FormControl>
                         <Input 
                           type="email"
@@ -351,7 +351,7 @@ export default function AdminContactsModal({
                   name="phone"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Teléfono (Opcional)</FormLabel>
                       <FormControl>
                         <PhoneInputField
                           value={field.value}
@@ -382,7 +382,7 @@ export default function AdminContactsModal({
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Notas</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Notas (Opcional)</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Información adicional sobre el contacto..." 
