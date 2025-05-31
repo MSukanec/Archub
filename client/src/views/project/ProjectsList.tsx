@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -260,37 +260,15 @@ export default function ProjectsOverview() {
               </Button>
             )}
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
-              <div className="space-y-1">
-                <Button
-                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setSortOrder('newest')}
-                  className="w-full justify-start text-sm h-8"
-                >
-                  Más reciente primero
-                </Button>
-                <Button
-                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setSortOrder('oldest')}
-                  className="w-full justify-start text-sm h-8"
-                >
-                  Más antiguo primero
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <Select value={sortOrder} onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="newest">Más reciente primero</SelectItem>
+              <SelectItem value="oldest">Más antiguo primero</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
