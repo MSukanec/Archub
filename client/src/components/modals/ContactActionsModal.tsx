@@ -1,7 +1,7 @@
 import { Phone, Mail, MessageCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Contact } from '@/lib/contactsService';
+import ModernModal from '@/components/ui/ModernModal';
 
 interface ContactActionsModalProps {
   isOpen: boolean;
@@ -46,83 +46,87 @@ export default function ContactActionsModal({ isOpen, onClose, contact }: Contac
   const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
   const hasContactMethods = contact.phone || contact.email;
 
+  const footer = (
+    <div className="flex justify-end w-full">
+      <Button
+        variant="outline"
+        onClick={onClose}
+        className="bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+      >
+        Cerrar
+      </Button>
+    </div>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5" />
-            Contactar a {fullName}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          {!hasContactMethods ? (
-            <div className="text-center py-8">
-              <div className="text-muted-foreground">
-                No hay información de contacto disponible para este contacto.
-              </div>
+    <ModernModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Contactar a ${fullName}`}
+      subtitle="Selecciona el método de contacto"
+      icon={MessageCircle}
+      footer={footer}
+    >
+      <div className="space-y-4">
+        {!hasContactMethods ? (
+          <div className="text-center py-8">
+            <div className="text-muted-foreground">
+              No hay información de contacto disponible para este contacto.
             </div>
-          ) : (
-            <div className="grid gap-3">
-              {contact.phone && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm text-muted-foreground">Teléfono</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* WhatsApp Card */}
-                    <Button
-                      onClick={handleWhatsAppClick}
-                      className="h-auto p-4 flex flex-col items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <MessageCircle className="h-6 w-6" />
-                      <div className="text-center">
-                        <div className="font-medium">WhatsApp</div>
-                        <div className="text-xs opacity-90">{contact.phone}</div>
-                      </div>
-                    </Button>
-
-                    {/* Phone Call Card */}
-                    <Button
-                      onClick={handlePhoneClick}
-                      variant="outline"
-                      className="h-auto p-4 flex flex-col items-center gap-2"
-                    >
-                      <Phone className="h-6 w-6" />
-                      <div className="text-center">
-                        <div className="font-medium">Llamar</div>
-                        <div className="text-xs text-muted-foreground">{contact.phone}</div>
-                      </div>
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {contact.email && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm text-muted-foreground">Email</h4>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {contact.phone && (
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm text-foreground">Teléfono</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* WhatsApp Card */}
                   <Button
-                    onClick={handleEmailClick}
-                    variant="outline"
-                    className="w-full h-auto p-4 flex items-center gap-3"
+                    onClick={handleWhatsAppClick}
+                    className="h-auto p-4 flex flex-col items-center gap-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
                   >
-                    <Mail className="h-6 w-6" />
-                    <div className="text-left flex-1">
-                      <div className="font-medium">Enviar email</div>
-                      <div className="text-xs text-muted-foreground truncate">{contact.email}</div>
+                    <MessageCircle className="h-6 w-6" />
+                    <div className="text-center">
+                      <div className="font-medium">WhatsApp</div>
+                      <div className="text-xs opacity-90">{contact.phone}</div>
+                    </div>
+                  </Button>
+
+                  {/* Phone Call Card */}
+                  <Button
+                    onClick={handlePhoneClick}
+                    variant="outline"
+                    className="h-auto p-4 flex flex-col items-center gap-2 bg-[#d2d2d2] border-[#919191]/20 hover:bg-[#c5c5c5] rounded-lg"
+                  >
+                    <Phone className="h-6 w-6" />
+                    <div className="text-center">
+                      <div className="font-medium">Llamar</div>
+                      <div className="text-xs text-muted-foreground">{contact.phone}</div>
                     </div>
                   </Button>
                 </div>
-              )}
-            </div>
-          )}
-        </div>
+              </div>
+            )}
 
-        <div className="flex justify-end pt-4">
-          <Button variant="outline" onClick={onClose}>
-            Cerrar
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+            {contact.email && (
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm text-foreground">Email</h4>
+                <Button
+                  onClick={handleEmailClick}
+                  variant="outline"
+                  className="w-full h-auto p-4 flex items-center gap-3 bg-[#d2d2d2] border-[#919191]/20 hover:bg-[#c5c5c5] rounded-lg"
+                >
+                  <Mail className="h-6 w-6" />
+                  <div className="text-left flex-1">
+                    <div className="font-medium">Enviar email</div>
+                    <div className="text-xs text-muted-foreground truncate">{contact.email}</div>
+                  </div>
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </ModernModal>
   );
 }

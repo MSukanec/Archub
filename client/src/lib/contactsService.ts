@@ -10,6 +10,7 @@ export interface Contact {
   company_name: string | null;
   location: string | null;
   notes: string | null;
+  contact_type: string;
   organization_id: string;
   created_at: string;
   updated_at: string;

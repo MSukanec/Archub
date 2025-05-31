@@ -20,6 +20,7 @@ const contactSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
+  contact_type: z.string().min(1, 'El tipo de contacto es requerido'),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -49,6 +50,7 @@ export default function AdminContactsModal({
       phone: '',
       location: '',
       notes: '',
+      contact_type: '',
     },
   });
 
@@ -63,6 +65,7 @@ export default function AdminContactsModal({
         phone: contact?.phone || '',
         location: contact?.location || '',
         notes: contact?.notes || '',
+        contact_type: contact?.contact_type || '',
       });
     }
   }, [contact, isOpen, form]);
@@ -77,6 +80,7 @@ export default function AdminContactsModal({
         phone: data.phone || null,
         location: data.location || null,
         notes: data.notes || null,
+        contact_type: data.contact_type,
       };
       return await contactsService.create(contactData);
     },
@@ -108,6 +112,7 @@ export default function AdminContactsModal({
         phone: data.phone || null,
         location: data.location || null,
         notes: data.notes || null,
+        contact_type: data.contact_type,
       };
       return await contactsService.update(contact!.id, contactData);
     },
