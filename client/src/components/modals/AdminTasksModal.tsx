@@ -19,6 +19,7 @@ import { Wrench, DollarSign, Package, CheckSquare, Search, X } from 'lucide-reac
 // Schema for form validation
 const createTaskSchema = z.object({
   name: z.string().min(1, "Nombre es requerido").trim(),
+  description: z.string().optional().or(z.literal('')),
   unit_labor_price: z.string().optional().or(z.literal('')),
   unit_material_price: z.string().optional().or(z.literal('')),
   category_id: z.string().min(1, "Rubro es requerido"),
@@ -34,6 +35,7 @@ type FormData = z.infer<typeof createTaskSchema>;
 type TaskWithNewFields = {
   id: string;
   name: string;
+  description?: string | null;
   organization_id: string;
   category_id: string;
   subcategory_id: string;
@@ -75,6 +77,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     mode: 'onSubmit',
     defaultValues: {
       name: '',
+      description: '',
       unit_labor_price: '',
       unit_material_price: '',
       category_id: '',
@@ -229,6 +232,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           
           // Set other form values (same as MovementModal)
           form.setValue('name', task.name || '');
+          form.setValue('description', task.description || '');
           form.setValue('unit_labor_price', task.unit_labor_price?.toString() || '');
           form.setValue('unit_material_price', task.unit_material_price?.toString() || '');
           form.setValue('unit_id', task.unit_id || '');
@@ -253,6 +257,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
         
         form.reset({
           name: '',
+          description: '',
           unit_labor_price: '',
           unit_material_price: '',
           category_id: '',
@@ -712,6 +717,25 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           {...field}
                           readOnly
                           disabled
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Descripción */}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Descripción</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Descripción opcional de la tarea"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
