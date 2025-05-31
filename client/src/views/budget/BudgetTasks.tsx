@@ -18,12 +18,13 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
-
+import { TaskModalSimple } from '@/components/modals/TaskModalSimple';
 
 export default function BudgetTasks() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
-
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -36,7 +37,7 @@ export default function BudgetTasks() {
   // Listen for floating action button events
   useEffect(() => {
     const handleOpenCreateTaskModal = () => {
-      // Task modal functionality removed
+      setIsTaskModalOpen(true);
     };
 
     window.addEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
@@ -246,7 +247,7 @@ export default function BudgetTasks() {
           </Select>
           <Button 
             className="flex items-center gap-2"
-            onClick={() => {}}
+            onClick={() => setIsTaskModalOpen(true)}
             disabled={!budgetId}
           >
             <Plus className="h-4 w-4" />
@@ -287,7 +288,7 @@ export default function BudgetTasks() {
                 }
               </p>
               {budgetId && (
-                <Button onClick={() => {}}>
+                <Button onClick={() => setIsTaskModalOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Agregar Primera Tarea
                 </Button>
@@ -419,7 +420,14 @@ export default function BudgetTasks() {
         </CardContent>
       </Card>
 
-
+      {/* Task Modal */}
+      <TaskModalSimple
+        isOpen={isTaskModalOpen}
+        onOpenChange={(open) => {
+          setIsTaskModalOpen(open);
+          if (!open) setEditingTask(null);
+        }}
+      />
     </div>
   );
 }
