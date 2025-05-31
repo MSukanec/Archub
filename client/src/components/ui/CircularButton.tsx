@@ -99,17 +99,17 @@ export default function CircularButton({
         <div className={`
           absolute top-1/2 transform -translate-y-1/2
           ${tooltipDirection === 'right' ? 'left-full ml-3' : 'right-full mr-3'}
-          bg-gray-700 text-white rounded-lg shadow-xl z-50 pointer-events-none
-          min-w-[200px] max-w-[250px]
+          bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-none
+          min-w-[200px] max-w-[280px]
         `}>
-          <div className="p-3">
-            {/* Title in black (or white since bg is dark) */}
-            <div className="font-semibold text-sm text-white mb-1">
+          <div className="p-4">
+            {/* Title in black */}
+            <div className="font-semibold text-sm text-black mb-2">
               {label}
             </div>
-            {/* Description in secondary color */}
+            {/* Description in sidebar icon color */}
             {description && (
-              <div className="text-xs text-gray-300 leading-relaxed">
+              <div className="text-xs text-[#919191] leading-relaxed">
                 {description}
               </div>
             )}
@@ -117,10 +117,10 @@ export default function CircularButton({
           {/* Arrow */}
           <div className={`
             absolute top-1/2 transform -translate-y-1/2
-            w-0 h-0 border-t-[6px] border-b-[6px] border-transparent
+            w-0 h-0 border-t-[8px] border-b-[8px] border-transparent
             ${tooltipDirection === 'right' 
-              ? 'right-full border-r-[6px] border-r-gray-700'
-              : 'left-full border-l-[6px] border-l-gray-700'
+              ? 'right-full border-r-[8px] border-r-[#e1e1e1]'
+              : 'left-full border-l-[8px] border-l-[#e1e1e1]'
             }
           `} />
         </div>
