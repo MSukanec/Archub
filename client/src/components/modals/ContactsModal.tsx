@@ -201,7 +201,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
       isOpen={isOpen} 
       onClose={onClose}
       title={contact ? 'Editar Contacto' : 'Crear Contacto'}
-      description="Gestiona contactos de proveedores, contratistas y colaboradores"
+      subtitle="Gestiona contactos de proveedores, contratistas y colaboradores"
       icon={User}
     >
       <Form {...form}>
