@@ -82,7 +82,7 @@ export default function SecondarySidebar() {
       case 'free':
         return 'text-gray-600';
       case 'pro':
-        return 'text-yellow-600';
+        return 'text-green-600';
       case 'enterprise':
         return 'text-purple-600';
       default:

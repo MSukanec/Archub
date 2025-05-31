@@ -2,13 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { CheckCircle, X, Zap, Crown, Rocket, ArrowRight } from 'lucide-react';
 import { plansService } from '@/lib/plansService';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
+import { useState } from 'react';
 
 export default function SubscriptionTables() {
   const { user } = useAuthStore();
+  const [isAnnual, setIsAnnual] = useState(false);
   
   const { data: plans = [], isLoading } = useQuery({
     queryKey: ['/api/plans'],
@@ -47,13 +50,13 @@ export default function SubscriptionTables() {
   const getPlanIcon = (planName: string) => {
     switch (planName.toLowerCase()) {
       case 'free':
-        return <Zap className="h-8 w-8 text-muted-foreground" />;
+        return <Zap className="h-8 w-8 text-gray-600" />;
       case 'pro':
-        return <Crown className="h-8 w-8 text-primary" />;
+        return <Crown className="h-8 w-8 text-green-600" />;
       case 'enterprise':
-        return <Rocket className="h-8 w-8 text-muted-foreground" />;
+        return <Rocket className="h-8 w-8 text-purple-600" />;
       default:
-        return <Zap className="h-8 w-8 text-muted-foreground" />;
+        return <Zap className="h-8 w-8 text-gray-600" />;
     }
   };
 
@@ -64,14 +67,19 @@ export default function SubscriptionTables() {
     
     switch (planName.toLowerCase()) {
       case 'free':
-        return 'border-muted hover:border-muted-foreground/20';
+        return 'border-gray-300 hover:border-gray-400';
       case 'pro':
-        return 'border-primary bg-primary/5 shadow-lg shadow-primary/10';
+        return 'border-green-300 bg-green-50 hover:border-green-400 shadow-lg shadow-green-100';
       case 'enterprise':
-        return 'border-muted hover:border-muted-foreground/20';
+        return 'border-purple-300 bg-purple-50 hover:border-purple-400 shadow-lg shadow-purple-100';
       default:
-        return 'border-muted hover:border-muted-foreground/20';
+        return 'border-gray-300 hover:border-gray-400';
     }
+  };
+
+  const calculatePrice = (price: number) => {
+    if (price === 0) return 0;
+    return isAnnual ? Math.floor(price * 12 * 0.8) : price; // 20% discount for annual
   };
 
   const isPopular = (planName: string) => {
@@ -168,16 +176,36 @@ export default function SubscriptionTables() {
   return (
     <div className="space-y-12">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">Planes de Suscripción</h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Elige el plan perfecto para tu organización y lleva tus proyectos de construcción al siguiente nivel
-        </p>
-        {userPlan && typeof userPlan.name === 'string' && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full border border-primary/20">
-            <span className="text-sm font-medium">Plan Actual: {userPlan.name}</span>
-          </div>
-        )}
+      <div className="text-center space-y-6">
+        <div className="space-y-4">
+          <h1 className="text-4xl font-bold tracking-tight">Planes de Suscripción</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Elige el plan perfecto para tu organización y lleva tus proyectos de construcción al siguiente nivel
+          </p>
+          {userPlan && typeof userPlan.name === 'string' && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full border border-primary/20">
+              <span className="text-sm font-medium">Plan Actual: {userPlan.name}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Billing Toggle */}
+        <div className="flex items-center justify-center gap-4 p-4 bg-gray-50 rounded-lg border">
+          <span className={`text-sm font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+            Mensual
+          </span>
+          <Switch
+            checked={isAnnual}
+            onCheckedChange={setIsAnnual}
+            className="data-[state=checked]:bg-primary"
+          />
+          <span className={`text-sm font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+            Anual
+          </span>
+          <Badge variant="secondary" className="ml-2 bg-green-100 text-green-700 border-green-200">
+            Ahorra 20%
+          </Badge>
+        </div>
       </div>
 
       {/* Plans Grid */}
@@ -211,8 +239,19 @@ export default function SubscriptionTables() {
                 <div>
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
                   <CardDescription className="text-lg">
-                    <span className="text-3xl font-bold text-foreground">${plan.price}</span>
-                    {plan.price > 0 && <span className="text-muted-foreground">/mes</span>}
+                    <span className="text-3xl font-bold text-foreground">
+                      US${calculatePrice(plan.price)}
+                    </span>
+                    {plan.price > 0 && (
+                      <span className="text-muted-foreground">
+                        /{isAnnual ? 'año' : 'mes'}
+                      </span>
+                    )}
+                    {isAnnual && plan.price > 0 && (
+                      <div className="text-sm text-green-600 font-medium mt-1">
+                        US${plan.price}/mes facturado anualmente
+                      </div>
+                    )}
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -237,7 +276,7 @@ export default function SubscriptionTables() {
                     ? 'Plan Actual' 
                     : planIsUpgrade 
                       ? `Actualizar a ${plan.name}` 
-                      : plan.price === 0 ? 'Comenzar Gratis' : 'Elegir Plan'
+                      : plan.price === 0 ? 'Continuar Gratis' : 'Elegir Plan'
                   }
                 </Button>
               </CardContent>
