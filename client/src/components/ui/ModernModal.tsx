@@ -26,19 +26,28 @@ export default function ModernModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-end">
-      {/* Backdrop */}
+    <div 
+      className="fixed inset-0 z-[9999]" 
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, margin: 0, padding: 0 }}
+    >
+      {/* Backdrop - covers everything */}
       <div 
-        className="absolute inset-0" 
+        className="absolute inset-0 bg-black/60" 
         onClick={onClose}
       />
       
-      {/* Modal */}
+      {/* Modal - completely ignores layout */}
       <div 
-        className="relative bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20 h-full"
+        className="modern-modal absolute bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20"
         style={{ 
+          top: 0, 
+          right: 0, 
+          bottom: 0, 
           width: '420px', 
-          maxWidth: '90vw'
+          maxWidth: '90vw',
+          height: '100vh',
+          margin: 0,
+          padding: 0
         }}
         onClick={(e) => e.stopPropagation()}
       >
