@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Home, Building2, ClipboardList, Calendar, DollarSign, CreditCard, User, ChevronDown, ChevronRight } from 'lucide-react';
+import { X, Home, Building2, ClipboardList, Calendar, DollarSign, CreditCard, User, ChevronDown, ChevronRight, FolderOpen, Shield } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -27,6 +27,15 @@ const navigationItems = [
     subItems: [
       { id: 'organization-overview', label: 'Organización' },
       { id: 'organization-team', label: 'Equipo' }
+    ]
+  },
+  { 
+    section: 'projects' as const, 
+    icon: FolderOpen, 
+    label: 'Proyectos',
+    subItems: [
+      { id: 'projects-overview', label: 'Vista General' },
+      { id: 'projects-list', label: 'Lista de Proyectos' }
     ]
   },
   { 
@@ -72,6 +81,32 @@ const navigationItems = [
       { id: 'profile-info', label: 'Mi Perfil' },
       { id: 'profile-subscription', label: 'Suscripción' },
       { id: 'profile-notifications', label: 'Notificaciones' }
+    ]
+  },
+];
+
+const adminNavigationItems = [
+  { 
+    section: 'admin-community' as const, 
+    icon: Shield, 
+    label: 'Administración',
+    subItems: [
+      { id: 'admin-organizations', label: 'Organizaciones' },
+      { id: 'admin-users', label: 'Usuarios' }
+    ]
+  },
+  { 
+    section: 'admin-library' as const, 
+    icon: Building2, 
+    label: 'Biblioteca',
+    subItems: [
+      { id: 'admin-tasks', label: 'Tareas' },
+      { id: 'admin-categories', label: 'Tareas (Categorías)' },
+      { id: 'admin-materials', label: 'Materiales' },
+      { id: 'admin-material-categories', label: 'Materiales (Categorías)' },
+      { id: 'admin-units', label: 'Unidades' },
+      { id: 'admin-elements', label: 'Elementos' },
+      { id: 'admin-actions', label: 'Acciones' }
     ]
   },
 ];
@@ -212,7 +247,65 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         {/* Navigation Items */}
         <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
+            {/* Regular navigation items */}
             {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentSection === item.section;
+              const isExpanded = openAccordion === item.section;
+              
+              return (
+                <li key={item.section}>
+                  {/* Main section button */}
+                  <button
+                    onClick={() => handleSectionClick(item.section)}
+                    className={cn(
+                      "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left",
+                      isActive
+                        ? "bg-black text-white"
+                        : "text-black hover:bg-[#919191]/10"
+                    )}
+                    style={!isActive ? { backgroundColor: '#e1e1e1' } : {}}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium flex-1">{item.label}</span>
+                    {item.subItems.length > 1 && (
+                      <ChevronRight className={cn(
+                        "w-4 h-4 transition-transform",
+                        isExpanded && "rotate-90"
+                      )} />
+                    )}
+                  </button>
+                  
+                  {/* Sub-items */}
+                  {isExpanded && (
+                    <ul className="mt-2 ml-4 space-y-1">
+                      {item.subItems.map((subItem) => {
+                        const isSubActive = currentView === subItem.id;
+                        return (
+                          <li key={subItem.id}>
+                            <button
+                              onClick={() => handleSubItemClick(subItem.id)}
+                              className={cn(
+                                "w-full flex items-center px-4 py-2 rounded-lg transition-colors text-left text-sm",
+                                isSubActive
+                                  ? "bg-black text-white"
+                                  : "text-black hover:bg-[#919191]/10"
+                              )}
+                              style={!isSubActive ? { backgroundColor: '#e1e1e1' } : {}}
+                            >
+                              {subItem.label}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+
+            {/* Admin navigation items - only for admin users */}
+            {user?.role === 'admin' && adminNavigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentSection === item.section;
               const isExpanded = openAccordion === item.section;
