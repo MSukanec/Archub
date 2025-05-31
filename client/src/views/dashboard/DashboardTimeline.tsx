@@ -559,7 +559,7 @@ function DashboardTimeline() {
               {/* Subtle vertical separator line between time periods */}
               {index < timelineNodes.length - 1 && (
                 <div 
-                  className="absolute w-px bg-gray-200/40 z-10"
+                  className="absolute w-px bg-gray-400/80 z-10"
                   style={{
                     top: '-50vh',
                     bottom: '-50vh',
@@ -571,7 +571,7 @@ function DashboardTimeline() {
 
 
 
-              {/* Date label positioned at bottom */}
+              {/* Date label positioned at bottom - engraved text effect */}
               <div 
                 className="absolute flex items-center text-center z-30 pointer-events-none"
                 style={{
@@ -580,13 +580,17 @@ function DashboardTimeline() {
                   transform: 'translateX(-50%)'
                 }}
               >
-                <div className="date-label-container">
-                  <div className="date-label-engraved text-sm font-medium">
-                    {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
-                      `${(formatDate(node.date) as any).dayName} ${(formatDate(node.date) as any).dayNumber}` :
-                      formatDate(node.date)
-                    }
-                  </div>
+                <div 
+                  className="text-sm font-medium text-gray-600"
+                  style={{
+                    textShadow: '1px 1px 2px rgba(255,255,255,0.8), -1px -1px 1px rgba(0,0,0,0.1)',
+                    color: '#8b8b8b'
+                  }}
+                >
+                  {timelineMode === 'days' || timelineMode === 'weeks' || timelineMode === 'months' ? 
+                    `${(formatDate(node.date) as any).dayName} ${(formatDate(node.date) as any).dayNumber}` :
+                    formatDate(node.date)
+                  }
                 </div>
               </div>
 
