@@ -5,6 +5,7 @@ import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/useMediaQuery';
 import PrimarySidebar from './PrimarySidebar';
+import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawer';
@@ -187,13 +188,15 @@ export default function AppLayout() {
           {/* Floating Header */}
           <FloatingHeader />
           
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '0px', marginRight: '56px' }}>
             <main className="flex-1 overflow-auto relative">
-              <div className="mx-auto" style={{ maxWidth: 'calc(100vw - 56px)', paddingTop: '64px', paddingLeft: '56px', paddingRight: '56px', paddingBottom: '37px' }}>
+              <div className="mx-auto" style={{ maxWidth: 'calc(100vw - 112px)', paddingTop: '64px', paddingLeft: '56px', paddingRight: '56px', paddingBottom: '37px' }}>
                 <ViewComponent />
               </div>
             </main>
           </div>
+          
+          <SecondarySidebar />
         </>
       )}
       
