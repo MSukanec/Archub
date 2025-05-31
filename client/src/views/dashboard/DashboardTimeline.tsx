@@ -571,11 +571,11 @@ function DashboardTimeline() {
 
 
 
-              {/* Date label positioned at bottom - engraved text effect */}
+              {/* Date label positioned aligned with plan button - engraved text effect */}
               <div 
                 className="absolute flex items-center text-center z-30 pointer-events-none"
                 style={{
-                  bottom: '-400px', // Far below the timeline center
+                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile + 50}px` : '100px', // Aligned with plan button area
                   left: '0',
                   transform: 'translateX(-50%)'
                 }}
