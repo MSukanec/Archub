@@ -530,8 +530,9 @@ export default function Movements() {
 
       {/* Search and Filters */}
       <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Buscar movimientos..."
@@ -550,7 +551,10 @@ export default function Movements() {
               </Button>
             )}
           </div>
-          
+        </div>
+
+        {/* Filters Row */}
+        <div className="flex flex-col sm:flex-row gap-4">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
             <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
               <SelectValue placeholder="Todas las monedas" />
@@ -603,8 +607,8 @@ export default function Movements() {
               <TableHead className="text-foreground font-semibold h-12 text-center w-[100px]">Tipo</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-left w-[200px]">Detalle</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[80px]">Moneda</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Billetera</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[80px]">Moneda</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Cantidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Acciones</TableHead>
             </TableRow>
@@ -648,20 +652,17 @@ export default function Movements() {
                     </div>
                   </TableCell>
                   <TableCell className="text-center py-1">
+                    {movement.wallets?.name || 'Sin billetera'}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
                       {movement.currency}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {movement.wallets?.name || 'Sin billetera'}
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <div className="flex items-center justify-center gap-1">
-                      <DollarSign className="w-3 h-3 text-muted-foreground" />
-                      <span className="text-sm font-medium">
-                        {formatCurrency(movement.amount, movement.currency)}
-                      </span>
-                    </div>
+                    <span className="text-sm font-medium">
+                      {movement.amount}
+                    </span>
                   </TableCell>
                   <TableCell className="text-center py-1">
                     <div className="flex items-center justify-center gap-2">
