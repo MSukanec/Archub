@@ -31,6 +31,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
+import { contactTypesService } from '@/lib/contactTypesService';
 import AdminContactsModal from '@/components/modals/AdminContactsModal';
 import ContactActionsModal from '@/components/modals/ContactActionsModal';
 import { ContactTypeDisplay } from '@/components/ui/ContactTypeDisplay';
@@ -38,6 +39,7 @@ import { ContactTypeDisplay } from '@/components/ui/ContactTypeDisplay';
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'name'>('newest');
+  const [contactTypeFilter, setContactTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -65,6 +67,14 @@ export default function Contacts() {
   const { data: contacts = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/contacts'],
     queryFn: contactsService.getAll,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  })
+
+  const { data: contactTypes = [] } = useQuery({
+    queryKey: ['/api/contact-types'],
+    queryFn: contactTypesService.getContactTypes,
     retry: 1,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -134,7 +144,11 @@ export default function Contacts() {
       const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (contact.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (contact.company_name || '').toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
+      
+      const matchesType = contactTypeFilter === 'all' || 
+        (contact.contact_types && contact.contact_types.some((type: any) => type.name === contactTypeFilter));
+      
+      return matchesSearch && matchesType;
     })
     .sort((a: any, b: any) => {
       switch (sortOrder) {
@@ -159,7 +173,7 @@ export default function Contacts() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, sortOrder]);
+  }, [searchTerm, sortOrder, contactTypeFilter]);
 
   if (isLoading) {
     return <AdminContactsSkeleton />;
@@ -200,6 +214,44 @@ export default function Contacts() {
               </Button>
             )}
           </div>
+          
+          {/* Filtro por tipo de contacto */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[180px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
+              >
+                <Tags className="mr-2 h-4 w-4" />
+                {contactTypeFilter === 'all' ? "Todos los tipos" : contactTypeFilter}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[180px] p-2 bg-[#e1e1e1]">
+              <div className="space-y-1">
+                <Button
+                  variant={contactTypeFilter === 'all' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setContactTypeFilter('all')}
+                  className="w-full justify-start text-sm h-8"
+                >
+                  Todos los tipos
+                </Button>
+                {contactTypes.map((type: any) => (
+                  <Button
+                    key={type.id}
+                    variant={contactTypeFilter === type.name ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setContactTypeFilter(type.name)}
+                    className="w-full justify-start text-sm h-8"
+                  >
+                    {type.name}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+          
+          {/* Filtro de ordenamiento */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
