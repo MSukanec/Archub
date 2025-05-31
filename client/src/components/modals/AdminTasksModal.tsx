@@ -257,52 +257,20 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
     }
   }, [selectedActionId, selectedElementId, actions, taskElements, form]);
 
-  // Reset form when modal opens or task changes
+  // First effect: Set initial state when modal opens
   useEffect(() => {
     if (isOpen) {
       if (task) {
         console.log('Loading task for edit:', task);
-        console.log('Task category_id:', task.category_id);
-        console.log('Task subcategory_id:', task.subcategory_id);
-        console.log('Task element_category_id:', task.element_category_id);
-        
-        // Editing existing task
-        form.reset({
-          name: task.name || '',
-          unit_labor_price: task.unit_labor_price?.toString() || '',
-          unit_material_price: task.unit_material_price?.toString() || '',
-          category_id: task.category_id || '',
-          subcategory_id: task.subcategory_id || '',
-          element_category_id: task.element_category_id || '',
-          unit_id: task.unit_id?.toString() || '',
-          action_id: task.action_id || '',
-          element_id: task.element_id || '',
-        });
-        
-        // Set the selected IDs for the dropdowns
+        // Set the selected IDs for the dropdowns immediately
         setSelectedCategoryId(task.category_id || '');
         setSelectedSubcategoryId(task.subcategory_id || '');
         setSelectedElementCategoryId(task.element_category_id || '');
         setSelectedActionId(task.action_id || '');
         setSelectedElementId(task.element_id || '');
-        
-        console.log('Set selected category:', task.category_id);
-        console.log('Set selected subcategory:', task.subcategory_id);
-        console.log('Set selected element category:', task.element_category_id);
       } else {
         console.log('Creating new task - clearing all fields');
         // Creating new task - clear everything
-        form.reset({
-          name: '',
-          unit_labor_price: '',
-          unit_material_price: '',
-          category_id: '',
-          subcategory_id: '',
-          element_category_id: '',
-          unit_id: '',
-          action_id: '',
-          element_id: '',
-        });
         setSelectedCategoryId('');
         setSelectedSubcategoryId('');
         setSelectedElementCategoryId('');
@@ -315,7 +283,43 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         setMaterialUnitCost('');
       }
     }
-  }, [task, isOpen, form]);
+  }, [task, isOpen]);
+
+  // Second effect: Set form values when categories are loaded
+  useEffect(() => {
+    if (task && allCategories.length > 0) {
+      console.log('Setting form values with categories loaded');
+      form.reset({
+        name: task.name || '',
+        unit_labor_price: task.unit_labor_price?.toString() || '',
+        unit_material_price: task.unit_material_price?.toString() || '',
+        category_id: task.category_id || '',
+        subcategory_id: task.subcategory_id || '',
+        element_category_id: task.element_category_id || '',
+        unit_id: task.unit_id?.toString() || '',
+        action_id: task.action_id || '',
+        element_id: task.element_id || '',
+      });
+      
+      // Also set form values for the dependent selects
+      form.setValue('category_id', task.category_id || '');
+      form.setValue('subcategory_id', task.subcategory_id || '');
+      form.setValue('element_category_id', task.element_category_id || '');
+    } else if (!task && allCategories.length > 0) {
+      // Creating new task - clear form
+      form.reset({
+        name: '',
+        unit_labor_price: '',
+        unit_material_price: '',
+        category_id: '',
+        subcategory_id: '',
+        element_category_id: '',
+        unit_id: '',
+        action_id: '',
+        element_id: '',
+      });
+    }
+  }, [task, allCategories, form]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateTaskData) => tasksService.create(data),
