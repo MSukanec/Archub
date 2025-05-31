@@ -191,8 +191,8 @@ export default function PrimarySidebar() {
 
   return (
     <div className="w-[56px] flex flex-col relative z-30">
-      {/* Dashboard button - moved to top */}
-      <div className="flex items-center justify-center pt-2.5 pr-2.5">
+      {/* Top section - Dashboard and Project selector */}
+      <div className="flex flex-col items-center pt-2.5 pr-2.5 space-y-2">
         <CircularButton
           icon={Home}
           isActive={currentSection === 'dashboard'}
@@ -200,65 +200,86 @@ export default function PrimarySidebar() {
           section="dashboard"
           label="Dashboard"
         />
-      </div>
 
-      {/* Project selector */}
-      <div className="flex items-center justify-center pt-2 pr-2.5" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group relative">
-          <span className="text-sm font-bold text-gray-700">
-            {getProjectInitials(currentProject)}
-          </span>
-          <ChevronDown className="w-3 h-3 text-gray-600 absolute -bottom-1 -right-1" />
-        </div>
-
-        {/* Project menu */}
-        {showProjectMenu && (
-          <div className="absolute left-full top-0 ml-2 w-80 bg-white rounded-lg shadow-xl border z-50 p-4">
-            <h3 className="font-semibold text-gray-900 mb-3">Seleccionar Proyecto</h3>
-            <div className="space-y-2">
-              {projects.map((project) => (
-                <button
-                  key={project.id}
-                  onClick={() => handleProjectChange(project.id)}
-                  className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    project.id === projectId
-                      ? 'bg-primary/10 border border-primary'
-                      : 'hover:bg-gray-50 border border-transparent'
-                  }`}
-                >
-                  <span className="font-medium text-sm text-gray-900">{project.name}</span>
-                  <p className="text-xs text-gray-500 mt-1">{project.description}</p>
-                </button>
-              ))}
-              <button className="w-full text-left p-3 rounded-lg hover:bg-gray-50 border border-dashed border-gray-300 mt-3">
-                <Plus className="w-4 h-4 inline mr-2 text-gray-400" />
-                <span className="font-medium text-sm text-gray-900">Crear Nuevo Proyecto</span>
-              </button>
-            </div>
+        {/* Project selector with consistent styling */}
+        <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group relative">
+            <span className="text-sm font-bold text-gray-700">
+              {getProjectInitials(currentProject)}
+            </span>
+            <ChevronDown className="w-3 h-3 text-gray-600 absolute -bottom-1 -right-1" />
           </div>
-        )}
+
+          {/* Project menu with consistent popover styling */}
+          {showProjectMenu && (
+            <div className="absolute left-full top-0 ml-2 w-80 bg-gray-900 text-white rounded-lg shadow-xl z-50 p-3">
+              <h3 className="font-medium text-white mb-3 text-sm">Seleccionar Proyecto</h3>
+              <div className="space-y-1">
+                {projects.map((project) => (
+                  <button
+                    key={project.id}
+                    onClick={() => handleProjectChange(project.id)}
+                    className={`w-full text-left p-2 rounded-md transition-colors text-sm ${
+                      project.id === projectId
+                        ? 'bg-white/20 text-white'
+                        : 'hover:bg-white/10 text-gray-200'
+                    }`}
+                  >
+                    <span className="font-medium">{project.name}</span>
+                    <p className="text-xs text-gray-400 mt-0.5">{project.description}</p>
+                  </button>
+                ))}
+                <button className="w-full text-left p-2 rounded-md hover:bg-white/10 border border-dashed border-gray-600 mt-2">
+                  <Plus className="w-3 h-3 inline mr-2 text-gray-400" />
+                  <span className="font-medium text-sm text-gray-200">Crear Nuevo Proyecto</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       
-      {/* Center navigation buttons */}
-      <div className="flex-1 flex flex-col items-center justify-center space-y-6 pr-2.5">
-        {topNavigationItems.slice(1).map(({ section, icon, label, description, hasTimeline }) => (
-          <div key={section} className="relative">
-            <CircularButton
-              icon={icon}
-              isActive={currentSection === section}
-              onClick={() => setSection(section)}
-              section={section}
-              label={label}
-              description={description}
-            />
-            {/* Timeline line extending to the right - only show in dashboard timeline view */}
-            {hasTimeline === true && currentSection === 'dashboard' && (
-              <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-[calc(100vw-112px)] h-0.5 bg-border/20 pointer-events-none" />
-            )}
-          </div>
+      {/* Middle navigation buttons */}
+      <div className="flex-1 flex flex-col items-center justify-center space-y-2 pr-2.5">
+        {topNavigationItems.slice(1).map(({ section, icon, label, description }) => (
+          <CircularButton
+            key={section}
+            icon={icon}
+            isActive={currentSection === section}
+            onClick={() => setSection(section)}
+            section={section}
+            label={label}
+            description={description}
+          />
         ))}
       </div>
       
+      {/* Admin buttons section - only for admin users */}
+      {user?.role === 'admin' && (
+        <div className="flex flex-col items-center pr-2.5 space-y-2">
+          <CircularButton
+            icon={Calendar}
+            isActive={currentView === 'dashboard-timeline'}
+            onClick={() => setView('dashboard-timeline')}
+            label="Dashboard Timeline"
+          />
+
+          <CircularButton
+            icon={Shield}
+            isActive={currentView === 'admin-organizations'}
+            onClick={() => setView('admin-organizations')}
+            label="Admin Organizaciones"
+          />
+
+          <CircularButton
+            icon={Users}
+            isActive={currentView === 'admin-users'}
+            onClick={() => setView('admin-users')}
+            label="Admin Usuarios"
+          />
+        </div>
+      )}
+
       {/* Bottom buttons section */}
       <div className="flex flex-col items-center pb-2.5 pr-2.5 space-y-2">
         {/* Plan button */}
