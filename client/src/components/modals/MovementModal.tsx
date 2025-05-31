@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { useHierarchicalConcepts, setHierarchicalFormValues } from '@/hooks/useHierarchicalConcepts';
 import { contactsService } from '@/lib/contactsService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -82,6 +83,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const [isContactPopoverOpen, setIsContactPopoverOpen] = useState(false);
   const isEditing = !!movement;
 
+  // Use hierarchical concepts hook for optimized concept management
+  const { data: conceptStructures, isLoading: conceptsLoading } = useHierarchicalConcepts('movement_concepts');
+
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
     defaultValues: {
@@ -99,27 +103,37 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   // Reset form when modal opens/closes or movement changes
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && conceptStructures) {
       if (movement && isEditing) {
-        const typeId = movement.movement_concepts?.parent_id || '';
         const conceptId = movement.concept_id || '';
         
-        console.log('Editing movement:', { typeId, conceptId, movement });
-        
-        // Set the selected type and form values
-        setSelectedTypeId(typeId);
-        
-        form.reset({
-          type_id: typeId,
-          concept_id: conceptId,
-          created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          description: movement.description || '',
-          amount: movement.amount || 0,
-          currency: movement.currency || 'ARS',
-          wallet_id: movement.wallet_id || '',
-          related_contact_id: movement.related_contact_id || '',
-          related_task_id: movement.related_task_id || '',
-        });
+        if (conceptId && conceptStructures) {
+          // Use hierarchical path to set both type and concept
+          const conceptPath = conceptStructures.getConceptPath(conceptId);
+          const typeId = conceptPath.length >= 2 ? conceptPath[0] : '';
+          
+          console.log('Editing movement with hierarchical path:', { 
+            conceptId, 
+            conceptPath, 
+            typeId, 
+            movement 
+          });
+          
+          // Set the selected type for dependent selects
+          setSelectedTypeId(typeId);
+          
+          // Use hierarchical form setter
+          setHierarchicalFormValues(form, conceptPath, ['type_id', 'concept_id']);
+          
+          // Set other form values
+          form.setValue('created_at', movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+          form.setValue('description', movement.description || '');
+          form.setValue('amount', movement.amount || 0);
+          form.setValue('currency', movement.currency || 'ARS');
+          form.setValue('wallet_id', movement.wallet_id || '');
+          form.setValue('related_contact_id', movement.related_contact_id || '');
+          form.setValue('related_task_id', movement.related_task_id || '');
+        }
       } else {
         setSelectedTypeId('');
         form.reset({
@@ -135,46 +149,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         });
       }
     }
-  }, [isOpen, movement, isEditing, form]);
+  }, [isOpen, movement, isEditing, form, conceptStructures]);
 
-  // Fetch movement types
-  const { data: movementTypes = [], isLoading: typesLoading } = useQuery({
-    queryKey: ['movement-types'],
-    queryFn: async () => {
-      console.log('Fetching movement types...');
-      const { data, error } = await supabase
-        .from('movement_concepts')
-        .select('*')
-        .is('parent_id', null)
-        .order('name');
-      
-      if (error) {
-        console.error('Error fetching movement types:', error);
-        throw error;
-      }
-      console.log('Movement types fetched:', data);
-      return data || [];
-    },
-    enabled: isOpen,
-  });
-
-  // Fetch categories for selected type
-  const { data: movementCategories = [] } = useQuery({
-    queryKey: ['movement-categories', selectedTypeId],
-    queryFn: async () => {
-      if (!selectedTypeId) return [];
-      
-      const { data, error } = await supabase
-        .from('movement_concepts')
-        .select('*')
-        .eq('parent_id', selectedTypeId)
-        .order('name');
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: isOpen && !!selectedTypeId,
-  });
+  // Get movement types (root concepts) and categories using hierarchical structure
+  const movementTypes = conceptStructures?.getRootConcepts() || [];
+  const movementCategories = conceptStructures?.getChildConcepts(selectedTypeId) || [];
 
   // Fetch contacts
   const { data: contactsList = [] } = useQuery({
@@ -352,7 +331,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <Select onValueChange={field.onChange} value={field.value || ''} disabled={!selectedTypeId}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
-                            <SelectValue placeholder={selectedTypeId ? "Seleccionar categoría" : "Primero selecciona un tipo"} />
+                            <SelectValue placeholder={
+                              conceptsLoading ? "Cargando categorías..." :
+                              !selectedTypeId ? "Primero selecciona un tipo" :
+                              movementCategories.length === 0 ? "No hay categorías disponibles" :
+                              "Seleccionar categoría"
+                            } />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
