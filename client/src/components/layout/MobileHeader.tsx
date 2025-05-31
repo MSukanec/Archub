@@ -61,7 +61,7 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
     if (currentSection && sectionTitles[currentSection]) {
       return sectionTitles[currentSection];
     }
-    return 'Metrik';
+    return 'Archmony';
   };
 
   return (

@@ -184,9 +184,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         <div className="flex items-center justify-between p-4 border-b border-[#919191]/20">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
+              <span className="text-white font-bold text-sm">A</span>
             </div>
-            <span className="font-semibold text-lg text-black">Metrik</span>
+            <span className="font-semibold text-lg text-black">Archmony</span>
           </div>
           <button
             onClick={onClose}

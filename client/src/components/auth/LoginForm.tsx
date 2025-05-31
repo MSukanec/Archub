@@ -84,11 +84,11 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-2xl">M</span>
+          <span className="text-white font-bold text-2xl">A</span>
         </div>
         <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
         <CardDescription>
-          Ingresa a tu cuenta de Metrik
+          Ingresa a tu cuenta de Archmony
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -90,11 +90,11 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-2xl">M</span>
+          <span className="text-white font-bold text-2xl">A</span>
         </div>
         <CardTitle className="text-2xl">Crear Cuenta</CardTitle>
         <CardDescription>
-          Únete a Metrik para gestionar tus proyectos
+          Únete a Archmony para gestionar tus proyectos
         </CardDescription>
       </CardHeader>
       <CardContent>
