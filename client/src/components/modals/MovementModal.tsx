@@ -24,10 +24,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { 
   DollarSign, 
   FileText, 
   Calendar,
+  Search,
   Wallet,
   Target,
   User,
@@ -63,6 +77,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
+  const [contactSearchTerm, setContactSearchTerm] = useState('');
+  const [isContactPopoverOpen, setIsContactPopoverOpen] = useState(false);
   const isEditing = !!movement;
 
   const form = useForm<MovementForm>({
@@ -87,23 +103,22 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         const typeId = movement.movement_concepts?.parent_id || '';
         const conceptId = movement.concept_id || '';
         
-        // Set the selected type first
+        console.log('Editing movement:', { typeId, conceptId, movement });
+        
+        // Set the selected type and form values
         setSelectedTypeId(typeId);
         
-        // Then reset the form with all values
-        setTimeout(() => {
-          form.reset({
-            type_id: typeId,
-            concept_id: conceptId,
-            created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            description: movement.description || '',
-            amount: movement.amount || 0,
-            currency: movement.currency || 'ARS',
-            wallet_id: movement.wallet_id || '',
-            related_contact_id: movement.related_contact_id || '',
-            related_task_id: movement.related_task_id || '',
-          });
-        }, 100);
+        form.reset({
+          type_id: typeId,
+          concept_id: conceptId,
+          created_at: movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          description: movement.description || '',
+          amount: movement.amount || 0,
+          currency: movement.currency || 'ARS',
+          wallet_id: movement.wallet_id || '',
+          related_contact_id: movement.related_contact_id || '',
+          related_task_id: movement.related_task_id || '',
+        });
       } else {
         setSelectedTypeId('');
         form.reset({
@@ -294,7 +309,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         field.onChange(value);
                         setSelectedTypeId(value);
                         form.setValue('concept_id', '');
-                      }} value={field.value} disabled={false}>
+                      }} value={selectedTypeId} disabled={false}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar tipo" />
@@ -473,21 +488,71 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-xs font-medium text-foreground">Contacto Relacionado</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(value === 'none' ? '' : value)} value={field.value || 'none'}>
-                      <FormControl>
-                        <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
-                          <SelectValue placeholder="Seleccionar contacto (opcional)" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
-                        <SelectItem value="none" className="[&>span:first-child]:hidden">Sin contacto</SelectItem>
-                        {contactsList.map((contact) => (
-                          <SelectItem key={contact.id} value={contact.id} className="[&>span:first-child]:hidden">
-                            {getContactDisplayName(contact)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover open={isContactPopoverOpen} onOpenChange={setIsContactPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8] h-10"
+                          >
+                            {field.value 
+                              ? contactsList.find((contact) => contact.id === field.value)
+                                ? getContactDisplayName(contactsList.find((contact) => contact.id === field.value)!)
+                                : "Contacto no encontrado"
+                              : "Buscar contacto (opcional)..."}
+                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0" align="start">
+                        <Command>
+                          <CommandInput 
+                            placeholder="Escribir al menos 3 caracteres..."
+                            value={contactSearchTerm}
+                            onValueChange={setContactSearchTerm}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {contactSearchTerm.length < 3 
+                                ? "Escribir al menos 3 caracteres para buscar"
+                                : "No se encontraron contactos"}
+                            </CommandEmpty>
+                            {contactSearchTerm.length >= 3 && (
+                              <CommandGroup>
+                                <CommandItem
+                                  onSelect={() => {
+                                    field.onChange('');
+                                    setIsContactPopoverOpen(false);
+                                    setContactSearchTerm('');
+                                  }}
+                                >
+                                  Sin contacto
+                                </CommandItem>
+                                {contactsList
+                                  .filter((contact) =>
+                                    getContactDisplayName(contact)
+                                      .toLowerCase()
+                                      .includes(contactSearchTerm.toLowerCase())
+                                  )
+                                  .map((contact) => (
+                                    <CommandItem
+                                      key={contact.id}
+                                      onSelect={() => {
+                                        field.onChange(contact.id);
+                                        setIsContactPopoverOpen(false);
+                                        setContactSearchTerm('');
+                                      }}
+                                    >
+                                      {getContactDisplayName(contact)}
+                                    </CommandItem>
+                                  ))}
+                              </CommandGroup>
+                            )}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
