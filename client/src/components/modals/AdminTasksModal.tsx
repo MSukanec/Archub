@@ -26,7 +26,7 @@ const createTaskSchema = z.object({
   element_category_id: z.string().min(1, "Elemento es requerido"),
   unit_id: z.string().min(1, "Unidad es requerida"),
   action_id: z.string().optional().or(z.literal('')),
-  element_id: z.string().optional().or(z.literal('')),
+  element_id: z.string().optional(),
 });
 
 type FormData = z.infer<typeof createTaskSchema>;
@@ -268,14 +268,12 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   // Load existing materials when editing a task
   useEffect(() => {
-    if (isOpen) {
-      if (isEditing && existingTaskMaterials.length > 0) {
-        setSelectedMaterials(existingTaskMaterials);
-      } else if (!isEditing) {
-        setSelectedMaterials([]);
-      }
+    if (isOpen && isEditing && existingTaskMaterials.length > 0) {
+      setSelectedMaterials(existingTaskMaterials);
+    } else if (isOpen && !isEditing) {
+      setSelectedMaterials([]);
     }
-  }, [isOpen, task?.id]);
+  }, [isOpen, isEditing, existingTaskMaterials]);
 
   // Functions to handle materials
   const addMaterial = async (material: any) => {
