@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Calendar as CalendarIcon, Clock, MapPin, Users, CheckCircle, DollarSign, FileText, Plus, Edit } from 'lucide-react';
-import { format, isToday, isTomorrow, isAfter, addDays } from 'date-fns';
+import { format, isToday, isTomorrow, isAfter, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { supabase } from '@/lib/supabase';
 import EventModal from '@/components/modals/EventModal';
 
 interface Event {
@@ -19,8 +21,7 @@ interface Event {
   type: 'meeting' | 'deadline' | 'inspection' | 'other';
 }
 
-// TODO: Replace with actual calendar events from database
-const events: Event[] = [];
+// Events will be loaded from database
 
 const getEventTypeIcon = (type: Event['type']) => {
   switch (type) {
@@ -64,6 +65,38 @@ const getEventTypeBadge = (type: Event['type']) => {
 export default function CalendarView() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { projectId, organizationId } = useUserContextStore();
+
+  // Fetch calendar events from database
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ['/api/calendar-events', organizationId, projectId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const { data, error } = await supabase
+        .from('calendar_events')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('event_date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching calendar events:', error);
+        return [];
+      }
+
+      return (data || []).map(event => ({
+        id: event.id,
+        title: event.title,
+        date: new Date(event.event_date),
+        time: event.event_time || '00:00',
+        location: event.location,
+        attendees: event.attendees ? JSON.parse(event.attendees) : [],
+        type: event.event_type || 'other'
+      })) as Event[];
+    },
+    enabled: !!organizationId,
+  });
 
   const selectedDateEvents = events.filter(
     event => selectedDate && format(event.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
@@ -75,9 +108,9 @@ export default function CalendarView() {
     const tomorrow = addDays(today, 1);
     const nextWeek = addDays(today, 7);
 
-    const todayEvents = events.filter(event => isToday(event.date));
-    const tomorrowEvents = events.filter(event => isTomorrow(event.date));
-    const upcomingEvents = events.filter(event => 
+    const todayEvents = events.filter((event: Event) => isToday(event.date));
+    const tomorrowEvents = events.filter((event: Event) => isTomorrow(event.date));
+    const upcomingEvents = events.filter((event: Event) => 
       isAfter(event.date, tomorrow) && event.date <= nextWeek
     );
 
