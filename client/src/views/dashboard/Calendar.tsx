@@ -84,159 +84,153 @@ export default function CalendarView() {
     .slice(0, 5);
 
   return (
-    <div className="h-screen overflow-hidden bg-[#f8f9fa] dark:bg-[#0d1117]">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="p-6 border-b border-[#e1e4e8] dark:border-[#30363d] bg-white dark:bg-[#161b22]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-[#0969da]/10 rounded-lg">
-              <CalendarIcon className="w-6 h-6 text-[#0969da]" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-[#24292f] dark:text-[#f0f6fc]">
-                Calendario
-              </h1>
-              <p className="text-sm text-[#656d76] dark:text-[#8b949e]">
-                Gestiona eventos y citas del proyecto
-              </p>
-            </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <CalendarIcon className="w-6 h-6 text-green-600" />
           </div>
-          <button 
-            onClick={() => setIsEventModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-[#0969da] hover:bg-[#0860ca] text-white rounded-lg transition-colors text-sm font-medium"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nuevo Evento</span>
-          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Calendario
+            </h1>
+            <p className="text-gray-600">
+              Gestiona eventos y citas del proyecto
+            </p>
+          </div>
         </div>
+        <button 
+          onClick={() => setIsEventModalOpen(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Nuevo Evento</span>
+        </button>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Calendar */}
-            <div className="lg:col-span-2 bg-white dark:bg-[#161b22] rounded-lg border border-[#d0d7de] dark:border-[#30363d]">
-              <div className="p-4 border-b border-[#d0d7de] dark:border-[#30363d]">
-                <h2 className="text-lg font-semibold text-[#24292f] dark:text-[#f0f6fc] flex items-center space-x-2">
-                  <CalendarIcon className="w-5 h-5 text-[#656d76] dark:text-[#8b949e]" />
-                  <span>Calendario del Proyecto</span>
-                </h2>
-              </div>
-              <div className="p-4">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  locale={es}
-                  className="rounded-md"
-                  modifiers={{
-                    hasEvent: mockEvents.map(event => event.date)
-                  }}
-                  modifiersStyles={{
-                    hasEvent: { backgroundColor: '#0969da', color: 'white', fontWeight: 'bold' }
-                  }}
-                />
-              </div>
-            </div>
+      {/* Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Calendar */}
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
+              <CalendarIcon className="w-5 h-5 text-gray-600" />
+              <span>Calendario del Proyecto</span>
+            </h2>
+          </div>
+          <div className="p-6">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              locale={es}
+              className="rounded-md"
+              modifiers={{
+                hasEvent: mockEvents.map(event => event.date)
+              }}
+              modifiersStyles={{
+                hasEvent: { backgroundColor: '#16a34a', color: 'white', fontWeight: 'bold' }
+              }}
+            />
+          </div>
+        </div>
 
-            {/* Events for selected date */}
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-[#161b22] rounded-lg border border-[#d0d7de] dark:border-[#30363d]">
-                <div className="p-4 border-b border-[#d0d7de] dark:border-[#30363d]">
-                  <h3 className="text-lg font-semibold text-[#24292f] dark:text-[#f0f6fc]">
-                    {selectedDate ? format(selectedDate, 'dd MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
-                  </h3>
-                </div>
-                <div className="p-4">
-                  {selectedDateEvents.length > 0 ? (
-                    <div className="space-y-3">
-                      {selectedDateEvents.map(event => (
-                        <div 
-                          key={event.id} 
-                          className="border border-[#d0d7de] dark:border-[#30363d] rounded-lg p-3 hover:bg-[#f6f8fa] dark:hover:bg-[#21262d] transition-colors"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-[#24292f] dark:text-[#f0f6fc] mb-2">
-                                {event.title}
-                              </h4>
-                              <div className="space-y-1">
-                                <div className="flex items-center space-x-2">
-                                  <Clock className="w-3 h-3 text-[#656d76] dark:text-[#8b949e]" />
-                                  <span className="text-sm text-[#656d76] dark:text-[#8b949e]">
-                                    {event.time}
-                                  </span>
-                                </div>
-                                {event.location && (
-                                  <div className="flex items-center space-x-2">
-                                    <MapPin className="w-3 h-3 text-[#656d76] dark:text-[#8b949e]" />
-                                    <span className="text-sm text-[#656d76] dark:text-[#8b949e]">
-                                      {event.location}
-                                    </span>
-                                  </div>
-                                )}
-                                {event.attendees && event.attendees.length > 0 && (
-                                  <div className="flex items-center space-x-2">
-                                    <Users className="w-3 h-3 text-[#656d76] dark:text-[#8b949e]" />
-                                    <span className="text-sm text-[#656d76] dark:text-[#8b949e]">
-                                      {event.attendees.length} asistente{event.attendees.length > 1 ? 's' : ''}
-                                    </span>
-                                  </div>
-                                )}
+        {/* Events for selected date */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {selectedDate ? format(selectedDate, 'dd MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
+              </h3>
+            </div>
+            <div className="p-6">
+              {selectedDateEvents.length > 0 ? (
+                <div className="space-y-4">
+                  {selectedDateEvents.map(event => (
+                    <div 
+                      key={event.id} 
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 mb-2">
+                            {event.title}
+                          </h4>
+                          <div className="space-y-1">
+                            <div className="flex items-center space-x-2">
+                              <Clock className="w-3 h-3 text-gray-500" />
+                              <span className="text-sm text-gray-600">
+                                {event.time}
+                              </span>
+                            </div>
+                            {event.location && (
+                              <div className="flex items-center space-x-2">
+                                <MapPin className="w-3 h-3 text-gray-500" />
+                                <span className="text-sm text-gray-600">
+                                  {event.location}
+                                </span>
                               </div>
-                            </div>
-                            <div 
-                              className="px-2 py-1 rounded text-xs font-medium text-white ml-2"
-                              style={{ backgroundColor: getEventTypeColor(event.type) }}
-                            >
-                              {getEventTypeBadge(event.type)}
-                            </div>
+                            )}
+                            {event.attendees && event.attendees.length > 0 && (
+                              <div className="flex items-center space-x-2">
+                                <Users className="w-3 h-3 text-gray-500" />
+                                <span className="text-sm text-gray-600">
+                                  {event.attendees.length} asistente{event.attendees.length > 1 ? 's' : ''}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-[#656d76] dark:text-[#8b949e] opacity-50" />
-                      <p className="text-[#656d76] dark:text-[#8b949e] mb-3">No hay eventos para esta fecha</p>
-                      <button 
-                        onClick={() => setIsEventModalOpen(true)}
-                        className="px-3 py-1 text-sm border border-[#d0d7de] dark:border-[#30363d] rounded-lg hover:bg-[#f6f8fa] dark:hover:bg-[#21262d] transition-colors flex items-center space-x-2 mx-auto"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>Crear evento</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Upcoming events */}
-              <div className="bg-white dark:bg-[#161b22] rounded-lg border border-[#d0d7de] dark:border-[#30363d]">
-                <div className="p-4 border-b border-[#d0d7de] dark:border-[#30363d]">
-                  <h3 className="text-lg font-semibold text-[#24292f] dark:text-[#f0f6fc]">Próximos Eventos</h3>
-                </div>
-                <div className="p-4">
-                  <div className="space-y-3">
-                    {upcomingEvents.map(event => (
-                      <div key={event.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-[#f6f8fa] dark:hover:bg-[#21262d] transition-colors">
                         <div 
-                          className="w-2 h-2 rounded-full"
+                          className="px-2 py-1 rounded text-xs font-medium text-white ml-2"
                           style={{ backgroundColor: getEventTypeColor(event.type) }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm text-[#24292f] dark:text-[#f0f6fc] truncate">
-                            {event.title}
-                          </p>
-                          <p className="text-xs text-[#656d76] dark:text-[#8b949e]">
-                            {format(event.date, 'dd MMM', { locale: es })} • {event.time}
-                          </p>
+                        >
+                          {getEventTypeBadge(event.type)}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <div className="text-center py-8">
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-gray-400 opacity-50" />
+                  <p className="text-gray-600 mb-3">No hay eventos para esta fecha</p>
+                  <button 
+                    onClick={() => setIsEventModalOpen(true)}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2 mx-auto"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Crear evento</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Upcoming events */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800">Próximos Eventos</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-3">
+                {upcomingEvents.map(event => (
+                  <div key={event.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div 
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: getEventTypeColor(event.type) }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-gray-900 truncate">
+                        {event.title}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {format(event.date, 'dd MMM', { locale: es })} • {event.time}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
