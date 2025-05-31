@@ -33,18 +33,20 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
     },
   });
 
-  // Set form values when editing
+  // Set form values when editing or reset when creating new
   useEffect(() => {
-    if (category) {
-      form.reset({
-        name: category.name,
-      });
-    } else {
-      form.reset({
-        name: '',
-      });
+    if (isOpen) {
+      if (category) {
+        form.reset({
+          name: category.name,
+        });
+      } else {
+        form.reset({
+          name: '',
+        });
+      }
     }
-  }, [category, form]);
+  }, [category, form, isOpen]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateMaterialCategoryData) => materialCategoriesService.create(data),
