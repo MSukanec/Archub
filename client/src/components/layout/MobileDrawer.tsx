@@ -270,7 +270,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                         )}
                       >
                         <div className="flex items-center space-x-3">
-                          <Icon className="w-4 h-4 text-[#666]" />
+                          <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-[#666]")} />
                           <span className="font-normal text-sm">{item.label}</span>
                         </div>
                         {item.subItems.length > 1 && (

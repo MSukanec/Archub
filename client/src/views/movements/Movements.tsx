@@ -629,7 +629,7 @@ export default function Movements() {
           {/* Filter Buttons */}
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
             <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <DollarSign className="h-4 w-4 text-[#666]" />
+              <DollarSign className="h-4 w-4 text-foreground" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="all">Todas las monedas</SelectItem>
@@ -640,7 +640,7 @@ export default function Movements() {
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <Filter className="h-4 w-4 text-[#666]" />
+              <Filter className="h-4 w-4 text-foreground" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="all">Todos los tipos</SelectItem>
@@ -652,7 +652,7 @@ export default function Movements() {
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <Tag className="h-4 w-4 text-[#666]" />
+              <Tag className="h-4 w-4 text-foreground" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="all">Todas las categorías</SelectItem>
@@ -664,7 +664,7 @@ export default function Movements() {
 
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger className="w-9 h-9 bg-card border-0 rounded-full shadow-lg p-0 flex items-center justify-center [&>svg]:hidden">
-              <ArrowUpDown className="h-4 w-4 text-[#666]" />
+              <ArrowUpDown className="h-4 w-4 text-foreground" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="newest">Más reciente primero</SelectItem>
