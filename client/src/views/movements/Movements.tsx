@@ -528,196 +528,232 @@ export default function Movements() {
         </Card>
       </div>
 
-      {/* Movements List */}
-      <Card className="rounded-2xl shadow-md bg-[#e1e1e1] border-0">
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
-              <FileText className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-xl font-semibold">Historial de Movimientos</CardTitle>
-              <CardDescription className="text-sm text-muted-foreground">
-                Lista completa de todos los movimientos registrados
-              </CardDescription>
-            </div>
+      {/* Search and Filters */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar movimientos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
-        </CardHeader>
-        <CardContent>
-          {/* Filters inside movements list */}
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar movimientos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Select value={filterType} onValueChange={(value: 'all' | 'year' | 'date' | 'custom') => {
-                setFilterType(value);
-                if (value === 'all') {
-                  setDateFilter('all');
-                  setCustomDate('');
-                }
-              }}>
-                <SelectTrigger className="w-28 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
-                  <SelectValue placeholder="Filtro" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todo</SelectItem>
-                  <SelectItem value="year">Año</SelectItem>
-                  <SelectItem value="date">Fecha</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              {filterType === 'year' && (
-                <Select value={dateFilter} onValueChange={setDateFilter}>
-                  <SelectTrigger className="w-20 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
-                    <SelectValue placeholder="Año" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 6 }, (_, i) => {
-                      const year = new Date().getFullYear() - i;
-                      return (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-              
-              {filterType === 'date' && (
-                <Input
-                  type="date"
-                  value={customDate}
-                  onChange={(e) => setCustomDate(e.target.value)}
-                  className="w-36 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all"
-                />
-              )}
-            </div>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-48 rounded-xl bg-background/50 border-border/50 focus:border-primary transition-all">
-                <SelectValue placeholder="Tipo de movimiento" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="all">Todos los tipos</SelectItem>
-                <SelectItem value="ingreso">Ingresos</SelectItem>
-                <SelectItem value="egreso">Egresos</SelectItem>
-                <SelectItem value="ajuste">Ajustes</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="rounded-xl hover:scale-105 transition-all"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Exportar
-            </Button>
-          </div>
-          {isLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <p className="text-muted-foreground">Cargando movimientos...</p>
-            </div>
-          ) : filteredMovements.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-32 space-y-2">
-              <FileText className="h-8 w-8 text-muted-foreground" />
-              <p className="text-muted-foreground">No hay movimientos registrados</p>
-              <p className="text-sm text-muted-foreground">
-                Comienza agregando tu primer movimiento
-              </p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Detalle</TableHead>
-                  <TableHead>Moneda</TableHead>
-                  <TableHead>Billetera</TableHead>
-                  <TableHead>Cantidad</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredMovements.map((movement) => (
-                  <TableRow key={movement.id} className="hover:bg-muted/50">
-                    <TableCell>
-                      {(() => {
-                        const dateStr = movement.created_at_local || movement.created_at;
-                        // Parse the date string without timezone conversion
-                        const dateParts = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-                        const [year, month, day] = dateParts.split('-');
-                        return `${day}/${month}/${year}`;
-                      })()}
-                    </TableCell>
-                    <TableCell>
+          
+          <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
+            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Todas las monedas" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las monedas</SelectItem>
+              <SelectItem value="ARS">ARS</SelectItem>
+              <SelectItem value="USD">USD</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Todos los tipos" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todos los tipos</SelectItem>
+              <SelectItem value="ingresos">Ingresos</SelectItem>
+              <SelectItem value="egresos">Egresos</SelectItem>
+              <SelectItem value="ajustes">Ajustes</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={sortOrder} onValueChange={setSortOrder as any}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="newest">Más reciente primero</SelectItem>
+              <SelectItem value="oldest">Más antiguo primero</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button
+            variant="outline"
+            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-muted"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Exportar
+          </Button>
+        </div>
+      </div>
+
+      {/* History Table */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[100px]">Fecha</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[100px]">Tipo</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-left w-[200px]">Detalle</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[80px]">Moneda</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Billetera</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Cantidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedMovements.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-4 h-8">
+                  {searchTerm || currencyFilter !== 'all' || typeFilter !== 'all'
+                    ? 'No se encontraron movimientos que coincidan con los filtros.'
+                    : 'No hay movimientos registrados.'
+                  }
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedMovements.map((movement) => (
+                <TableRow key={movement.id} className="border-border hover:bg-muted/30 transition-colors h-12">
+                  <TableCell className="text-center py-1">
+                    {(() => {
+                      const dateStr = movement.created_at_local || movement.created_at;
+                      const dateParts = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                      const [year, month, day] = dateParts.split('-');
+                      return `${day}/${month}/${year}`;
+                    })()}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge variant="outline" className="bg-muted/50">
                       {movement.movement_concepts?.parent_id ? 
                         movement.movement_concepts.parent_concept?.name || 'Sin tipo'
                         : movement.movement_concepts?.name || 'Sin tipo'}
-                    </TableCell>
-                    <TableCell>{movement.movement_concepts?.name || 'Sin categoría'}</TableCell>
-                    <TableCell>{movement.description}</TableCell>
-                    <TableCell>{movement.currency}</TableCell>
-                    <TableCell>{movement.wallets?.name || 'Sin billetera'}</TableCell>
-                    <TableCell>
-                      <span className="font-medium text-foreground">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge variant="secondary" className="bg-muted/50">
+                      {movement.movement_concepts?.name || 'Sin categoría'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-left py-1">
+                    <div className="font-medium text-foreground truncate max-w-[180px]" title={movement.description}>
+                      {movement.description}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {movement.currency}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    {movement.wallets?.name || 'Sin billetera'}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1">
+                      <DollarSign className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-sm font-medium">
                         {formatCurrency(movement.amount, movement.currency)}
                       </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {movement.file_url && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              if (movement.file_url) {
-                                const { data } = supabase.storage
-                                  .from('movement-files')
-                                  .getPublicUrl(movement.file_url);
-                                window.open(data.publicUrl, '_blank');
-                              }
-                            }}
-                            title="Descargar archivo"
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-2">
+                      {movement.file_url && (
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          onClick={() => handleEdit(movement)}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                          onClick={() => {
+                            if (movement.file_url) {
+                              const { data } = supabase.storage
+                                .from('movement-files')
+                                .getPublicUrl(movement.file_url);
+                              window.open(data.publicUrl, '_blank');
+                            }
+                          }}
+                          className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                          title="Descargar archivo"
                         >
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Editar movimiento</span>
+                          <Download className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDelete(movement)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Eliminar movimiento</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(movement)}
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(movement)}
+                        className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+        
+        {/* Paginación */}
+        {filteredAndSortedMovements.length > 0 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedMovements.length)} de {filteredAndSortedMovements.length} elementos
+            </div>
+            
+            {totalPages > 1 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8 h-8 p-0 rounded-lg"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Movement Modal - Force complete remount */}
       {isMovementModalOpen && modalReady && (
