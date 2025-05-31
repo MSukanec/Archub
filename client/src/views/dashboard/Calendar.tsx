@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar as CalendarIcon, Clock, MapPin, Users, CheckCircle, DollarSign, FileText, Plus, Edit } from 'lucide-react';
-import { format, isToday, isTomorrow, isAfter, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from 'date-fns';
+import { Calendar as CalendarIcon, Clock, MapPin, Users, CheckCircle, DollarSign, FileText, Plus, Edit, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, isToday, isTomorrow, isAfter, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, addMonths, subMonths, getDay, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,123 @@ interface Event {
 }
 
 // Events will be loaded from database
+
+// Custom Calendar Component
+interface CustomCalendarProps {
+  currentMonth: Date;
+  onMonthChange: (date: Date) => void;
+  selectedDate: Date | undefined;
+  onDateSelect: (date: Date | undefined) => void;
+  events: Event[];
+}
+
+const CustomCalendar = ({ currentMonth, onMonthChange, selectedDate, onDateSelect, events }: CustomCalendarProps) => {
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // Monday start
+  const calendarEnd = addDays(calendarStart, 41); // 6 weeks
+  
+  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  const weekdays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+
+  const getEventsForDate = (date: Date) => {
+    return events.filter(event => isSameDay(event.date, date));
+  };
+
+  const getEventTypeColor = (type: Event['type']) => {
+    switch (type) {
+      case 'meeting':
+        return 'bg-blue-500';
+      case 'deadline':
+        return 'bg-red-500';
+      case 'inspection':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  return (
+    <div className="w-full">
+      {/* Calendar Header */}
+      <div className="flex items-center justify-between mb-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onMonthChange(subMonths(currentMonth, 1))}
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        <h2 className="text-lg font-semibold text-foreground">
+          {format(currentMonth, 'MMMM yyyy', { locale: es })}
+        </h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onMonthChange(addMonths(currentMonth, 1))}
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {/* Weekday Headers */}
+        {weekdays.map((day) => (
+          <div key={day} className="h-8 flex items-center justify-center text-xs font-medium text-muted-foreground">
+            {day}
+          </div>
+        ))}
+        
+        {/* Calendar Days */}
+        {days.map((day, index) => {
+          const dayEvents = getEventsForDate(day);
+          const isCurrentMonth = isSameMonth(day, currentMonth);
+          const isSelected = selectedDate && isSameDay(day, selectedDate);
+          const isToday = isSameDay(day, new Date());
+          
+          return (
+            <div
+              key={index}
+              className={`
+                h-24 p-1 border border-gray-200 cursor-pointer transition-colors
+                ${isCurrentMonth ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 text-gray-400'}
+                ${isSelected ? 'ring-2 ring-primary bg-primary/5' : ''}
+                ${isToday ? 'bg-primary/10' : ''}
+              `}
+              onClick={() => onDateSelect(day)}
+            >
+              <div className="h-full flex flex-col">
+                <div className={`text-xs font-medium ${isToday ? 'text-primary font-bold' : ''}`}>
+                  {format(day, 'd')}
+                </div>
+                <div className="flex-1 space-y-0.5 mt-1">
+                  {dayEvents.slice(0, 3).map((event, eventIndex) => (
+                    <div
+                      key={event.id}
+                      className={`
+                        text-xs px-1 py-0.5 rounded text-white truncate
+                        ${getEventTypeColor(event.type)}
+                      `}
+                      title={event.title}
+                    >
+                      {event.title}
+                    </div>
+                  ))}
+                  {dayEvents.length > 3 && (
+                    <div className="text-xs text-gray-500 px-1">
+                      +{dayEvents.length - 3} más
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const getEventTypeIcon = (type: Event['type']) => {
   switch (type) {
@@ -68,35 +185,8 @@ export default function CalendarView() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { projectId, organizationId } = useUserContextStore();
 
-  // Fetch calendar events from database
-  const { data: events = [], isLoading } = useQuery({
-    queryKey: ['/api/calendar-events', organizationId, projectId],
-    queryFn: async () => {
-      if (!organizationId) return [];
-      
-      const { data, error } = await supabase
-        .from('calendar_events')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .order('event_date', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching calendar events:', error);
-        return [];
-      }
-
-      return (data || []).map(event => ({
-        id: event.id,
-        title: event.title,
-        date: new Date(event.event_date),
-        time: event.event_time || '00:00',
-        location: event.location,
-        attendees: event.attendees ? JSON.parse(event.attendees) : [],
-        type: event.event_type || 'other'
-      })) as Event[];
-    },
-    enabled: !!organizationId,
-  });
+  // TODO: Connect to actual calendar events when table is available
+  const events: Event[] = [];
 
   const selectedDateEvents = events.filter(
     event => selectedDate && format(event.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
@@ -178,18 +268,12 @@ export default function CalendarView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              locale={es}
-              className="rounded-md border"
-              modifiers={{
-                hasEvent: events.map((event: Event) => event.date)
-              }}
-              modifiersStyles={{
-                hasEvent: { backgroundColor: 'hsl(var(--primary))', color: 'white', fontWeight: 'bold' }
-              }}
+            <CustomCalendar 
+              currentMonth={currentMonth}
+              onMonthChange={setCurrentMonth}
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
+              events={events}
             />
           </CardContent>
         </Card>
