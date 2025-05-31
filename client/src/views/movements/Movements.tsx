@@ -760,6 +760,126 @@ export default function Movements() {
         )}
       </div>
 
+      {/* Mobile Cards View */}
+      <div className="md:hidden space-y-3">
+        {paginatedMovements.length === 0 ? (
+          <div className="text-center text-muted-foreground py-8">
+            {searchTerm || currencyFilter !== 'all' || typeFilter !== 'all'
+              ? 'No se encontraron movimientos que coincidan con los filtros.'
+              : 'No hay movimientos registrados.'
+            }
+          </div>
+        ) : (
+          paginatedMovements.map((movement) => (
+            <Card 
+              key={movement.id} 
+              className="rounded-2xl shadow-md bg-card border-0 p-4 cursor-pointer hover:bg-muted/30 transition-colors"
+              onClick={() => handleEdit(movement)}
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    movement.movement_concepts?.parent_concept?.name === 'Ingresos' ? 'bg-emerald-500' :
+                    movement.movement_concepts?.parent_concept?.name === 'Egresos' ? 'bg-rose-500' :
+                    'bg-blue-500'
+                  }`} />
+                  <span className="text-sm font-medium text-foreground">
+                    {movement.movement_concepts?.parent_concept?.name}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-muted-foreground">
+                    {(() => {
+                      const dateStr = movement.created_at_local || movement.created_at;
+                      const dateParts = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                      const [year, month, day] = dateParts.split('-');
+                      return `${day}/${month}/${year}`;
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Categoría</span>
+                  <span className="text-sm font-medium">
+                    {movement.movement_concepts?.name || '-'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Descripción</span>
+                  <span className="text-sm text-right max-w-[60%] truncate">
+                    {movement.description || 'Sin descripción'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Billetera</span>
+                  <span className="text-sm font-medium">
+                    {movement.wallets?.name || '-'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pt-2 border-t border-border/50">
+                  <span className="text-xs text-muted-foreground">Cantidad</span>
+                  <span className={`text-lg font-bold ${
+                    movement.movement_concepts?.parent_concept?.name === 'Ingresos' ? 'text-emerald-500' :
+                    movement.movement_concepts?.parent_concept?.name === 'Egresos' ? 'text-rose-500' :
+                    'text-blue-500'
+                  }`}>
+                    {formatCurrency(movement.amount, movement.currency)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-3 pt-2 border-t border-border/50">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(movement);
+                  }}
+                  className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
+          ))
+        )}
+
+        {/* Mobile Pagination */}
+        {filteredAndSortedMovements.length > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 pt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="rounded-xl border-border"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <span className="text-sm text-muted-foreground px-2">
+              {currentPage} de {totalPages}
+            </span>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="rounded-xl border-border"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+
       {/* Movement Modal - Force complete remount */}
       {isMovementModalOpen && modalReady && (
         <MovementModal
