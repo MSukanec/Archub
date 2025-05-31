@@ -70,7 +70,7 @@ const topNavigationItems = [
 
 
 export default function PrimarySidebar() {
-  const { currentSection, setSection, setHoveredSection, setView } = useNavigationStore();
+  const { currentSection, currentView, setSection, setHoveredSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
 
   // Escuchar eventos de navegación desde el timeline
@@ -158,8 +158,8 @@ export default function PrimarySidebar() {
               label={label}
               description={description}
             />
-            {/* Timeline line extending to the right for sections that have timeline */}
-            {hasTimeline === true && (
+            {/* Timeline line extending to the right - only show in dashboard timeline view */}
+            {hasTimeline === true && currentSection === 'dashboard' && (
               <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-[calc(100vw-112px)] h-0.5 bg-border/20 pointer-events-none" />
             )}
           </div>

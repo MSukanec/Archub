@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Users, UserPlus, Settings, Mail, Calendar, Crown, Shield, User, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import InviteTeamMemberModal from '@/components/modals/InviteTeamMemberModal';
 
 interface TeamMember {
   id: string;
@@ -278,17 +279,11 @@ export default function OrganizationTeam() {
       {/* Team Members List */}
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <div className="p-6 border-b border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Users className="w-4 h-4 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground">Miembros del Equipo</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Users className="w-4 h-4 text-primary" />
             </div>
-            <Button size="sm" className="bg-primary hover:bg-primary/90">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Invitar Miembro
-            </Button>
+            <h3 className="text-xl font-semibold text-foreground">Miembros del Equipo</h3>
           </div>
         </div>
         
