@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Wrench, DollarSign, Package } from 'lucide-react';
+import { Wrench, DollarSign, Package, CheckSquare } from 'lucide-react';
 
 // Schema for form validation
 const createTaskSchema = z.object({
@@ -249,11 +249,42 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     createMutation.mutate(data);
   };
 
+  const footer = (
+    <div className="flex justify-end space-x-2">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onClose}
+        className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
+      >
+        Cancelar
+      </Button>
+      <Button
+        type="submit"
+        form="task-form"
+        disabled={createMutation.isPending}
+        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+      >
+        {createMutation.isPending && (
+          <div className="mr-2 h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+        )}
+        {isEditing ? 'Actualizar Tarea' : 'Crear Tarea'}
+      </Button>
+    </div>
+  );
+
   return (
-    <ModernModal isOpen={isOpen} onClose={onClose} title={isEditing ? "Editar Tarea" : "Crear Tarea"}>
+    <ModernModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title={isEditing ? "Editar Tarea" : "Crear Nueva Tarea"}
+      subtitle={isEditing ? "Modifica los datos de la tarea existente" : "Crea una nueva tarea para el sistema"}
+      icon={CheckSquare}
+      footer={footer}
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Accordion type="multiple" defaultValue={["category", "task", "pricing"]} className="w-full">
+        <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Accordion type="single" defaultValue="category" className="w-full">
             {/* Category Section */}
             <AccordionItem value="category" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
@@ -535,24 +566,6 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onClose}
-              className="text-sm"
-            >
-              Cancelar
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={createMutation.isPending}
-              className="text-sm bg-primary hover:bg-primary/90"
-            >
-              {createMutation.isPending ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear')}
-            </Button>
-          </div>
         </form>
       </Form>
     </ModernModal>
