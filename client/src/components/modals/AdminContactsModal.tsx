@@ -321,21 +321,21 @@ export default function AdminContactsModal({
             </AccordionItem>
 
             {/* Contacto */}
-            <AccordionItem value="contacto" className="border border-border rounded-xl bg-card/30">
-              <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-foreground">Contacto</span>
+            <AccordionItem value="contacto" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Contacto
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4 space-y-4">
+              <AccordionContent className="space-y-2 pt-1">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Email (opcional)</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Email</FormLabel>
                         <FormControl>
                           <Input 
                             type="email"
@@ -354,7 +354,7 @@ export default function AdminContactsModal({
                     name="phone"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Teléfono (opcional)</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
                         <FormControl>
                           <PhoneInputField
                             value={field.value}
@@ -373,20 +373,20 @@ export default function AdminContactsModal({
             </AccordionItem>
 
             {/* Notas */}
-            <AccordionItem value="notas" className="border border-border rounded-xl bg-card/30">
-              <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-foreground">Notas</span>
+            <AccordionItem value="notas" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Notas
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
+              <AccordionContent className="space-y-2 pt-1">
                 <FormField
                   control={form.control}
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Notas (opcional)</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Notas</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Información adicional sobre el contacto..." 
