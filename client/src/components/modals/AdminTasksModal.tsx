@@ -268,12 +268,14 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   // Load existing materials when editing a task
   useEffect(() => {
-    if (isEditing && existingTaskMaterials.length > 0) {
-      setSelectedMaterials(existingTaskMaterials);
-    } else if (!isEditing) {
-      setSelectedMaterials([]);
+    if (isOpen) {
+      if (isEditing && existingTaskMaterials.length > 0) {
+        setSelectedMaterials(existingTaskMaterials);
+      } else if (!isEditing) {
+        setSelectedMaterials([]);
+      }
     }
-  }, [existingTaskMaterials, isEditing]);
+  }, [isOpen, task?.id]);
 
   // Functions to handle materials
   const addMaterial = async (material: any) => {
