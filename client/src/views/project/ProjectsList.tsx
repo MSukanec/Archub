@@ -279,10 +279,10 @@ export default function ProjectsOverview() {
             return (
               <div
                 key={project.id}
-                className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-[#e1e1e1] hover:bg-primary/5 ${
+                className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-[#e1e1e1] ${
                   isActiveProject 
                     ? 'border-2 border-primary' 
-                    : 'border-0'
+                    : 'border-2 border-transparent hover:border-primary'
                 }`}
                 onClick={() => handleProjectClick(project)}
               >
@@ -351,7 +351,7 @@ export default function ProjectsOverview() {
                             e.stopPropagation();
                             handleDelete(project);
                           }}
-                          className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
+                          className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

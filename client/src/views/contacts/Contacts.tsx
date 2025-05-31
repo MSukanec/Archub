@@ -291,7 +291,7 @@ export default function Contacts() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleContactActions(contact)}
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50 h-8 w-8 p-0 rounded-lg"
+                          className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 rounded-lg"
                         >
                           <MessageCircle className="h-4 w-4" />
                         </Button>
@@ -300,7 +300,7 @@ export default function Contacts() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(contact)}
-                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -308,7 +308,7 @@ export default function Contacts() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(contact)}
-                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
+                        className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
