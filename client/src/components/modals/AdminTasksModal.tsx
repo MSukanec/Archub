@@ -225,6 +225,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
   // Debug logs
   console.log('All categories:', allCategories);
+  console.log('Materials:', materials);
+  console.log('Actions:', actions);
+  console.log('Task elements:', taskElements);
+  console.log('Units:', units);
   console.log('Selected category ID:', selectedCategoryId);
   console.log('Subcategories filtered:', subcategoriesFiltered);
   console.log('Selected subcategory ID:', selectedSubcategoryId);
@@ -343,9 +347,21 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   const onSubmit = (data: FormData) => {
     console.log('Form submitted with data:', data);
     console.log('Form errors:', form.formState.errors);
+    console.log('Form is valid:', form.formState.isValid);
     console.log('Organization ID from context:', organizationId);
     console.log('Selected action ID:', selectedActionId);
     console.log('Selected element ID:', selectedElementId);
+    
+    // Check if required fields are present
+    if (!organizationId) {
+      console.error('Missing organization ID');
+      toast({
+        title: "Error",
+        description: "ID de organización no encontrado",
+        variant: "destructive",
+      });
+      return;
+    }
     
     const taskData = {
       name: data.name,
