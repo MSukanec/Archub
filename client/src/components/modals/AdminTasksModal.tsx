@@ -602,11 +602,16 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                           field.onChange(value);
                         }} 
                         value={field.value || ''}
-                        disabled={!selectedSubcategoryId}
+                        disabled={!selectedSubcategoryId || taskCategoriesLoading}
                       >
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                            <SelectValue placeholder="Seleccionar elemento" />
+                            <SelectValue placeholder={
+                              taskCategoriesLoading ? "Cargando elementos..." :
+                              !selectedSubcategoryId ? "Primero selecciona un subrubro" :
+                              elementCategoriesFiltered.length === 0 ? "No hay elementos disponibles" :
+                              "Seleccionar elemento"
+                            } />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
