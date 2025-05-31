@@ -9,6 +9,7 @@ interface CircularButtonProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   label?: string;
+  description?: string;
   section?: string;
   tooltipDirection?: 'left' | 'right';
 }
@@ -21,6 +22,7 @@ export default function CircularButton({
   size = 'md',
   section,
   label,
+  description,
   tooltipDirection = 'right'
 }: CircularButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -92,26 +94,33 @@ export default function CircularButton({
         />
       </div>
       
-      {/* Tooltip */}
+      {/* Enhanced Popover Tooltip */}
       {showTooltip && label && (
         <div className={`
           absolute top-1/2 transform -translate-y-1/2
-          px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap
-          shadow-lg z-50 pointer-events-none
-          ${tooltipDirection === 'right' ? 'left-full ml-2' : 'right-full mr-2'}
-          ${isActive 
-            ? 'bg-black text-white' 
-            : 'bg-[#e1e1e1] text-[#919191]'
-          }
+          ${tooltipDirection === 'right' ? 'left-full ml-3' : 'right-full mr-3'}
+          bg-gray-700 text-white rounded-lg shadow-xl z-50 pointer-events-none
+          min-w-[200px] max-w-[250px]
         `}>
-          {label}
+          <div className="p-3">
+            {/* Title in black (or white since bg is dark) */}
+            <div className="font-semibold text-sm text-white mb-1">
+              {label}
+            </div>
+            {/* Description in secondary color */}
+            {description && (
+              <div className="text-xs text-gray-300 leading-relaxed">
+                {description}
+              </div>
+            )}
+          </div>
           {/* Arrow */}
           <div className={`
             absolute top-1/2 transform -translate-y-1/2
-            w-0 h-0 border-t-4 border-b-4 border-transparent
+            w-0 h-0 border-t-[6px] border-b-[6px] border-transparent
             ${tooltipDirection === 'right' 
-              ? `right-full border-r-4 ${isActive ? 'border-r-black' : 'border-r-[#e1e1e1]'}`
-              : `left-full border-l-4 ${isActive ? 'border-l-black' : 'border-l-[#e1e1e1]'}`
+              ? 'right-full border-r-[6px] border-r-gray-700'
+              : 'left-full border-l-[6px] border-l-gray-700'
             }
           `} />
         </div>

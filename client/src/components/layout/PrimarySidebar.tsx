@@ -9,12 +9,42 @@ import { cn } from '@/lib/utils';
 import CircularButton from '@/components/ui/CircularButton';
 
 const topNavigationItems = [
-  { section: 'dashboard' as Section, icon: Home, label: 'Dashboard' },
-  { section: 'organization' as Section, icon: Building2, label: 'Organización' },
-  { section: 'sitelog' as Section, icon: ClipboardList, label: 'Bitácora' },
-  { section: 'contacts' as Section, icon: Calendar, label: 'Agenda' },
-  { section: 'movements' as Section, icon: DollarSign, label: 'Finanzas' },
-  { section: 'budgets' as Section, icon: CreditCard, label: 'Presupuestos' },
+  { 
+    section: 'dashboard' as Section, 
+    icon: Home, 
+    label: 'Dashboard',
+    description: 'Vista general del proyecto, métricas y acceso rápido a funciones principales.'
+  },
+  { 
+    section: 'organization' as Section, 
+    icon: Building2, 
+    label: 'Organización',
+    description: 'Gestión de la empresa, equipos de trabajo y estructura organizacional.'
+  },
+  { 
+    section: 'sitelog' as Section, 
+    icon: ClipboardList, 
+    label: 'Bitácora',
+    description: 'Registro diario de actividades, eventos y seguimiento del progreso de obra.'
+  },
+  { 
+    section: 'contacts' as Section, 
+    icon: Calendar, 
+    label: 'Agenda',
+    description: 'Calendario de eventos, reuniones y gestión de contactos del proyecto.'
+  },
+  { 
+    section: 'movements' as Section, 
+    icon: DollarSign, 
+    label: 'Finanzas',
+    description: 'Control de ingresos, egresos y movimientos financieros del proyecto.'
+  },
+  { 
+    section: 'budgets' as Section, 
+    icon: CreditCard, 
+    label: 'Presupuestos',
+    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.'
+  },
 ];
 
 
@@ -93,12 +123,13 @@ export default function PrimarySidebar() {
           onClick={() => setSection('dashboard')}
           section="dashboard"
           label="Dashboard"
+          description="Vista general del proyecto, métricas y acceso rápido a funciones principales."
         />
       </div>
       
       {/* Center navigation buttons */}
       <div className="flex-1 flex flex-col items-center justify-center space-y-6 pl-2.5">
-        {topNavigationItems.slice(1).map(({ section, icon, label }) => (
+        {topNavigationItems.slice(1).map(({ section, icon, label, description }) => (
           <CircularButton
             key={section}
             icon={icon}
@@ -106,6 +137,7 @@ export default function PrimarySidebar() {
             onClick={() => setSection(section)}
             section={section}
             label={label}
+            description={description}
           />
         ))}
 
@@ -120,6 +152,7 @@ export default function PrimarySidebar() {
           onClick={() => setSection('profile')}
           section="profile"
           label="Perfil"
+          description="Configuración de usuario, suscripción y preferencias de la cuenta."
         />
       </div>
     </div>
