@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Users, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Users, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
 import AdminContactsModal from '@/components/modals/AdminContactsModal';
+import ContactActionsModal from '@/components/modals/ContactActionsModal';
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,6 +41,7 @@ export default function Contacts() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isContactActionsModalOpen, setIsContactActionsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<any>(null);
   
   const ITEMS_PER_PAGE = 10;
@@ -118,6 +120,11 @@ export default function Contacts() {
   const handleEdit = (contact: any) => {
     setSelectedContact(contact);
     setIsEditModalOpen(true);
+  };
+
+  const handleContactActions = (contact: any) => {
+    setSelectedContact(contact);
+    setIsContactActionsModalOpen(true);
   };
 
   const filteredAndSortedContacts = contacts

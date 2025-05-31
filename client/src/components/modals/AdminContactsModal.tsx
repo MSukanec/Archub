@@ -8,6 +8,7 @@ import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, CreateContactData } from '@/lib/contactsService';
@@ -220,23 +221,53 @@ export default function AdminContactsModal({
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="company_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ej: Constructora ABC" 
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="company_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Ej: Constructora ABC" 
+                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contact_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                        <SelectValue placeholder="Seleccionar tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="proveedor">Proveedor</SelectItem>
+                      <SelectItem value="contratista">Contratista</SelectItem>
+                      <SelectItem value="cliente">Cliente</SelectItem>
+                      <SelectItem value="arquitecto">Arquitecto</SelectItem>
+                      <SelectItem value="ingeniero">Ingeniero</SelectItem>
+                      <SelectItem value="técnico">Técnico</SelectItem>
+                      <SelectItem value="inspector">Inspector</SelectItem>
+                      <SelectItem value="otro">Otro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
