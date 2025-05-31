@@ -469,7 +469,16 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       footer={footer}
     >
       <Form {...form}>
-        <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <form 
+          id="task-form" 
+          onSubmit={(e) => {
+            console.log('Form submit triggered!');
+            console.log('Form valid:', form.formState.isValid);
+            console.log('Form errors:', form.formState.errors);
+            form.handleSubmit(onSubmit)(e);
+          }} 
+          className="space-y-2"
+        >
           <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
             <AccordionItem value="basic-info" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
