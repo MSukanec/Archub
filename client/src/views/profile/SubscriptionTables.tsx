@@ -52,7 +52,7 @@ export default function SubscriptionTables() {
       case 'free':
         return <Zap className="h-8 w-8 text-gray-600" />;
       case 'pro':
-        return <Crown className="h-8 w-8 text-green-600" />;
+        return <Crown className="h-8 w-8 text-primary" />;
       case 'enterprise':
         return <Rocket className="h-8 w-8 text-purple-600" />;
       default:
@@ -190,14 +190,14 @@ export default function SubscriptionTables() {
         </div>
 
         {/* Billing Toggle */}
-        <div className="flex items-center justify-center gap-4 p-4 bg-gray-50 rounded-lg border">
+        <div className="flex items-center justify-center gap-4 p-3">
           <span className={`text-sm font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
             Mensual
           </span>
           <Switch
             checked={isAnnual}
             onCheckedChange={setIsAnnual}
-            className="data-[state=checked]:bg-primary"
+            className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-400"
           />
           <span className={`text-sm font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
             Anual
@@ -227,7 +227,11 @@ export default function SubscriptionTables() {
                 </Badge>
               )}
               {planIsUpgrade && (
-                <Badge className="absolute -top-2 right-4 bg-green-500 text-white">
+                <Badge className={`absolute -top-2 right-4 text-white ${
+                  plan.name.toLowerCase() === 'enterprise' 
+                    ? 'bg-purple-500' 
+                    : 'bg-green-500'
+                }`}>
                   <ArrowRight className="h-3 w-3 mr-1" />
                   Upgrade
                 </Badge>
@@ -268,7 +272,11 @@ export default function SubscriptionTables() {
                   })}
                 </div>
                 <Button 
-                  className="w-full" 
+                  className={`w-full ${
+                    plan.name.toLowerCase() === 'enterprise' && planIsUpgrade
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                      : ''
+                  }`}
                   variant={planIsCurrentPlan ? 'secondary' : planIsUpgrade ? 'default' : 'outline'}
                   disabled={planIsCurrentPlan}
                 >
