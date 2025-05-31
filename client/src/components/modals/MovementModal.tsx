@@ -178,8 +178,21 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Fetch contacts
   const { data: contactsList = [] } = useQuery({
     queryKey: ['contacts'],
-    queryFn: contactsService.getAll,
-    enabled: isOpen,
+    queryFn: async () => {
+      if (!organizationId) return [];
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching contacts:', error);
+        return [];
+      }
+      return data || [];
+    },
+    enabled: isOpen && !!organizationId,
   });
 
   // Fetch wallets
@@ -335,7 +348,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground">Categoría <span className="text-primary">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={!selectedTypeId}>
+                      <Select onValueChange={field.onChange} value={field.value || ''} disabled={!selectedTypeId}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder={selectedTypeId ? "Seleccionar categoría" : "Primero selecciona un tipo"} />
@@ -505,7 +518,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-full p-0" align="start">
+                      <PopoverContent className="w-full p-0 z-[10000]" align="start">
                         <Command>
                           <CommandInput 
                             placeholder="Escribir al menos 3 caracteres..."
