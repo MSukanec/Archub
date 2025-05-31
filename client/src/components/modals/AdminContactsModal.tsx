@@ -223,82 +223,78 @@ export default function AdminContactsModal({
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-2 pt-1">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="first_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Nombre</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ej: Juan" 
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Nombre</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Ej: Juan" 
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="last_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Apellido</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ej: Pérez" 
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Apellido</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Ej: Pérez" 
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="company_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ej: Constructora ABC" 
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name="company_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Ej: Constructora ABC" 
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="contact_type_ids"
-                    render={({ field, fieldState }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto</FormLabel>
-                        <FormControl>
-                          <MultiSelectContactTypes
-                            value={field.value}
-                            onChange={field.onChange}
-                            onBlur={field.onBlur}
-                            error={!!fieldState.error}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="contact_type_ids"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto</FormLabel>
+                      <FormControl>
+                        <MultiSelectContactTypes
+                          value={field.value || []}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          error={!!fieldState.error}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

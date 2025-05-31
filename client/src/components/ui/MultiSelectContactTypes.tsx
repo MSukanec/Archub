@@ -27,8 +27,13 @@ export function MultiSelectContactTypes({
 
   const { data: contactTypes = [], isLoading } = useQuery({
     queryKey: ['/api/contact-types'],
-    queryFn: () => contactTypesService.getContactTypes(),
+    queryFn: () => {
+      console.log('Fetching contact types...');
+      return contactTypesService.getContactTypes();
+    },
   });
+
+  console.log('Contact types loaded:', contactTypes);
 
   useEffect(() => {
     setSelectedIds(value);
