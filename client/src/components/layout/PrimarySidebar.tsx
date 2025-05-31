@@ -159,7 +159,7 @@ export default function PrimarySidebar() {
               description={description}
             />
             {/* Timeline line extending to the right for sections that have timeline */}
-            {hasTimeline && (
+            {hasTimeline === true && (
               <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-[calc(100vw-112px)] h-0.5 bg-border/20 pointer-events-none" />
             )}
           </div>
