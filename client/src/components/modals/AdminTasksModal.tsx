@@ -373,27 +373,48 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     createMutation.mutate(data);
   };
 
+  // Check for form errors to display summary
+  const formErrors = form.formState.errors;
+  const hasErrors = Object.keys(formErrors).length > 0;
+
   const footer = (
-    <div className="flex justify-end space-x-2">
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onClose}
-        className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
-      >
-        Cancelar
-      </Button>
-      <Button
-        type="submit"
-        form="task-form"
-        disabled={createMutation.isPending}
-        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
-      >
-        {createMutation.isPending && (
-          <div className="mr-2 h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
-        )}
-        {isEditing ? 'Actualizar Tarea' : 'Crear Tarea'}
-      </Button>
+    <div className="space-y-3">
+      {/* Error summary */}
+      {hasErrors && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <p className="text-sm font-medium text-red-800 mb-2">Por favor completa los siguientes campos:</p>
+          <ul className="text-sm text-red-600 space-y-1">
+            {formErrors.name && <li>• Nombre de la Tarea</li>}
+            {formErrors.category_id && <li>• Categoría de Rubro</li>}
+            {formErrors.subcategory_id && <li>• Subrubro</li>}
+            {formErrors.element_category_id && <li>• Elemento</li>}
+            {formErrors.unit_id && <li>• Unidad</li>}
+          </ul>
+        </div>
+      )}
+      
+      {/* Buttons */}
+      <div className="flex space-x-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="bg-background border-border text-foreground hover:bg-muted rounded-xl flex-[1]"
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          form="task-form"
+          disabled={createMutation.isPending}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl flex-[3]"
+        >
+          {createMutation.isPending && (
+            <div className="mr-2 h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+          )}
+          {isEditing ? 'Actualizar Tarea' : 'Crear Tarea'}
+        </Button>
+      </div>
     </div>
   );
 
