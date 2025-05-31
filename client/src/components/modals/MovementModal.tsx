@@ -285,7 +285,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   name="type_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Tipo *</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Tipo <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={(value) => {
                         field.onChange(value);
                         setSelectedTypeId(value);
@@ -298,7 +298,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           {movementTypes.map((type) => (
-                            <SelectItem key={type.id} value={type.id}>
+                            <SelectItem key={type.id} value={type.id} className="[&>span:first-child]:hidden">
                               {type.name}
                             </SelectItem>
                           ))}
@@ -337,7 +337,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   name="concept_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Categoría *</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Categoría <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value} disabled={!selectedTypeId}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
@@ -346,7 +346,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           {movementCategories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
+                            <SelectItem key={category.id} value={category.id} className="[&>span:first-child]:hidden">
                               {category.name}
                             </SelectItem>
                           ))}
@@ -363,7 +363,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   name="currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Moneda *</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Moneda <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
@@ -371,8 +371,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
-                          <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
-                          <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
+                          <SelectItem value="ARS" className="[&>span:first-child]:hidden">ARS - Peso Argentino</SelectItem>
+                          <SelectItem value="USD" className="[&>span:first-child]:hidden">USD - Dólar Estadounidense</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -388,7 +388,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   name="wallet_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Billetera *</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Billetera <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
@@ -397,7 +397,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </FormControl>
                         <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
                           {walletsList.map((wallet) => (
-                            <SelectItem key={wallet.id} value={wallet.id}>
+                            <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
                               {wallet.name}
                             </SelectItem>
                           ))}
@@ -476,9 +476,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
-                        <SelectItem value="none">Sin contacto</SelectItem>
+                        <SelectItem value="none" className="[&>span:first-child]:hidden">Sin contacto</SelectItem>
                         {contactsList.map((contact) => (
-                          <SelectItem key={contact.id} value={contact.id}>
+                          <SelectItem key={contact.id} value={contact.id} className="[&>span:first-child]:hidden">
                             {getContactDisplayName(contact)}
                           </SelectItem>
                         ))}
