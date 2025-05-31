@@ -314,6 +314,15 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       console.log('- Category:', task.category_id);
       console.log('- Subcategory:', task.subcategory_id);
       console.log('- Element Category:', task.element_category_id);
+      
+      // Sincronizar estado local después de establecer valores jerárquicos
+      setTimeout(() => {
+        const formValues = form.getValues();
+        if (formValues.element_category_id && formValues.element_category_id !== selectedElementCategoryId) {
+          console.log('Syncing element category state:', formValues.element_category_id);
+          setSelectedElementCategoryId(formValues.element_category_id);
+        }
+      }, 50);
     } else if (!task && taskCategoriesStructure) {
       // Creating new task - clear form
       form.reset({
@@ -590,25 +599,37 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                 />
 
                 {/* Elemento */}
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
-                  <Select 
-                    onValueChange={setSelectedElementCategoryId}
-                    value={selectedElementCategoryId}
-                    disabled={!selectedSubcategoryId}
-                  >
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                      <SelectValue placeholder="Seleccionar elemento" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                      {elementCategoriesFiltered.map((element) => (
-                        <SelectItem key={element.id} value={String(element.id)}>
-                          {element.code} - {element.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
+                <FormField
+                  control={form.control}
+                  name="element_category_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
+                      <Select 
+                        onValueChange={(value) => {
+                          setSelectedElementCategoryId(value);
+                          field.onChange(value);
+                        }}
+                        value={field.value || ''}
+                        disabled={!selectedSubcategoryId}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                            <SelectValue placeholder="Seleccionar elemento" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          {elementCategoriesFiltered.map((element) => (
+                            <SelectItem key={element.id} value={String(element.id)}>
+                              {element.code} - {element.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
               </AccordionContent>
             </AccordionItem>
