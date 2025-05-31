@@ -85,7 +85,7 @@ export const contactsService = {
     if (contact_type_ids && contact_type_ids.length > 0) {
       const typeLinks = contact_type_ids.map(typeId => ({
         contact_id: data.id,
-        contact_type_id: typeId
+        type_id: typeId
       }));
 
       const { error: typesError } = await supabase
@@ -136,7 +136,7 @@ export const contactsService = {
       if (contact_type_ids.length > 0) {
         const typeLinks = contact_type_ids.map(typeId => ({
           contact_id: id,
-          contact_type_id: typeId
+          type_id: typeId
         }));
 
         const { error: typesError } = await supabase
