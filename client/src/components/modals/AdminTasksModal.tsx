@@ -261,6 +261,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
   useEffect(() => {
     if (isOpen) {
       if (task) {
+        console.log('Loading task for edit:', task);
+        console.log('Task category_id:', task.category_id);
+        console.log('Task subcategory_id:', task.subcategory_id);
+        console.log('Task element_category_id:', task.element_category_id);
+        
         // Editing existing task
         form.reset({
           name: task.name || '',
@@ -280,7 +285,12 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         setSelectedElementCategoryId(task.element_category_id || '');
         setSelectedActionId(task.action_id || '');
         setSelectedElementId(task.element_id || '');
+        
+        console.log('Set selected category:', task.category_id);
+        console.log('Set selected subcategory:', task.subcategory_id);
+        console.log('Set selected element category:', task.element_category_id);
       } else {
+        console.log('Creating new task - clearing all fields');
         // Creating new task - clear everything
         form.reset({
           name: '',
@@ -305,7 +315,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         setMaterialUnitCost('');
       }
     }
-  }, [task, isOpen, allCategories, actions, taskElements, form]);
+  }, [task, isOpen, form]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateTaskData) => tasksService.create(data),
