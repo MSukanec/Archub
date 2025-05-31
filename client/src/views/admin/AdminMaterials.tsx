@@ -295,7 +295,7 @@ export default function AdminMaterials() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(material)}
-                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>

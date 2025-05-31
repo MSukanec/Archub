@@ -96,11 +96,8 @@ export default function ProjectsOverview() {
   }, []);
 
   const handleEdit = (project: Project) => {
-    // Funcionalidad de edición a implementar
-    toast({
-      title: "Función en desarrollo",
-      description: "La edición de proyectos estará disponible próximamente.",
-    });
+    setSelectedProject(project);
+    setIsCreateModalOpen(true);
   };
 
   const handleDelete = (project: Project) => {
@@ -331,7 +328,7 @@ export default function ProjectsOverview() {
                             e.stopPropagation();
                             handleViewProject(project);
                           }}
-                          className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
+                          className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
                           title="Ver información del proyecto"
                         >
                           <Eye className="h-4 w-4" />
@@ -343,7 +340,7 @@ export default function ProjectsOverview() {
                             e.stopPropagation();
                             handleEdit(project);
                           }}
-                          className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
+                          className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
