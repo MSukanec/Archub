@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Wrench, DollarSign, Package, CheckSquare } from 'lucide-react';
+import { Wrench, DollarSign, Package, CheckSquare, Search, X } from 'lucide-react';
 
 // Schema for form validation
 const createTaskSchema = z.object({
@@ -59,6 +59,13 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedActionId, setSelectedActionId] = useState<string>('');
   const [selectedElementId, setSelectedElementId] = useState<string>('');
+  const [materialSearchTerm, setMaterialSearchTerm] = useState<string>('');
+  const [selectedMaterials, setSelectedMaterials] = useState<Array<{
+    material_id: string;
+    material_name: string;
+    quantity: string;
+    unit_cost: string;
+  }>>([]);
   const isEditing = !!task;
 
   // Use hierarchical concepts hook for task categories (same as MovementModal)
@@ -107,6 +114,24 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       return data;
     },
     enabled: isOpen,
+  });
+
+  // Fetch materials for search (only when search term is >= 3 characters)
+  const { data: materials = [] } = useQuery({
+    queryKey: ['materials-search', materialSearchTerm],
+    queryFn: async () => {
+      if (materialSearchTerm.length < 3) return [];
+      
+      const { data, error } = await supabase
+        .from('materials')
+        .select('id, name, units(name)')
+        .ilike('name', `%${materialSearchTerm}%`)
+        .limit(20);
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen && materialSearchTerm.length >= 3,
   });
 
   // Fetch units
@@ -176,6 +201,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
         setSelectedCategoryId('');
         setSelectedActionId('');
         setSelectedElementId('');
+        setMaterialSearchTerm('');
+        setSelectedMaterials([]);
         
         form.reset({
           name: '',
@@ -191,6 +218,36 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       }
     }
   }, [task, isOpen, taskCategoriesStructure, isEditing, form, actions, taskElements, units]);
+
+  // Functions to handle materials
+  const addMaterial = (material: any) => {
+    const isAlreadySelected = selectedMaterials.some(m => m.material_id === material.id);
+    if (!isAlreadySelected) {
+      setSelectedMaterials(prev => [...prev, {
+        material_id: material.id,
+        material_name: material.name,
+        quantity: '1',
+        unit_cost: '0'
+      }]);
+    }
+    setMaterialSearchTerm('');
+  };
+
+  const removeMaterial = (materialId: string) => {
+    setSelectedMaterials(prev => prev.filter(m => m.material_id !== materialId));
+  };
+
+  const updateMaterialQuantity = (materialId: string, quantity: string) => {
+    setSelectedMaterials(prev => prev.map(m => 
+      m.material_id === materialId ? { ...m, quantity } : m
+    ));
+  };
+
+  const updateMaterialCost = (materialId: string, unit_cost: string) => {
+    setSelectedMaterials(prev => prev.map(m => 
+      m.material_id === materialId ? { ...m, unit_cost } : m
+    ));
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -566,6 +623,98 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                     )}
                   />
                 </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Materials Section */}
+            <AccordionItem value="materials" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-primary" />
+                  Materiales
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="space-y-3 pt-3">
+                {/* Material Search */}
+                <div className="space-y-2">
+                  <FormLabel className="text-xs font-medium text-foreground">Buscar Material</FormLabel>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Escriba al menos 3 caracteres para buscar..."
+                      value={materialSearchTerm}
+                      onChange={(e) => setMaterialSearchTerm(e.target.value)}
+                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm pl-10"
+                    />
+                  </div>
+                  
+                  {/* Search Results */}
+                  {materialSearchTerm.length >= 3 && materials.length > 0 && (
+                    <div className="max-h-32 overflow-y-auto border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                      {materials.map((material) => (
+                        <div
+                          key={material.id}
+                          onClick={() => addMaterial(material)}
+                          className="p-2 hover:bg-[#c2c2c2] cursor-pointer border-b border-[#919191]/10 last:border-b-0"
+                        >
+                          <div className="text-sm font-medium">{material.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {material.units?.name || 'Sin unidad'}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {materialSearchTerm.length >= 3 && materials.length === 0 && (
+                    <div className="text-xs text-muted-foreground p-2 border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                      No se encontraron materiales
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected Materials */}
+                {selectedMaterials.length > 0 && (
+                  <div className="space-y-2">
+                    <FormLabel className="text-xs font-medium text-foreground">Materiales Seleccionados</FormLabel>
+                    {selectedMaterials.map((material) => (
+                      <div key={material.material_id} className="flex items-center gap-2 p-3 border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium">{material.material_name}</div>
+                        </div>
+                        <div className="w-20">
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="Cantidad"
+                            value={material.quantity}
+                            onChange={(e) => updateMaterialQuantity(material.material_id, e.target.value)}
+                            className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs"
+                          />
+                        </div>
+                        <div className="w-24">
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="Costo"
+                            value={material.unit_cost}
+                            onChange={(e) => updateMaterialCost(material.material_id, e.target.value)}
+                            className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeMaterial(material.material_id)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 h-auto"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
