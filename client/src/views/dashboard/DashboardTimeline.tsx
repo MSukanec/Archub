@@ -531,73 +531,9 @@ function DashboardTimeline() {
         );
       })()}
 
-      {/* Five horizontal timeline lines - dynamically positioned based on sidebar button measurements */}
-      {Object.keys(sidebarButtonPositions).length > 0 && (
-        <>
-          {/* Line 1 - Organization */}
-          {sidebarButtonPositions.organization && (
-            <div 
-              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
-              style={{ 
-                top: `${sidebarButtonPositions.organization}px`
-              }}
-            />
-          )}
-          
-          {/* Line 2 - Bitácora */}
-          {sidebarButtonPositions.sitelog && (
-            <div 
-              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
-              style={{ 
-                top: `${sidebarButtonPositions.sitelog}px`
-              }}
-            />
-          )}
-          
-          {/* Line 3 - Agenda */}
-          {sidebarButtonPositions.contacts && (
-            <div 
-              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
-              style={{ 
-                top: `${sidebarButtonPositions.contacts}px`
-              }}
-            />
-          )}
-          
-          {/* Line 4 - Finanzas */}
-          {sidebarButtonPositions.movements && (
-            <div 
-              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
-              style={{ 
-                top: `${sidebarButtonPositions.movements}px`
-              }}
-            />
-          )}
-          
-          {/* Line 5 - Presupuestos */}
-          {sidebarButtonPositions.budgets && (
-            <div 
-              className="absolute left-0 right-0 h-px bg-border z-10 pointer-events-none"
-              style={{ 
-                top: `${sidebarButtonPositions.budgets}px`
-              }}
-            />
-          )}
-        </>
-      )}
 
-      {/* "HOY" marker - perfectly centered vertical line */}
-      <div 
-        className="absolute z-40 pointer-events-none"
-        style={{
-          left: '50%',
-          top: '0',
-          width: '1px',
-          height: '100%',
-          backgroundColor: 'black',
-          transform: 'translateX(-50%)'
-        }}
-      ></div>
+
+
 
       {/* Infinite horizontal timeline */}
       <div 
@@ -620,16 +556,7 @@ function DashboardTimeline() {
                 transform: 'translateY(-50%)'
               }}
             >
-              {/* Vertical separator line */}
-              <div 
-                className="absolute w-px bg-border/30 z-20"
-                style={{
-                  top: sidebarButtonPositions.dashboard ? `${sidebarButtonPositions.dashboard - window.innerHeight/2}px` : '-400px',
-                  bottom: sidebarButtonPositions.profile ? `${window.innerHeight - sidebarButtonPositions.profile}px` : '40px',
-                  left: '0',
-                  transform: 'translateX(-50%)'
-                }}
-              />
+
 
 
 

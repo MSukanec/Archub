@@ -204,7 +204,7 @@ export default function PrimarySidebar() {
 
       {/* Project selector */}
       <div className="flex items-center justify-center pt-2 pl-2.5 relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group">
+        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group hover:pressed">
           <span className="text-sm font-bold text-gray-700">
             {getProjectInitials(currentProject)}
           </span>
