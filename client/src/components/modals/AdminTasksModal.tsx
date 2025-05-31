@@ -327,11 +327,16 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
             amount: parseFloat(material.amount) || 0,
           }));
 
+          console.log('Inserting task materials:', taskMaterialsData);
+
           const { error: materialsError } = await supabase
             .from('task_materials')
             .insert(taskMaterialsData);
 
-          if (materialsError) throw materialsError;
+          if (materialsError) {
+            console.error('Task materials error:', materialsError);
+            throw materialsError;
+          }
         }
 
         return result;
@@ -371,9 +376,9 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     <div className="space-y-3">
       {/* Error summary */}
       {hasErrors && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-sm font-medium text-red-800 mb-2">Por favor completa los siguientes campos:</p>
-          <ul className="text-sm text-red-600 space-y-1">
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
+          <p className="text-sm font-medium text-primary mb-2">Por favor completa los siguientes campos:</p>
+          <ul className="text-sm text-primary/80 space-y-1">
             {formErrors.name && <li>• Nombre de la Tarea</li>}
             {formErrors.category_id && <li>• Categoría de Rubro</li>}
             {formErrors.subcategory_id && <li>• Subrubro</li>}
