@@ -240,7 +240,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
         <div className="space-y-4">
           {/* Campo del proyecto activo (bloqueado) */}
           <FormItem>
-            <FormLabel className="flex items-center gap-2">
+            <FormLabel className="text-xs font-medium text-foreground flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Proyecto
             </FormLabel>
@@ -248,7 +248,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
               <Input
                 value={currentProject?.name || 'Cargando...'}
                 disabled
-                className="bg-muted cursor-not-allowed"
+                className="bg-muted cursor-not-allowed rounded-lg"
               />
             </FormControl>
           </FormItem>
@@ -258,10 +258,11 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre del Presupuesto *</FormLabel>
+                <FormLabel className="text-xs font-medium text-foreground">Nombre del Presupuesto <span className="text-primary">*</span></FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Ej: Presupuesto General de Obra"
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -275,11 +276,12 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Descripción (opcional)</FormLabel>
+                <FormLabel className="text-xs font-medium text-foreground">Descripción (opcional)</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Descripción del presupuesto..."
                     rows={3}
+                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
                     {...field}
                   />
                 </FormControl>
@@ -294,14 +296,14 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estado *</FormLabel>
+                  <FormLabel className="text-xs font-medium text-foreground">Estado <span className="text-primary">*</span></FormLabel>
                   <Select 
                     onValueChange={field.onChange} 
                     value={field.value || 'draft'}
                     defaultValue="draft"
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                         <SelectValue placeholder="Selecciona el estado" />
                       </SelectTrigger>
                     </FormControl>
