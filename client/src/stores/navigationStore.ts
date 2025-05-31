@@ -48,7 +48,7 @@ const sectionViewMap: Record<Section, View> = {
   budgets: 'budgets-list',
   sitelog: 'sitelog-main',
   movements: 'movements-main',
-  contacts: 'schedule',
+  contacts: 'contacts',
   'admin-community': 'admin-organizations',
   'admin-library': 'admin-tasks',
   profile: 'profile-info',
