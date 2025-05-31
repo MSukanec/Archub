@@ -104,6 +104,9 @@ export default function FloatingActionButton() {
   const { organizationId } = useUserContextStore();
   const { checkLimit: checkProjectLimit } = useFeatures();
 
+  // Debug log para verificar currentView
+  console.log('FloatingActionButton currentView:', currentView);
+
   // Obtener conteo de proyectos para verificar límites
   const { data: projects = [] } = useQuery({
     queryKey: ['/api/projects', organizationId],
