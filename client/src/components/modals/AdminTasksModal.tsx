@@ -241,7 +241,23 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   }, [task, isOpen, taskCategoriesStructure, isEditing, form, actions, taskElements, units]);
 
   // Functions to handle materials
-  const addMaterial = (material: any) => {
+  const addMaterial = async (material: any) => {
+    // Verify the material exists in the database before adding
+    const { data: existingMaterial, error } = await supabase
+      .from('materials')
+      .select('id, name')
+      .eq('id', material.id)
+      .single();
+
+    if (error || !existingMaterial) {
+      toast({
+        title: "Error",
+        description: "Este material no está disponible en la base de datos",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const isAlreadySelected = selectedMaterials.some(m => m.material_id === material.id);
     if (!isAlreadySelected) {
       setSelectedMaterials(prev => [...prev, {
