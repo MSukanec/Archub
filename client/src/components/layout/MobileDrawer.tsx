@@ -140,7 +140,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-80 shadow-xl z-50 transform transition-transform duration-300 ease-in-out",
+          "fixed top-0 left-0 h-full w-80 shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
         style={{ backgroundColor: '#d2d2d2' }}
@@ -270,9 +270,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           </ul>
         </nav>
 
-        {/* User Info fixed at bottom */}
+        {/* User Info - Fixed at absolute bottom */}
         {user && (
-          <div className="mt-auto p-4 border-t border-[#919191]/20">
+          <div className="p-4 border-t border-[#919191]/20 mt-auto">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">
