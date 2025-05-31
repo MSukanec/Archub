@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Building2, MapPin, Filter, MessageCircle, Users } from 'lucide-react';
+import { Search, Edit, Trash2, Users, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
 import { contactTypesService, ContactType } from '@/lib/contactTypesService';
-import ContactModal from '@/components/modals/ContactModal';
+import ContactsModal from '@/components/modals/ContactsModal';
 
 // Extended contact with types
 interface ContactWithTypes extends Contact {
@@ -20,39 +19,19 @@ interface ContactWithTypes extends Contact {
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [sortOrder, setSortOrder] = useState<string>('asc');
+  const [selectedType, setSelectedType] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
   const [contactsWithTypes, setContactsWithTypes] = useState<ContactWithTypes[]>([]);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Listen for floating action button events
-  useEffect(() => {
-    const handleOpenCreateContactModal = () => {
-      setSelectedContact(null);
-      setIsModalOpen(true);
-    };
-
-    window.addEventListener('openCreateContactModal', handleOpenCreateContactModal);
-    return () => {
-      window.removeEventListener('openCreateContactModal', handleOpenCreateContactModal);
-    };
-  }, []);
-
   // Fetch contacts
-  const { data: contacts = [], isLoading, error } = useQuery({
+  const { data: contacts = [], isLoading } = useQuery({
     queryKey: ['contacts'],
     queryFn: contactsService.getAll,
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    gcTime: 10 * 60 * 1000, // 10 minutos
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    retry: false, // No reintentos para evitar bucles
   });
 
   // Fetch available contact types for filtering
@@ -60,11 +39,6 @@ export default function Contacts() {
     queryKey: ['contact-types'],
     queryFn: contactTypesService.getAll,
   });
-
-  // Log error if any
-  if (error) {
-    console.error('Error fetching contacts:', error);
-  }
 
   // Load contact types for each contact
   useEffect(() => {
@@ -79,18 +53,6 @@ export default function Contacts() {
       setContactsWithTypes([]);
     }
   }, [contacts]);
-
-  // Force refresh when contact types change
-  useEffect(() => {
-    if (contacts.length > 0) {
-      Promise.all(
-        contacts.map(async (contact) => {
-          const types = await contactTypesService.getContactTypes(contact.id);
-          return { ...contact, contact_types: types };
-        })
-      ).then(setContactsWithTypes);
-    }
-  }, [availableTypes, contacts]);
 
   // Delete contact mutation
   const deleteMutation = useMutation({
@@ -113,11 +75,14 @@ export default function Contacts() {
     },
   });
 
-  const handleEdit = async (contact: Contact) => {
+  const handleCreate = () => {
+    setSelectedContact(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (contact: Contact) => {
     setSelectedContact(contact);
     setIsModalOpen(true);
-    // Force reload of contact types to ensure fresh data
-    queryClient.invalidateQueries({ queryKey: ['contact-types'] });
   };
 
   const handleDelete = (contact: Contact) => {
@@ -136,32 +101,19 @@ export default function Contacts() {
     setSelectedContact(null);
   };
 
-
-
-  // Filter and sort contacts based on search term, selected type, and alphabetical order
-  const filteredContacts = contactsWithTypes
-    .filter(contact => {
-      const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
-      const matchesSearch = 
-        fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      const matchesType = selectedType === '' || selectedType === 'all' || 
-        (contact.contact_types && contact.contact_types.some(type => type.id === selectedType));
-      
-      return matchesSearch && matchesType;
-    })
-    .sort((a, b) => {
-      const nameA = `${a.first_name} ${a.last_name || ''}`.trim().toLowerCase();
-      const nameB = `${b.first_name} ${b.last_name || ''}`.trim().toLowerCase();
-      
-      if (sortOrder === 'asc') {
-        return nameA.localeCompare(nameB);
-      } else {
-        return nameB.localeCompare(nameA);
-      }
-    });
+  // Filter contacts based on search term and selected type
+  const filteredContacts = contactsWithTypes.filter(contact => {
+    const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim();
+    const matchesSearch = 
+      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (contact.company_name && contact.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesType = !selectedType || 
+      (contact.contact_types && contact.contact_types.some(type => type.id === selectedType));
+    
+    return matchesSearch && matchesType;
+  });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
@@ -171,28 +123,17 @@ export default function Contacts() {
     });
   };
 
-  const getTypeColor = (index: number) => {
-    const colors = [
-      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-      'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
-    ];
-    return colors[index % colors.length];
-  };
-
   return (
-    <div className="flex-1 space-y-4" style={{ padding: '37px' }}>
+    <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="bg-[#e1e1e1] rounded-lg p-6 border border-gray-200 shadow-sm">
+      <div className="shrink-0 bg-[#e1e1e1] p-6 border-b border-[#919191]/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#919191]/10 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-[#919191]" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-[#919191]">Gestión de Equipo</h1>
+              <h1 className="text-xl font-semibold text-[#919191]">Gestión de Contactos</h1>
               <p className="text-sm text-[#919191]/70">
                 Administra contactos de proveedores, contratistas y colaboradores
               </p>
@@ -201,24 +142,24 @@ export default function Contacts() {
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="bg-[#e1e1e1] rounded-lg p-4 border border-gray-200 shadow-sm">
+      {/* Filters */}
+      <div className="shrink-0 bg-[#e1e1e1] p-4 border-b border-[#919191]/20">
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
             <Input
               placeholder="Buscar contactos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 bg-white border-gray-300"
+              className="pl-9 bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary"
             />
             <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#919191]/60" />
           </div>
           <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-48 bg-white border-gray-300">
+            <SelectTrigger className="w-48 bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los tipos</SelectItem>
+            <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+              <SelectItem value="">Todos los tipos</SelectItem>
               {availableTypes.map((type) => (
                 <SelectItem key={type.id} value={type.id}>
                   {type.name}
@@ -226,152 +167,112 @@ export default function Contacts() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={sortOrder} onValueChange={setSortOrder}>
-            <SelectTrigger className="w-40 bg-white border-gray-300">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="asc">A - Z</SelectItem>
-              <SelectItem value="desc">Z - A</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
-      {/* Contacts Table */}
-      <div className="bg-[#e1e1e1] rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-white/50">
-              <TableHead className="text-center font-medium text-[#919191]">Nombre</TableHead>
-              <TableHead className="text-center font-medium text-[#919191]">Apellido</TableHead>
-              <TableHead className="text-center font-medium text-[#919191]">Tipo</TableHead>
-              <TableHead className="text-center font-medium text-[#919191]">Contacto</TableHead>
-              <TableHead className="text-center font-medium text-[#919191]">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-[#919191]/70">
-                  Cargando contactos...
-                </TableCell>
+      {/* Table */}
+      <div className="flex-1 overflow-hidden bg-[#e1e1e1]">
+        <div className="h-full overflow-auto">
+          <Table>
+            <TableHeader className="sticky top-0 bg-[#e1e1e1] z-10">
+              <TableRow className="border-b border-[#919191]/20">
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1]">Nombre</TableHead>
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1]">Empresa</TableHead>
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1]">Tipos</TableHead>
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1]">Email</TableHead>
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1]">Teléfono</TableHead>
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1]">Ubicación</TableHead>
+                <TableHead className="text-xs font-medium text-[#919191] bg-[#e1e1e1] text-center">Acciones</TableHead>
               </TableRow>
-            ) : filteredContacts.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-[#919191]/70">
-                  {contactsWithTypes.length === 0 ? 'No hay contactos registrados.' : 'No se encontraron contactos que coincidan con los filtros.'}
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredContacts.map((contact, index) => (
-                <TableRow key={contact.id} className={index % 2 === 0 ? 'bg-white/30' : 'bg-white/10'}>
-                  <TableCell className="font-medium text-center text-[#919191]">{contact.first_name}</TableCell>
-                  <TableCell className="text-center text-[#919191]">{contact.last_name || '-'}</TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {contact.contact_types && contact.contact_types.length > 0 ? (
-                        contact.contact_types.map((type, index) => (
-                          <Badge key={type.id} className="bg-[#919191]/20 text-[#919191] text-xs">
-                            {type.name}
-                          </Badge>
-                        ))
-                      ) : (
-                        <span className="text-[#919191]/50 text-sm">Sin tipo</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center gap-2 justify-center">
-                      {contact.phone && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const formattedPhone = contact.phone!.replace(/\D/g, '');
-                                  const whatsappUrl = `https://wa.me/${formattedPhone}`;
-                                  window.open(whatsappUrl, '_blank');
-                                }}
-                                className="h-8 w-8 p-0 border-[#919191]/30 text-green-600 hover:text-green-700 hover:bg-green-50"
-                              >
-                                <MessageCircle className="h-4 w-4" />
-                                <span className="sr-only">WhatsApp</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Contactar por WhatsApp</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                      {contact.email && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const mailtoUrl = `mailto:${contact.email}`;
-                                  window.location.href = mailtoUrl;
-                                }}
-                                className="h-8 w-8 p-0 border-[#919191]/30 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                              >
-                                <Mail className="h-4 w-4" />
-                                <span className="sr-only">Email</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Enviar email</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                      {!contact.phone && !contact.email && (
-                        <span className="text-[#919191]/50 text-sm">Sin contacto</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(contact)}
-                        className="h-8 w-8 p-0 border-[#919191]/30 text-[#919191] hover:text-[#919191] hover:bg-[#919191]/10"
-                      >
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Editar contacto</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(contact)}
-                        className="h-8 w-8 p-0 border-[#919191]/30 text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Eliminar contacto</span>
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center text-[#919191]/70">
+                    Cargando contactos...
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredContacts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center text-[#919191]/70">
+                    {contactsWithTypes.length === 0 ? 'No hay contactos registrados.' : 'No se encontraron contactos que coincidan con los filtros.'}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredContacts.map((contact) => (
+                  <TableRow key={contact.id} className="border-b border-[#919191]/10 hover:bg-[#919191]/5">
+                    <TableCell className="text-sm text-[#919191]">
+                      {`${contact.first_name} ${contact.last_name || ''}`.trim()}
+                    </TableCell>
+                    <TableCell className="text-sm text-[#919191]">
+                      {contact.company_name || '-'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {contact.contact_types && contact.contact_types.length > 0 ? (
+                          contact.contact_types.map((type) => (
+                            <Badge key={type.id} className="bg-[#919191]/20 text-[#919191] text-xs">
+                              {type.name}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-[#919191]/50 text-sm">Sin tipo</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-[#919191]">
+                      {contact.email || '-'}
+                    </TableCell>
+                    <TableCell className="text-sm text-[#919191]">
+                      {contact.phone || '-'}
+                    </TableCell>
+                    <TableCell className="text-sm text-[#919191]">
+                      {contact.location || '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(contact)}
+                          className="h-8 w-8 p-0 text-[#919191] hover:text-[#919191] hover:bg-[#919191]/10"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(contact)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={handleCreate}
+          className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       </div>
 
       {/* Contact Modal */}
-      <ContactModal
+      <ContactsModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         contact={selectedContact}
       />
-
-
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
