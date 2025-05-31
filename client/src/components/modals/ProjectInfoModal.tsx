@@ -16,9 +16,9 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
     const message = `📋 *Información del Proyecto*\n\n` +
       `🏗️ *Proyecto:* ${project.name}\n` +
       `👤 *Cliente:* ${project.client_name || 'No especificado'}\n` +
-      `📍 *Ubicación:* ${project.location || 'No especificada'}\n` +
-      `📞 *Teléfono:* ${project.client_phone || 'No especificado'}\n` +
-      `📧 *Email:* ${project.client_email || 'No especificado'}`;
+      `📍 *Ubicación:* ${project.address || 'No especificada'}\n` +
+      `📞 *Teléfono:* ${project.contact_phone || 'No especificado'}\n` +
+      `📧 *Email:* ${project.email || 'No especificado'}`;
     
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -41,8 +41,8 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
         <div className="space-y-4">
           {/* Client */}
           <div className="flex items-start gap-3 p-4 bg-white/50 rounded-lg">
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <User className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-800 mb-1">Cliente</h3>
@@ -52,28 +52,28 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
 
           {/* Location */}
           <div className="flex items-start gap-3 p-4 bg-white/50 rounded-lg">
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <MapPin className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <MapPin className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-800 mb-1">Ubicación</h3>
-              <p className="text-gray-600">{project.location || 'No especificada'}</p>
+              <p className="text-gray-600">{project.address || 'No especificada'}</p>
             </div>
           </div>
 
           {/* Contact Info */}
-          {(project.client_phone || project.client_email) && (
+          {(project.contact_phone || project.email) && (
             <div className="space-y-3">
-              {project.client_phone && (
+              {project.contact_phone && (
                 <div className="flex items-center justify-between p-3 bg-white/30 rounded-lg">
                   <span className="text-gray-700">📞 Teléfono</span>
-                  <span className="font-medium text-gray-800">{project.client_phone}</span>
+                  <span className="font-medium text-gray-800">{project.contact_phone}</span>
                 </div>
               )}
-              {project.client_email && (
+              {project.email && (
                 <div className="flex items-center justify-between p-3 bg-white/30 rounded-lg">
                   <span className="text-gray-700">📧 Email</span>
-                  <span className="font-medium text-gray-800">{project.client_email}</span>
+                  <span className="font-medium text-gray-800">{project.email}</span>
                 </div>
               )}
             </div>

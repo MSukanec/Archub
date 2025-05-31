@@ -270,9 +270,8 @@ export default function ProjectsOverview() {
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      {/* Projects List */}
+        {/* Projects List */}
       {filteredProjects.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
@@ -408,6 +407,7 @@ export default function ProjectsOverview() {
           })}
         </div>
       )}
+      </div>
 
       <CreateProjectModal 
         isOpen={isCreateModalOpen}
