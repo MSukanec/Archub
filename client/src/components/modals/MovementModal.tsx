@@ -119,11 +119,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
             movement 
           });
           
-          // Use hierarchical form setter first
-          setHierarchicalFormValues(form, conceptPath, ['type_id', 'concept_id']);
-          
-          // Then set the selected type for dependent selects
+          // Set the selected type FIRST for dependent selects
           setSelectedTypeId(typeId);
+          
+          // Then use hierarchical form setter with a small delay to ensure UI is ready
+          setTimeout(() => {
+            setHierarchicalFormValues(form, conceptPath, ['type_id', 'concept_id']);
+          }, 10);
           
           // Set other form values
           form.setValue('created_at', movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
