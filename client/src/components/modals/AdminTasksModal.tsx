@@ -345,6 +345,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
       const taskData = {
         name: taskName,
+        description: data.description || null,
         organization_id: organizationId,
         category_id: data.category_id,
         subcategory_id: data.subcategory_id,

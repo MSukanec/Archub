@@ -286,6 +286,7 @@ export default function AdminTasks() {
             <TableRow className="border-border bg-muted/50">
               <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Descripción</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Precio M.O.</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Precio Mat.</TableHead>
@@ -295,7 +296,7 @@ export default function AdminTasks() {
           <TableBody>
             {paginatedTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-4 h-8">
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-4 h-8">
                   {searchTerm || categoryFilter 
                     ? 'No se encontraron tareas que coincidan con los filtros.'
                     : 'No hay tareas registradas.'
@@ -312,6 +313,11 @@ export default function AdminTasks() {
                   </TableCell>
                   <TableCell className="py-1 text-center">
                     <div className="font-medium text-foreground">{task.name}</div>
+                  </TableCell>
+                  <TableCell className="py-1 text-center">
+                    <div className="text-sm text-muted-foreground max-w-48 truncate">
+                      {task.description || 'Sin descripción'}
+                    </div>
                   </TableCell>
                   <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
