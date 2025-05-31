@@ -213,23 +213,23 @@ export default function AdminContactsModal({
     >
       <Form {...form}>
         <form id="contact-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Accordion type="multiple" defaultValue={["datos-basicos", "contacto", "notas"]} className="space-y-2">
+          <Accordion type="single" collapsible defaultValue="datos-basicos" className="w-full space-y-1">
             {/* Datos Básicos */}
-            <AccordionItem value="datos-basicos" className="border border-border rounded-xl bg-card/30">
-              <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-foreground">Datos Básicos</span>
+            <AccordionItem value="datos-basicos" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Datos Básicos
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4 space-y-4">
+              <AccordionContent className="space-y-2 pt-1">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="first_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Nombre *</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Nombre</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Ej: Juan" 
@@ -247,7 +247,7 @@ export default function AdminContactsModal({
                     name="last_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Apellido (opcional)</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Apellido</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Ej: Pérez" 
@@ -267,7 +267,7 @@ export default function AdminContactsModal({
                     name="company_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Empresa (opcional)</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Ej: Constructora ABC" 
@@ -285,7 +285,7 @@ export default function AdminContactsModal({
                     name="contact_type_ids"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto (opcional)</FormLabel>
+                        <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto</FormLabel>
                         <FormControl>
                           <MultiSelectContactTypes
                             value={field.value}
@@ -305,7 +305,7 @@ export default function AdminContactsModal({
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Ubicación (opcional)</FormLabel>
+                      <FormLabel className="text-xs font-medium text-foreground">Ubicación</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Ej: Buenos Aires, Argentina" 
