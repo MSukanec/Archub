@@ -64,10 +64,13 @@ export const contactsService = {
       throw new Error('No se pudo obtener la organización del usuario');
     }
 
+    // Separate contact_type_ids from main contact data
+    const { contact_type_ids, ...mainContactData } = contactData;
+
     const { data, error } = await supabase
       .from('contacts')
       .insert([{
-        ...contactData,
+        ...mainContactData,
         organization_id: organizationId
       }])
       .select()
@@ -77,6 +80,23 @@ export const contactsService = {
       console.error('Error creating contact:', error);
       throw new Error('Error al crear el contacto');
     }
+
+    // If contact types are provided, insert them into contact_type_links
+    if (contact_type_ids && contact_type_ids.length > 0) {
+      const typeLinks = contact_type_ids.map(typeId => ({
+        contact_id: data.id,
+        contact_type_id: typeId
+      }));
+
+      const { error: typesError } = await supabase
+        .from('contact_type_links')
+        .insert(typeLinks);
+
+      if (typesError) {
+        console.error('Error linking contact types:', typesError);
+        // Continue even if types fail, contact is created
+      }
+    }
     
     return data;
   },
@@ -85,9 +105,12 @@ export const contactsService = {
     console.log('Updating contact with ID:', id);
     console.log('Update data:', contactData);
     
+    // Separate contact_type_ids from main contact data
+    const { contact_type_ids, ...mainContactData } = contactData;
+    
     const { data, error } = await supabase
       .from('contacts')
-      .update(contactData)
+      .update(mainContactData)
       .eq('id', id)
       .select()
       .single();
@@ -95,6 +118,35 @@ export const contactsService = {
     if (error) {
       console.error('Error updating contact:', error);
       throw new Error('Error al actualizar el contacto');
+    }
+
+    // Handle contact types if provided
+    if (contact_type_ids !== undefined) {
+      // First, delete existing contact type links
+      const { error: deleteError } = await supabase
+        .from('contact_type_links')
+        .delete()
+        .eq('contact_id', id);
+
+      if (deleteError) {
+        console.error('Error deleting existing contact types:', deleteError);
+      }
+
+      // Then, insert new contact type links if any
+      if (contact_type_ids.length > 0) {
+        const typeLinks = contact_type_ids.map(typeId => ({
+          contact_id: id,
+          contact_type_id: typeId
+        }));
+
+        const { error: typesError } = await supabase
+          .from('contact_type_links')
+          .insert(typeLinks);
+
+        if (typesError) {
+          console.error('Error linking contact types:', typesError);
+        }
+      }
     }
     
     console.log('Contact updated successfully:', data);
