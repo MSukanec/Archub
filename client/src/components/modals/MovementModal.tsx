@@ -297,7 +297,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-1">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Tipo */}
                 <FormField
                   control={form.control}
@@ -349,7 +349,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Categoría */}
                 <FormField
                   control={form.control}
@@ -400,7 +400,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Billetera */}
                 <FormField
                   control={form.control}

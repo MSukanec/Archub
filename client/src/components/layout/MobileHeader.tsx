@@ -70,10 +70,9 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
         {/* Botón hamburguesa */}
         <button
           onClick={onMenuClick}
-          className="p-2 hover:bg-[#919191]/10 rounded-lg transition-colors"
-          style={{ backgroundColor: '#e1e1e1' }}
+          className="w-10 h-10 flex items-center justify-center hover:bg-[#919191]/10 transition-colors"
         >
-          <Menu className="w-6 h-6 text-black" />
+          <Menu className="w-8 h-8 text-black" />
         </button>
 
         {/* Título */}
