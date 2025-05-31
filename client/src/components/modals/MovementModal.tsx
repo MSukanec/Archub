@@ -45,7 +45,8 @@ import {
   Wallet,
   Target,
   User,
-  Loader2 
+  Loader2,
+  X 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -507,29 +508,47 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           <Button
                             variant="outline"
                             role="combobox"
-                            className="w-full justify-between bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8] h-10"
+                            className="w-full justify-between bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8] h-10 font-normal"
                           >
-                            {field.value 
-                              ? contactsList.find((contact) => contact.id === field.value)
-                                ? getContactDisplayName(contactsList.find((contact) => contact.id === field.value)!)
-                                : "Contacto no encontrado"
-                              : "Buscar contacto (opcional)..."}
-                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            <span className="truncate">
+                              {field.value 
+                                ? contactsList.find((contact) => contact.id === field.value)
+                                  ? getContactDisplayName(contactsList.find((contact) => contact.id === field.value)!)
+                                  : "Contacto no encontrado"
+                                : "Buscar contacto (opcional)..."}
+                            </span>
+                            <div className="flex items-center gap-1 ml-2">
+                              {field.value && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    field.onChange('');
+                                  }}
+                                  className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              )}
+                              <Search className="h-4 w-4 shrink-0 opacity-50" />
+                            </div>
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-full p-0 z-[10000] bg-[#d2d2d2] border-[#919191]/20" align="start">
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-[10000] bg-[#d2d2d2] border-[#919191]/20" align="start">
                         <Command className="bg-[#d2d2d2]">
                           <CommandInput 
-                            placeholder="Escribir al menos 3 caracteres..."
+                            placeholder="Escribir para buscar..."
                             value={contactSearchTerm}
                             onValueChange={setContactSearchTerm}
                             className="bg-[#d2d2d2] border-none"
                           />
                           <CommandList className="bg-[#d2d2d2]">
-                            <CommandEmpty className="text-muted-foreground">
+                            <CommandEmpty className="text-muted-foreground text-sm p-2">
                               {contactSearchTerm.length < 3 
-                                ? "Escribir al menos 3 caracteres para buscar"
+                                ? "Escribir al menos 3 caracteres"
                                 : "No se encontraron contactos"}
                             </CommandEmpty>
                             {contactSearchTerm.length >= 3 && (
