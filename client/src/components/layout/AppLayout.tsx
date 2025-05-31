@@ -14,9 +14,11 @@ import FloatingActionButton from '@/components/ui/FloatingActionButton';
 
 import Dashboard from '@/views/dashboard/Dashboard';
 import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
+import CalendarView from '@/views/dashboard/Calendar';
 
 import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
+import Projects from '@/views/project/Projects';
 import ProjectsList from '@/views/project/ProjectsList';
 import SiteLogs from '@/views/sitelog/SiteLogs';
 import Budgets from '@/views/budget/Budgets';
@@ -52,7 +54,7 @@ const viewComponents = {
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
   'organization-activity': Organization,
-  'projects-overview': ProjectsList,
+  'projects-overview': Projects,
   'projects-list': ProjectsList,
   'budgets-list': Budgets,
   'budgets-tasks': BudgetTasks,
@@ -61,9 +63,7 @@ const viewComponents = {
   'movements-main': Movements,
   'transactions': Movements,
   'contacts': Contacts,
-  'calendar': Calendar,
-  'list': Contacts,
-  'schedule': Calendar,
+  'calendar': CalendarView,
   'admin-organizations': AdminOrganizations,
   'admin-users': AdminUsers,
   'admin-categories': AdminCategories,
