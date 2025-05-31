@@ -98,9 +98,16 @@ export default function AdminContactsModal({
         phone: data.phone || null,
         location: data.location || null,
         notes: data.notes || null,
-        contact_type: data.contact_type,
+        contact_type_ids: data.contact_type_ids,
       };
-      return await contactsService.create(contactData);
+      const newContact = await contactsService.create(contactData);
+      
+      // Actualizar tipos de contacto si hay alguno seleccionado
+      if (data.contact_type_ids.length > 0 && newContact.id) {
+        await contactTypesService.updateContactTypes(newContact.id, data.contact_type_ids);
+      }
+      
+      return newContact;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/contacts'] });
@@ -130,9 +137,14 @@ export default function AdminContactsModal({
         phone: data.phone || null,
         location: data.location || null,
         notes: data.notes || null,
-        contact_type: data.contact_type,
+        contact_type_ids: data.contact_type_ids,
       };
-      return await contactsService.update(contact!.id, contactData);
+      const updatedContact = await contactsService.update(contact!.id, contactData);
+      
+      // Actualizar tipos de contacto
+      await contactTypesService.updateContactTypes(contact!.id, data.contact_type_ids);
+      
+      return updatedContact;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/contacts'] });

@@ -33,6 +33,7 @@ import { useToast } from '@/hooks/use-toast';
 import { contactsService, Contact } from '@/lib/contactsService';
 import AdminContactsModal from '@/components/modals/AdminContactsModal';
 import ContactActionsModal from '@/components/modals/ContactActionsModal';
+import { ContactTypeDisplay } from '@/components/ui/ContactTypeDisplay';
 
 export default function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -272,7 +273,7 @@ export default function Contacts() {
                     </div>
                   </TableCell>
                   <TableCell className="py-2 text-center">
-                    <div className="text-foreground capitalize">{contact.contact_type || '-'}</div>
+                    <ContactTypeDisplay contactId={contact.id} />
                   </TableCell>
                   <TableCell className="py-2 text-center">
                     <div className="text-foreground">{contact.company_name || '-'}</div>
