@@ -143,6 +143,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     queryFn: async () => {
       if (!task?.id) return [];
       
+      console.log('Fetching materials for task:', task.id);
+      
       const { data, error } = await supabase
         .from('task_materials')
         .select(`
@@ -152,13 +154,21 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
         `)
         .eq('task_id', task.id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching task materials:', error);
+        throw error;
+      }
       
-      return data.map(item => ({
+      console.log('Raw task materials data:', data);
+      
+      const mappedData = data.map(item => ({
         material_id: item.material_id,
         material_name: item.materials?.name || '',
         amount: item.amount.toString()
       }));
+      
+      console.log('Mapped task materials:', mappedData);
+      return mappedData;
     },
     enabled: isOpen && isEditing && !!task?.id,
   });
@@ -273,10 +283,21 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   // Load existing materials when editing a task
   useEffect(() => {
-    if (isOpen && !isEditing) {
+    console.log('Material loading effect triggered:', { 
+      isOpen, 
+      isEditing, 
+      existingTaskMaterialsLength: existingTaskMaterials.length,
+      existingTaskMaterials 
+    });
+    
+    if (isOpen && isEditing && existingTaskMaterials.length > 0) {
+      console.log('Setting selected materials:', existingTaskMaterials);
+      setSelectedMaterials(existingTaskMaterials);
+    } else if (isOpen && !isEditing) {
+      console.log('Clearing materials for new task');
       setSelectedMaterials([]);
     }
-  }, [isOpen, isEditing]);
+  }, [isOpen, isEditing, existingTaskMaterials]);
 
   // Functions to handle materials
   const addMaterial = async (material: any) => {

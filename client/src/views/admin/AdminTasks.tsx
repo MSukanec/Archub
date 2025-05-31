@@ -314,8 +314,8 @@ export default function AdminTasks() {
                   <TableCell className="py-1 text-center">
                     <div className="font-medium text-foreground">{task.name}</div>
                   </TableCell>
-                  <TableCell className="py-1 text-center">
-                    <div className="text-sm text-muted-foreground max-w-48 truncate">
+                  <TableCell className="py-1 text-left min-w-[200px] max-w-[300px]">
+                    <div className="text-sm text-muted-foreground whitespace-normal break-words">
                       {task.description || 'Sin descripción'}
                     </div>
                   </TableCell>
