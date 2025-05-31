@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, isEqual, addMonths, subMonths, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, Clock, MapPin, Users, X } from 'lucide-react';
+import EventModal from '@/components/modals/EventModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -230,7 +231,7 @@ export default function Calendar() {
     },
   });
 
-  const onSubmit = (data: EventFormData) => {
+  const handleEventSubmit = (data: EventFormData) => {
     if (!organizationId) return;
 
     // Capturar fecha y hora local del navegador del usuario
@@ -452,43 +453,16 @@ export default function Calendar() {
       </Card>
 
       {/* Event Creation/Edit Modal */}
-      <Dialog open={isEventModalOpen} onOpenChange={setIsEventModalOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingEvent ? 'Editar Evento' : 'Nuevo Evento'}
-            </DialogTitle>
-          </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Título *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Título del evento" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descripción</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Descripción del evento" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <EventModal
+        isOpen={isEventModalOpen}
+        onClose={() => {
+          setIsEventModalOpen(false);
+          setEditingEvent(null);
+        }}
+        event={editingEvent}
+        onSubmit={handleEventSubmit}
+        isSubmitting={createEventMutation.isPending || updateEventMutation.isPending}
+      />
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -627,28 +601,7 @@ export default function Calendar() {
                 )}
               />
 
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsEventModalOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={createEventMutation.isPending || updateEventMutation.isPending}
-                >
-                  {createEventMutation.isPending || updateEventMutation.isPending
-                    ? 'Guardando...'
-                    : editingEvent ? 'Actualizar' : 'Crear Evento'
-                  }
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+
 
       {/* Event View Modal */}
       <Dialog open={isViewEventModalOpen} onOpenChange={setIsViewEventModalOpen}>
