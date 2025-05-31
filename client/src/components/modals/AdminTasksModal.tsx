@@ -72,7 +72,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   const form = useForm<FormData>({
     resolver: zodResolver(createTaskSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
     defaultValues: {
       name: '',
       unit_labor_price: '',
