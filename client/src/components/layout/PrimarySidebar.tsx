@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library, FolderOpen } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -16,6 +16,12 @@ const topNavigationItems = [
     description: 'Vista general del proyecto, métricas y acceso rápido a funciones principales.'
   },
   { 
+    section: 'projects' as Section, 
+    icon: FolderOpen, 
+    label: 'Proyectos',
+    description: 'Gestión y administración de proyectos de construcción.'
+  },
+  { 
     section: 'organization' as Section, 
     icon: Building2, 
     label: 'Organización',
@@ -28,10 +34,10 @@ const topNavigationItems = [
     description: 'Registro diario de actividades, eventos y seguimiento del progreso de obra.'
   },
   { 
-    section: 'contacts' as Section, 
+    section: 'calendar' as Section, 
     icon: Calendar, 
-    label: 'Agenda',
-    description: 'Calendario de eventos, reuniones y gestión de contactos del proyecto.'
+    label: 'Calendario',
+    description: 'Calendario de eventos, reuniones y citas del proyecto.'
   },
   { 
     section: 'movements' as Section, 
@@ -44,6 +50,12 @@ const topNavigationItems = [
     icon: CreditCard, 
     label: 'Presupuestos',
     description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.'
+  },
+  { 
+    section: 'contacts' as Section, 
+    icon: UserCheck, 
+    label: 'Contactos',
+    description: 'Gestión de contactos, clientes y proveedores del proyecto.'
   },
 ];
 
