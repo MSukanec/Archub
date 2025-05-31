@@ -368,7 +368,11 @@ export default function ProjectsOverview() {
       {/* Modales */}
       <CreateProjectModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setSelectedProject(null);
+        }}
+        project={selectedProject}
       />
 
       <ProjectInfoModal
