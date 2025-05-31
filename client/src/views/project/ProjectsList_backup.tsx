@@ -195,7 +195,7 @@ export default function ProjectsOverview() {
       </div>
 
       {/* Cards de Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
@@ -215,30 +215,6 @@ export default function ProjectsOverview() {
             </div>
             <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
               <Activity className="h-5 w-5 text-emerald-500" />
-            </div>
-          </div>
-        </div>
-        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Completados</p>
-              <p className="text-3xl font-bold text-blue-500">{completedProjects}</p>
-            </div>
-            <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-blue-500" />
-            </div>
-          </div>
-        </div>
-        <div className="rounded-2xl shadow-md bg-[#e1e1e1] p-6 border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Proyecto Activo</p>
-              <p className="text-xl font-bold text-primary truncate">
-                {currentProject?.name || 'Ninguno'}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <Users className="h-5 w-5 text-primary" />
             </div>
           </div>
         </div>
@@ -277,9 +253,10 @@ export default function ProjectsOverview() {
           </Select>
         </div>
 
-        {/* Projects List */}
-      {filteredProjects.length === 0 ? (
-        <Card>
+        {/* Separación entre filtros y lista */}
+        <div className="mt-6 border-t border-gray-200 pt-6">
+          {filteredProjects.length === 0 ? (
+            <Card>
           <CardContent className="p-12 text-center">
             <Building className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-medium text-foreground">
