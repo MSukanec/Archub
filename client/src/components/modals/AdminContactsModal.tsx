@@ -112,6 +112,7 @@ export default function AdminContactsModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/contact-types'] });
       toast({
         title: "Contacto creado",
         description: "El contacto se ha creado exitosamente.",
@@ -149,6 +150,7 @@ export default function AdminContactsModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/contact-types'] });
       toast({
         title: "Contacto actualizado",
         description: "El contacto se ha actualizado exitosamente.",

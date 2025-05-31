@@ -85,11 +85,11 @@ export function SimpleMultiSelectContactTypes({
       </Button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#919191]/20 rounded-lg shadow-lg z-50 max-h-[200px] overflow-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#d2d2d2] border border-[#919191]/20 rounded-lg shadow-lg z-50 max-h-[300px] overflow-auto">
           {contactTypes.map((type) => (
             <div
               key={type.id}
-              className="flex items-center space-x-2 p-3 hover:bg-gray-100 cursor-pointer"
+              className="flex items-center space-x-2 p-3 hover:bg-[#c8c8c8] cursor-pointer"
               onClick={() => handleSelectionChange(type.id, !value.includes(type.id))}
             >
               <Checkbox
