@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { CheckSquare, Search, Plus, Edit, Trash2, DollarSign, FolderOpen, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 import AdminTasksModal from '@/components/modals/AdminTasksModal';
 
 export default function AdminTasks() {
@@ -45,6 +46,8 @@ export default function AdminTasks() {
   const [selectedTask, setSelectedTask] = useState<any>(null);
   
   const ITEMS_PER_PAGE = 10;
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Event listener for floating action button
   useEffect(() => {
@@ -95,6 +98,40 @@ export default function AdminTasks() {
       return data;
     },
   });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (taskId: string) => {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/tasks'] });
+      toast({
+        title: "Tarea eliminada",
+        description: "La tarea se ha eliminado exitosamente.",
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedTask(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo eliminar la tarea.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteConfirm = () => {
+    if (selectedTask) {
+      deleteMutation.mutate(selectedTask.id);
+    }
+  };
 
   if (error) {
     return (
@@ -385,13 +422,11 @@ export default function AdminTasks() {
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                setIsDeleteDialogOpen(false);
-                setSelectedTask(null);
-              }}
+              onClick={handleDeleteConfirm}
+              disabled={deleteMutation.isPending}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl"
             >
-              Eliminar
+              {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
