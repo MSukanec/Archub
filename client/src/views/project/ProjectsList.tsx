@@ -284,7 +284,7 @@ export default function ProjectsOverview() {
                 key={project.id}
                 className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-[#e1e1e1] hover:bg-primary/5 ${
                   isActiveProject 
-                    ? 'border-4 border-primary' 
+                    ? 'border-2 border-primary' 
                     : 'border-0'
                 }`}
                 onClick={() => handleProjectClick(project)}
@@ -323,38 +323,38 @@ export default function ProjectsOverview() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleViewProject(project);
                           }}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                          className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                           title="Ver información del proyecto"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleEdit(project);
                           }}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                          className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0 rounded-lg"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDelete(project);
                           }}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
