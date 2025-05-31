@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download } from 'lucide-react';
+import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,8 +69,13 @@ export default function Movements() {
   const [customDate, setCustomDate] = useState<string>('');
   const [filterType, setFilterType] = useState<'all' | 'year' | 'date' | 'custom'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [currencyFilter, setCurrencyFilter] = useState<string>('all');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   const [modalKey, setModalKey] = useState<number>(0);
   const [modalReady, setModalReady] = useState<boolean>(true);
+  
+  const ITEMS_PER_PAGE = 10;
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -264,28 +269,41 @@ export default function Movements() {
         // Type filtering with safe property access
         const movementType = movement.movement_concepts?.parent_concept?.name?.toLowerCase();
         const matchesType = typeFilter === 'all' || 
-          (typeFilter === 'ingreso' && movementType === 'ingresos') ||
-          (typeFilter === 'egreso' && movementType === 'egresos') ||
-          (typeFilter === 'ajuste' && movementType === 'ajustes');
+          (typeFilter === 'ingresos' && movementType === 'ingresos') ||
+          (typeFilter === 'egresos' && movementType === 'egresos') ||
+          (typeFilter === 'ajustes' && movementType === 'ajustes');
         
-        return matchesDate && matchesType;
+        // Currency filtering
+        const matchesCurrency = currencyFilter === 'all' || movement.currency === currencyFilter;
+        
+        return matchesDate && matchesType && matchesCurrency;
       });
 
-      // Sort by date (newest first) with error handling
+      // Sort movements with error handling
       return filtered.sort((a, b) => {
-        try {
-          const dateA = new Date(a.created_at_local || a.created_at || 0);
-          const dateB = new Date(b.created_at_local || b.created_at || 0);
-          return dateB.getTime() - dateA.getTime();
-        } catch (error) {
-          return 0; // Keep original order if dates can't be compared
+        if (sortOrder === 'newest') {
+          return new Date(b.created_at_local || b.created_at || 0).getTime() - new Date(a.created_at_local || a.created_at || 0).getTime();
+        } else {
+          return new Date(a.created_at_local || a.created_at || 0).getTime() - new Date(b.created_at_local || b.created_at || 0).getTime();
         }
       });
     } catch (error) {
       console.error('Error filtering movements:', error);
-      return movements; // Return original data if filtering fails
+      return [];
     }
-  }, [movements, searchTerm, dateFilter, typeFilter, filterType, customDate]);
+  }, [movements, searchTerm, filterType, dateFilter, customDate, typeFilter, currencyFilter, sortOrder]);
+
+  // Paginated movements
+  const filteredAndSortedMovements = filteredMovements;
+  const totalPages = Math.ceil(filteredAndSortedMovements.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedMovements = filteredAndSortedMovements.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, currencyFilter, typeFilter, sortOrder]);
 
   // Calculate totals by currency
   const totalsByCurrency = useMemo(() => {
