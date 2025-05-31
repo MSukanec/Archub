@@ -212,28 +212,17 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         console.log('- Subcategory:', subcategoryId);
         console.log('- Element Category:', elementCategoryId);
       
-      // Set other form values including element_id
-      form.setValue('action_id', task.action_id || '');
-      form.setValue('element_id', task.element_id || '');
-      form.setValue('unit_id', task.unit_id || '');
-      
-      setSelectedActionId(task.action_id || '');
-      setSelectedElementId(task.element_id || '');
-      
-      // Force re-sync element_id after a delay to ensure UI is ready
+      // Set other form values including element_id (after hierarchical sync)
       setTimeout(() => {
-        if (task.element_id) {
-          console.log('Available task elements:', taskElements.map(e => ({ id: e.id, name: e.name })));
-          console.log('Looking for element_id:', task.element_id);
-          const foundElement = taskElements.find(e => e.id === task.element_id);
-          console.log('Found element:', foundElement);
-          
-          form.setValue('element_id', task.element_id);
-          setSelectedElementId(task.element_id);
-          console.log('Force synced element_id:', task.element_id);
-          console.log('Current form element_id after sync:', form.getValues('element_id'));
-        }
-      }, 50);
+        form.setValue('action_id', task.action_id || '');
+        form.setValue('element_id', task.element_id || '');
+        form.setValue('unit_id', task.unit_id || '');
+        
+        setSelectedActionId(task.action_id || '');
+        setSelectedElementId(task.element_id || '');
+        
+        console.log('Final sync - element_id:', task.element_id);
+      }, 100);
       } else {
         // Fallback to manual setting
         setSelectedCategoryId(task.category_id || '');
