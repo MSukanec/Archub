@@ -3,12 +3,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Users } from 'lucide-react';
+import { Users, User, Phone, MapPin, FileText } from 'lucide-react';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PhoneInputField } from '@/components/ui/PhoneInput';
 import { MultiSelectContactTypes } from '@/components/ui/MultiSelectContactTypes';
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +24,7 @@ const contactSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   notes: z.string().optional(),
-  contact_type_ids: z.array(z.string()).min(1, 'Selecciona al menos un tipo de contacto'),
+  contact_type_ids: z.array(z.string()).optional().default([]),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -212,159 +213,194 @@ export default function AdminContactsModal({
     >
       <Form {...form}>
         <form id="contact-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Nombre *</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Ej: Juan" 
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Apellido</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Ej: Pérez" 
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="company_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Empresa</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Ej: Constructora ABC" 
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contact_type_ids"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto *</FormLabel>
-                  <FormControl>
-                    <MultiSelectContactTypes
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      error={!!fieldState.error}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Email</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="email"
-                      placeholder="ejemplo@email.com" 
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
-                  <FormControl>
-                    <PhoneInputField
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      placeholder="Ingresa tu teléfono"
-                      error={!!fieldState.error}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Ubicación</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ej: Buenos Aires, Argentina" 
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                    {...field} 
+          <Accordion type="multiple" defaultValue={["datos-basicos", "contacto", "notas"]} className="space-y-2">
+            {/* Datos Básicos */}
+            <AccordionItem value="datos-basicos" className="border border-border rounded-xl bg-card/30">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">Datos Básicos</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Nombre *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ej: Juan" 
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Notas</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Información adicional sobre el contacto..." 
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
-                    {...field} 
+                  <FormField
+                    control={form.control}
+                    name="last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Apellido (opcional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ej: Pérez" 
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="company_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Empresa (opcional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ej: Constructora ABC" 
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="contact_type_ids"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Tipo de contacto (opcional)</FormLabel>
+                        <FormControl>
+                          <MultiSelectContactTypes
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            error={!!fieldState.error}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Ubicación (opcional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Ej: Buenos Aires, Argentina" 
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Contacto */}
+            <AccordionItem value="contacto" className="border border-border rounded-xl bg-card/30">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">Contacto</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Email (opcional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email"
+                            placeholder="ejemplo@email.com" 
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Teléfono (opcional)</FormLabel>
+                        <FormControl>
+                          <PhoneInputField
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            placeholder="Ingresa tu teléfono"
+                            error={!!fieldState.error}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Notas */}
+            <AccordionItem value="notas" className="border border-border rounded-xl bg-card/30">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">Notas</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Notas (opcional)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Información adicional sobre el contacto..." 
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </form>
       </Form>
     </ModernModal>
