@@ -210,7 +210,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         )}
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
@@ -270,9 +270,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           </ul>
         </nav>
 
-        {/* User Info at bottom */}
+        {/* User Info fixed at bottom */}
         {user && (
-          <div className="p-4 border-t border-[#919191]/20">
+          <div className="mt-auto p-4 border-t border-[#919191]/20">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">
