@@ -123,7 +123,6 @@ export default function PrimarySidebar() {
           onClick={() => setSection('dashboard')}
           section="dashboard"
           label="Dashboard"
-          description="Vista general del proyecto, métricas y acceso rápido a funciones principales."
         />
       </div>
       
@@ -152,7 +151,6 @@ export default function PrimarySidebar() {
           onClick={() => setSection('profile')}
           section="profile"
           label="Perfil"
-          description="Configuración de usuario, suscripción y preferencias de la cuenta."
         />
       </div>
     </div>

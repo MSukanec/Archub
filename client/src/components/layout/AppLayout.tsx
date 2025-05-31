@@ -9,6 +9,7 @@ import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawer';
+import FloatingActionButton from '@/components/ui/FloatingActionButton';
 
 
 import Dashboard from '@/views/dashboard/Dashboard';
@@ -176,6 +177,8 @@ export default function AppLayout() {
             </main>
           </div>
           
+          {/* Mobile Floating Action Button */}
+          <FloatingActionButton />
 
         </>
       ) : (
