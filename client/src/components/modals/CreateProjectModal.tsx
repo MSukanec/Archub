@@ -6,13 +6,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsService, Project } from '@/lib/projectsService';
 import { Organization } from '@/lib/organizationsService';
 import { supabase } from '@/lib/supabase';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { 
   Loader2, 
   Building,
@@ -40,12 +34,11 @@ import {
   CheckCircle,
   AlertCircle,
   User,
-  Mail,
-  X
+  Mail
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
+import ModernModal from '@/components/ui/ModernModal';
 
 const createProjectSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -74,6 +67,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [nameValidation, setNameValidation] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
   const [nameExists, setNameExists] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -123,32 +117,34 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
 
   // Set form values when editing
   useEffect(() => {
-    if (project) {
-      form.reset({
-        name: project.name || '',
-        description: project.description || '',
-        client_name: project.client_name || '',
-        status: mapStatusFromDB(project.status || ''),
-        address: project.address || '',
-        city: project.city || '',
-        zip_code: project.zip_code || '',
-        contact_phone: project.contact_phone || '',
-        email: project.email || '',
-      });
-    } else {
-      form.reset({
-        name: '',
-        description: '',
-        client_name: '',
-        status: 'planning',
-        address: '',
-        city: '',
-        zip_code: '',
-        contact_phone: '',
-        email: '',
-      });
+    if (isOpen) {
+      if (project) {
+        form.reset({
+          name: project.name || '',
+          description: project.description || '',
+          client_name: project.client_name || '',
+          status: mapStatusFromDB(project.status || ''),
+          address: project.address || '',
+          city: project.city || '',
+          zip_code: project.zip_code || '',
+          contact_phone: project.contact_phone || '',
+          email: project.email || '',
+        });
+      } else {
+        form.reset({
+          name: '',
+          description: '',
+          client_name: '',
+          status: 'planning',
+          address: '',
+          city: '',
+          zip_code: '',
+          contact_phone: '',
+          email: '',
+        });
+      }
     }
-  }, [project, form]);
+  }, [project, isOpen, form]);
 
   // Real-time name validation
   const validateProjectName = async (name: string) => {
@@ -193,7 +189,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         title: 'Éxito',
         description: project ? 'Proyecto actualizado correctamente' : 'Proyecto creado correctamente',
       });
-      onClose();
+      handleClose();
     },
     onError: (error: any) => {
       toast({
@@ -202,6 +198,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         variant: 'destructive',
       });
     },
+    onSettled: () => setIsSubmitting(false),
   });
 
   // Map form status back to database format
@@ -216,6 +213,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     return statusMap[formStatus] || 'Planificación';
   };
 
+  const handleClose = () => {
+    form.reset();
+    setNameValidation('idle');
+    setNameExists(false);
+    onClose();
+  };
+
   const onSubmit = (data: CreateProjectFormData) => {
     if (!data.name) {
       toast({
@@ -226,6 +230,17 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
       return;
     }
     
+    if (nameValidation === 'invalid') {
+      toast({
+        title: "Error",
+        description: "El nombre del proyecto ya existe",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
     const dbData = {
       ...data,
       status: mapStatusToDB(data.status || 'planning')
@@ -234,57 +249,67 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     createProjectMutation.mutate(dbData);
   };
 
+  const footer = (
+    <div className="flex justify-end gap-3">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleClose}
+        disabled={isSubmitting}
+        className="bg-[#d2d2d2] border-[#919191]/20 text-foreground hover:bg-[#c2c2c2] rounded-lg"
+      >
+        Cancelar
+      </Button>
+      <Button
+        type="submit"
+        form="project-form"
+        disabled={isSubmitting || nameValidation === 'invalid'}
+        className="bg-[#8fc700] hover:bg-[#7fb600] text-white rounded-lg"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            {project ? 'Actualizando...' : 'Creando...'}
+          </>
+        ) : (
+          <>
+            <Building className="h-4 w-4 mr-2" />
+            {project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
+          </>
+        )}
+      </Button>
+    </div>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] p-0 gap-0 bg-white dark:bg-gray-900 border-0 rounded-2xl overflow-hidden">
-        {/* Header con gradiente */}
-        <div className="relative px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-lg transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-              <Building className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold">
-                {project ? 'Editar Proyecto' : 'Nuevo Proyecto'}
-              </h2>
-              <p className="text-blue-100 text-sm">
-                {project ? 'Actualiza la información del proyecto' : 'Crea un nuevo proyecto de construcción'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Contenido */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              
-              {/* Información General */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b border-gray-100 dark:border-gray-800">
-                  <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                    <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Información General</h3>
+    <ModernModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={project ? 'Editar Proyecto' : 'Crear Nuevo Proyecto'}
+      subtitle="Gestiona los proyectos de construcción"
+      icon={Building}
+      footer={footer}
+    >
+      <Form {...form}>
+        <form id="project-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Accordion type="single" collapsible defaultValue="informacion-general" className="w-full space-y-1">
+            
+            {/* Información General */}
+            <AccordionItem value="informacion-general" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Información General
                 </div>
-
+              </AccordionTrigger>
+              <AccordionContent className="space-y-3 pt-1">
                 {/* Organización */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    <Building className="h-4 w-4 text-gray-400" />
-                    Organización
-                  </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground block mb-1">Organización</label>
                   <Input 
                     value={currentOrganization?.name || "Cargando..."}
                     disabled
-                    className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                    className="bg-[#c8c8c8] border-[#919191]/20 text-muted-foreground rounded-lg text-sm"
                   />
                 </div>
 
@@ -293,18 +318,17 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <Building className="h-4 w-4 text-gray-400" />
-                        Nombre del Proyecto
+                    <FormItem>
+                      <div className="flex items-center gap-2">
+                        <FormLabel className="text-xs font-medium text-foreground">Nombre del Proyecto *</FormLabel>
                         {nameValidation === 'validating' && (
-                          <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
                         )}
                         {nameValidation === 'valid' && (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-3 w-3 text-green-600" />
                         )}
                         {nameValidation === 'invalid' && (
-                          <AlertCircle className="h-4 w-4 text-red-500" />
+                          <AlertCircle className="h-3 w-3 text-red-600" />
                         )}
                       </div>
                       <FormControl>
@@ -312,7 +336,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           {...field}
                           value={field.value || ''}
                           placeholder="Ej: Torre Norte – Etapa 2"
-                          className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                           onChange={(e) => {
                             field.onChange(e.target.value);
                             validateProjectName(e.target.value);
@@ -320,16 +344,10 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                         />
                       </FormControl>
                       {nameValidation === 'invalid' && nameExists && (
-                        <p className="text-sm text-red-500 flex items-center gap-1">
-                          <AlertCircle className="h-3 w-3" />
-                          Este nombre ya existe
-                        </p>
+                        <p className="text-xs text-red-600 mt-1">Este nombre ya existe</p>
                       )}
                       {nameValidation === 'valid' && (
-                        <p className="text-sm text-green-500 flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" />
-                          Nombre disponible
-                        </p>
+                        <p className="text-xs text-green-600 mt-1">Nombre disponible</p>
                       )}
                       <FormMessage />
                     </FormItem>
@@ -341,18 +359,15 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   control={form.control}
                   name="status"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <AlertCircle className="h-4 w-4 text-gray-400" />
-                        Estado del Proyecto
-                      </div>
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Estado del Proyecto</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Selecciona el estado" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
                           <SelectItem value="planning">Planificación</SelectItem>
                           <SelectItem value="in_progress">En Progreso</SelectItem>
                           <SelectItem value="on_hold">En Pausa</SelectItem>
@@ -370,48 +385,43 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   control={form.control}
                   name="description"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <FileText className="h-4 w-4 text-gray-400" />
-                        Descripción
-                      </div>
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Descripción</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
                           placeholder="Describe brevemente el alcance y características del proyecto..."
-                          className="min-h-[80px] border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm min-h-[60px]"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Información del Cliente */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b border-gray-100 dark:border-gray-800">
-                  <div className="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                    <User className="h-4 w-4 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Información del Cliente</h3>
+            {/* Información del Cliente */}
+            <AccordionItem value="informacion-cliente" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Información del Cliente
                 </div>
-
+              </AccordionTrigger>
+              <AccordionContent className="space-y-3 pt-1">
                 {/* Nombre del Cliente */}
                 <FormField
                   control={form.control}
                   name="client_name"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <User className="h-4 w-4 text-gray-400" />
-                        Nombre del Cliente
-                      </div>
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Nombre del Cliente</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="Ej: Constructora ABC S.A."
-                          className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -424,17 +434,14 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        Email de Contacto
-                      </div>
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Email de Contacto</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           type="email"
                           placeholder="cliente@empresa.com"
-                          className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -447,48 +454,43 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   control={form.control}
                   name="contact_phone"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        Teléfono de Contacto
-                      </div>
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Teléfono de Contacto</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="Ej: +54 11 1234-5678"
-                          className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
+              </AccordionContent>
+            </AccordionItem>
 
-              {/* Ubicación */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b border-gray-100 dark:border-gray-800">
-                  <div className="w-8 h-8 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
-                    <MapPin className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Ubicación del Proyecto</h3>
+            {/* Ubicación */}
+            <AccordionItem value="ubicacion" className="border-[#919191]/20">
+              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Ubicación del Proyecto
                 </div>
-
+              </AccordionTrigger>
+              <AccordionContent className="space-y-3 pt-1">
                 {/* Dirección */}
                 <FormField
                   control={form.control}
                   name="address"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        Dirección
-                      </div>
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Dirección</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="Ej: Av. Libertador 1234, Piso 15"
-                          className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -496,22 +498,19 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {/* Ciudad */}
                   <FormField
                     control={form.control}
                     name="city"
                     render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                          <MapPin className="h-4 w-4 text-gray-400" />
-                          Ciudad
-                        </div>
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Ciudad</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="Ej: Buenos Aires"
-                            className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -524,16 +523,13 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     control={form.control}
                     name="zip_code"
                     render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                          <MapPin className="h-4 w-4 text-gray-400" />
-                          Código Postal
-                        </div>
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">Código Postal</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="Ej: C1001"
-                            className="border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -541,42 +537,12 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     )}
                   />
                 </div>
-              </div>
+              </AccordionContent>
+            </AccordionItem>
 
-            </form>
-          </Form>
-        </div>
-
-        {/* Footer con botones */}
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            className="border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            disabled={createProjectMutation.isPending || (nameValidation === 'invalid')}
-            onClick={form.handleSubmit(onSubmit)}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 min-w-[140px]"
-          >
-            {createProjectMutation.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {project ? 'Actualizando...' : 'Creando...'}
-              </>
-            ) : (
-              <>
-                <Building className="h-4 w-4" />
-                {project ? 'Actualizar' : 'Crear Proyecto'}
-              </>
-            )}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+          </Accordion>
+        </form>
+      </Form>
+    </ModernModal>
   );
 }
