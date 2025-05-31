@@ -104,8 +104,7 @@ export default function FloatingActionButton() {
   const { organizationId } = useUserContextStore();
   const { checkLimit: checkProjectLimit } = useFeatures();
 
-  // Debug log para verificar currentView
-  console.log('FloatingActionButton currentView:', currentView);
+  // Clean up - no debug logs needed
 
   // Obtener conteo de proyectos para verificar límites
   const { data: projects = [] } = useQuery({
@@ -193,15 +192,7 @@ export default function FloatingActionButton() {
         </div>
       )}
       
-      {/* Badge de restricción para creación de proyectos */}
-      {isProjectCreation && isBlocked && (
-        <LimitLock
-          limitName="max_projects"
-          currentCount={projects.length}
-          featureName="proyecto"
-          description="Has alcanzado el límite de proyectos para tu plan actual. Actualiza a PRO para crear proyectos ilimitados."
-        />
-      )}
+
     </div>
   );
 }
