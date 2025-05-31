@@ -263,16 +263,16 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const content = (
     <Form {...form}>
       <form id="movement-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Accordion type="single" collapsible defaultValue="basic-info" className="w-full">
+        <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
           {/* Información Básica */}
-          <AccordionItem value="basic-info">
-            <AccordionTrigger className="text-left">
+          <AccordionItem value="basic-info" className="border-[#919191]/20">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 Información Básica
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
+            <AccordionContent className="space-y-2 pt-1">
               <div className="grid grid-cols-2 gap-3">
                 {/* Tipo */}
                 <FormField
@@ -449,14 +449,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           </AccordionItem>
 
           {/* Relaciones */}
-          <AccordionItem value="relations">
-            <AccordionTrigger className="text-left">
+          <AccordionItem value="relations" className="border-[#919191]/20">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Relaciones
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
+            <AccordionContent className="space-y-2 pt-1">
               {/* Contacto Relacionado */}
               <FormField
                 control={form.control}
@@ -464,14 +464,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-xs font-medium text-foreground">Contacto Relacionado</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={(value) => field.onChange(value === 'none' ? '' : value)} value={field.value || 'none'}>
                       <FormControl>
                         <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                           <SelectValue placeholder="Seleccionar contacto (opcional)" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Sin contacto</SelectItem>
+                        <SelectItem value="none">Sin contacto</SelectItem>
                         {contactsList.map((contact) => (
                           <SelectItem key={contact.id} value={contact.id}>
                             {getContactDisplayName(contact)}
