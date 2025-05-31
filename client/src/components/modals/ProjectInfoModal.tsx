@@ -148,13 +148,13 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+          className="w-1/4"
         >
           Cancelar
         </Button>
         <Button
           onClick={handleWhatsAppShare}
-          className="flex-[2] bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Share2 className="w-4 h-4 mr-2" />
           Compartir por WhatsApp
