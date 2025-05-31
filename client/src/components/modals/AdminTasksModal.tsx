@@ -200,6 +200,17 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
         setTimeout(() => {
           setHierarchicalFormValues(form, conceptPath, ['category_id', 'subcategory_id', 'element_category_id']);
         }, 10);
+        
+        // Sync local state after setting hierarchical values (same as MovementModal)
+        setTimeout(() => {
+          setSelectedSubcategoryId(subcategoryId);
+          setSelectedElementCategoryId(elementCategoryId);
+        }, 20);
+        
+        console.log('Synchronized local state:');
+        console.log('- Category:', categoryId);
+        console.log('- Subcategory:', subcategoryId);
+        console.log('- Element Category:', elementCategoryId);
       } else {
         // Fallback to manual setting
         setSelectedCategoryId(task.category_id || '');
@@ -664,24 +675,36 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                 </FormItem>
 
                 {/* Elemento */}
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
-                  <Select 
-                    onValueChange={setSelectedElementId}
-                    value={selectedElementId}
-                  >
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                      <SelectValue placeholder="Seleccionar elemento" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                      {taskElements.map((element) => (
-                        <SelectItem key={element.id} value={element.id}>
-                          {element.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
+                <FormField
+                  control={form.control}
+                  name="element_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Elemento</FormLabel>
+                      <Select 
+                        onValueChange={(value) => {
+                          setSelectedElementId(value);
+                          field.onChange(value);
+                        }}
+                        value={field.value || ''}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                            <SelectValue placeholder="Seleccionar elemento" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          {taskElements.map((element) => (
+                            <SelectItem key={element.id} value={element.id}>
+                              {element.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 {/* Nombre generado automáticamente */}
                 <FormField
