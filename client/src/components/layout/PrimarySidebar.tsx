@@ -203,8 +203,8 @@ export default function PrimarySidebar() {
       </div>
 
       {/* Project selector */}
-      <div className="flex items-center justify-center pt-2 pl-2.5" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group relative">
+      <div className="flex items-center justify-center pt-2 pl-2.5 relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group">
           <span className="text-sm font-bold text-gray-700">
             {getProjectInitials(currentProject)}
           </span>
@@ -227,12 +227,18 @@ export default function PrimarySidebar() {
                     onClick={() => handleProjectChange(project.id)}
                     className={`w-full text-left p-2 rounded-lg transition-colors ${
                       project.id === projectId
-                        ? 'bg-black/10'
+                        ? 'bg-black text-white'
                         : 'hover:bg-black/5'
                     }`}
                   >
-                    <span className="font-medium text-xs text-black">{project.name}</span>
-                    <p className="text-xs text-[#919191] mt-1 leading-relaxed whitespace-normal">{project.description}</p>
+                    <span className={`font-medium text-xs ${project.id === projectId ? 'text-white' : 'text-black'}`}>
+                      {project.name}
+                    </span>
+                    <p className={`text-xs mt-1 leading-relaxed whitespace-normal ${
+                      project.id === projectId ? 'text-white/70' : 'text-[#919191]'
+                    }`}>
+                      {project.description}
+                    </p>
                   </button>
                 ))}
                 <button className="w-full text-left p-2 rounded-lg hover:bg-black/5 border border-dashed border-[#919191] mt-2">
