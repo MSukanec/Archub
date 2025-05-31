@@ -150,6 +150,27 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     enabled: isOpen,
   });
 
+  // Generate task name from action and element
+  const generateTaskName = (actionId: string, elementId: string) => {
+    const action = actions.find((a: any) => a.id === actionId);
+    const element = taskElements.find((e: any) => e.id === elementId);
+    
+    if (action && element) {
+      return `${action.name} de ${element.name}.`;
+    }
+    return '';
+  };
+
+  // Update generated name when action or element changes
+  useEffect(() => {
+    if (selectedActionId && selectedElementId) {
+      const name = generateTaskName(selectedActionId, selectedElementId);
+      form.setValue('name', name);
+    } else {
+      form.setValue('name', '');
+    }
+  }, [selectedActionId, selectedElementId, actions, taskElements, form]);
+
   // Get hierarchical categories (same as MovementModal)
   const mainCategories = taskCategoriesStructure?.getRootConcepts() || [];
   const subcategoriesFiltered = taskCategoriesStructure?.getChildConcepts(selectedCategoryId) || [];
@@ -581,6 +602,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
                           placeholder="Nombre de la tarea"
                           className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                           {...field}
+                          readOnly
+                          disabled
                         />
                       </FormControl>
                       <FormMessage />
