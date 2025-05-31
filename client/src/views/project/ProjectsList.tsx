@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, Activity, TrendingUp, Lock, FolderKanban, Eye } from 'lucide-react';
+import { Plus, Search, Building, MapPin, Edit, Trash2, ArrowUpDown, Users, Calendar, Activity, TrendingUp, Lock, FolderKanban, Eye, X } from 'lucide-react';
 import { useFeatures } from '@/hooks/useFeatures';
 import { LimitLock } from '@/components/features';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -238,25 +239,59 @@ export default function ProjectsOverview() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Input
-            placeholder="Buscar proyectos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar proyectos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
+              <div className="space-y-1">
+                <Button
+                  variant={sortOrder === 'newest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('newest')}
+                  className="w-full justify-start text-sm h-8"
+                >
+                  Más reciente primero
+                </Button>
+                <Button
+                  variant={sortOrder === 'oldest' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSortOrder('oldest')}
+                  className="w-full justify-start text-sm h-8"
+                >
+                  Más antiguo primero
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
-          className="flex items-center gap-2 whitespace-nowrap"
-        >
-          <ArrowUpDown size={16} />
-          {sortOrder === 'newest' ? 'Más recientes' : 'Más antiguos'}
-        </Button>
       </div>
 
       {/* Projects List */}
