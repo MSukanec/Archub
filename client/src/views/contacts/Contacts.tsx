@@ -246,6 +246,7 @@ export default function Contacts() {
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
               <TableHead className="text-foreground font-semibold h-12 text-center">Nombre</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Tipo</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Empresa</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Email</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Teléfono</TableHead>
@@ -255,7 +256,7 @@ export default function Contacts() {
           <TableBody>
             {paginatedContacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-4 h-8">
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-4 h-8">
                   {searchTerm 
                     ? 'No se encontraron contactos que coincidan con los filtros.'
                     : 'No hay contactos registrados.'
@@ -271,6 +272,9 @@ export default function Contacts() {
                     </div>
                   </TableCell>
                   <TableCell className="py-2 text-center">
+                    <div className="text-foreground capitalize">{contact.contact_type || '-'}</div>
+                  </TableCell>
+                  <TableCell className="py-2 text-center">
                     <div className="text-foreground">{contact.company_name || '-'}</div>
                   </TableCell>
                   <TableCell className="py-2 text-center">
@@ -281,6 +285,16 @@ export default function Contacts() {
                   </TableCell>
                   <TableCell className="text-center py-2">
                     <div className="flex items-center justify-center gap-2">
+                      {(contact.phone || contact.email) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleContactActions(contact)}
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50 h-8 w-8 p-0 rounded-lg"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
@@ -393,6 +407,16 @@ export default function Contacts() {
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
+          setSelectedContact(null);
+        }}
+        contact={selectedContact}
+      />
+
+      {/* Contact Actions Modal */}
+      <ContactActionsModal
+        isOpen={isContactActionsModalOpen}
+        onClose={() => {
+          setIsContactActionsModalOpen(false);
           setSelectedContact(null);
         }}
         contact={selectedContact}
