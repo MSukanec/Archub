@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Users, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X, MessageCircle } from 'lucide-react';
+import { Users, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X, MessageCircle, Tags } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
