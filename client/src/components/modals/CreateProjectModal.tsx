@@ -491,7 +491,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-3 pt-1">
-                {/* Dirección */}
+                {/* Dirección con Autocompletado */}
                 <FormField
                   control={form.control}
                   name="address"
@@ -499,10 +499,17 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground">Dirección</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Ej: Av. Libertador 1234, Piso 15"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                        <AddressAutocomplete
+                          value={field.value || ''}
+                          onChange={(address) => {
+                            field.onChange(address);
+                          }}
+                          onCoordinatesChange={(lat, lng) => {
+                            setMapLat(lat);
+                            setMapLng(lng);
+                          }}
+                          placeholder="Buscar dirección..."
+                          className="w-full"
                         />
                       </FormControl>
                       <FormMessage />

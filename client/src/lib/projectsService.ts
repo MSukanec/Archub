@@ -31,6 +31,8 @@ export interface CreateProjectData {
   city?: string;
   zip_code?: string;
   organization_id?: number;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export const projectsService = {
@@ -89,7 +91,11 @@ export const projectsService = {
       status: projectData.status || 'planning',
       address: projectData.address || null,
       contact_phone: projectData.contact_phone || null,
+      email: projectData.email || null,
       city: projectData.city || null,
+      zip_code: projectData.zip_code || null,
+      lat: projectData.lat || null,
+      lng: projectData.lng || null,
       organization_id: organizationId,
       is_active: true,
     };
