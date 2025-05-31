@@ -233,11 +233,15 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                    {units.map((unit) => (
-                      <SelectItem key={unit.id} value={String(unit.id)}>
-                        {unit.name} {unit.description && `(${unit.description})`}
-                      </SelectItem>
-                    ))}
+                    {units
+                      .slice()
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((unit) => (
+                        <SelectItem key={unit.id} value={String(unit.id)}>
+                          {unit.name} {unit.description && `(${unit.description})`}
+                        </SelectItem>
+                      ))
+                    }
                   </SelectContent>
                 </Select>
                 <FormMessage />
