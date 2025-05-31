@@ -38,7 +38,7 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-30">
+    <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-[#919191]/20 z-30" style={{ backgroundColor: '#d2d2d2' }}>
       <div className="flex items-center justify-around h-full px-2">
         {bottomNavItems.map((item) => {
           const Icon = item.icon;
@@ -49,11 +49,12 @@ export default function MobileBottomNav() {
               key={item.section}
               onClick={() => handleItemClick(item.section, item.view)}
               className={cn(
-                "flex flex-col items-center justify-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1",
+                "flex flex-col items-center justify-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 mx-1",
                 isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-white"
+                  : "text-black hover:bg-[#919191]/10"
               )}
+              style={isActive ? { backgroundColor: '#6366f1' } : { backgroundColor: '#e1e1e1' }}
             >
               <Icon className="w-5 h-5" />
               <span className="text-xs font-medium truncate w-full text-center">

@@ -65,22 +65,23 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-30">
+    <header className="fixed top-0 left-0 right-0 h-14 border-b border-[#919191]/20 z-30" style={{ backgroundColor: '#d2d2d2' }}>
       <div className="flex items-center justify-between h-full px-4">
         {/* Botón hamburguesa */}
         <button
           onClick={onMenuClick}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 hover:bg-[#919191]/10 rounded-lg transition-colors"
+          style={{ backgroundColor: '#e1e1e1' }}
         >
-          <Menu className="w-6 h-6 text-foreground" />
+          <Menu className="w-6 h-6 text-black" />
         </button>
 
         {/* Título */}
-        <h1 className="text-lg font-semibold text-foreground truncate">
+        <h1 className="text-lg font-semibold text-black truncate">
           {getTitle()}
         </h1>
 
-        {/* Espacio para balancear (opcional: aquí se podría agregar un ícono de notificaciones) */}
+        {/* Espacio para balancear */}
         <div className="w-10" />
       </div>
     </header>

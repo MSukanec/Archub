@@ -55,29 +55,30 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 shadow-xl z-50 transform transition-transform duration-300 ease-in-out",
+          "fixed top-0 left-0 h-full w-80 shadow-xl z-50 transform transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
+        style={{ backgroundColor: '#d2d2d2' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-[#919191]/20">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">M</span>
             </div>
-            <span className="font-semibold text-lg text-foreground">Metrik</span>
+            <span className="font-semibold text-lg text-black">Metrik</span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-[#919191]/10 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-foreground" />
+            <X className="w-5 h-5 text-black" />
           </button>
         </div>
 
         {/* User Info */}
         {user && (
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border-[#919191]/20">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">
@@ -85,8 +86,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 </span>
               </div>
               <div>
-                <p className="font-medium text-foreground">{user.firstName} {user.lastName}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="font-medium text-black">{user.firstName} {user.lastName}</p>
+                <p className="text-sm text-[#919191]">{user.email}</p>
               </div>
             </div>
           </div>
@@ -106,9 +107,10 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     className={cn(
                       "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left",
                       isActive
-                        ? "bg-primary text-white"
-                        : "text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+                        ? "text-white"
+                        : "text-black hover:bg-[#919191]/10"
                     )}
+                    style={isActive ? { backgroundColor: '#6366f1' } : { backgroundColor: '#e1e1e1' }}
                   >
                     <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
