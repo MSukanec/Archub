@@ -467,7 +467,7 @@ export default function Movements() {
             
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-foreground">Balance Total</span>
-              <span className={`text-lg font-bold ${balancePesos >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+              <span className="text-lg font-bold text-blue-500">
                 {formatCurrency(balancePesos, 'ARS')}
               </span>
             </div>
@@ -513,7 +513,7 @@ export default function Movements() {
             
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-foreground">Balance Total</span>
-              <span className={`text-lg font-bold ${balanceDolares >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+              <span className="text-lg font-bold text-blue-500">
                 {formatCurrency(balanceDolares, 'USD')}
               </span>
             </div>
@@ -532,7 +532,7 @@ export default function Movements() {
             placeholder="Buscar movimientos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+            className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
           />
           {searchTerm && (
             <Button
@@ -549,7 +549,7 @@ export default function Movements() {
         {/* Filters Row */}
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -560,7 +560,7 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -572,7 +572,7 @@ export default function Movements() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -583,7 +583,7 @@ export default function Movements() {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder as any}>
-            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -594,7 +594,7 @@ export default function Movements() {
 
           <Button
             variant="outline"
-            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-muted"
+            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-muted shadow-lg"
           >
             <Download className="h-4 w-4 mr-2" />
             Exportar
@@ -607,14 +607,14 @@ export default function Movements() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[100px]">Fecha</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[100px]">Tipo</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-left w-[200px]">Detalle</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Billetera</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[80px]">Moneda</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Cantidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[120px]">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Fecha</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Tipo</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-left">Detalle</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Billetera</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Moneda</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Cantidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
