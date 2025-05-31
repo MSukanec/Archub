@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
+import { useIsMobile } from '@/hooks/useMediaQuery';
 import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
+import MobileHeader from './MobileHeader';
+import MobileDrawer from './MobileDrawer';
+import MobileBottomNav from './MobileBottomNav';
 
 import Dashboard from '@/views/dashboard/Dashboard';
 import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
@@ -38,7 +42,7 @@ import SubscriptionTables from '@/views/profile/SubscriptionTables';
 import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { useNavigationStore } from '@/stores/navigationStore';
-import { useState } from 'react';
+
 
 const viewComponents = {
   'dashboard-main': Dashboard,
@@ -81,6 +85,8 @@ export default function AppLayout() {
   const { setSecondarySidebarVisible } = useSidebarStore();
   const { initializeUserContext } = useUserContextStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     let mounted = true;
@@ -149,20 +155,49 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <PrimarySidebar />
-      
-      {/* Floating Header */}
-      <FloatingHeader />
-      
-      <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '0px', marginRight: '56px' }}>
-        <main className="flex-1 overflow-auto relative">
-          <div className="mx-auto" style={{ maxWidth: 'calc(100vw - 112px)', paddingTop: '64px', paddingLeft: '56px', paddingRight: '56px', paddingBottom: '37px' }}>
-            <ViewComponent />
+      {isMobile ? (
+        // Mobile Layout
+        <>
+          {/* Mobile Header */}
+          <MobileHeader onMenuClick={() => setIsMobileDrawerOpen(true)} />
+          
+          {/* Mobile Drawer */}
+          <MobileDrawer 
+            isOpen={isMobileDrawerOpen} 
+            onClose={() => setIsMobileDrawerOpen(false)} 
+          />
+          
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col overflow-hidden pt-14 pb-16">
+            <main className="flex-1 overflow-auto relative">
+              <div className="mx-auto p-4">
+                <ViewComponent />
+              </div>
+            </main>
           </div>
-        </main>
-      </div>
-      
-      <SecondarySidebar />
+          
+          {/* Mobile Bottom Navigation */}
+          <MobileBottomNav />
+        </>
+      ) : (
+        // Desktop Layout
+        <>
+          <PrimarySidebar />
+          
+          {/* Floating Header */}
+          <FloatingHeader />
+          
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '0px', marginRight: '56px' }}>
+            <main className="flex-1 overflow-auto relative">
+              <div className="mx-auto" style={{ maxWidth: 'calc(100vw - 112px)', paddingTop: '64px', paddingLeft: '56px', paddingRight: '56px', paddingBottom: '37px' }}>
+                <ViewComponent />
+              </div>
+            </main>
+          </div>
+          
+          <SecondarySidebar />
+        </>
+      )}
       
       <CreateProjectModal 
         isOpen={isCreateModalOpen}
