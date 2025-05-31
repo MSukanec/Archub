@@ -31,20 +31,6 @@ const topNavigationItems = [
     hasTimeline: true
   },
   { 
-    section: 'budgets' as Section, 
-    icon: CreditCard, 
-    label: 'Presupuestos',
-    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
-    hasTimeline: true
-  },
-  { 
-    section: 'movements' as Section, 
-    icon: DollarSign, 
-    label: 'Finanzas',
-    description: 'Control de ingresos, egresos y movimientos financieros del proyecto.',
-    hasTimeline: true
-  },
-  { 
     section: 'sitelog' as Section, 
     icon: ClipboardList, 
     label: 'Bitácora',
@@ -59,6 +45,20 @@ const topNavigationItems = [
     hasTimeline: true
   },
   { 
+    section: 'movements' as Section, 
+    icon: DollarSign, 
+    label: 'Finanzas',
+    description: 'Control de ingresos, egresos y movimientos financieros del proyecto.',
+    hasTimeline: true
+  },
+  { 
+    section: 'budgets' as Section, 
+    icon: CreditCard, 
+    label: 'Presupuestos',
+    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
+    hasTimeline: true
+  },
+  { 
     section: 'contacts' as Section, 
     icon: UserCheck, 
     label: 'Contactos',
@@ -70,7 +70,7 @@ const topNavigationItems = [
 
 
 export default function PrimarySidebar() {
-  const { currentSection, currentView, setSection, setHoveredSection, setView } = useNavigationStore();
+  const { currentSection, setSection, setHoveredSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
 
   // Escuchar eventos de navegación desde el timeline
@@ -158,8 +158,8 @@ export default function PrimarySidebar() {
               label={label}
               description={description}
             />
-            {/* Timeline line extending to the right for sections that have timeline - ONLY in dashboard-timeline view */}
-            {hasTimeline === true && currentView === 'dashboard-timeline' && (
+            {/* Timeline line extending to the right for sections that have timeline */}
+            {hasTimeline === true && (
               <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-[calc(100vw-112px)] h-0.5 bg-border/20 pointer-events-none" />
             )}
           </div>

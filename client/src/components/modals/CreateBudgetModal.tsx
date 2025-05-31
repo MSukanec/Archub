@@ -217,11 +217,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
           <Button
             type="button"
             variant="outline"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleClose();
-            }}
+            onClick={handleClose}
             disabled={budgetMutation.isPending}
             className="w-1/4 bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
           >
