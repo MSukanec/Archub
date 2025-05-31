@@ -186,34 +186,12 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
 
   // Helper functions to filter categories
   const getMainCategories = () => allCategories.filter(cat => cat.parent_id === null);
-  
-  // State for filtered categories
-  const [subcategoriesFiltered, setSubcategoriesFiltered] = useState<TaskCategory[]>([]);
-  const [elementCategoriesFiltered, setElementCategoriesFiltered] = useState<TaskCategory[]>([]);
+  const getSubcategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parentId);
+  const getElementCategories = (parentId: string) => allCategories.filter(cat => cat.parent_id === parentId);
 
-  // Filter subcategories when selectedCategoryId changes
-  useEffect(() => {
-    if (selectedCategoryId && allCategories.length > 0) {
-      const filtered = allCategories.filter(cat => cat.parent_id === selectedCategoryId);
-      console.log('Filtering subcategories for parent ID:', selectedCategoryId);
-      console.log('Found subcategories:', filtered);
-      setSubcategoriesFiltered(filtered);
-    } else {
-      setSubcategoriesFiltered([]);
-    }
-  }, [selectedCategoryId, allCategories]);
-
-  // Filter element categories when selectedSubcategoryId changes
-  useEffect(() => {
-    if (selectedSubcategoryId && allCategories.length > 0) {
-      const filtered = allCategories.filter(cat => cat.parent_id === selectedSubcategoryId);
-      console.log('Filtering element categories for parent ID:', selectedSubcategoryId);
-      console.log('Found element categories:', filtered);
-      setElementCategoriesFiltered(filtered);
-    } else {
-      setElementCategoriesFiltered([]);
-    }
-  }, [selectedSubcategoryId, allCategories]);
+  // Calculate filtered categories based on current selection
+  const subcategoriesFiltered = selectedCategoryId ? getSubcategories(selectedCategoryId) : [];
+  const elementCategoriesFiltered = selectedSubcategoryId ? getElementCategories(selectedSubcategoryId) : [];
 
   // Initialize form states when editing a task
   useEffect(() => {
@@ -224,10 +202,6 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
       const elementCategoryId = task.element_category_id || '';
       const actionId = task.action_id || '';
       const elementId = task.element_id || '';
-      
-      console.log('Setting category ID to:', categoryId);
-      console.log('Setting subcategory ID to:', subcategoryId);
-      console.log('Setting element category ID to:', elementCategoryId);
       
       setSelectedCategoryId(categoryId);
       setSelectedSubcategoryId(subcategoryId);
