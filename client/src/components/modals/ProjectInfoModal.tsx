@@ -83,18 +83,18 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
         {/* Actions */}
         <div className="flex gap-3 pt-4">
           <Button
+            variant="outline"
+            onClick={onClose}
+            className="w-1/4"
+          >
+            Cancelar
+          </Button>
+          <Button
             onClick={handleWhatsAppShare}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            className="w-3/4 bg-primary hover:bg-primary/90 text-white"
           >
             <Share2 className="w-4 h-4 mr-2" />
             Compartir por WhatsApp
-          </Button>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cerrar
           </Button>
         </div>
       </div>

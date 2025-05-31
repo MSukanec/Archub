@@ -135,7 +135,13 @@ export default function ProjectsOverview() {
   };
 
   if (isLoading) {
-    return <ProjectsListSkeleton />;
+    return (
+      <div className="flex-1 p-6 space-y-6">
+        <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    );
   }
 
   // Primero separar proyectos permitidos y bloqueados
