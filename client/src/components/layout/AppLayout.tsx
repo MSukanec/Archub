@@ -18,7 +18,6 @@ import CalendarView from '@/views/dashboard/Calendar';
 
 import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
-import Projects from '@/views/project/Projects';
 import ProjectsList from '@/views/project/ProjectsList';
 import SiteLogs from '@/views/sitelog/SiteLogs';
 import Budgets from '@/views/budget/Budgets';

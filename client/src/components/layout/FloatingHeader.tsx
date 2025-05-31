@@ -13,9 +13,7 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'organization-team', label: 'Equipo' }
   ],
   projects: [
-    { id: 'projects-list', label: 'Proyectos' },
-    { id: 'gantt', label: 'Gantt' },
-    { id: 'reports', label: 'Reportes' }
+    { id: 'projects-list', label: 'Proyectos' }
   ],
   sitelog: [
     { id: 'sitelog-main', label: 'Bitácora' }

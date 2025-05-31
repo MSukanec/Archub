@@ -44,7 +44,7 @@ interface NavigationState {
 const sectionViewMap: Record<Section, View> = {
   dashboard: 'dashboard-timeline',
   organization: 'organization-overview',
-  projects: 'projects-overview',
+  projects: 'projects-list',
   budgets: 'budgets-list',
   sitelog: 'sitelog-main',
   movements: 'movements-main',
