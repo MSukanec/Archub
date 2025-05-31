@@ -1,4 +1,4 @@
-import { Calendar, Shield, Users } from 'lucide-react';
+import { Shield, Users, Library } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import CircularButton from '@/components/ui/CircularButton';
@@ -15,15 +15,7 @@ export default function SecondarySidebar() {
   return (
     <div className="w-[56px] flex flex-col relative z-20">
       {/* Admin buttons section */}
-      <div className="flex flex-col items-center space-y-4 pt-4 pl-2.5">
-        {/* Dashboard button (old dashboard for admin) */}
-        <CircularButton
-          icon={Calendar}
-          isActive={currentView === 'dashboard-timeline'}
-          onClick={() => setView('dashboard-timeline')}
-          label="Dashboard Timeline"
-        />
-
+      <div className="flex flex-col items-center space-y-2 pt-2.5 pl-2.5">
         {/* Admin Organizations button */}
         <CircularButton
           icon={Shield}
@@ -38,6 +30,14 @@ export default function SecondarySidebar() {
           isActive={currentView === 'admin-users'}
           onClick={() => setView('admin-users')}
           label="Admin Usuarios"
+        />
+
+        {/* Library button */}
+        <CircularButton
+          icon={Library}
+          isActive={currentView === 'admin-library'}
+          onClick={() => setView('admin-library')}
+          label="Biblioteca"
         />
       </div>
     </div>

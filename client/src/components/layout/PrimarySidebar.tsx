@@ -192,7 +192,7 @@ export default function PrimarySidebar() {
   return (
     <div className="w-[56px] flex flex-col relative z-30">
       {/* Dashboard button - moved to top */}
-      <div className="flex items-center justify-center pt-2.5 pr-2.5">
+      <div className="flex items-center justify-center pt-2.5 pl-2.5">
         <CircularButton
           icon={Home}
           isActive={currentSection === 'dashboard'}
@@ -203,7 +203,7 @@ export default function PrimarySidebar() {
       </div>
 
       {/* Project selector */}
-      <div className="flex items-center justify-center pt-2 pr-2.5" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div className="flex items-center justify-center pt-2 pl-2.5" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <div className="w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group relative">
           <span className="text-sm font-bold text-gray-700">
             {getProjectInitials(currentProject)}
@@ -240,7 +240,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Center navigation buttons */}
-      <div className="flex-1 flex flex-col items-center justify-center space-y-6 pr-2.5">
+      <div className="flex-1 flex flex-col items-center justify-center space-y-2 pl-2.5">
         {topNavigationItems.slice(1).map(({ section, icon, label, description, hasTimeline }) => (
           <div key={section} className="relative">
             <CircularButton
@@ -260,7 +260,7 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Bottom buttons section */}
-      <div className="flex flex-col items-center pb-2.5 pr-2.5 space-y-2">
+      <div className="flex flex-col items-center pb-2.5 pl-2.5 space-y-2">
         {/* Plan button */}
         {userPlan && (
           <div 
