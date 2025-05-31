@@ -587,22 +587,6 @@ export default function Calendar() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="attendees"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Asistentes</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Lista de asistentes (separados por comas)" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-
-
       {/* Event View Modal */}
       <Dialog open={isViewEventModalOpen} onOpenChange={setIsViewEventModalOpen}>
         <DialogContent className="sm:max-w-[500px]">
