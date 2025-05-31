@@ -265,8 +265,32 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   const createMutation = useMutation({
     mutationFn: async (data: FormData) => {
+      let taskName = data.name;
+      
+      // Check if task name already exists and generate unique name if needed
+      if (!isEditing) {
+        const { data: existingTasks } = await supabase
+          .from('tasks')
+          .select('name')
+          .eq('organization_id', organizationId)
+          .like('name', `${taskName}%`);
+
+        if (existingTasks && existingTasks.length > 0) {
+          const existingNames = existingTasks.map(t => t.name);
+          let counter = 1;
+          let uniqueName = taskName;
+          
+          while (existingNames.includes(uniqueName)) {
+            uniqueName = `${taskName} (${counter})`;
+            counter++;
+          }
+          
+          taskName = uniqueName;
+        }
+      }
+
       const taskData = {
-        name: data.name,
+        name: taskName,
         organization_id: organizationId,
         category_id: data.category_id,
         subcategory_id: data.subcategory_id,
