@@ -49,7 +49,7 @@ interface BudgetAccordionProps {
   isDeleting: boolean;
 }
 
-function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask }: BudgetAccordionProps) {
+function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask, onDeleteBudget, isDeleting }: BudgetAccordionProps) {
   const { projectId } = useUserContextStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -248,11 +248,11 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => deleteBudgetMutation.mutate(budget.id)}
+                          onClick={() => onDeleteBudget(budget.id)}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          disabled={deleteBudgetMutation.isPending}
+                          disabled={isDeleting}
                         >
-                          {deleteBudgetMutation.isPending ? "Eliminando..." : "Eliminar Presupuesto"}
+                          {isDeleting ? "Eliminando..." : "Eliminar Presupuesto"}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -698,6 +698,68 @@ export default function SiteTasksMultiple() {
             </p>
           </div>
         </div>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Nuevo Presupuesto
+        </Button>
+      </div>
+
+      {/* Cards de estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-card rounded-2xl p-6 shadow-md border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Total Presupuestos</h3>
+              <p className="text-2xl font-bold text-foreground mt-1">{budgets.length}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-green-500" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card rounded-2xl p-6 shadow-md border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Borradores</h3>
+              <p className="text-2xl font-bold text-foreground mt-1">
+                {budgets.filter(b => b.status === 'draft').length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-yellow-500" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card rounded-2xl p-6 shadow-md border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Aprobados</h3>
+              <p className="text-2xl font-bold text-foreground mt-1">
+                {budgets.filter(b => b.status === 'approved').length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-blue-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de búsqueda */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar presupuestos..."
+            className="pl-10"
+          />
+        </div>
+        <Button variant="outline" size="sm">
+          <Filter className="h-4 w-4 mr-2" />
+          Más recientes
+        </Button>
       </div>
 
       {/* Lista de presupuestos como acordeones */}
@@ -718,6 +780,8 @@ export default function SiteTasksMultiple() {
               onToggle={() => handleToggleExpanded(budget.id)}
               onSetActive={() => handleSetActiveBudget(budget.id)}
               onAddTask={() => handleAddTask(budget.id)}
+              onDeleteBudget={(budgetIdToDelete) => deleteBudgetMutation.mutate(budgetIdToDelete)}
+              isDeleting={deleteBudgetMutation.isPending}
             />
           ))
         )}
