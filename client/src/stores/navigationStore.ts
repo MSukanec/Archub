@@ -46,7 +46,7 @@ const sectionViewMap: Record<Section, View> = {
   dashboard: 'dashboard-timeline',
   organization: 'organization-overview',
   projects: 'projects-list',
-  budgets: 'budgets-list',
+  budgets: 'budgets-tasks-multiple',
   sitelog: 'sitelog-main',
   movements: 'movements-main',
   contacts: 'contacts',

@@ -29,6 +29,7 @@ const viewTitles: Record<string, string> = {
   'projects-list': 'Lista de Proyectos',
   'budgets-list': 'Presupuestos',
   'budgets-tasks': 'Tabla de Cómputo',
+  'budgets-tasks-multiple': 'Tareas',
   'budgets-materials': 'Lista de Materiales',
   'sitelog-main': 'Bitácora',
   'movements-main': 'Finanzas',
