@@ -535,16 +535,17 @@ export default function SiteMaterials() {
       </div>
 
       {/* Barra de búsqueda */}
-      <div className="flex items-center gap-4">
+      <div className="flex gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Buscar materiales, categorías..."
-            className="pl-10 bg-background"
+            className="pl-10"
           />
         </div>
         <Select defaultValue="all">
-          <SelectTrigger className="w-48 bg-background">
+          <SelectTrigger className="w-48">
+            <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Filtrar por estado" />
           </SelectTrigger>
           <SelectContent>
