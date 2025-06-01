@@ -352,14 +352,14 @@ export default function BudgetTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-[#606060]">
-              <TableHead className="text-white font-semibold h-12 text-left pl-6">Rubro</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">Tarea</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">Unidad</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">Cantidad</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">Precio Unit.</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">Subtotal</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">% Incidencia</TableHead>
-              <TableHead className="text-white font-semibold h-12 text-center">Acciones</TableHead>
+              <TableHead className="text-white text-sm h-12 text-left pl-6">Rubro</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Tarea</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Cantidad</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Precio Unit.</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Subtotal</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">% Incidencia</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -405,12 +405,30 @@ export default function BudgetTasks() {
               </TableRow>
             ) : (
               <>
-                {Object.entries(groupedTasks).map(([categoryName, categoryTasks]: [string, any]) => [
-                  // Category Header
+                {Object.entries(groupedTasks).map(([categoryName, categoryTasks]: [string, any]) => {
+                  // Calculate category totals
+                  const categoryTotal = categoryTasks.reduce((sum: number, task: any) => 
+                    sum + (task.unit_labor_price * task.quantity), 0
+                  );
+                  const categoryPercentage = totalGeneral > 0 ? (categoryTotal / totalGeneral) * 100 : 0;
+                  
+                  return [
+                    // Category Header
                   <TableRow key={`category-${categoryName}`} className="bg-[#606060] border-border">
-                    <TableCell colSpan={8} className="pl-6 py-3 font-semibold text-sm text-white">
+                    <TableCell className="pl-6 py-3 font-semibold text-sm text-white">
                       {categoryName}
                     </TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
+                    <TableCell className="py-3 text-center font-semibold text-sm text-white">
+                      ${categoryTotal.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="py-3 text-center font-semibold text-sm text-white">
+                      {categoryPercentage.toFixed(1)}%
+                    </TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
                   </TableRow>,
                   // Category Tasks
                   ...categoryTasks.map((task: any) => {
@@ -481,7 +499,8 @@ export default function BudgetTasks() {
                       </TableRow>
                     );
                   })
-                ]).flat()}
+                  ];
+                }).flat()}
                 {/* Total Row */}
                 {filteredTasks.length > 0 && (
                   <TableRow className="bg-[#606060] border-border font-semibold">
