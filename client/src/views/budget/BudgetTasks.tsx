@@ -19,6 +19,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 import { TaskModalSimple } from '@/components/modals/TaskModalSimple';
+import AdminTasksModal from '@/components/modals/AdminTasksModal';
 
 function BudgetTasksSkeleton() {
   return (
@@ -53,6 +54,8 @@ export default function BudgetTasks() {
   const { setSection, setView } = useNavigationStore();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [selectedTaskForEdit, setSelectedTaskForEdit] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const { toast } = useToast();
@@ -480,7 +483,10 @@ export default function BudgetTasks() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setEditingTask(task)}
+                              onClick={() => {
+                                setSelectedTaskForEdit(task);
+                                setIsAdminModalOpen(true);
+                              }}
                               className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
                             >
                               <Edit className="h-4 w-4" />
@@ -529,6 +535,21 @@ export default function BudgetTasks() {
         <TaskModalSimple
           isOpen={isTaskModalOpen}
           onOpenChange={setIsTaskModalOpen}
+        />
+      )}
+      
+      {/* Admin Task Edit Modal */}
+      {isAdminModalOpen && (
+        <AdminTasksModal
+          isOpen={isAdminModalOpen}
+          onOpenChange={setIsAdminModalOpen}
+          taskToEdit={selectedTaskForEdit}
+          onClose={() => {
+            setIsAdminModalOpen(false);
+            setSelectedTaskForEdit(null);
+            // Refetch tasks to update the table
+            queryClient.invalidateQueries({ queryKey: ['budget-tasks', budgetId] });
+          }}
         />
       )}
     </div>
