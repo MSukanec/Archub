@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'sitelog' | 'movements' | 'contacts' | 'calendar' | 'admin-community' | 'admin-library' | 'profile';
+export type Section = 'dashboard' | 'organization' | 'projects' | 'budgets' | 'movements' | 'contacts' | 'calendar' | 'admin-community' | 'admin-library' | 'profile';
 export type View = 
   | 'dashboard-main'
   | 'dashboard-timeline'
@@ -47,7 +47,6 @@ const sectionViewMap: Record<Section, View> = {
   organization: 'organization-overview',
   projects: 'projects-list',
   budgets: 'budgets-tasks-multiple',
-  sitelog: 'sitelog-main',
   movements: 'movements-main',
   contacts: 'contacts',
   calendar: 'calendar',
@@ -62,7 +61,7 @@ const getSectionFromView = (view: View): Section => {
   if (view.startsWith('organization-')) return 'organization';
   if (view.startsWith('projects-')) return 'projects';
   if (view.startsWith('budgets-')) return 'budgets';
-  if (view.startsWith('sitelog-')) return 'sitelog';
+  if (view.startsWith('sitelog-')) return 'budgets';
   if (view.startsWith('movements-') || view === 'transactions') return 'movements';
   if (view === 'contacts') return 'contacts';
   if (view === 'calendar') return 'calendar';
