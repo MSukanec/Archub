@@ -30,6 +30,7 @@ interface TaskData {
   description: string;
   category_name: string;
   category_code: string;
+  parent_category_name: string;
   unit_name: string;
   amount: number;
   unit_price: number;
@@ -80,6 +81,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
           description: budgetTask.tasks?.description || '',
           category_name: budgetTask.tasks?.task_categories?.name || 'Sin categoría',
           category_code: budgetTask.tasks?.task_categories?.code || '---',
+          parent_category_name: budgetTask.tasks?.task_categories?.parent_category_name || 'Sin categoría padre',
           unit_name: budgetTask.tasks?.units?.name || 'Sin unidad',
           amount: parseFloat(budgetTask.quantity) || 0,
           unit_price: parseFloat(budgetTask.unit_price) || 0,
@@ -93,18 +95,21 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
     enabled: !!budget.id && !!projectId,
   });
 
-  // Query para obtener categorías únicas
-  const { data: categories = [] } = useQuery({
-    queryKey: ['element-categories', projectId],
+  // Query para obtener categorías únicas (usaremos las categorías normales por ahora)
+  const { data: parentCategories = [] } = useQuery({
+    queryKey: ['task-categories', projectId],
     queryFn: async () => {
       try {
         const { data, error } = await supabase
           .from('task_categories')
-          .select('*')
+          .select('name')
           .order('name');
         
         if (error) throw error;
-        return data || [];
+        
+        // Obtener categorías únicas
+        const uniqueCategories = Array.from(new Set((data || []).map(item => item.name)));
+        return uniqueCategories.map(name => ({ name }));
       } catch (error) {
         console.error('Error fetching categories:', error);
         return [];
@@ -120,7 +125,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
       task.description.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCategory = categoryFilter === 'all' || 
-      task.category_name === categoryFilter;
+      task.parent_category_name === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -236,8 +241,8 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas las categorías</SelectItem>
-                  {categories.map((category: any) => (
-                    <SelectItem key={category.id} value={category.name}>
+                  {parentCategories.map((category: any) => (
+                    <SelectItem key={category.name} value={category.name}>
                       {category.name}
                     </SelectItem>
                   ))}
