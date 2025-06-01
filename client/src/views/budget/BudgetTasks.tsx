@@ -530,18 +530,17 @@ export default function BudgetTasks() {
                 }).flat()}
                 {/* Total Row */}
                 {filteredTasks.length > 0 && (
-                  <TableRow className="bg-[#606060] border-border font-semibold">
+                  <TableRow className="bg-[#606060] border-border font-semibold hover:bg-[#606060]">
                     <TableCell colSpan={5} className="pl-6 py-3 text-right font-bold text-white">
                       TOTAL
                     </TableCell>
-                    <TableCell className="text-center py-3 font-bold text-white">
+                    <TableCell className="text-center py-3 font-bold text-white w-[5%]">
                       ${totalGeneral.toFixed(2)}
                     </TableCell>
-                    <TableCell className="text-center py-3 font-bold text-white">
+                    <TableCell className="text-center py-3 font-bold text-white w-[5%]">
                       100.0%
                     </TableCell>
-                    <TableCell className="text-center py-3 text-white">
-                      —
+                    <TableCell className="text-center py-3 text-white w-[5%]">
                     </TableCell>
                   </TableRow>
                 )}
