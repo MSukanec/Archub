@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Package2, Search, X, Edit, Trash2, MoreHorizontal, DollarSign } from 'lucide-react';
+import { Package2, Search, X, Edit, Trash2, MoreHorizontal, DollarSign, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -201,41 +201,38 @@ export default function BudgetMaterials() {
             </p>
           </div>
         </div>
-        
-        {/* Budget Selector */}
-        <div className="flex items-center gap-4">
-          <Select 
-            value={budgetId || ""} 
-            onValueChange={(value) => {
-              setBudgetId(value);
-              setSearchTerm('');
-              setCategoryFilter('all');
-            }}
-          >
-            <SelectTrigger className="w-[250px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-              <SelectValue placeholder="Seleccionar presupuesto" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              {budgets?.map((budget: any) => (
-                <SelectItem key={budget.id} value={budget.id.toString()}>
-                  {budget.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+
+        <Select 
+          value={budgetId || ""} 
+          onValueChange={(value) => {
+            setBudgetId(value);
+            setSearchTerm('');
+            setCategoryFilter('all');
+          }}
+        >
+          <SelectTrigger className="w-48 bg-white/80 hover:bg-white border-input">
+            <SelectValue placeholder="Seleccionar presupuesto" />
+          </SelectTrigger>
+          <SelectContent>
+            {budgets?.map((budget: any) => (
+              <SelectItem key={budget.id} value={budget.id.toString()}>
+                {budget.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Filters */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
-        <div className="p-4 flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filters and Search - exactly like Gestión de Tareas */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Buscar materiales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -248,10 +245,10 @@ export default function BudgetMaterials() {
               </Button>
             )}
           </div>
-
+          
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-              <SelectValue placeholder="Todas las Categorías" />
+              <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
               <SelectItem value="all">Todas las categorías</SelectItem>
@@ -262,6 +259,20 @@ export default function BudgetMaterials() {
               ))}
             </SelectContent>
           </Select>
+
+          <Button 
+            variant="outline"
+            onClick={() => {
+              toast({
+                title: "Funcionalidad en desarrollo",
+                description: "La exportación a PDF estará disponible próximamente.",
+              });
+            }}
+            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-[#d1d1d1]"
+          >
+            <FileDown className="w-4 h-4 mr-2" />
+            Exportar PDF
+          </Button>
         </div>
       </div>
 
