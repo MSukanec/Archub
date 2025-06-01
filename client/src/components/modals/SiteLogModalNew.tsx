@@ -246,7 +246,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
           type="button"
           variant="outline"
           onClick={onClose}
-          className="bg-background border-border text-foreground hover:bg-muted rounded-xl flex-[1]"
+          className="bg-background border-border text-foreground hover:bg-muted rounded-xl flex-[1] basis-1/4"
         >
           Cancelar
         </Button>
@@ -254,7 +254,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
           type="submit"
           form="sitelog-form"
           disabled={createMutation.isPending}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl flex-[1]"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl flex-[3] basis-3/4"
         >
           {createMutation.isPending && (
             <div className="mr-2 h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
@@ -289,7 +289,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
     <ModernModal 
       isOpen={isOpen} 
       onClose={onClose}
-      onOpenChange={onOpenChange}
+
       title={isEditing ? "Editar Registro de Obra" : "Nuevo Registro de Obra"}
       subtitle={isEditing ? "Modifica los datos del registro existente" : "Registra las actividades diarias y personal presente en obra"}
       icon={FileText}
@@ -302,7 +302,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
             <AccordionItem value="basic" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-primary" />
+                  <FileText className="w-4 h-4 text-primary" />
                   Información Básica
                 </div>
               </AccordionTrigger>
@@ -333,7 +333,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="w-auto p-0 z-[10000]" align="start">
                           <Calendar
                             mode="single"
                             selected={field.value}
