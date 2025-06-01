@@ -124,6 +124,7 @@ export default function FloatingActionButton() {
     'projects-list': { label: 'Crear Proyecto', action: modalActions.openCreateProjectModal },
     'budgets-list': { label: 'Crear Presupuesto', action: modalActions.openCreateBudgetModal },
     'budgets-tasks': { label: 'Crear Tarea', action: modalActions.openCreateTaskModal },
+    'budgets-tasks-multiple': { label: 'Crear Presupuesto', action: modalActions.openCreateBudgetModal },
     'budgets-materials': { label: 'Crear Material', action: modalActions.openCreateMaterialModal },
     'sitelog-main': { label: 'Crear Entrada', action: modalActions.openCreateSiteLogModal },
     'movements-main': { label: 'Crear Movimiento', action: modalActions.openCreateMovementModal },
