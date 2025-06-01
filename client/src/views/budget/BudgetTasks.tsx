@@ -255,17 +255,21 @@ export default function BudgetTasks() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="flex-1 p-6 space-y-6">
       {/* Header - exactly like Lista de Presupuestos */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-          <Calculator className="w-4 h-4 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Tabla de Cómputo</h1>
-          <p className="text-muted-foreground">
-            Dashboard general de tareas y cantidades del presupuesto
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Tabla de Cómputo
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Dashboard general de tareas y cantidades del presupuesto
+            </p>
+          </div>
         </div>
       </div>
 
@@ -292,54 +296,57 @@ export default function BudgetTasks() {
         </Select>
       </div>
 
-      {/* Filters and Search - inline like Gestión de Tareas */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <div className="relative flex-1 min-w-[300px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar tareas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+      {/* Filters and Search - exactly like Gestión de Tareas */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar tareas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Todas las categorías" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button 
+            variant="outline"
+            onClick={() => {
+              toast({
+                title: "Funcionalidad en desarrollo",
+                description: "La exportación a PDF estará disponible próximamente.",
+              });
+            }}
+            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-[#d1d1d1]"
+          >
+            <FileDown className="w-4 h-4 mr-2" />
+            Exportar PDF
+          </Button>
         </div>
-
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Todas las categorías" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas las categorías</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.name}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Button 
-          variant="outline"
-          onClick={() => {
-            toast({
-              title: "Funcionalidad en desarrollo",
-              description: "La exportación a PDF estará disponible próximamente.",
-            });
-          }}
-        >
-          <FileDown className="w-4 h-4 mr-2" />
-          Exportar PDF
-        </Button>
       </div>
 
       {/* Table */}
