@@ -31,7 +31,7 @@ export default function SiteLogs() {
 
   // Set navigation state when component mounts
   useEffect(() => {
-    setSection('sitelog');
+    setSection('budgets');
     setView('sitelog-main');
   }, [setSection, setView]);
 
