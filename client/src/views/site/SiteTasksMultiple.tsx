@@ -225,7 +225,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   placeholder="Buscar tareas..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white/80 hover:bg-white"
+                  className="pl-10"
                 />
               </div>
               
