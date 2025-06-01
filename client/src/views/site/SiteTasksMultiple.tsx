@@ -67,7 +67,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               unit_id,
               category_id,
               units(name),
-              task_categories(name, code)
+              task_categories!tasks_category_id_fkey(name, code)
             )
           `)
           .eq('budget_id', budget.id);
@@ -99,7 +99,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
     queryFn: async () => {
       try {
         const { data, error } = await supabase
-          .from('categories')
+          .from('task_categories')
           .select('*')
           .order('name');
         
@@ -180,6 +180,27 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
             </div>
             
             <div className="flex items-center gap-2">
+              {!isActive && (
+                <Button
+                  onClick={onSetActive}
+                  variant="outline"
+                  size="sm"
+                >
+                  Hacer Activo
+                </Button>
+              )}
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  // TODO: Implementar exportación PDF
+                  console.log('Exportar PDF');
+                }}
+              >
+                <FileText className="h-4 w-4 mr-1" />
+                Exportar PDF
+              </Button>
               
               <Button
                 onClick={onAddTask}
@@ -209,7 +230,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               </div>
               
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-48 bg-white/80 hover:bg-white">
+                <SelectTrigger className="w-48">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filtrar por categoría" />
                 </SelectTrigger>
@@ -222,19 +243,6 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   ))}
                 </SelectContent>
               </Select>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-white/80 hover:bg-white"
-                onClick={() => {
-                  // TODO: Implementar exportación PDF
-                  console.log('Exportar PDF');
-                }}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Exportar PDF
-              </Button>
             </div>
 
             {/* Tabla de tareas */}
