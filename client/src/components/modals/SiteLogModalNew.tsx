@@ -120,14 +120,14 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
       };
 
       if (isEditing && siteLog) {
-        const result = await siteLogsService.update(siteLog.id, siteLogData);
+        const result = await siteLogsService.updateSiteLog(siteLog.id, siteLogData);
         
         // Update related tasks and attendees
         // Implementation depends on your service structure
         
         return result;
       } else {
-        const result = await siteLogsService.create(siteLogData);
+        const result = await siteLogsService.createSiteLog(siteLogData);
         
         // Add tasks and attendees
         // Implementation depends on your service structure
