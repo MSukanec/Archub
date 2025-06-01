@@ -51,10 +51,12 @@ type TaskWithNewFields = {
 interface AdminTasksModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenChange?: (open: boolean) => void;
   task?: TaskWithNewFields | null;
+  taskToEdit?: TaskWithNewFields | null;
 }
 
-export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
+export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, taskToEdit }: AdminTasksModalProps) {
   const { organizationId } = useUserContextStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -67,7 +69,9 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     material_name: string;
     amount: string;
   }>>([]);
-  const isEditing = !!task;
+  // Use taskToEdit if provided, otherwise fall back to task
+  const editingTask = taskToEdit || task;
+  const isEditing = !!editingTask;
 
   // Use hierarchical concepts hook for task categories (same as MovementModal)
   const { data: taskCategoriesStructure, isLoading: taskCategoriesLoading } = useHierarchicalConcepts('task_categories');
@@ -139,11 +143,11 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
 
   // Fetch existing materials for the task when editing
   const { data: existingTaskMaterials = [] } = useQuery({
-    queryKey: ['task-materials', task?.id],
+    queryKey: ['task-materials', editingTask?.id],
     queryFn: async () => {
-      if (!task?.id) return [];
+      if (!editingTask?.id) return [];
       
-      console.log('Fetching materials for task:', task.id);
+      console.log('Fetching materials for task:', editingTask.id);
       
       const { data, error } = await supabase
         .from('task_materials')
@@ -152,7 +156,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           amount,
           materials(id, name)
         `)
-        .eq('task_id', task.id);
+        .eq('task_id', editingTask.id);
       
       if (error) {
         console.error('Error fetching task materials:', error);
@@ -170,7 +174,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       console.log('Mapped task materials:', mappedData);
       return mappedData;
     },
-    enabled: isOpen && isEditing && !!task?.id,
+    enabled: isOpen && isEditing && !!editingTask?.id,
   });
 
   // Fetch units
@@ -217,8 +221,8 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
   // Initialize form when modal opens (exact same logic as MovementModal)
   useEffect(() => {
     if (isOpen && taskCategoriesStructure && actions.length > 0 && taskElements.length > 0 && units.length > 0) {
-      if (task && isEditing) {
-        const elementCategoryId = task.element_category_id || '';
+      if (editingTask && isEditing) {
+        const elementCategoryId = editingTask.element_category_id || '';
         
         if (elementCategoryId && taskCategoriesStructure) {
           // Use hierarchical path to set category, subcategory and element (exact same as MovementModal)
@@ -229,7 +233,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
             element_category_id: elementCategoryId, 
             conceptPath, 
             categoryId,
-            task 
+            editingTask 
           });
           
           // Set the selected category FIRST for dependent selects (same as MovementModal)
@@ -241,20 +245,20 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
           }, 10);
           
           // Set other form values (same as MovementModal)
-          form.setValue('name', task.name || '');
-          form.setValue('description', task.description || '');
-          form.setValue('unit_labor_price', task.unit_labor_price?.toString() || '');
-          form.setValue('unit_material_price', task.unit_material_price?.toString() || '');
-          form.setValue('unit_id', task.unit_id || '');
-          form.setValue('action_id', task.action_id || '');
+          form.setValue('name', editingTask.name || '');
+          form.setValue('description', editingTask.description || '');
+          form.setValue('unit_labor_price', editingTask.unit_labor_price?.toString() || '');
+          form.setValue('unit_material_price', editingTask.unit_material_price?.toString() || '');
+          form.setValue('unit_id', editingTask.unit_id || '');
+          form.setValue('action_id', editingTask.action_id || '');
           
-          setSelectedActionId(task.action_id || '');
+          setSelectedActionId(editingTask.action_id || '');
           
           // Set element_id with proper timing to ensure UI synchronization
           setTimeout(() => {
-            form.setValue('element_id', task.element_id || '');
-            setSelectedElementId(task.element_id || '');
-            console.log('Synced element_id after delay:', task.element_id);
+            form.setValue('element_id', editingTask.element_id || '');
+            setSelectedElementId(editingTask.element_id || '');
+            console.log('Synced element_id after delay:', editingTask.element_id);
           }, 20);
         }
       } else {
@@ -279,7 +283,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
         });
       }
     }
-  }, [task, isOpen, taskCategoriesStructure, isEditing, form, actions, taskElements, units]);
+  }, [editingTask, isOpen, taskCategoriesStructure, isEditing, form, actions, taskElements, units]);
 
   // Load existing materials when editing a task
   useEffect(() => {
