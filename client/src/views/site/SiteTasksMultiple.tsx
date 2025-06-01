@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText, Trash2 } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
@@ -44,6 +45,8 @@ interface BudgetAccordionProps {
   onToggle: () => void;
   onSetActive: () => void;
   onAddTask: () => void;
+  onDeleteBudget: (budgetId: string) => void;
+  isDeleting: boolean;
 }
 
 function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask }: BudgetAccordionProps) {
@@ -213,6 +216,47 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                     <Plus className="h-4 w-4 mr-1" />
                     Agregar Tarea
                   </Button>
+                  
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar presupuesto?</AlertDialogTitle>
+                        <AlertDialogDescription className="space-y-2">
+                          <p>
+                            <strong>¡ATENCIÓN!</strong> Esta acción eliminará permanentemente el presupuesto "{budget.name}" y <strong>TODOS</strong> los datos relacionados:
+                          </p>
+                          <ul className="list-disc pl-5 space-y-1 text-sm">
+                            <li>Todas las tareas asociadas al presupuesto</li>
+                            <li>Todas las bitácoras relacionadas</li>
+                            <li>Todos los cómputos y cálculos</li>
+                            <li>Cualquier otro dato vinculado al presupuesto</li>
+                          </ul>
+                          <p className="font-semibold text-destructive">
+                            Esta acción NO se puede deshacer.
+                          </p>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteBudgetMutation.mutate(budget.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          disabled={deleteBudgetMutation.isPending}
+                        >
+                          {deleteBudgetMutation.isPending ? "Eliminando..." : "Eliminar Presupuesto"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </>
               )}
             </div>
@@ -334,7 +378,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                             ...categoryTasks.map((task: TaskData) => {
                               const percentage = totalGeneral > 0 ? (task.total_price / totalGeneral) * 100 : 0;
                               return (
-                                <tr key={task.id} className="border-border hover:bg-primary/10 transition-colors h-12">
+                                <tr key={task.id} className="border-border hover:bg-muted/50 transition-colors h-12">
                                   <td className="pl-12 py-1 w-[15%]">
                                     <div className="text-sm font-medium text-foreground">{task.category_code}</div>
                                   </td>
@@ -559,6 +603,44 @@ export default function SiteTasksMultiple() {
     if (a.id === budgetId && b.id !== budgetId) return -1;
     if (b.id === budgetId && a.id !== budgetId) return 1;
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  // Mutación para eliminar presupuesto
+  const deleteBudgetMutation = useMutation({
+    mutationFn: async (budgetIdToDelete: string) => {
+      const { error } = await supabase
+        .from('budgets')
+        .delete()
+        .eq('id', budgetIdToDelete);
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, budgetIdDeleted) => {
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+      
+      // Si se eliminó el presupuesto activo, cambiar al primer presupuesto disponible
+      if (budgetIdDeleted === budgetId) {
+        const remainingBudgets = budgets.filter(b => b.id !== budgetIdDeleted);
+        if (remainingBudgets.length > 0) {
+          setBudgetId(remainingBudgets[0].id);
+        } else {
+          setBudgetId('');
+        }
+      }
+
+      toast({
+        title: "Presupuesto eliminado",
+        description: "El presupuesto y todos sus datos relacionados han sido eliminados correctamente.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error al eliminar presupuesto",
+        description: "No se pudo eliminar el presupuesto. Intenta nuevamente.",
+        variant: "destructive",
+      });
+      console.error('Error deleting budget:', error);
+    },
   });
 
   // Solo expandir el presupuesto activo
