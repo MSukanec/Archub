@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Package, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import { Calculator, Search, X, Edit, Trash2, MoreHorizontal, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,11 +20,41 @@ import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 import { TaskModalSimple } from '@/components/modals/TaskModalSimple';
 
+function BudgetTasksSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-5 w-96" />
+      </div>
+      
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-10 w-48" />
+      </div>
+
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="border-b border-border bg-muted/50 p-4">
+          <Skeleton className="h-5 w-32" />
+        </div>
+        <div className="space-y-2 p-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-12" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BudgetTasks() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -53,14 +83,8 @@ export default function BudgetTasks() {
     queryFn: async () => {
       if (!projectId) return [];
       
-      const { data, error } = await supabase
-        .from('budgets')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
+      const budgets = await projectsService.getBudgets(projectId);
+      return budgets;
     },
     enabled: !!projectId,
   });
@@ -134,18 +158,24 @@ export default function BudgetTasks() {
     enabled: !!budgetId,
   });
 
-  // Agrupar tareas por categoría
-  const groupedTasks = budgetTasks.reduce((groups: any, task: any) => {
-    const categoryName = task.category_name || 'Sin categoría';
-    if (!groups[categoryName]) {
-      groups[categoryName] = [];
-    }
-    groups[categoryName].push(task);
-    return groups;
-  }, {});
+  // Get unique categories for filter
+  const categories = Array.from(new Set(budgetTasks.map(task => task.category_name)))
+    .filter(Boolean)
+    .map(name => ({ id: name, name }));
 
-  // Calcular total general
-  const totalGeneral = budgetTasks.reduce((sum: number, task: any) => 
+  // Filter tasks based on search and category
+  const filteredTasks = budgetTasks.filter(task => {
+    const matchesSearch = !searchTerm || 
+      task.task_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.category_name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = categoryFilter === 'all' || task.category_name === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Calculate total
+  const totalGeneral = filteredTasks.reduce((sum: number, task: any) => 
     sum + (task.unit_labor_price * task.quantity), 0
   );
 
@@ -171,13 +201,13 @@ export default function BudgetTasks() {
     },
   });
 
-  // Mutation to delete budget task
+  // Delete task mutation
   const deleteTaskMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (taskId: string) => {
       const { error } = await supabase
         .from('budget_tasks')
         .delete()
-        .eq('id', id);
+        .eq('id', taskId);
       
       if (error) throw error;
     },
@@ -197,236 +227,229 @@ export default function BudgetTasks() {
     },
   });
 
-
-
   if (budgetsLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-96 mt-2" />
-          </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <div className="grid gap-4">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32" />
-          ))}
-        </div>
-      </div>
-    );
+    return <BudgetTasksSkeleton />;
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-medium text-foreground">Cómputo y Presupuesto</h3>
-          <p className="text-sm text-muted-foreground">
-            Tabla de cómputo donde puedes agregar tareas con cantidades y ver subtotales
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select 
-            value={budgetId || ""} 
-            onValueChange={(value) => {
-              setBudgetId(value);
-            }}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Seleccionar presupuesto" />
-            </SelectTrigger>
-            <SelectContent>
-              {budgets?.map((budget: any) => (
-                <SelectItem key={budget.id} value={budget.id.toString()}>
-                  {budget.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button 
-            className="flex items-center gap-2"
-            onClick={() => setIsTaskModalOpen(true)}
-            disabled={!budgetId}
-          >
-            <Plus className="h-4 w-4" />
-            Agregar Tarea
-          </Button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+            <Calculator className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Tabla de Cómputo</h1>
+            <p className="text-muted-foreground">
+              Gestiona las tareas y cantidades para calcular el presupuesto total
+            </p>
+          </div>
         </div>
       </div>
 
-      <Card className="bg-[#e1e1e1]">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Tabla de Cómputo</span>
-            <Badge variant="secondary">
-              Total: ${budgetTasks.reduce((sum: number, task: any) => sum + (task.unit_labor_price * task.quantity), 0).toFixed(2)}
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Agrega tareas y cantidades para calcular el presupuesto total
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          {tasksLoading ? (
-            <div className="p-6 space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-16" />
-              ))}
-            </div>
-          ) : budgetTasks.length === 0 ? (
-            <div className="text-center py-8">
-              <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                No hay tareas en este presupuesto
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {!budgetId 
-                  ? "Selecciona un presupuesto para ver sus tareas"
-                  : "Comienza agregando la primera tarea"
-                }
-              </p>
-              {budgetId && (
-                <Button onClick={() => setIsTaskModalOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Agregar Primera Tarea
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="overflow-hidden border border-gray-300 rounded-lg">
-              {/* Table Header */}
-              <div className="bg-gray-100 border-b border-gray-300 p-4">
-                <div className="grid grid-cols-9 gap-4 font-medium text-sm text-gray-700">
-                  <div className="col-span-1 text-center">Rubro</div>
-                  <div className="col-span-2 text-center">Descripción</div>
-                  <div className="col-span-1 text-center">Unidad</div>
-                  <div className="col-span-1 text-center">Cantidad</div>
-                  <div className="col-span-1 text-center">Costo M.O.</div>
-                  <div className="col-span-1 text-center">Subtotal</div>
-                  <div className="col-span-1 text-center">% Inc.</div>
-                  <div className="col-span-1 text-center">Acciones</div>
-                </div>
-              </div>
-              
-              {/* Table Body */}
-              <div className="max-h-[500px] overflow-y-auto bg-white">
-                {Object.keys(groupedTasks).map((categoryName) => {
-                  const categoryTasks = groupedTasks[categoryName];
-                  const categoryTotal = categoryTasks.reduce((sum: number, task: any) => 
-                    sum + (task.unit_labor_price * task.quantity), 0
-                  );
-                  
-                  return (
-                    <div key={categoryName}>
-                      {/* Category Header */}
-                      <div className="bg-[#787878] border-b border-gray-400 p-3 font-bold text-sm text-white">
-                        <div className="grid grid-cols-9 gap-4 items-center">
-                          <div className="col-span-1 text-center">{categoryName.toUpperCase()}</div>
-                          <div className="col-span-5"></div>
-                          <div className="col-span-1 text-center">${categoryTotal.toFixed(2)}</div>
-                          <div className="col-span-1 text-center">
-                            {totalGeneral > 0 ? ((categoryTotal / totalGeneral) * 100).toFixed(1) : '0.0'}%
-                          </div>
-                          <div className="col-span-1"></div>
-                        </div>
-                      </div>
-                      
-                      {/* Tasks in Category */}
-                      {categoryTasks.map((budgetTask: any, index: number) => {
-                        const unitPrice = budgetTask.unit_labor_price || 0;
-                        const quantity = budgetTask.quantity || 0;
-                        const subtotal = unitPrice * quantity;
-                        const incidencePercentage = totalGeneral > 0 ? (subtotal / totalGeneral) * 100 : 0;
-                        
-                        return (
-                          <div 
-                            key={budgetTask.id} 
-                            className={`grid grid-cols-9 gap-4 p-3 border-b border-gray-200 hover:bg-gray-50 ${
-                              index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                            }`}
-                          >
-                            <div className="col-span-1 text-sm font-medium text-gray-500 text-center">
-                              {/* Empty for rubro since it's in header */}
-                            </div>
-                            <div className="col-span-2 text-sm text-center">
-                              {budgetTask.task_name}
-                            </div>
-                            <div className="col-span-1 text-sm text-center">
-                              {budgetTask.unit}
-                            </div>
-                            <div className="col-span-1 flex justify-center">
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={budgetTask.quantity}
-                                onChange={(e) => {
-                                  const newQuantity = parseFloat(e.target.value) || 0;
-                                  updateQuantityMutation.mutate({ 
-                                    id: budgetTask.id, 
-                                    quantity: newQuantity 
-                                  });
-                                }}
-                                className="h-8 text-sm bg-white border-gray-300 text-center w-full max-w-[80px]"
-                              />
-                            </div>
-                            <div className="col-span-1 text-sm font-medium text-center">
-                              ${budgetTask.unit_labor_price?.toFixed(2) || '0.00'}
-                            </div>
-                            <div className="col-span-1 text-sm font-bold text-center">
-                              ${subtotal.toFixed(2)}
-                            </div>
-                            <div className="col-span-1 text-sm text-center">
-                              {incidencePercentage.toFixed(1)}%
-                            </div>
-                            <div className="col-span-1 flex justify-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => deleteTaskMutation.mutate(budgetTask.id)}
-                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {/* Total Row */}
-              <div className="bg-black border-t-2 border-gray-600 p-4 font-bold">
-                <div className="grid grid-cols-9 gap-4">
-                  <div className="col-span-5"></div>
-                  <div className="col-span-1 text-lg text-white text-center">
-                    TOTAL GENERAL:
-                  </div>
-                  <div className="col-span-1 text-lg text-white text-center">
-                    ${totalGeneral.toFixed(2)}
-                  </div>
-                  <div className="col-span-1 text-lg text-white text-center">
-                    100%
-                  </div>
-                  <div className="col-span-1"></div>
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Filters and Budget Selector */}
+      <div className="flex items-center gap-4">
+        <Select 
+          value={budgetId || ""} 
+          onValueChange={(value) => {
+            setBudgetId(value);
+            setSearchTerm('');
+            setCategoryFilter('all');
+          }}
+        >
+          <SelectTrigger className="w-[250px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectValue placeholder="Seleccionar presupuesto" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+            {budgets?.map((budget: any) => (
+              <SelectItem key={budget.id} value={budget.id.toString()}>
+                {budget.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      {/* Task Modal */}
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar tareas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+          />
+          {searchTerm && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectValue placeholder="Todas las Categorías" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+            <SelectItem value="all">Todas las categorías</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.name}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Total Badge */}
+      {budgetId && (
+        <div className="flex justify-end">
+          <Badge variant="outline" className="text-lg px-4 py-2 bg-primary/10 text-primary border-primary/20">
+            <DollarSign className="w-4 h-4 mr-1" />
+            Total: ${totalGeneral.toFixed(2)}
+          </Badge>
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Cantidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Precio Unit.</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Subtotal</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tasksLoading ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <TableRow key={index} className="border-border h-12">
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-20 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-32 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-16 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-8 w-20 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-16 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-20 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-8 w-8 mx-auto rounded-full" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredTasks.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-8 h-32">
+                  {!budgetId 
+                    ? 'Selecciona un presupuesto para ver sus tareas'
+                    : searchTerm || categoryFilter !== 'all'
+                    ? 'No se encontraron tareas que coincidan con los filtros.'
+                    : 'No hay tareas en este presupuesto.'
+                  }
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredTasks.map((task: any) => (
+                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors h-12">
+                  <TableCell className="text-center py-1">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {task.category_name}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-1 text-center">
+                    <div className="font-medium text-foreground">{task.task_name}</div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {task.unit}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={task.quantity}
+                      onChange={(e) => {
+                        const newQuantity = parseFloat(e.target.value) || 0;
+                        updateQuantityMutation.mutate({ 
+                          id: task.id, 
+                          quantity: newQuantity 
+                        });
+                      }}
+                      className="w-20 text-center text-sm h-8"
+                      disabled={updateQuantityMutation.isPending}
+                    />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1">
+                      <DollarSign className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-sm">{task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1 font-semibold">
+                      <DollarSign className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-sm">{(task.unit_labor_price * task.quantity).toFixed(2)}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem
+                          onClick={() => setEditingTask(task)}
+                          className="flex items-center gap-2"
+                        >
+                          <Edit className="h-4 w-4" />
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => deleteTaskMutation.mutate(task.id)}
+                          className="flex items-center gap-2 text-destructive"
+                          disabled={deleteTaskMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Eliminar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Modals */}
       <TaskModalSimple
         isOpen={isTaskModalOpen}
-        onOpenChange={(open) => {
-          setIsTaskModalOpen(open);
-          if (!open) setEditingTask(null);
-        }}
+        onClose={() => setIsTaskModalOpen(false)}
+        budgetId={budgetId}
       />
     </div>
   );
