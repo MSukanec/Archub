@@ -255,13 +255,18 @@ export default function BudgetTasks() {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header - consistent with Lista de Presupuestos */}
-      <div>
-        <h3 className="text-lg font-medium text-foreground">Tabla de Cómputo</h3>
-        <p className="text-sm text-muted-foreground">
-          Administra las tareas y cantidades del sistema
-        </p>
+    <div className="p-6 space-y-6">
+      {/* Header - exactly like Lista de Presupuestos */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+          <Calculator className="w-4 h-4 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Tabla de Cómputo</h1>
+          <p className="text-muted-foreground">
+            Dashboard general de tareas y cantidades del presupuesto
+          </p>
+        </div>
       </div>
 
       {/* Budget Selector */}
@@ -274,7 +279,7 @@ export default function BudgetTasks() {
             setCategoryFilter('all');
           }}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[250px]">
             <SelectValue placeholder="Seleccionar presupuesto" />
           </SelectTrigger>
           <SelectContent>
@@ -287,10 +292,30 @@ export default function BudgetTasks() {
         </Select>
       </div>
 
-      {/* Filters - consistent with Movimientos style */}
-      <div className="flex items-center gap-4">
+      {/* Filters and Search - inline like Gestión de Tareas */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="relative flex-1 min-w-[300px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar tareas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          {searchTerm && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-48 bg-white/80 hover:bg-white border-input">
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Todas las categorías" />
           </SelectTrigger>
           <SelectContent>
@@ -304,8 +329,7 @@ export default function BudgetTasks() {
         </Select>
 
         <Button 
-          variant="outline" 
-          className="bg-white/80 hover:bg-white border-input"
+          variant="outline"
           onClick={() => {
             toast({
               title: "Funcionalidad en desarrollo",
@@ -316,27 +340,6 @@ export default function BudgetTasks() {
           <FileDown className="w-4 h-4 mr-2" />
           Exportar PDF
         </Button>
-      </div>
-
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar tareas..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-background"
-        />
-        {searchTerm && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSearchTerm('')}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
       </div>
 
       {/* Table */}
