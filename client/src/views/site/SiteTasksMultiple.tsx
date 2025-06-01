@@ -171,7 +171,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                     ${(totalAmount || 0).toLocaleString()}
                   </span>
                   {isActive && (
-                    <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-white text-xs">
+                    <Badge className="text-xs">
                       Activo
                     </Badge>
                   )}
@@ -244,8 +244,8 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               </Select>
             </div>
 
-            {/* Tabla de tareas */}
-            <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+            {/* Tabla de tareas - Desktop */}
+            <div className="hidden xl:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -371,6 +371,102 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            {/* Cards responsivas - Tablet/Mobile */}
+            <div className="xl:hidden space-y-3">
+              {filteredTasks.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  No hay tareas para mostrar
+                </div>
+              ) : (
+                (() => {
+                  // Group tasks by category
+                  const groupedTasks = filteredTasks.reduce((groups: any, task: TaskData) => {
+                    const categoryName = task.category_name || 'Sin categoría';
+                    if (!groups[categoryName]) {
+                      groups[categoryName] = [];
+                    }
+                    groups[categoryName].push(task);
+                    return groups;
+                  }, {});
+
+                  // Calculate total
+                  const totalGeneral = filteredTasks.reduce((sum: number, task: TaskData) => 
+                    sum + task.total_price, 0
+                  );
+
+                  return Object.entries(groupedTasks).map(([categoryName, categoryTasks]: [string, any]) => {
+                    // Calculate category totals
+                    const categoryTotal = categoryTasks.reduce((sum: number, task: TaskData) => 
+                      sum + task.total_price, 0
+                    );
+                    const categoryPercentage = totalGeneral > 0 ? (categoryTotal / totalGeneral) * 100 : 0;
+
+                    return (
+                      <div key={categoryName} className="space-y-2">
+                        {/* Category Header Card */}
+                        <div className="rounded-lg shadow-md bg-[#606060] p-3">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-white text-sm">{categoryName}</span>
+                            <div className="text-right">
+                              <div className="font-semibold text-white text-sm">
+                                ${categoryTotal.toFixed(2)}
+                              </div>
+                              <div className="text-xs text-white/80">
+                                {categoryPercentage.toFixed(1)}%
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Category Tasks Cards */}
+                        {categoryTasks.map((task: TaskData) => {
+                          const percentage = totalGeneral > 0 ? (task.total_price / totalGeneral) * 100 : 0;
+                          
+                          return (
+                            <div 
+                              key={task.id} 
+                              className="rounded-lg shadow-md bg-card border-0 p-3 hover:bg-muted/30 transition-colors"
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-sm truncate text-foreground">{task.name}</h4>
+                                  {task.description && (
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{task.description}</p>
+                                  )}
+                                </div>
+                                <span className="text-sm font-bold text-foreground ml-2">
+                                  ${task.total_price.toFixed(2)}
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Unidad:</span>
+                                  <span className="font-medium text-foreground">{task.unit_name}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Cantidad:</span>
+                                  <span className="font-medium text-foreground">{task.amount}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Precio Unit.:</span>
+                                  <span className="font-medium text-foreground">${task.unit_price ? task.unit_price.toFixed(2) : '0.00'}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">% Incidencia:</span>
+                                  <span className="font-medium text-foreground">{percentage.toFixed(1)}%</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  });
+                })()
+              )}
             </div>
           </div>
         </CollapsibleContent>
