@@ -66,9 +66,8 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               description,
               unit_id,
               category_id,
-              element_category_id,
               units(name),
-              element_categories(name, code)
+              categories(name, code)
             )
           `)
           .eq('budget_id', budget.id);
@@ -79,8 +78,8 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
           id: budgetTask.id,
           name: budgetTask.tasks?.name || 'Tarea no encontrada',
           description: budgetTask.tasks?.description || '',
-          category_name: budgetTask.tasks?.element_categories?.name || 'Sin categoría',
-          category_code: budgetTask.tasks?.element_categories?.code || '---',
+          category_name: budgetTask.tasks?.categories?.name || 'Sin categoría',
+          category_code: budgetTask.tasks?.categories?.code || '---',
           unit_name: budgetTask.tasks?.units?.name || 'Sin unidad',
           amount: parseFloat(budgetTask.quantity) || 0,
           unit_price: parseFloat(budgetTask.unit_price) || 0,
@@ -100,7 +99,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
     queryFn: async () => {
       try {
         const { data, error } = await supabase
-          .from('element_categories')
+          .from('categories')
           .select('*')
           .order('name');
         
@@ -229,78 +228,123 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border bg-muted/50">
-                      <th className="text-left p-4 font-medium text-muted-foreground" style={{ width: '15%' }}>
+                      <th className="text-left pl-6 py-3 font-medium text-muted-foreground text-sm w-[15%]">
                         Rubro
                       </th>
-                      <th className="text-left p-4 font-medium text-muted-foreground flex-1">
+                      <th className="text-left py-3 font-medium text-muted-foreground text-sm">
                         Tarea
                       </th>
-                      <th className="text-left p-4 font-medium text-muted-foreground" style={{ width: '5%' }}>
+                      <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
                         Unidad
                       </th>
-                      <th className="text-left p-4 font-medium text-muted-foreground" style={{ width: '5%' }}>
+                      <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
                         Cantidad
                       </th>
-                      <th className="text-left p-4 font-medium text-muted-foreground" style={{ width: '5%' }}>
+                      <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
                         Precio Unit.
                       </th>
-                      <th className="text-left p-4 font-medium text-muted-foreground" style={{ width: '5%' }}>
-                        Precio Total
+                      <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
+                        Subtotal
+                      </th>
+                      <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
+                        %
+                      </th>
+                      <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
+                        Acciones
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredTasks.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                        <td colSpan={8} className="text-center text-muted-foreground py-8 h-32">
                           No hay tareas para mostrar
                         </td>
                       </tr>
                     ) : (
-                      filteredTasks.map((task: TaskData) => (
-                        <tr
-                          key={task.id}
-                          className="border-b border-border hover:bg-primary/5 transition-colors"
-                        >
-                          <td className="p-4" style={{ width: '15%' }}>
-                            <span className="font-medium text-foreground">
-                              {task.category_code}
-                            </span>
-                          </td>
-                          <td className="p-4 flex-1">
-                            <div className="space-y-1">
-                              <div className="font-medium text-foreground">
-                                {task.name}
-                              </div>
-                              {task.description && (
-                                <div className="text-sm text-muted-foreground">
-                                  {task.description}
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="p-4" style={{ width: '5%' }}>
-                            <span className="text-foreground">
-                              {task.unit_name}
-                            </span>
-                          </td>
-                          <td className="p-4" style={{ width: '5%' }}>
-                            <span className="text-foreground">
-                              {task.amount.toLocaleString()}
-                            </span>
-                          </td>
-                          <td className="p-4" style={{ width: '5%' }}>
-                            <span className="text-foreground">
-                              ${task.unit_price.toLocaleString()}
-                            </span>
-                          </td>
-                          <td className="p-4" style={{ width: '5%' }}>
-                            <span className="font-medium text-foreground">
-                              ${task.total_price.toLocaleString()}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
+                      (() => {
+                        // Group tasks by category
+                        const groupedTasks = filteredTasks.reduce((groups: any, task: TaskData) => {
+                          const categoryName = task.category_name || 'Sin categoría';
+                          if (!groups[categoryName]) {
+                            groups[categoryName] = [];
+                          }
+                          groups[categoryName].push(task);
+                          return groups;
+                        }, {});
+
+                        // Calculate total
+                        const totalGeneral = filteredTasks.reduce((sum: number, task: TaskData) => 
+                          sum + task.total_price, 0
+                        );
+
+                        return Object.entries(groupedTasks).flatMap(([categoryName, categoryTasks]: [string, any]) => {
+                          // Calculate category totals
+                          const categoryTotal = categoryTasks.reduce((sum: number, task: TaskData) => 
+                            sum + task.total_price, 0
+                          );
+                          const categoryPercentage = totalGeneral > 0 ? (categoryTotal / totalGeneral) * 100 : 0;
+                          
+                          return [
+                            // Category Header
+                            <tr key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
+                              <td className="pl-6 py-3 font-semibold text-sm text-white w-[15%]">
+                                {categoryName}
+                              </td>
+                              <td className="py-3 text-left text-white text-sm"></td>
+                              <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                              <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                              <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                              <td className="py-3 text-center font-semibold text-sm text-white w-[5%]">
+                                ${categoryTotal.toFixed(2)}
+                              </td>
+                              <td className="py-3 text-center font-semibold text-sm text-white w-[5%]">
+                                {categoryPercentage.toFixed(1)}%
+                              </td>
+                              <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                            </tr>,
+                            // Category Tasks
+                            ...categoryTasks.map((task: TaskData) => {
+                              const percentage = totalGeneral > 0 ? (task.total_price / totalGeneral) * 100 : 0;
+                              return (
+                                <tr key={task.id} className="border-border hover:bg-primary/10 transition-colors h-12">
+                                  <td className="pl-12 py-1 w-[15%]">
+                                    <div className="text-sm font-medium text-foreground">{task.category_code}</div>
+                                  </td>
+                                  <td className="py-1 text-left pl-6">
+                                    <div className="flex flex-col">
+                                      <div className="font-medium text-foreground text-sm">{task.name}</div>
+                                      {task.description && (
+                                        <div className="text-xs text-muted-foreground mt-0.5">{task.description}</div>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="text-center py-1">
+                                    <Badge variant="outline" className="bg-muted/50 text-xs">
+                                      {task.unit_name}
+                                    </Badge>
+                                  </td>
+                                  <td className="text-center py-1">
+                                    <div className="text-sm">{task.amount}</div>
+                                  </td>
+                                  <td className="text-center py-1">
+                                    <div className="text-sm">${task.unit_price ? task.unit_price.toFixed(2) : '0.00'}</div>
+                                  </td>
+                                  <td className="text-center py-1">
+                                    <div className="font-semibold text-sm">${task.total_price.toFixed(2)}</div>
+                                  </td>
+                                  <td className="text-center py-1">
+                                    <div className="text-sm">{percentage.toFixed(1)}%</div>
+                                  </td>
+                                  <td className="text-center py-1">
+                                    <div className="text-sm">-</div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          ];
+                        });
+                      })()
                     )}
                   </tbody>
                 </table>
