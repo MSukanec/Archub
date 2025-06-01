@@ -125,7 +125,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
       task.description.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCategory = categoryFilter === 'all' || 
-      task.parent_category_name === categoryFilter;
+      task.category_name === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -256,7 +256,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border bg-muted/50">
-                      <th className="text-left pl-6 py-3 font-medium text-muted-foreground text-sm w-[15%]">
+                      <th className="text-left pl-6 py-3 font-medium text-muted-foreground text-sm w-[5%]">
                         Rubro
                       </th>
                       <th className="text-left py-3 font-medium text-muted-foreground text-sm">
@@ -316,10 +316,9 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                           return [
                             // Category Header
                             <tr key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
-                              <td className="pl-6 py-3 font-semibold text-sm text-white w-[15%]">
+                              <td colSpan={2} className="pl-6 py-3 font-semibold text-sm text-white">
                                 {categoryName}
                               </td>
-                              <td className="py-3 text-left text-white text-sm"></td>
                               <td className="py-3 text-center text-white text-sm w-[5%]"></td>
                               <td className="py-3 text-center text-white text-sm w-[5%]"></td>
                               <td className="py-3 text-center text-white text-sm w-[5%]"></td>
