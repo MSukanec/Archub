@@ -191,13 +191,15 @@ export default function BudgetMaterials() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-            <Package2 className="w-4 h-4 text-primary" />
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Package2 className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Lista de Materiales</h1>
-            <p className="text-muted-foreground">
-              Gestiona el inventario y materiales necesarios para el proyecto
+            <h1 className="text-2xl font-semibold text-foreground">
+              Lista de Materiales
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Dashboard general de materiales y cantidades del presupuesto
             </p>
           </div>
         </div>
