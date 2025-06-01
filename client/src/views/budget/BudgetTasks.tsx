@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Calculator, Search, X, Edit, Trash2, MoreHorizontal, DollarSign } from 'lucide-react';
+import { Calculator, Search, X, Edit, Trash2, MoreHorizontal, DollarSign, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -180,10 +180,27 @@ export default function BudgetTasks() {
     return matchesSearch && matchesCategory;
   });
 
+  // Group tasks by category
+  const groupedTasks = filteredTasks.reduce((groups: any, task: any) => {
+    const categoryName = task.category_name || 'Sin categoría';
+    if (!groups[categoryName]) {
+      groups[categoryName] = [];
+    }
+    groups[categoryName].push(task);
+    return groups;
+  }, {});
+
   // Calculate total
   const totalGeneral = filteredTasks.reduce((sum: number, task: any) => 
     sum + (task.unit_labor_price * task.quantity), 0
   );
+
+  // Calculate percentages for each task
+  const tasksWithPercentage = filteredTasks.map(task => ({
+    ...task,
+    subtotal: task.unit_labor_price * task.quantity,
+    percentage: totalGeneral > 0 ? ((task.unit_labor_price * task.quantity) / totalGeneral) * 100 : 0
+  }));
 
   // Mutation to update task quantity
   const updateQuantityMutation = useMutation({
@@ -238,24 +255,17 @@ export default function BudgetTasks() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-            <Calculator className="w-4 h-4 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Tabla de Cómputo</h1>
-            <p className="text-muted-foreground">
-              Gestiona las tareas y cantidades para calcular el presupuesto total
-            </p>
-          </div>
-        </div>
+    <div className="space-y-4">
+      {/* Header - consistent with Lista de Presupuestos */}
+      <div>
+        <h3 className="text-lg font-medium text-foreground">Tabla de Cómputo</h3>
+        <p className="text-sm text-muted-foreground">
+          Administra las tareas y cantidades del sistema
+        </p>
       </div>
 
-      {/* Filters and Budget Selector */}
-      <div className="flex items-center gap-4">
+      {/* Budget Selector */}
+      <div className="flex items-center justify-between">
         <Select 
           value={budgetId || ""} 
           onValueChange={(value) => {
@@ -264,10 +274,10 @@ export default function BudgetTasks() {
             setCategoryFilter('all');
           }}
         >
-          <SelectTrigger className="w-[250px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Seleccionar presupuesto" />
           </SelectTrigger>
-          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+          <SelectContent>
             {budgets?.map((budget: any) => (
               <SelectItem key={budget.id} value={budget.id.toString()}>
                 {budget.name}
@@ -275,32 +285,15 @@ export default function BudgetTasks() {
             ))}
           </SelectContent>
         </Select>
+      </div>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar tareas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-
+      {/* Filters - consistent with Movimientos style */}
+      <div className="flex items-center gap-4">
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-            <SelectValue placeholder="Todas las Categorías" />
+          <SelectTrigger className="w-48 bg-white/80 hover:bg-white border-input">
+            <SelectValue placeholder="Todas las categorías" />
           </SelectTrigger>
-          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+          <SelectContent>
             <SelectItem value="all">Todas las categorías</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.name}>
@@ -309,29 +302,55 @@ export default function BudgetTasks() {
             ))}
           </SelectContent>
         </Select>
+
+        <Button 
+          variant="outline" 
+          className="bg-white/80 hover:bg-white border-input"
+          onClick={() => {
+            toast({
+              title: "Funcionalidad en desarrollo",
+              description: "La exportación a PDF estará disponible próximamente.",
+            });
+          }}
+        >
+          <FileDown className="w-4 h-4 mr-2" />
+          Exportar PDF
+        </Button>
       </div>
 
-      {/* Total Badge */}
-      {budgetId && (
-        <div className="flex justify-end">
-          <Badge variant="outline" className="text-lg px-4 py-2 bg-primary/10 text-primary border-primary/20">
-            <DollarSign className="w-4 h-4 mr-1" />
-            Total: ${totalGeneral.toFixed(2)}
-          </Badge>
-        </div>
-      )}
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar tareas..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10 bg-background"
+        />
+        {searchTerm && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSearchTerm('')}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
 
       {/* Table */}
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-left pl-6">Rubro</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Cantidad</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Precio Unit.</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Subtotal</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">% Incidencia</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -339,8 +358,8 @@ export default function BudgetTasks() {
             {tasksLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <TableRow key={index} className="border-border h-12">
-                  <TableCell className="text-center py-1">
-                    <Skeleton className="h-6 w-20 mx-auto" />
+                  <TableCell className="pl-6 py-1">
+                    <Skeleton className="h-6 w-32" />
                   </TableCell>
                   <TableCell className="text-center py-1">
                     <Skeleton className="h-6 w-32 mx-auto" />
@@ -358,13 +377,16 @@ export default function BudgetTasks() {
                     <Skeleton className="h-6 w-20 mx-auto" />
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Skeleton className="h-8 w-8 mx-auto rounded-full" />
+                    <Skeleton className="h-6 w-12 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-8 w-16 mx-auto" />
                   </TableCell>
                 </TableRow>
               ))
             ) : filteredTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-8 h-32">
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-8 h-32">
                   {!budgetId 
                     ? 'Selecciona un presupuesto para ver sus tareas'
                     : searchTerm || categoryFilter !== 'all'
@@ -374,78 +396,100 @@ export default function BudgetTasks() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredTasks.map((task: any) => (
-                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors h-12">
-                  <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50">
-                      {task.category_name}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="py-1 text-center">
-                    <div className="font-medium text-foreground">{task.task_name}</div>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50">
-                      {task.unit}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={task.quantity}
-                      onChange={(e) => {
-                        const newQuantity = parseFloat(e.target.value) || 0;
-                        updateQuantityMutation.mutate({ 
-                          id: task.id, 
-                          quantity: newQuantity 
-                        });
-                      }}
-                      className="w-20 text-center text-sm h-8"
-                      disabled={updateQuantityMutation.isPending}
-                    />
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <div className="flex items-center justify-center gap-1">
-                      <DollarSign className="w-3 h-3 text-muted-foreground" />
-                      <span className="text-sm">{task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <div className="flex items-center justify-center gap-1 font-semibold">
-                      <DollarSign className="w-3 h-3 text-muted-foreground" />
-                      <span className="text-sm">{(task.unit_labor_price * task.quantity).toFixed(2)}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem
-                          onClick={() => setEditingTask(task)}
-                          className="flex items-center gap-2"
-                        >
-                          <Edit className="h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => deleteTaskMutation.mutate(task.id)}
-                          className="flex items-center gap-2 text-destructive"
-                          disabled={deleteTaskMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
+              <>
+                {Object.entries(groupedTasks).map(([categoryName, categoryTasks]: [string, any]) => [
+                  // Category Header
+                  <TableRow key={`category-${categoryName}`} className="bg-muted/30 border-border">
+                    <TableCell colSpan={8} className="pl-6 py-3 font-semibold text-sm">
+                      {categoryName}
+                    </TableCell>
+                  </TableRow>,
+                  // Category Tasks
+                  ...categoryTasks.map((task: any) => {
+                    const subtotal = task.unit_labor_price * task.quantity;
+                    const percentage = totalGeneral > 0 ? (subtotal / totalGeneral) * 100 : 0;
+                    return (
+                      <TableRow key={task.id} className="border-border hover:bg-muted/20 transition-colors h-12">
+                        <TableCell className="pl-12 py-1">
+                          <div className="text-sm text-muted-foreground">—</div>
+                        </TableCell>
+                        <TableCell className="py-1 text-center">
+                          <div className="font-medium text-foreground text-sm">{task.task_name}</div>
+                        </TableCell>
+                        <TableCell className="text-center py-1">
+                          <Badge variant="outline" className="bg-muted/50 text-xs">
+                            {task.unit}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center py-1">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={task.quantity}
+                            onChange={(e) => {
+                              const newQuantity = parseFloat(e.target.value) || 0;
+                              updateQuantityMutation.mutate({ 
+                                id: task.id, 
+                                quantity: newQuantity 
+                              });
+                            }}
+                            className="w-20 text-center text-sm h-8"
+                            disabled={updateQuantityMutation.isPending}
+                          />
+                        </TableCell>
+                        <TableCell className="text-center py-1">
+                          <div className="text-sm">${task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}</div>
+                        </TableCell>
+                        <TableCell className="text-center py-1">
+                          <div className="font-semibold text-sm">${subtotal.toFixed(2)}</div>
+                        </TableCell>
+                        <TableCell className="text-center py-1">
+                          <div className="text-sm">{percentage.toFixed(1)}%</div>
+                        </TableCell>
+                        <TableCell className="text-center py-1">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditingTask(task)}
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteTaskMutation.mutate(task.id)}
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                              disabled={deleteTaskMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ]).flat()}
+                {/* Total Row */}
+                {filteredTasks.length > 0 && (
+                  <TableRow className="bg-primary/10 border-border font-semibold">
+                    <TableCell colSpan={5} className="pl-6 py-3 text-right font-bold">
+                      TOTAL
+                    </TableCell>
+                    <TableCell className="text-center py-3 font-bold">
+                      ${totalGeneral.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-center py-3 font-bold">
+                      100.0%
+                    </TableCell>
+                    <TableCell className="text-center py-3">
+                      —
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
             )}
           </TableBody>
         </Table>
@@ -456,7 +500,6 @@ export default function BudgetTasks() {
         <TaskModalSimple
           isOpen={isTaskModalOpen}
           onOpenChange={setIsTaskModalOpen}
-          budgetId={budgetId}
         />
       )}
     </div>
