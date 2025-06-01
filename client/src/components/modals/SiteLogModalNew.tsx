@@ -424,7 +424,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar tarea..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 max-h-[200px]">
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 max-h-[200px] z-[10001]">
                       {tasks.filter(task => !selectedTasks.find(st => st.task.id === task.id)).map((task) => (
                         <SelectItem key={task.id} value={task.id}>
                           <div className="flex flex-col">
@@ -518,7 +518,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar persona..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 max-h-[200px]">
+                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 max-h-[200px] z-[10001]">
                       {contacts.filter(contact => !selectedAttendees.find(sa => sa.contact.id === contact.id)).map((contact) => (
                         <SelectItem key={contact.id} value={contact.id}>
                           <div className="flex flex-col">
@@ -559,7 +559,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                                 <SelectTrigger className="w-[120px] bg-[#d2d2d2] border-[#919191]/20 text-xs h-8">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                                <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10001]">
                                   <SelectItem value="Trabajador">Trabajador</SelectItem>
                                   <SelectItem value="Supervisor">Supervisor</SelectItem>
                                   <SelectItem value="Inspector">Inspector</SelectItem>
