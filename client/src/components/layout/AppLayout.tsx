@@ -22,6 +22,7 @@ import ProjectsList from '@/views/project/ProjectsList';
 import SiteLogs from '@/views/sitelog/SiteLogs';
 import Budgets from '@/views/budget/Budgets';
 import BudgetTasks from '@/views/budget/BudgetTasks';
+import BudgetTasksMultiple from '@/views/budget/BudgetTasksMultiple';
 import BudgetMaterials from '@/views/budget/BudgetMaterials';
 import Movements from '@/views/movements/Movements';
 import Contacts from '@/views/contacts/Contacts';
@@ -57,6 +58,7 @@ const viewComponents = {
   'projects-list': ProjectsList,
   'budgets-list': Budgets,
   'budgets-tasks': BudgetTasks,
+  'budgets-tasks-multiple': BudgetTasksMultiple,
   'budgets-materials': BudgetMaterials,
   'sitelog-main': SiteLogs,
   'movements-main': Movements,

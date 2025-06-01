@@ -11,6 +11,7 @@ export type View =
   | 'projects-list'
   | 'budgets-list'
   | 'budgets-tasks'
+  | 'budgets-tasks-multiple'
   | 'budgets-materials'
   | 'sitelog-main'
   | 'movements-main'

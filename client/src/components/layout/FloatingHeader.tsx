@@ -26,6 +26,7 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'transactions', label: 'Movimientos' }
   ],
   budgets: [
+    { id: 'budgets-tasks-multiple', label: 'Tareas' },
     { id: 'budgets-list', label: 'Lista de Presupuestos' },
     { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
     { id: 'budgets-materials', label: 'Lista de Materiales' },
