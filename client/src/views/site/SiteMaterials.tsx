@@ -55,48 +55,87 @@ interface MaterialAccordionProps {
 }
 
 function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDeleteMaterial, isDeletingMaterial }: MaterialAccordionProps) {
-  const { budgetId } = useUserContextStore();
+  const { projectId } = useUserContextStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
-  // Query para obtener materiales del presupuesto activo
+  // Query para obtener todos los materiales utilizados en el proyecto
   const { data: materials = [], isLoading: isLoadingMaterials } = useQuery({
-    queryKey: ['budget-materials', budgetId],
+    queryKey: ['project-materials', projectId],
     queryFn: async () => {
-      if (!budgetId) return [];
+      if (!projectId) return [];
       
+      // Primero obtenemos todos los presupuestos del proyecto
+      const { data: budgets, error: budgetsError } = await supabase
+        .from('budgets')
+        .select('id')
+        .eq('project_id', projectId);
+
+      if (budgetsError) throw budgetsError;
+      
+      const budgetIds = budgets?.map(b => b.id) || [];
+      if (budgetIds.length === 0) return [];
+
+      // Luego obtenemos todas las tareas de esos presupuestos y sus materiales
       const { data, error } = await supabase
-        .from('budget_items')
+        .from('budget_tasks')
         .select(`
-          *,
-          materials!inner(
+          task_id,
+          quantity,
+          tasks!inner(
             id,
-            name,
-            description,
-            unit_material_price,
-            material_categories!inner(name, code),
-            units(name)
+            tasks_materials!inner(
+              quantity,
+              materials!inner(
+                id,
+                name,
+                description,
+                unit_material_price,
+                material_categories!inner(name, code),
+                units(name)
+              )
+            )
           )
         `)
-        .eq('budget_id', budgetId)
-        .order('materials.name');
+        .in('budget_id', budgetIds);
 
       if (error) throw error;
+
+      // Procesamos los datos para obtener materiales únicos con cantidades totales
+      const materialMap = new Map();
       
-      return data.map((budgetItem: any) => ({
-        id: budgetItem.materials.id,
-        name: budgetItem.materials.name,
-        description: budgetItem.materials.description || '',
-        category_name: budgetItem.materials.material_categories?.name || 'Sin categoría',
-        category_code: budgetItem.materials.material_categories?.code || '',
-        parent_category_name: budgetItem.materials.material_categories?.name || 'Sin categoría',
-        unit_name: budgetItem.materials.units?.name || 'und',
-        stock: budgetItem.quantity || 0,
-        unit_price: parseFloat(budgetItem.materials.unit_material_price || '0'),
-        total_value: (budgetItem.quantity || 0) * parseFloat(budgetItem.materials.unit_material_price || '0')
-      }));
+      data?.forEach((budgetTask: any) => {
+        const taskQuantity = budgetTask.quantity || 1;
+        
+        budgetTask.tasks?.tasks_materials?.forEach((taskMaterial: any) => {
+          const material = taskMaterial.materials;
+          const materialQuantity = taskMaterial.quantity || 0;
+          const totalQuantity = taskQuantity * materialQuantity;
+          
+          if (materialMap.has(material.id)) {
+            const existing = materialMap.get(material.id);
+            existing.stock += totalQuantity;
+            existing.total_value = existing.stock * existing.unit_price;
+          } else {
+            materialMap.set(material.id, {
+              id: material.id,
+              name: material.name,
+              description: material.description || '',
+              category_name: material.material_categories?.name || 'Sin categoría',
+              category_code: material.material_categories?.code || '',
+              parent_category_name: material.material_categories?.name || 'Sin categoría',
+              unit_name: material.units?.name || 'und',
+              stock: totalQuantity,
+              unit_price: parseFloat(material.unit_material_price || '0'),
+              total_value: totalQuantity * parseFloat(material.unit_material_price || '0')
+            });
+          }
+        });
+      });
+      
+      return Array.from(materialMap.values()).sort((a, b) => a.name.localeCompare(b.name));
     },
-    enabled: !!budgetId,
+    enabled: !!projectId,
   });
 
   const filteredMaterials = materials.filter((material: MaterialData) => {
