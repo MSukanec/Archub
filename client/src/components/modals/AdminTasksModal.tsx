@@ -382,11 +382,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
         element_id: data.element_id || null,
       };
 
-      if (isEditing && task) {
+      if (isEditing && editingTask) {
         const { data: result, error } = await supabase
           .from('tasks')
           .update(taskData)
-          .eq('id', task.id)
+          .eq('id', editingTask.id)
           .select()
           .single();
 
@@ -396,7 +396,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
         await supabase
           .from('task_materials')
           .delete()
-          .eq('task_id', task.id);
+          .eq('task_id', editingTask.id);
 
         // Insert new materials if any
         if (selectedMaterials.length > 0) {
