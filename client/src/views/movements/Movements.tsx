@@ -528,11 +528,10 @@ export default function Movements() {
 
       {/* Filters and Search */}
       <div className="space-y-4">
-        {/* Desktop: Filters first row */}
-        <div className="hidden lg:flex items-center gap-4">
-          {/* Filters */}
+        {/* Desktop: Filters first row - Distributed width */}
+        <div className="hidden lg:grid grid-cols-5 gap-3 w-full">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -543,7 +542,7 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[160px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -555,7 +554,7 @@ export default function Movements() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -567,7 +566,7 @@ export default function Movements() {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder}>
-            <SelectTrigger className="w-[160px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
+            <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
             <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
@@ -578,6 +577,7 @@ export default function Movements() {
 
           <Button
             variant="outline"
+            onClick={handleExportToExcel}
             className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-muted shadow-lg"
           >
             <Download className="h-4 w-4 mr-2" />
@@ -740,14 +740,14 @@ export default function Movements() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Fecha</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Tipo</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Categoría</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[8%]">Fecha</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[8%]">Tipo</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[16%]">Categoría</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-left">Detalle</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Billetera</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Moneda</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Cantidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center w-[5%]">Acciones</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[8%]">Billetera</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[8%]">Moneda</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[8%]">Cantidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center w-[8%]">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
