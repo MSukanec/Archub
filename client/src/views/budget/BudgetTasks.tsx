@@ -460,23 +460,21 @@ export default function BudgetTasks() {
                         <TableCell className="text-center py-1">
                           <div className="flex items-center justify-center gap-2">
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
                               onClick={() => setEditingTask(task)}
-                              className="h-8 px-2 text-xs"
+                              className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
                             >
-                              <Edit className="h-3 w-3 mr-1" />
-                              Editar
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
                               onClick={() => deleteTaskMutation.mutate(task.id)}
-                              className="h-8 px-2 text-xs text-destructive border-destructive hover:bg-destructive hover:text-white"
+                              className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
                               disabled={deleteTaskMutation.isPending}
                             >
-                              <Trash2 className="h-3 w-3 mr-1" />
-                              Eliminar
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
