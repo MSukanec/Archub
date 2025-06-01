@@ -126,16 +126,20 @@ export default function BudgetTasks() {
             unit_labor_price, 
             unit_material_price, 
             category_id,
+            element_category_id,
             units!inner(name)
           `)
           .in('id', taskIds);
         
         if (tasksError) throw tasksError;
 
-        // Obtenemos las categorías por separado si hay tareas
+        // Obtenemos las categorías y categorías de elementos por separado si hay tareas
         let categoriesData: any[] = [];
+        let elementCategoriesData: any[] = [];
         if (tasksData && tasksData.length > 0) {
           const categoryIds = Array.from(new Set(tasksData.map(t => t.category_id).filter(Boolean)));
+          const elementCategoryIds = Array.from(new Set(tasksData.map(t => t.element_category_id).filter(Boolean)));
+          
           if (categoryIds.length > 0) {
             const { data: catData } = await supabase
               .from('task_categories')
@@ -143,12 +147,21 @@ export default function BudgetTasks() {
               .in('id', categoryIds);
             categoriesData = catData || [];
           }
+          
+          if (elementCategoryIds.length > 0) {
+            const { data: elemCatData } = await supabase
+              .from('element_categories')
+              .select('id, name')
+              .in('id', elementCategoryIds);
+            elementCategoriesData = elemCatData || [];
+          }
         }
 
         // Combinamos los datos
         const combinedData = budgetTasksData.map(budgetTask => {
           const task = tasksData?.find(t => t.id === budgetTask.task_id);
           const category = categoriesData.find(c => c.id === task?.category_id);
+          const elementCategory = elementCategoriesData.find(ec => ec.id === task?.element_category_id);
           return {
             ...budgetTask,
             task_name: task?.name || 'Tarea no encontrada',
@@ -156,7 +169,8 @@ export default function BudgetTasks() {
             unit_labor_price: task?.unit_labor_price || 0,
             unit_material_price: task?.unit_material_price || 0,
             unit: task?.units?.name || '',
-            category_name: category?.name || 'Sin categoría'
+            category_name: category?.name || 'Sin categoría',
+            element_category: elementCategory
           };
         });
 
@@ -356,15 +370,15 @@ export default function BudgetTasks() {
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-[#606060]">
-              <TableHead className="text-white text-sm h-12 text-left pl-6">Rubro</TableHead>
+            <TableRow className="border-border bg-[#606060] hover:bg-[#606060]">
+              <TableHead className="text-white text-sm h-12 text-left pl-6 w-[10%]">Rubro</TableHead>
               <TableHead className="text-white text-sm h-12 text-left">Tarea</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Unidad</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Cantidad</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Precio Unit.</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Subtotal</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">% Incidencia</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Acciones</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center w-[5%]">Unidad</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center w-[5%]">Cantidad</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center w-[5%]">Precio Unit.</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center w-[5%]">Subtotal</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center w-[5%]">% Incidencia</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center w-[5%]">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -419,31 +433,31 @@ export default function BudgetTasks() {
                   
                   return [
                     // Category Header
-                  <TableRow key={`category-${categoryName}`} className="bg-[#606060] border-border">
-                    <TableCell className="pl-6 py-3 font-semibold text-sm text-white">
+                  <TableRow key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
+                    <TableCell className="pl-6 py-3 font-semibold text-sm text-white w-[10%]">
                       {categoryName}
                     </TableCell>
-                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
-                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
-                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
-                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
-                    <TableCell className="py-3 text-center font-semibold text-sm text-white">
+                    <TableCell className="py-3 text-left text-white text-sm"></TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm w-[5%]"></TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm w-[5%]"></TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm w-[5%]"></TableCell>
+                    <TableCell className="py-3 text-center font-semibold text-sm text-white w-[5%]">
                       ${categoryTotal.toFixed(2)}
                     </TableCell>
-                    <TableCell className="py-3 text-center font-semibold text-sm text-white">
+                    <TableCell className="py-3 text-center font-semibold text-sm text-white w-[5%]">
                       {categoryPercentage.toFixed(1)}%
                     </TableCell>
-                    <TableCell className="py-3 text-center text-white text-sm">—</TableCell>
+                    <TableCell className="py-3 text-center text-white text-sm w-[5%]"></TableCell>
                   </TableRow>,
                   // Category Tasks
                   ...categoryTasks.map((task: any) => {
                     const subtotal = task.unit_labor_price * task.quantity;
                     const percentage = totalGeneral > 0 ? (subtotal / totalGeneral) * 100 : 0;
-                    // Generate task code from category and subcategory
-                    const taskCode = `${task.category?.name?.substring(0, 1) || 'X'}${task.subcategory?.name?.substring(0, 1) || 'X'}${task.element_category?.name?.substring(0, 1) || 'X'}`;
+                    // Generate task code from element_category (3 letters)
+                    const taskCode = task.element_category?.name?.substring(0, 3).toUpperCase() || '';
                     return (
-                      <TableRow key={task.id} className="border-border hover:bg-muted/20 transition-colors h-12">
-                        <TableCell className="pl-12 py-1">
+                      <TableRow key={task.id} className="border-border hover:bg-primary/10 transition-colors h-12">
+                        <TableCell className="pl-12 py-1 w-[10%]">
                           <div className="text-sm font-medium text-foreground">{taskCode}</div>
                         </TableCell>
                         <TableCell className="py-1 text-left pl-6">
