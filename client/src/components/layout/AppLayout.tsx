@@ -19,8 +19,7 @@ import CalendarView from '@/views/dashboard/Calendar';
 import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
 import ProjectsList from '@/views/project/ProjectsList';
-import SiteBudgets from '@/views/site/SiteBudgets';
-import SiteTasks from '@/views/site/SiteTasks';
+
 import SiteTasksMultiple from '@/views/site/SiteTasksMultiple';
 import SiteMaterials from '@/views/site/SiteMaterials';
 import SiteLogs from '@/views/site/SiteLogs';
@@ -56,8 +55,8 @@ const viewComponents = {
   'organization-activity': Organization,
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
-  'budgets-list': SiteBudgets,
-  'budgets-tasks': SiteTasks,
+  'budgets-list': SiteTasksMultiple,
+  'budgets-tasks': SiteTasksMultiple,
   'budgets-tasks-multiple': SiteTasksMultiple,
   'budgets-materials': SiteMaterials,
   'sitelog-main': SiteLogs,

@@ -1,25 +1,450 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Package2, Search, X, Edit, Trash2, MoreHorizontal, DollarSign, FileDown } from 'lucide-react';
+import { Package2, Search, Plus, Trash2, Calculator } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
-import { useNavigationStore } from '@/stores/navigationStore';
-import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 
-function BudgetMaterialsSkeleton() {
+interface Material {
+  id: string;
+  name: string;
+  description?: string;
+  category: string;
+  unit: string;
+  price: number;
+  stock: number;
+  created_at: string;
+}
+
+interface MaterialData {
+  id: string;
+  name: string;
+  description: string;
+  category_name: string;
+  category_code: string;
+  parent_category_name: string;
+  unit_name: string;
+  stock: number;
+  unit_price: number;
+  total_value: number;
+}
+
+interface MaterialAccordionProps {
+  category: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onAddMaterial: () => void;
+  onDeleteMaterial: (materialId: string) => void;
+  isDeletingMaterial: boolean;
+}
+
+function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDeleteMaterial, isDeletingMaterial }: MaterialAccordionProps) {
+  const { projectId } = useUserContextStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  // Query para obtener materiales
+  const { data: materials = [], isLoading: isLoadingMaterials } = useQuery({
+    queryKey: ['materials', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      
+      const { data, error } = await supabase
+        .from('materials')
+        .select(`
+          *,
+          material_categories!inner(name, code),
+          units(name)
+        `)
+        .eq('organization_id', projectId)
+        .order('name');
+
+      if (error) throw error;
+      
+      return data.map((material: any) => ({
+        id: material.id,
+        name: material.name,
+        description: material.description || '',
+        category_name: material.material_categories?.name || 'Sin categoría',
+        category_code: material.material_categories?.code || '',
+        parent_category_name: material.material_categories?.name || 'Sin categoría',
+        unit_name: material.units?.name || 'und',
+        stock: material.stock || 0,
+        unit_price: parseFloat(material.unit_material_price || '0'),
+        total_value: (material.stock || 0) * parseFloat(material.unit_material_price || '0')
+      }));
+    },
+    enabled: !!projectId,
+  });
+
+  const filteredMaterials = materials.filter((material: MaterialData) => {
+    const matchesSearch = material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         material.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = categoryFilter === 'all' || 
+                           material.category_name.toLowerCase().includes(categoryFilter.toLowerCase());
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  const totalAmount = filteredMaterials.reduce((sum: number, material: MaterialData) => sum + material.total_value, 0);
+
+  return (
+    <div className="bg-card rounded-2xl shadow-md border-0 overflow-hidden">
+      {/* Header del Acordeón */}
+      <div className="flex items-center justify-between p-6 bg-card">
+        <div className="flex items-center gap-4 flex-1">
+          <button
+            onClick={onToggle}
+            className="flex items-center gap-4 flex-1 text-left hover:opacity-75 transition-opacity"
+          >
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Package2 className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3">
+                <h3 className="text-lg font-semibold text-foreground">{category}</h3>
+                <Badge variant="outline" className="bg-muted/50">
+                  {filteredMaterials.length} materiales
+                </Badge>
+                <div className="text-sm text-muted-foreground">
+                  Total: ${totalAmount.toFixed(2)}
+                </div>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Gestión de inventario y costos de materiales
+              </div>
+            </div>
+          </button>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // TODO: Implementar exportación PDF
+              console.log('Exportar PDF');
+            }}
+          >
+            Exportar PDF
+          </Button>
+          
+          <Button
+            onClick={onAddMaterial}
+            size="sm"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Agregar Material
+          </Button>
+        </div>
+      </div>
+
+      {/* Contenido del Acordeón */}
+      {isExpanded && (
+        <div className="border-t border-border">
+          {/* Controles de búsqueda y filtros */}
+          <div className="p-6 border-b border-border bg-muted/30">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Buscar materiales..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-background"
+                />
+              </div>
+              
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full sm:w-48 bg-background">
+                  <SelectValue placeholder="Filtrar por categoría" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas las categorías</SelectItem>
+                  <SelectItem value="estructura">Estructura</SelectItem>
+                  <SelectItem value="acabados">Acabados</SelectItem>
+                  <SelectItem value="instalaciones">Instalaciones</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Tabla de materiales - Desktop */}
+          <div className="hidden xl:block">
+            <div className="overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50 border-b border-border">
+                  <tr className="text-left h-12">
+                    <th className="pl-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      Código
+                    </th>
+                    <th className="py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[25%]">
+                      Material
+                    </th>
+                    <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      Unidad
+                    </th>
+                    <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      Stock
+                    </th>
+                    <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      Precio Unit.
+                    </th>
+                    <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      Valor Total
+                    </th>
+                    <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      % del Total
+                    </th>
+                    <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                      Acciones
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-y divide-border">
+                  {isLoadingMaterials ? (
+                    // Loading skeleton
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={index} className="h-12">
+                        <td className="pl-6 py-1"><Skeleton className="h-4 w-12" /></td>
+                        <td className="py-1"><Skeleton className="h-4 w-32" /></td>
+                        <td className="text-center py-1"><Skeleton className="h-4 w-12 mx-auto" /></td>
+                        <td className="text-center py-1"><Skeleton className="h-4 w-8 mx-auto" /></td>
+                        <td className="text-center py-1"><Skeleton className="h-4 w-16 mx-auto" /></td>
+                        <td className="text-center py-1"><Skeleton className="h-4 w-16 mx-auto" /></td>
+                        <td className="text-center py-1"><Skeleton className="h-4 w-8 mx-auto" /></td>
+                        <td className="text-center py-1"><Skeleton className="h-4 w-8 mx-auto" /></td>
+                      </tr>
+                    ))
+                  ) : filteredMaterials.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="text-center py-8 text-muted-foreground">
+                        No se encontraron materiales
+                      </td>
+                    </tr>
+                  ) : (
+                    (() => {
+                      // Agrupar materiales por categoría
+                      const groupedMaterials = filteredMaterials.reduce((groups: any, material: MaterialData) => {
+                        const categoryName = material.category_name;
+                        if (!groups[categoryName]) {
+                          groups[categoryName] = [];
+                        }
+                        groups[categoryName].push(material);
+                        return groups;
+                      }, {});
+
+                      const totalGeneral = filteredMaterials.reduce((sum: number, material: MaterialData) => 
+                        sum + material.total_value, 0
+                      );
+
+                      return Object.entries(groupedMaterials).flatMap(([categoryName, categoryMaterials]: [string, any]) => {
+                        const categoryTotal = categoryMaterials.reduce((sum: number, material: MaterialData) => 
+                          sum + material.total_value, 0
+                        );
+                        const categoryPercentage = totalGeneral > 0 ? (categoryTotal / totalGeneral) * 100 : 0;
+                        
+                        return [
+                          // Category Header
+                          <tr key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
+                            <td colSpan={2} className="pl-6 py-3 font-semibold text-sm text-white">
+                              {categoryName}
+                            </td>
+                            <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                            <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                            <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                            <td className="py-3 text-center font-semibold text-sm text-white w-[5%]">
+                              ${categoryTotal.toFixed(2)}
+                            </td>
+                            <td className="py-3 text-center font-semibold text-sm text-white w-[5%]">
+                              {categoryPercentage.toFixed(1)}%
+                            </td>
+                            <td className="py-3 text-center text-white text-sm w-[5%]"></td>
+                          </tr>,
+                          // Category Materials
+                          ...categoryMaterials.map((material: MaterialData) => {
+                            const percentage = totalGeneral > 0 ? (material.total_value / totalGeneral) * 100 : 0;
+                            return (
+                              <tr key={material.id} className="border-border hover:bg-muted/50 transition-colors h-12">
+                                <td className="pl-12 py-1 w-[15%]">
+                                  <div className="text-sm font-medium text-foreground">{material.category_code}</div>
+                                </td>
+                                <td className="py-1 text-left pl-6">
+                                  <div className="flex flex-col">
+                                    <div className="font-medium text-foreground text-sm">{material.name}</div>
+                                    {material.description && (
+                                      <div className="text-xs text-muted-foreground mt-0.5">{material.description}</div>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="text-center py-1">
+                                  <Badge variant="outline" className="bg-muted/50 text-xs">
+                                    {material.unit_name}
+                                  </Badge>
+                                </td>
+                                <td className="text-center py-1">
+                                  <div className="text-sm">{material.stock}</div>
+                                </td>
+                                <td className="text-center py-1">
+                                  <div className="text-sm">${material.unit_price ? material.unit_price.toFixed(2) : '0.00'}</div>
+                                </td>
+                                <td className="text-center py-1">
+                                  <div className="font-semibold text-sm">${material.total_value.toFixed(2)}</div>
+                                </td>
+                                <td className="text-center py-1">
+                                  <div className="text-sm">{percentage.toFixed(1)}%</div>
+                                </td>
+                                <td className="text-center py-1">
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>¿Eliminar material?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Esta acción eliminará permanentemente el material "{material.name}" del inventario. Esta acción NO se puede deshacer.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction
+                                          onClick={() => onDeleteMaterial(material.id)}
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          disabled={isDeletingMaterial}
+                                        >
+                                          {isDeletingMaterial ? "Eliminando..." : "Eliminar Material"}
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        ];
+                      });
+                    })()
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Cards responsivas - Tablet/Mobile */}
+          <div className="xl:hidden space-y-3">
+            {filteredMaterials.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                No se encontraron materiales
+              </div>
+            ) : (
+              filteredMaterials.map((material: MaterialData) => (
+                <div key={material.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-medium text-foreground">{material.name}</h4>
+                        <Badge variant="outline" className="bg-muted/50 text-xs">
+                          {material.category_code}
+                        </Badge>
+                      </div>
+                      {material.description && (
+                        <p className="text-sm text-muted-foreground mb-2">{material.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-muted-foreground">
+                          Categoría: <span className="text-foreground">{material.category_name}</span>
+                        </span>
+                        <span className="text-muted-foreground">
+                          Unidad: <span className="text-foreground">{material.unit_name}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Eliminar material?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción eliminará permanentemente el material "{material.name}" del inventario. Esta acción NO se puede deshacer.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => onDeleteMaterial(material.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeletingMaterial}
+                          >
+                            {isDeletingMaterial ? "Eliminando..." : "Eliminar Material"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border">
+                    <div>
+                      <div className="text-xs text-muted-foreground">Stock</div>
+                      <div className="font-medium">{material.stock}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Precio Unitario</div>
+                      <div className="font-medium">${material.unit_price.toFixed(2)}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Valor Total</div>
+                      <div className="font-semibold text-primary">${material.total_value.toFixed(2)}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">% del Total</div>
+                      <div className="font-medium">
+                        {totalAmount > 0 ? ((material.total_value / totalAmount) * 100).toFixed(1) : 0}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MaterialsSkeleton() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -30,17 +455,11 @@ function BudgetMaterialsSkeleton() {
       <div className="flex items-center gap-4">
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-10 w-48" />
-        <Skeleton className="h-10 w-48" />
       </div>
 
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
-        <div className="border-b border-border bg-muted/50 p-4">
-          <Skeleton className="h-5 w-32" />
-        </div>
-        <div className="space-y-2 p-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-12" />
-          ))}
+        <div className="p-6">
+          <Skeleton className="h-12 w-full" />
         </div>
       </div>
     </div>
@@ -48,332 +467,111 @@ function BudgetMaterialsSkeleton() {
 }
 
 export default function SiteMaterials() {
-  const { projectId, budgetId, setBudgetId } = useUserContextStore();
-  const { setSection, setView } = useNavigationStore();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
   const { toast } = useToast();
+  const { projectId } = useUserContextStore();
   const queryClient = useQueryClient();
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['Materiales']));
 
-  // Set navigation state when component mounts
-  useEffect(() => {
-    setSection('budgets');
-    setView('budgets-materials');
-  }, [setSection, setView]);
-
-  // Listen for floating action button events
-  useEffect(() => {
-    const handleOpenCreateMaterialModal = () => {
-      toast({
-        title: "Funcionalidad en desarrollo",
-        description: "La gestión de materiales estará disponible próximamente.",
-      });
-    };
-
-    window.addEventListener('openCreateMaterialModal', handleOpenCreateMaterialModal);
-    
-    return () => {
-      window.removeEventListener('openCreateMaterialModal', handleOpenCreateMaterialModal);
-    };
-  }, [toast]);
-
-  // Fetch budgets for current project
-  const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
-    queryKey: ['budgets', projectId],
-    queryFn: async () => {
-      if (!projectId) return [];
-      
-      const { data, error } = await supabase
-        .from('budgets')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
+  // Mutación para eliminar material
+  const deleteMaterialMutation = useMutation({
+    mutationFn: async (materialId: string) => {
+      const { error } = await supabase
+        .from('materials')
+        .delete()
+        .eq('id', materialId);
       
       if (error) throw error;
-      return data;
     },
-    enabled: !!projectId,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['materials'] });
+      toast({
+        title: "Material eliminado",
+        description: "El material ha sido eliminado del inventario correctamente.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error al eliminar material",
+        description: "No se pudo eliminar el material. Intenta nuevamente.",
+        variant: "destructive",
+      });
+      console.error('Error deleting material:', error);
+    },
   });
 
-  // Fetch materials for current budget
-  const { data: budgetMaterials = [], isLoading: materialsLoading } = useQuery({
-    queryKey: ['budget-materials', budgetId],
-    queryFn: async () => {
-      if (!budgetId) return [];
-      
-      try {
-        // Get all tasks for the budget first
-        const { data: budgetTasks, error: budgetTasksError } = await supabase
-          .from('budget_tasks')
-          .select('task_id')
-          .eq('budget_id', budgetId);
-        
-        if (budgetTasksError) throw budgetTasksError;
-        if (!budgetTasks || budgetTasks.length === 0) return [];
-
-        const taskIds = budgetTasks.map(bt => bt.task_id);
-        
-        // Get task materials with material details
-        const { data: taskMaterials, error: taskMaterialsError } = await supabase
-          .from('task_materials')
-          .select(`
-            *,
-            materials(id, name, unit_id),
-            tasks(name)
-          `)
-          .in('task_id', taskIds);
-        
-        if (taskMaterialsError) throw taskMaterialsError;
-        if (!taskMaterials || taskMaterials.length === 0) return [];
-
-        // Get unit information
-        const unitIds = Array.from(new Set(taskMaterials.map(tm => tm.materials?.unit_id).filter(Boolean)));
-        let unitsData: any[] = [];
-        if (unitIds.length > 0) {
-          const { data: units } = await supabase
-            .from('units')
-            .select('id, name')
-            .in('id', unitIds);
-          unitsData = units || [];
-        }
-
-        // Combine and structure data
-        const combinedData = taskMaterials.map(taskMaterial => {
-          const unit = unitsData.find(u => u.id === taskMaterial.materials?.unit_id);
-          return {
-            id: taskMaterial.id,
-            material_id: taskMaterial.material_id,
-            material_name: taskMaterial.materials?.name || 'Material no encontrado',
-            task_name: taskMaterial.tasks?.name || 'Tarea no encontrada',
-            amount: taskMaterial.amount,
-            unit: unit?.name || 'Sin unidad',
-            task_id: taskMaterial.task_id
-          };
-        });
-
-        return combinedData;
-      } catch (error) {
-        console.error('Error fetching budget materials:', error);
-        return [];
+  const handleToggleExpanded = (category: string) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
       }
-    },
-    enabled: !!budgetId,
-  });
+      return newSet;
+    });
+  };
 
-  // Get unique material categories for filter (simplified version)
-  const materialCategories = Array.from(new Set(budgetMaterials.map(material => material.material_name.split(' ')[0])))
-    .filter(Boolean)
-    .map(name => ({ id: name, name }));
+  const handleAddMaterial = () => {
+    // TODO: Implementar modal para agregar material
+    console.log('Add material');
+  };
 
-  // Filter materials based on search and category
-  const filteredMaterials = budgetMaterials.filter(material => {
-    const matchesSearch = !searchTerm || 
-      material.material_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      material.task_name.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = categoryFilter === 'all' || 
-      material.material_name.toLowerCase().startsWith(categoryFilter.toLowerCase());
-    
-    return matchesSearch && matchesCategory;
-  });
-
-  // Calculate total materials count
-  const totalMaterials = filteredMaterials.reduce((sum: number, material: any) => 
-    sum + material.amount, 0
-  );
-
-  if (budgetsLoading) {
-    return <BudgetMaterialsSkeleton />;
+  if (!projectId) {
+    return <MaterialsSkeleton />;
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
             <Package2 className="w-5 h-5 text-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-semibold text-foreground">
-              Lista de Materiales
+              Materiales
             </h1>
             <p className="text-sm text-muted-foreground">
-              Dashboard general de materiales y cantidades del presupuesto
+              Gestión de inventario y costos de materiales de construcción
             </p>
           </div>
         </div>
+      </div>
 
-        <Select 
-          value={budgetId || ""} 
-          onValueChange={(value) => {
-            setBudgetId(value);
-            setSearchTerm('');
-            setCategoryFilter('all');
-          }}
-        >
-          <SelectTrigger className="w-48 bg-white/80 hover:bg-white border-input">
-            <SelectValue placeholder="Seleccionar presupuesto" />
+      {/* Barra de búsqueda */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar materiales, categorías..."
+            className="pl-10 bg-background"
+          />
+        </div>
+        <Select defaultValue="all">
+          <SelectTrigger className="w-48 bg-background">
+            <SelectValue placeholder="Filtrar por estado" />
           </SelectTrigger>
           <SelectContent>
-            {budgets?.map((budget: any) => (
-              <SelectItem key={budget.id} value={budget.id.toString()}>
-                {budget.name}
-              </SelectItem>
-            ))}
+            <SelectItem value="all">Todos los materiales</SelectItem>
+            <SelectItem value="in-stock">En stock</SelectItem>
+            <SelectItem value="low-stock">Stock bajo</SelectItem>
+            <SelectItem value="out-of-stock">Sin stock</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Filters and Search - exactly like Gestión de Tareas */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar materiales..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
-            />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-          
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-              <SelectValue placeholder="Todas las categorías" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              {materialCategories.map((category) => (
-                <SelectItem key={category.id} value={category.name}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Button 
-            variant="outline"
-            onClick={() => {
-              toast({
-                title: "Funcionalidad en desarrollo",
-                description: "La exportación a PDF estará disponible próximamente.",
-              });
-            }}
-            className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-[#d1d1d1]"
-          >
-            <FileDown className="w-4 h-4 mr-2" />
-            Exportar PDF
-          </Button>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border bg-[#606060]">
-              <TableHead className="text-white text-sm h-12 text-left pl-6">Material</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Tarea Asociada</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Cantidad</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Unidad</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {materialsLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index} className="border-border h-12">
-                  <TableCell className="text-center py-1">
-                    <Skeleton className="h-6 w-32 mx-auto" />
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Skeleton className="h-6 w-24 mx-auto" />
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Skeleton className="h-6 w-16 mx-auto" />
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Skeleton className="h-6 w-12 mx-auto" />
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Skeleton className="h-8 w-8 mx-auto rounded-full" />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : filteredMaterials.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-32">
-                  {!budgetId 
-                    ? 'Selecciona un presupuesto para ver sus materiales'
-                    : searchTerm || categoryFilter !== 'all'
-                    ? 'No se encontraron materiales que coincidan con los filtros.'
-                    : 'No hay materiales en este presupuesto.'
-                  }
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredMaterials.map((material: any) => (
-                <TableRow key={material.id} className="border-border hover:bg-muted/20 transition-colors h-12">
-                  <TableCell className="pl-6 py-1">
-                    <div className="text-sm font-medium text-foreground">{material.material_name}</div>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <div className="text-sm">{material.task_name}</div>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <div className="text-sm font-medium">{material.amount}</div>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50 text-xs">
-                      {material.unit}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center py-1">
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Funcionalidad en desarrollo",
-                            description: "La edición de materiales estará disponible próximamente.",
-                          });
-                        }}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Funcionalidad en desarrollo",
-                            description: "La eliminación de materiales estará disponible próximamente.",
-                          });
-                        }}
-                        className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      {/* Acordeón de materiales */}
+      <div className="space-y-4">
+        <MaterialAccordion
+          key="Materiales"
+          category="Materiales"
+          isExpanded={expandedCategories.has('Materiales')}
+          onToggle={() => handleToggleExpanded('Materiales')}
+          onAddMaterial={handleAddMaterial}
+          onDeleteMaterial={(materialId) => deleteMaterialMutation.mutate(materialId)}
+          isDeletingMaterial={deleteMaterialMutation.isPending}
+        />
       </div>
     </div>
   );

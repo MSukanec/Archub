@@ -456,9 +456,9 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                                     <AlertDialog>
                                       <AlertDialogTrigger asChild>
                                         <Button
-                                          variant="outline"
+                                          variant="ghost"
                                           size="sm"
-                                          className="text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
+                                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                         >
                                           <Trash2 className="h-4 w-4" />
                                         </Button>
