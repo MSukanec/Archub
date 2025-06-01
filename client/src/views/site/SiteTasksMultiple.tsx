@@ -144,7 +144,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
     <Collapsible open={isExpanded} onOpenChange={onToggle}>
       <div className={cn(
         "rounded-2xl shadow-md border-0 overflow-hidden transition-all duration-200",
-        isActive ? "bg-primary/5 ring-2 ring-primary/50" : "bg-card"
+        isActive ? "bg-card ring-2 ring-primary/50" : "bg-card"
       )}>
         {/* Header del Acordeón */}
         <div className="p-4 border-b border-border bg-muted/50">
@@ -180,7 +180,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
             </div>
             
             <div className="flex items-center gap-2">
-              {!isActive && (
+              {!isActive ? (
                 <Button
                   onClick={onSetActive}
                   variant="outline"
@@ -188,27 +188,28 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 >
                   Hacer Activo
                 </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // TODO: Implementar exportación PDF
+                      console.log('Exportar PDF');
+                    }}
+                  >
+                    Exportar PDF
+                  </Button>
+                  
+                  <Button
+                    onClick={onAddTask}
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Agregar Tarea
+                  </Button>
+                </>
               )}
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  // TODO: Implementar exportación PDF
-                  console.log('Exportar PDF');
-                }}
-              >
-                <FileText className="h-4 w-4 mr-1" />
-                Exportar PDF
-              </Button>
-              
-              <Button
-                onClick={onAddTask}
-                size="sm"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Agregar Tarea
-              </Button>
             </div>
           </div>
         </div>
