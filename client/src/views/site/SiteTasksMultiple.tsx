@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
 
 // Types
@@ -51,23 +52,39 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
 
   // Query para obtener las tareas del presupuesto
   const { data: budgetTasks = [], isLoading: tasksLoading } = useQuery({
-    queryKey: ['/api/budget-tasks', budget.id],
+    queryKey: ['budget-tasks', budget.id],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/budget-tasks?budget_id=${budget.id}&project_id=${projectId}`);
-        if (!response.ok) throw new Error('Error fetching budget tasks');
+        // Obtener budget_tasks con datos relacionados
+        const { data: budgetTasksData, error: budgetTasksError } = await supabase
+          .from('budget_tasks')
+          .select(`
+            *,
+            tasks(
+              id,
+              name,
+              description,
+              unit_id,
+              category_id,
+              element_category_id,
+              units(name),
+              element_categories(name, code)
+            )
+          `)
+          .eq('budget_id', budget.id);
         
-        const data = await response.json();
-        return data.map((task: any) => ({
-          id: task.id,
-          name: task.name,
-          description: task.description || '',
-          category_name: task.element_categories?.name || 'Sin categoría',
-          category_code: task.element_categories?.code || '---',
-          unit_name: task.units?.name || 'Sin unidad',
-          amount: parseFloat(task.amount) || 0,
-          unit_price: parseFloat(task.unit_price) || 0,
-          total_price: (parseFloat(task.amount) || 0) * (parseFloat(task.unit_price) || 0)
+        if (budgetTasksError) throw budgetTasksError;
+        
+        return (budgetTasksData || []).map((budgetTask: any) => ({
+          id: budgetTask.id,
+          name: budgetTask.tasks?.name || 'Tarea no encontrada',
+          description: budgetTask.tasks?.description || '',
+          category_name: budgetTask.tasks?.element_categories?.name || 'Sin categoría',
+          category_code: budgetTask.tasks?.element_categories?.code || '---',
+          unit_name: budgetTask.tasks?.units?.name || 'Sin unidad',
+          amount: parseFloat(budgetTask.quantity) || 0,
+          unit_price: parseFloat(budgetTask.unit_price) || 0,
+          total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.unit_price) || 0)
         }));
       } catch (error) {
         console.error('Error fetching budget tasks:', error);
@@ -79,12 +96,16 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
 
   // Query para obtener categorías únicas
   const { data: categories = [] } = useQuery({
-    queryKey: ['/api/element-categories', projectId],
+    queryKey: ['element-categories', projectId],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/element-categories?organization_id=${projectId}`);
-        if (!response.ok) throw new Error('Error fetching categories');
-        return await response.json();
+        const { data, error } = await supabase
+          .from('element_categories')
+          .select('*')
+          .order('name');
+        
+        if (error) throw error;
+        return data || [];
       } catch (error) {
         console.error('Error fetching categories:', error);
         return [];
@@ -147,7 +168,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   {budget.name}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {totalTasks} tareas • ${totalAmount.toLocaleString()}
+                  {totalTasks} tareas • ${(totalAmount || 0).toLocaleString()}
                 </p>
               </button>
             </div>
@@ -348,12 +369,17 @@ export default function SiteTasksMultiple() {
 
   // Query para obtener presupuestos
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
-    queryKey: ['/api/budgets', projectId],
+    queryKey: ['budgets', projectId],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/budgets?project_id=${projectId}`);
-        if (!response.ok) throw new Error('Error fetching budgets');
-        return await response.json();
+        const { data, error } = await supabase
+          .from('budgets')
+          .select('*')
+          .eq('project_id', projectId)
+          .eq('is_active', true);
+        
+        if (error) throw error;
+        return data || [];
       } catch (error) {
         console.error('Error fetching budgets:', error);
         return [];
