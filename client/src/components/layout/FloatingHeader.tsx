@@ -28,7 +28,8 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
   budgets: [
     { id: 'budgets-list', label: 'Lista de Presupuestos' },
     { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
-    { id: 'budgets-materials', label: 'Lista de Materiales' }
+    { id: 'budgets-materials', label: 'Lista de Materiales' },
+    { id: 'sitelog-main', label: 'Bitácora' }
   ],
   'admin-community': [
     { id: 'admin-organizations', label: 'Organizaciones' },

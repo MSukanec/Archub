@@ -31,10 +31,10 @@ const topNavigationItems = [
     hasTimeline: true
   },
   { 
-    section: 'sitelog' as Section, 
-    icon: ClipboardList, 
-    label: 'Bitácora',
-    description: 'Registro diario de actividades, eventos y seguimiento del progreso de obra.',
+    section: 'budgets' as Section, 
+    icon: CreditCard, 
+    label: 'Obra',
+    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
     hasTimeline: true
   },
   { 
@@ -49,13 +49,6 @@ const topNavigationItems = [
     icon: DollarSign, 
     label: 'Finanzas',
     description: 'Control de ingresos, egresos y movimientos financieros del proyecto.',
-    hasTimeline: true
-  },
-  { 
-    section: 'budgets' as Section, 
-    icon: CreditCard, 
-    label: 'Presupuestos',
-    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
     hasTimeline: true
   },
   { 

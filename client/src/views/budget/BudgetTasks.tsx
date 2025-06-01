@@ -371,7 +371,7 @@ export default function BudgetTasks() {
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-[#606060] hover:bg-[#606060]">
-              <TableHead className="text-white text-sm h-12 text-left pl-6 w-[10%]">Rubro</TableHead>
+              <TableHead className="text-white text-sm h-12 text-left pl-6 w-[15%]">Rubro</TableHead>
               <TableHead className="text-white text-sm h-12 text-left">Tarea</TableHead>
               <TableHead className="text-white text-sm h-12 text-center w-[5%]">Unidad</TableHead>
               <TableHead className="text-white text-sm h-12 text-center w-[5%]">Cantidad</TableHead>
@@ -434,7 +434,7 @@ export default function BudgetTasks() {
                   return [
                     // Category Header
                   <TableRow key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
-                    <TableCell className="pl-6 py-3 font-semibold text-sm text-white w-[10%]">
+                    <TableCell className="pl-6 py-3 font-semibold text-sm text-white w-[15%]">
                       {categoryName}
                     </TableCell>
                     <TableCell className="py-3 text-left text-white text-sm"></TableCell>
@@ -457,7 +457,7 @@ export default function BudgetTasks() {
                     const taskCode = task.element_category?.name?.substring(0, 3).toUpperCase() || '';
                     return (
                       <TableRow key={task.id} className="border-border hover:bg-primary/10 transition-colors h-12">
-                        <TableCell className="pl-12 py-1 w-[10%]">
+                        <TableCell className="pl-12 py-1 w-[15%]">
                           <div className="text-sm font-medium text-foreground">{taskCode}</div>
                         </TableCell>
                         <TableCell className="py-1 text-left pl-6">
