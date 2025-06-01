@@ -363,7 +363,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                             <SelectValue placeholder="Seleccionar clima" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10001]">
                           {weatherOptions.map((option) => {
                             const IconComponent = option.icon;
                             return (
