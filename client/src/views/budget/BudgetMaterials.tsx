@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Package, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import { Package2, Search, X, Edit, Trash2, MoreHorizontal, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -11,9 +19,39 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
 
+function BudgetMaterialsSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-5 w-96" />
+      </div>
+      
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-10 w-48" />
+      </div>
+
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="border-b border-border bg-muted/50 p-4">
+          <Skeleton className="h-5 w-32" />
+        </div>
+        <div className="space-y-2 p-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-12" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BudgetMaterials() {
-  const { projectId } = useUserContextStore();
+  const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -26,7 +64,6 @@ export default function BudgetMaterials() {
   // Listen for floating action button events
   useEffect(() => {
     const handleOpenCreateMaterialModal = () => {
-      // TODO: Implement material creation modal
       toast({
         title: "Funcionalidad en desarrollo",
         description: "La gestión de materiales estará disponible próximamente.",
@@ -40,62 +77,303 @@ export default function BudgetMaterials() {
     };
   }, [toast]);
 
+  // Fetch budgets for current project
+  const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
+    queryKey: ['budgets', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId,
+  });
+
+  // Fetch materials for current budget
+  const { data: budgetMaterials = [], isLoading: materialsLoading } = useQuery({
+    queryKey: ['budget-materials', budgetId],
+    queryFn: async () => {
+      if (!budgetId) return [];
+      
+      try {
+        // Get all tasks for the budget first
+        const { data: budgetTasks, error: budgetTasksError } = await supabase
+          .from('budget_tasks')
+          .select('task_id')
+          .eq('budget_id', budgetId);
+        
+        if (budgetTasksError) throw budgetTasksError;
+        if (!budgetTasks || budgetTasks.length === 0) return [];
+
+        const taskIds = budgetTasks.map(bt => bt.task_id);
+        
+        // Get task materials with material details
+        const { data: taskMaterials, error: taskMaterialsError } = await supabase
+          .from('task_materials')
+          .select(`
+            *,
+            materials(id, name, unit_id),
+            tasks(name)
+          `)
+          .in('task_id', taskIds);
+        
+        if (taskMaterialsError) throw taskMaterialsError;
+        if (!taskMaterials || taskMaterials.length === 0) return [];
+
+        // Get unit information
+        const unitIds = Array.from(new Set(taskMaterials.map(tm => tm.materials?.unit_id).filter(Boolean)));
+        let unitsData: any[] = [];
+        if (unitIds.length > 0) {
+          const { data: units } = await supabase
+            .from('units')
+            .select('id, name')
+            .in('id', unitIds);
+          unitsData = units || [];
+        }
+
+        // Combine and structure data
+        const combinedData = taskMaterials.map(taskMaterial => {
+          const unit = unitsData.find(u => u.id === taskMaterial.materials?.unit_id);
+          return {
+            id: taskMaterial.id,
+            material_id: taskMaterial.material_id,
+            material_name: taskMaterial.materials?.name || 'Material no encontrado',
+            task_name: taskMaterial.tasks?.name || 'Tarea no encontrada',
+            amount: taskMaterial.amount,
+            unit: unit?.name || 'Sin unidad',
+            task_id: taskMaterial.task_id
+          };
+        });
+
+        return combinedData;
+      } catch (error) {
+        console.error('Error fetching budget materials:', error);
+        return [];
+      }
+    },
+    enabled: !!budgetId,
+  });
+
+  // Get unique material categories for filter (simplified version)
+  const materialCategories = Array.from(new Set(budgetMaterials.map(material => material.material_name.split(' ')[0])))
+    .filter(Boolean)
+    .map(name => ({ id: name, name }));
+
+  // Filter materials based on search and category
+  const filteredMaterials = budgetMaterials.filter(material => {
+    const matchesSearch = !searchTerm || 
+      material.material_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      material.task_name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = categoryFilter === 'all' || 
+      material.material_name.toLowerCase().startsWith(categoryFilter.toLowerCase());
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Calculate total materials count
+  const totalMaterials = filteredMaterials.reduce((sum: number, material: any) => 
+    sum + material.amount, 0
+  );
+
+  if (budgetsLoading) {
+    return <BudgetMaterialsSkeleton />;
+  }
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-medium text-foreground">Lista de Materiales</h3>
-          <p className="text-sm text-muted-foreground">
-            Gestiona el inventario y materiales necesarios para el proyecto
-          </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+            <Package2 className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Lista de Materiales</h1>
+            <p className="text-muted-foreground">
+              Gestiona el inventario y materiales necesarios para el proyecto
+            </p>
+          </div>
         </div>
-        <Button 
-          className="flex items-center gap-2"
-          onClick={() => {
-            toast({
-              title: "Funcionalidad en desarrollo",
-              description: "La gestión de materiales estará disponible próximamente.",
-            });
-          }}
-        >
-          <Plus className="h-4 w-4" />
-          Agregar Material
-        </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Inventario de Materiales</span>
-            <Badge variant="secondary">Total: 0 materiales</Badge>
-          </CardTitle>
-          <CardDescription>
-            Listado de todos los materiales disponibles para el proyecto
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium text-muted-foreground mb-2">
-              No hay materiales registrados
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Comienza agregando materiales para gestionar tu inventario
-            </p>
-            <Button 
-              onClick={() => {
-                toast({
-                  title: "Funcionalidad en desarrollo",
-                  description: "La gestión de materiales estará disponible próximamente.",
-                });
-              }}
+      {/* Filters and Budget Selector */}
+      <div className="flex items-center gap-4">
+        <Select 
+          value={budgetId || ""} 
+          onValueChange={(value) => {
+            setBudgetId(value);
+            setSearchTerm('');
+            setCategoryFilter('all');
+          }}
+        >
+          <SelectTrigger className="w-[250px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectValue placeholder="Seleccionar presupuesto" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+            {budgets?.map((budget: any) => (
+              <SelectItem key={budget.id} value={budget.id.toString()}>
+                {budget.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar materiales..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+          />
+          {searchTerm && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
             >
-              <Plus className="mr-2 h-4 w-4" />
-              Agregar Primer Material
+              <X className="h-4 w-4" />
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectValue placeholder="Todas las Categorías" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+            <SelectItem value="all">Todas las categorías</SelectItem>
+            {materialCategories.map((category) => (
+              <SelectItem key={category.id} value={category.name}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Total Badge */}
+      {budgetId && (
+        <div className="flex justify-end">
+          <Badge variant="outline" className="text-lg px-4 py-2 bg-primary/10 text-primary border-primary/20">
+            <Package2 className="w-4 h-4 mr-1" />
+            Total materiales: {totalMaterials.toFixed(2)}
+          </Badge>
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border bg-muted/50">
+              <TableHead className="text-foreground font-semibold h-12 text-center">Material</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea Asociada</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Cantidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-foreground font-semibold h-12 text-center">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {materialsLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index} className="border-border h-12">
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-32 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-24 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-16 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-6 w-12 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Skeleton className="h-8 w-8 mx-auto rounded-full" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredMaterials.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 h-32">
+                  {!budgetId 
+                    ? 'Selecciona un presupuesto para ver sus materiales'
+                    : searchTerm || categoryFilter !== 'all'
+                    ? 'No se encontraron materiales que coincidan con los filtros.'
+                    : 'No hay materiales en este presupuesto.'
+                  }
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredMaterials.map((material: any) => (
+                <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors h-12">
+                  <TableCell className="py-1 text-center">
+                    <div className="font-medium text-foreground">{material.material_name}</div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {material.task_name}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="font-semibold text-foreground">{material.amount}</div>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {material.unit}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            toast({
+                              title: "Funcionalidad en desarrollo",
+                              description: "La edición de materiales estará disponible próximamente.",
+                            });
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <Edit className="h-4 w-4" />
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            toast({
+                              title: "Funcionalidad en desarrollo",
+                              description: "La eliminación de materiales estará disponible próximamente.",
+                            });
+                          }}
+                          className="flex items-center gap-2 text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Eliminar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

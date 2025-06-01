@@ -83,8 +83,14 @@ export default function BudgetTasks() {
     queryFn: async () => {
       if (!projectId) return [];
       
-      const budgets = await projectsService.getBudgets(projectId);
-      return budgets;
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
     },
     enabled: !!projectId,
   });
@@ -446,11 +452,13 @@ export default function BudgetTasks() {
       </div>
 
       {/* Modals */}
-      <TaskModalSimple
-        isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        budgetId={budgetId}
-      />
+      {isTaskModalOpen && (
+        <TaskModalSimple
+          isOpen={isTaskModalOpen}
+          onOpenChange={setIsTaskModalOpen}
+          budgetId={budgetId}
+        />
+      )}
     </div>
   );
 }
