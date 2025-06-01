@@ -121,6 +121,7 @@ export default function BudgetTasks() {
           .select(`
             id, 
             name, 
+            description,
             unit_id, 
             unit_labor_price, 
             unit_material_price, 
@@ -151,6 +152,7 @@ export default function BudgetTasks() {
           return {
             ...budgetTask,
             task_name: task?.name || 'Tarea no encontrada',
+            description: task?.description || '',
             unit_labor_price: task?.unit_labor_price || 0,
             unit_material_price: task?.unit_material_price || 0,
             unit: task?.units?.name || '',
@@ -356,7 +358,7 @@ export default function BudgetTasks() {
           <TableHeader>
             <TableRow className="border-border bg-[#606060]">
               <TableHead className="text-white text-sm h-12 text-left pl-6">Rubro</TableHead>
-              <TableHead className="text-white text-sm h-12 text-center">Tarea</TableHead>
+              <TableHead className="text-white text-sm h-12 text-left">Tarea</TableHead>
               <TableHead className="text-white text-sm h-12 text-center">Unidad</TableHead>
               <TableHead className="text-white text-sm h-12 text-center">Cantidad</TableHead>
               <TableHead className="text-white text-sm h-12 text-center">Precio Unit.</TableHead>
@@ -444,8 +446,13 @@ export default function BudgetTasks() {
                         <TableCell className="pl-12 py-1">
                           <div className="text-sm font-medium text-foreground">{taskCode}</div>
                         </TableCell>
-                        <TableCell className="py-1 text-center">
-                          <div className="font-medium text-foreground text-sm">{task.task_name}</div>
+                        <TableCell className="py-1 text-left pl-6">
+                          <div className="flex flex-col">
+                            <div className="font-medium text-foreground text-sm">{task.task_name}</div>
+                            {task.description && (
+                              <div className="text-xs text-muted-foreground mt-0.5">{task.description}</div>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-center py-1">
                           <Badge variant="outline" className="bg-muted/50 text-xs">

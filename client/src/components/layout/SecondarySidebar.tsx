@@ -22,14 +22,16 @@ export default function SecondarySidebar() {
           isActive={currentView === 'admin-organizations'}
           onClick={() => setView('admin-organizations')}
           label="Admin Organizaciones"
+          tooltipDirection="left"
         />
 
         {/* Library button */}
         <CircularButton
           icon={Library}
-          isActive={currentView === 'admin-library'}
-          onClick={() => setView('admin-library')}
-          label="Biblioteca"
+          isActive={currentView === 'admin-tasks' || currentView === 'admin-categories' || currentView === 'admin-material-categories' || currentView === 'admin-materials' || currentView === 'admin-units' || currentView === 'admin-elements' || currentView === 'admin-actions'}
+          onClick={() => setView('admin-tasks')}
+          label="Administración de Biblioteca"
+          tooltipDirection="left"
         />
       </div>
     </div>
