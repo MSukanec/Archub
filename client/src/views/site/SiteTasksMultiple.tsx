@@ -47,9 +47,11 @@ interface BudgetAccordionProps {
   onAddTask: () => void;
   onDeleteBudget: (budgetId: string) => void;
   isDeleting: boolean;
+  onDeleteTask: (taskId: string) => void;
+  isDeletingTask: boolean;
 }
 
-function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask, onDeleteBudget, isDeleting }: BudgetAccordionProps) {
+function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask, onDeleteBudget, isDeleting, onDeleteTask, isDeletingTask }: BudgetAccordionProps) {
   const { projectId } = useUserContextStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -189,13 +191,56 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
             
             <div className="flex items-center gap-2">
               {!isActive ? (
-                <Button
-                  onClick={onSetActive}
-                  variant="outline"
-                  size="sm"
-                >
-                  Hacer Activo
-                </Button>
+                <>
+                  <Button
+                    onClick={onSetActive}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Hacer Activo
+                  </Button>
+                  
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar presupuesto?</AlertDialogTitle>
+                        <AlertDialogDescription className="space-y-2">
+                          <p>
+                            <strong>¡ATENCIÓN!</strong> Esta acción eliminará permanentemente el presupuesto "{budget.name}" y <strong>TODOS</strong> los datos relacionados:
+                          </p>
+                          <ul className="list-disc pl-5 space-y-1 text-sm">
+                            <li>Todas las tareas asociadas al presupuesto</li>
+                            <li>Todas las bitácoras relacionadas</li>
+                            <li>Todos los cómputos y cálculos</li>
+                            <li>Cualquier otro dato vinculado al presupuesto</li>
+                          </ul>
+                          <p className="font-semibold text-destructive">
+                            Esta acción NO se puede deshacer.
+                          </p>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => onDeleteBudget(budget.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          disabled={isDeleting}
+                        >
+                          {isDeleting ? "Eliminando..." : "Eliminar Presupuesto"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
               ) : (
                 <>
                   <Button
@@ -220,9 +265,9 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -408,7 +453,35 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                                     <div className="text-sm">{percentage.toFixed(1)}%</div>
                                   </td>
                                   <td className="text-center py-1">
-                                    <div className="text-sm">-</div>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>¿Eliminar tarea?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Esta acción eliminará permanentemente la tarea "{task.name}" del presupuesto. Esta acción NO se puede deshacer.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => deleteTaskMutation.mutate(task.id)}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            disabled={deleteTaskMutation.isPending}
+                                          >
+                                            {deleteTaskMutation.isPending ? "Eliminando..." : "Eliminar Tarea"}
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
                                   </td>
                                 </tr>
                               );
@@ -643,6 +716,33 @@ export default function SiteTasksMultiple() {
     },
   });
 
+  // Mutación para eliminar tarea del presupuesto
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (taskId: string) => {
+      const { error } = await supabase
+        .from('budget_tasks')
+        .delete()
+        .eq('id', taskId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['budget-tasks'] });
+      toast({
+        title: "Tarea eliminada",
+        description: "La tarea ha sido eliminada del presupuesto correctamente.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error al eliminar tarea",
+        description: "No se pudo eliminar la tarea. Intenta nuevamente.",
+        variant: "destructive",
+      });
+      console.error('Error deleting task:', error);
+    },
+  });
+
   // Solo expandir el presupuesto activo
   useEffect(() => {
     if (budgetId) {
@@ -691,7 +791,7 @@ export default function SiteTasksMultiple() {
           </div>
           <div>
             <h1 className="text-2xl font-semibold text-foreground">
-              Tareas
+              Cómputo y Presupuesto
             </h1>
             <p className="text-sm text-muted-foreground">
               Gestión de múltiples tablas de cómputo y presupuestos
@@ -702,49 +802,6 @@ export default function SiteTasksMultiple() {
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Presupuesto
         </Button>
-      </div>
-
-      {/* Cards de estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-card rounded-2xl p-6 shadow-md border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Total Presupuestos</h3>
-              <p className="text-2xl font-bold text-foreground mt-1">{budgets.length}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
-              <FileText className="w-6 h-6 text-green-500" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-card rounded-2xl p-6 shadow-md border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Borradores</h3>
-              <p className="text-2xl font-bold text-foreground mt-1">
-                {budgets.filter(b => b.status === 'draft').length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center">
-              <FileText className="w-6 h-6 text-yellow-500" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-card rounded-2xl p-6 shadow-md border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Aprobados</h3>
-              <p className="text-2xl font-bold text-foreground mt-1">
-                {budgets.filter(b => b.status === 'approved').length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
-              <FileText className="w-6 h-6 text-blue-500" />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Barra de búsqueda */}
