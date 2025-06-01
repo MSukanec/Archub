@@ -256,7 +256,7 @@ export default function BudgetTasks() {
 
   return (
     <div className="flex-1 p-6 space-y-6">
-      {/* Header - exactly like Lista de Presupuestos */}
+      {/* Header with Budget Selector inline */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -271,10 +271,8 @@ export default function BudgetTasks() {
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Budget Selector */}
-      <div className="flex items-center justify-between">
+        
+        {/* Budget Selector with Movimientos style */}
         <Select 
           value={budgetId || ""} 
           onValueChange={(value) => {
@@ -283,7 +281,7 @@ export default function BudgetTasks() {
             setCategoryFilter('all');
           }}
         >
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger className="w-48 bg-white/80 hover:bg-white border-input">
             <SelectValue placeholder="Seleccionar presupuesto" />
           </SelectTrigger>
           <SelectContent>
@@ -353,15 +351,15 @@ export default function BudgetTasks() {
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-left pl-6">Rubro</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Cantidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Precio Unit.</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Subtotal</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">% Incidencia</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Acciones</TableHead>
+            <TableRow className="border-border bg-black">
+              <TableHead className="text-white font-semibold h-12 text-left pl-6">Rubro</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">Tarea</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">Cantidad</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">Precio Unit.</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">Subtotal</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">% Incidencia</TableHead>
+              <TableHead className="text-white font-semibold h-12 text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -409,8 +407,8 @@ export default function BudgetTasks() {
               <>
                 {Object.entries(groupedTasks).map(([categoryName, categoryTasks]: [string, any]) => [
                   // Category Header
-                  <TableRow key={`category-${categoryName}`} className="bg-muted/30 border-border">
-                    <TableCell colSpan={8} className="pl-6 py-3 font-semibold text-sm">
+                  <TableRow key={`category-${categoryName}`} className="bg-black border-border">
+                    <TableCell colSpan={8} className="pl-6 py-3 font-semibold text-sm text-white">
                       {categoryName}
                     </TableCell>
                   </TableRow>,
@@ -418,10 +416,12 @@ export default function BudgetTasks() {
                   ...categoryTasks.map((task: any) => {
                     const subtotal = task.unit_labor_price * task.quantity;
                     const percentage = totalGeneral > 0 ? (subtotal / totalGeneral) * 100 : 0;
+                    // Generate task code from category and subcategory
+                    const taskCode = `${task.category?.name?.substring(0, 1) || 'X'}${task.subcategory?.name?.substring(0, 1) || 'X'}${task.element_category?.name?.substring(0, 1) || 'X'}`;
                     return (
                       <TableRow key={task.id} className="border-border hover:bg-muted/20 transition-colors h-12">
                         <TableCell className="pl-12 py-1">
-                          <div className="text-sm text-muted-foreground">—</div>
+                          <div className="text-sm font-medium text-foreground">{taskCode}</div>
                         </TableCell>
                         <TableCell className="py-1 text-center">
                           <div className="font-medium text-foreground text-sm">{task.task_name}</div>
@@ -458,23 +458,25 @@ export default function BudgetTasks() {
                           <div className="text-sm">{percentage.toFixed(1)}%</div>
                         </TableCell>
                         <TableCell className="text-center py-1">
-                          <div className="flex items-center justify-center gap-1">
+                          <div className="flex items-center justify-center gap-2">
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={() => setEditingTask(task)}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                              className="h-8 px-2 text-xs"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3 w-3 mr-1" />
+                              Editar
                             </Button>
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={() => deleteTaskMutation.mutate(task.id)}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                              className="h-8 px-2 text-xs text-destructive border-destructive hover:bg-destructive hover:text-white"
                               disabled={deleteTaskMutation.isPending}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              Eliminar
                             </Button>
                           </div>
                         </TableCell>
@@ -484,17 +486,17 @@ export default function BudgetTasks() {
                 ]).flat()}
                 {/* Total Row */}
                 {filteredTasks.length > 0 && (
-                  <TableRow className="bg-primary/10 border-border font-semibold">
-                    <TableCell colSpan={5} className="pl-6 py-3 text-right font-bold">
+                  <TableRow className="bg-black border-border font-semibold">
+                    <TableCell colSpan={5} className="pl-6 py-3 text-right font-bold text-white">
                       TOTAL
                     </TableCell>
-                    <TableCell className="text-center py-3 font-bold">
+                    <TableCell className="text-center py-3 font-bold text-white">
                       ${totalGeneral.toFixed(2)}
                     </TableCell>
-                    <TableCell className="text-center py-3 font-bold">
+                    <TableCell className="text-center py-3 font-bold text-white">
                       100.0%
                     </TableCell>
-                    <TableCell className="text-center py-3">
+                    <TableCell className="text-center py-3 text-white">
                       —
                     </TableCell>
                   </TableRow>
