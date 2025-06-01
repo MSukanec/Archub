@@ -55,42 +55,48 @@ interface MaterialAccordionProps {
 }
 
 function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDeleteMaterial, isDeletingMaterial }: MaterialAccordionProps) {
-  const { projectId } = useUserContextStore();
+  const { budgetId } = useUserContextStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
-  // Query para obtener materiales
+  // Query para obtener materiales del presupuesto activo
   const { data: materials = [], isLoading: isLoadingMaterials } = useQuery({
-    queryKey: ['materials', projectId],
+    queryKey: ['budget-materials', budgetId],
     queryFn: async () => {
-      if (!projectId) return [];
+      if (!budgetId) return [];
       
       const { data, error } = await supabase
-        .from('materials')
+        .from('budget_items')
         .select(`
           *,
-          material_categories!inner(name, code),
-          units(name)
+          materials!inner(
+            id,
+            name,
+            description,
+            unit_material_price,
+            material_categories!inner(name, code),
+            units(name)
+          )
         `)
-        .eq('organization_id', projectId)
-        .order('name');
+        .eq('budget_id', budgetId)
+        .order('materials.name');
 
       if (error) throw error;
       
-      return data.map((material: any) => ({
-        id: material.id,
-        name: material.name,
-        description: material.description || '',
-        category_name: material.material_categories?.name || 'Sin categoría',
-        category_code: material.material_categories?.code || '',
-        parent_category_name: material.material_categories?.name || 'Sin categoría',
-        unit_name: material.units?.name || 'und',
-        stock: material.stock || 0,
-        unit_price: parseFloat(material.unit_material_price || '0'),
-        total_value: (material.stock || 0) * parseFloat(material.unit_material_price || '0')
+      return data.map((budgetItem: any) => ({
+        id: budgetItem.materials.id,
+        name: budgetItem.materials.name,
+        description: budgetItem.materials.description || '',
+        category_name: budgetItem.materials.material_categories?.name || 'Sin categoría',
+        category_code: budgetItem.materials.material_categories?.code || '',
+        parent_category_name: budgetItem.materials.material_categories?.name || 'Sin categoría',
+        unit_name: budgetItem.materials.units?.name || 'und',
+        stock: budgetItem.quantity || 0,
+        unit_price: parseFloat(budgetItem.materials.unit_material_price || '0'),
+        total_value: (budgetItem.quantity || 0) * parseFloat(budgetItem.materials.unit_material_price || '0')
       }));
     },
-    enabled: !!projectId,
+    enabled: !!budgetId,
   });
 
   const filteredMaterials = materials.filter((material: MaterialData) => {
