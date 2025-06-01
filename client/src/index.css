@@ -13,7 +13,7 @@
   --card-foreground: 0 0% 9%; /* #171717 */
   --border: 0 0% 89%; /* #e4e4e4 */
   --input: 0 0% 89%; /* #e4e4e4 */
-  --primary: 82 100% 39%; /* #8fc700 */
+  --primary: 214 100% 65%; /* #4f9eff */
   --primary-foreground: 0 0% 100%; /* #ffffff */
   --secondary: 0 0% 89%; /* #e4e4e4 */
   --secondary-foreground: 0 0% 9%; /* #171717 */
@@ -21,7 +21,7 @@
   --accent-foreground: 0 0% 9%; /* #171717 */
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 98%; /* #fafafa */
-  --ring: 82 100% 39%; /* #8fc700 */
+  --ring: 214 100% 65%; /* #4f9eff */
   --radius: 0.5rem;
   
   /* Surface variations for better hierarchy */
