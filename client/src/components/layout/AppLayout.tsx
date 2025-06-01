@@ -20,7 +20,7 @@ import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
 import ProjectsList from '@/views/project/ProjectsList';
 
-import SiteTasksMultiple from '@/views/site/SiteTasksMultiple';
+import SiteBudgets from '@/views/site/SiteBudgets';
 import SiteMaterials from '@/views/site/SiteMaterials';
 import SiteLogs from '@/views/site/SiteLogs';
 import Movements from '@/views/movements/Movements';
@@ -55,9 +55,9 @@ const viewComponents = {
   'organization-activity': Organization,
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
-  'budgets-list': SiteTasksMultiple,
-  'budgets-tasks': SiteTasksMultiple,
-  'budgets-tasks-multiple': SiteTasksMultiple,
+  'budgets-list': SiteBudgets,
+  'budgets-tasks': SiteBudgets,
+  'budgets-tasks-multiple': SiteBudgets,
   'budgets-materials': SiteMaterials,
   'sitelog-main': SiteLogs,
   'movements-main': Movements,

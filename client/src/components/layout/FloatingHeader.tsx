@@ -23,7 +23,7 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'transactions', label: 'Movimientos' }
   ],
   budgets: [
-    { id: 'budgets-tasks-multiple', label: 'Tareas' },
+    { id: 'budgets-tasks-multiple', label: 'Cómputo y Presupuesto' },
     { id: 'budgets-materials', label: 'Materiales' },
     { id: 'sitelog-main', label: 'Bitácora' }
   ],

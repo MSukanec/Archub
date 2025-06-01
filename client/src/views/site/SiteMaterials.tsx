@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Package2, Search, Plus, Trash2, Calculator } from 'lucide-react';
+import { Package2, Search, Plus, Trash2, Calculator, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -146,13 +146,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
             Exportar PDF
           </Button>
           
-          <Button
-            onClick={onAddMaterial}
-            size="sm"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Agregar Material
-          </Button>
+
         </div>
       </div>
 
@@ -160,20 +154,21 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       {isExpanded && (
         <div className="border-t border-border">
           {/* Controles de búsqueda y filtros */}
-          <div className="p-6 border-b border-border bg-muted/30">
-            <div className="flex flex-col sm:flex-row gap-4">
+          <div className="p-4 space-y-4">
+            <div className="flex gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Buscar materiales..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-background"
+                  className="pl-10"
                 />
               </div>
               
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-full sm:w-48 bg-background">
+                <SelectTrigger className="w-48">
+                  <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filtrar por categoría" />
                 </SelectTrigger>
                 <SelectContent>

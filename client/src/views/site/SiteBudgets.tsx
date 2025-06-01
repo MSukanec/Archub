@@ -624,7 +624,7 @@ function BudgetTasksMultipleSkeleton() {
   );
 }
 
-export default function SiteTasksMultiple() {
+export default function SiteBudgets() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
   const [expandedBudgets, setExpandedBudgets] = useState<Set<string>>(new Set());
