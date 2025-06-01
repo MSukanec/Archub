@@ -67,7 +67,6 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     material_name: string;
     amount: string;
   }>>([]);
-  const [openAccordions, setOpenAccordions] = useState<string[]>(['category', 'task', 'pricing', 'materials']);
   const isEditing = !!task;
 
   // Use hierarchical concepts hook for task categories (same as MovementModal)
@@ -161,7 +160,6 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
       }
       
       console.log('Raw task materials data:', data);
-      console.log('Number of materials found:', data?.length || 0);
       
       const mappedData = data.map(item => ({
         material_id: item.material_id,
@@ -545,12 +543,7 @@ export default function AdminTasksModal({ isOpen, onClose, task }: AdminTasksMod
     >
       <Form {...form}>
         <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
-          <Accordion 
-            type="multiple" 
-            value={openAccordions}
-            onValueChange={setOpenAccordions}
-            className="w-full flex-1 flex flex-col"
-          >
+          <Accordion type="single" defaultValue="category" className="w-full flex-1 flex flex-col">
             {/* Category Section */}
             <AccordionItem value="category" className="border-[#919191]/20">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
