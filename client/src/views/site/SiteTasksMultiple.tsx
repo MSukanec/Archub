@@ -375,8 +375,7 @@ export default function SiteTasksMultiple() {
         const { data, error } = await supabase
           .from('budgets')
           .select('*')
-          .eq('project_id', projectId)
-          .eq('is_active', true);
+          .eq('project_id', projectId);
         
         if (error) throw error;
         return data || [];
