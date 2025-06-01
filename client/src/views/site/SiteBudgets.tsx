@@ -319,12 +319,11 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   placeholder="Buscar tareas..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
                 />
               </div>
               
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger>
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filtrar por categoría" />
                 </SelectTrigger>
