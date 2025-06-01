@@ -187,7 +187,7 @@ export default function BudgetMaterials() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -202,7 +202,7 @@ export default function BudgetMaterials() {
           </div>
         </div>
         
-        {/* Budget Selector moved to right */}
+        {/* Budget Selector */}
         <div className="flex items-center gap-4">
           <Select 
             value={budgetId || ""} 
@@ -227,51 +227,43 @@ export default function BudgetMaterials() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar materiales..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="p-4 flex items-center gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar materiales..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-            <SelectValue placeholder="Todas las Categorías" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-            <SelectItem value="all">Todas las categorías</SelectItem>
-            {materialCategories.map((category) => (
-              <SelectItem key={category.id} value={category.name}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Todas las Categorías" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {materialCategories.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-
-      {/* Total Badge */}
-      {budgetId && (
-        <div className="flex justify-end">
-          <Badge variant="outline" className="text-lg px-4 py-2 bg-primary/10 text-primary border-primary/20">
-            <Package2 className="w-4 h-4 mr-1" />
-            Total materiales: {totalMaterials.toFixed(2)}
-          </Badge>
-        </div>
-      )}
 
       {/* Table */}
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
