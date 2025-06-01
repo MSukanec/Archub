@@ -473,11 +473,11 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                                         <AlertDialogFooter>
                                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                           <AlertDialogAction
-                                            onClick={() => deleteTaskMutation.mutate(task.id)}
+                                            onClick={() => onDeleteTask(task.id)}
                                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            disabled={deleteTaskMutation.isPending}
+                                            disabled={isDeletingTask}
                                           >
-                                            {deleteTaskMutation.isPending ? "Eliminando..." : "Eliminar Tarea"}
+                                            {isDeletingTask ? "Eliminando..." : "Eliminar Tarea"}
                                           </AlertDialogAction>
                                         </AlertDialogFooter>
                                       </AlertDialogContent>
@@ -839,6 +839,8 @@ export default function SiteTasksMultiple() {
               onAddTask={() => handleAddTask(budget.id)}
               onDeleteBudget={(budgetIdToDelete) => deleteBudgetMutation.mutate(budgetIdToDelete)}
               isDeleting={deleteBudgetMutation.isPending}
+              onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
+              isDeletingTask={deleteTaskMutation.isPending}
             />
           ))
         )}
