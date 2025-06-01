@@ -461,23 +461,24 @@ export default function SiteTasksMultiple() {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
-  // Expandir automáticamente el presupuesto activo
+  // Solo expandir el presupuesto activo
   useEffect(() => {
-    if (budgetId && !expandedBudgets.has(budgetId)) {
-      setExpandedBudgets(prev => new Set([...Array.from(prev), budgetId]));
+    if (budgetId) {
+      setExpandedBudgets(new Set([budgetId]));
     }
-  }, [budgetId, expandedBudgets]);
+  }, [budgetId]);
 
   const handleToggleExpanded = (budgetIdToToggle: string) => {
-    setExpandedBudgets(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(budgetIdToToggle)) {
-        newSet.delete(budgetIdToToggle);
-      } else {
-        newSet.add(budgetIdToToggle);
-      }
-      return newSet;
-    });
+    if (budgetIdToToggle === budgetId) {
+      // Si es el presupuesto activo, alternar su estado
+      setExpandedBudgets(prev => {
+        return prev.has(budgetIdToToggle) ? new Set() : new Set([budgetIdToToggle]);
+      });
+    } else {
+      // Si no es el activo, hacer activo y expandir
+      setBudgetId(budgetIdToToggle);
+      setExpandedBudgets(new Set([budgetIdToToggle]));
+    }
   };
 
   const handleSetActiveBudget = (newBudgetId: string) => {
