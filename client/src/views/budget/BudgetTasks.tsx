@@ -351,7 +351,7 @@ export default function BudgetTasks() {
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-black">
+            <TableRow className="border-border bg-[#606060]">
               <TableHead className="text-white font-semibold h-12 text-left pl-6">Rubro</TableHead>
               <TableHead className="text-white font-semibold h-12 text-center">Tarea</TableHead>
               <TableHead className="text-white font-semibold h-12 text-center">Unidad</TableHead>
@@ -407,7 +407,7 @@ export default function BudgetTasks() {
               <>
                 {Object.entries(groupedTasks).map(([categoryName, categoryTasks]: [string, any]) => [
                   // Category Header
-                  <TableRow key={`category-${categoryName}`} className="bg-black border-border">
+                  <TableRow key={`category-${categoryName}`} className="bg-[#606060] border-border">
                     <TableCell colSpan={8} className="pl-6 py-3 font-semibold text-sm text-white">
                       {categoryName}
                     </TableCell>
@@ -486,7 +486,7 @@ export default function BudgetTasks() {
                 ]).flat()}
                 {/* Total Row */}
                 {filteredTasks.length > 0 && (
-                  <TableRow className="bg-black border-border font-semibold">
+                  <TableRow className="bg-[#606060] border-border font-semibold">
                     <TableCell colSpan={5} className="pl-6 py-3 text-right font-bold text-white">
                       TOTAL
                     </TableCell>
