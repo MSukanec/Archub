@@ -205,7 +205,6 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               <Button
                 onClick={onAddTask}
                 size="sm"
-                className="bg-primary hover:bg-primary/90 text-white"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Agregar Tarea
