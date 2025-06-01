@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library, FolderOpen, ChevronDown, Plus } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library, FolderOpen, ChevronDown, Plus, HardHat } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -32,7 +32,7 @@ const topNavigationItems = [
   },
   { 
     section: 'budgets' as Section, 
-    icon: CreditCard, 
+    icon: HardHat, 
     label: 'Obra',
     description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
     hasTimeline: true
