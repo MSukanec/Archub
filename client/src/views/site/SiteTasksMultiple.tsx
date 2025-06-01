@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { Button } from '@/components/ui/button';
@@ -67,7 +67,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               unit_id,
               category_id,
               units(name),
-              categories(name, code)
+              task_categories(name, code)
             )
           `)
           .eq('budget_id', budget.id);
@@ -78,8 +78,8 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
           id: budgetTask.id,
           name: budgetTask.tasks?.name || 'Tarea no encontrada',
           description: budgetTask.tasks?.description || '',
-          category_name: budgetTask.tasks?.categories?.name || 'Sin categoría',
-          category_code: budgetTask.tasks?.categories?.code || '---',
+          category_name: budgetTask.tasks?.task_categories?.name || 'Sin categoría',
+          category_code: budgetTask.tasks?.task_categories?.code || '---',
           unit_name: budgetTask.tasks?.units?.name || 'Sin unidad',
           amount: parseFloat(budgetTask.quantity) || 0,
           unit_price: parseFloat(budgetTask.unit_price) || 0,
@@ -166,18 +166,20 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 <h3 className="text-lg font-medium text-foreground truncate">
                   {budget.name}
                 </h3>
-                <p className="text-sm text-muted-foreground">
-                  {totalTasks} tareas • ${(totalAmount || 0).toLocaleString()}
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm font-semibold text-foreground">
+                    ${(totalAmount || 0).toLocaleString()}
+                  </span>
+                  {isActive && (
+                    <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-white text-xs">
+                      Activo
+                    </Badge>
+                  )}
+                </div>
               </button>
             </div>
             
             <div className="flex items-center gap-2">
-              {isActive && (
-                <Badge variant="default" className="bg-primary text-white">
-                  Activo
-                </Badge>
-              )}
               
               <Button
                 onClick={onAddTask}
@@ -220,6 +222,19 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                   ))}
                 </SelectContent>
               </Select>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white/80 hover:bg-white"
+                onClick={() => {
+                  // TODO: Implementar exportación PDF
+                  console.log('Exportar PDF');
+                }}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Exportar PDF
+              </Button>
             </div>
 
             {/* Tabla de tareas */}
