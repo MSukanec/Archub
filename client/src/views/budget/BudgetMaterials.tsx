@@ -189,7 +189,7 @@ export default function BudgetMaterials() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
             <Package2 className="w-4 h-4 text-primary" />
@@ -201,30 +201,33 @@ export default function BudgetMaterials() {
             </p>
           </div>
         </div>
+        
+        {/* Budget Selector moved to right */}
+        <div className="flex items-center gap-4">
+          <Select 
+            value={budgetId || ""} 
+            onValueChange={(value) => {
+              setBudgetId(value);
+              setSearchTerm('');
+              setCategoryFilter('all');
+            }}
+          >
+            <SelectTrigger className="w-[250px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+              <SelectValue placeholder="Seleccionar presupuesto" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+              {budgets?.map((budget: any) => (
+                <SelectItem key={budget.id} value={budget.id.toString()}>
+                  {budget.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Filters and Budget Selector */}
+      {/* Filters */}
       <div className="flex items-center gap-4">
-        <Select 
-          value={budgetId || ""} 
-          onValueChange={(value) => {
-            setBudgetId(value);
-            setSearchTerm('');
-            setCategoryFilter('all');
-          }}
-        >
-          <SelectTrigger className="w-[250px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-            <SelectValue placeholder="Seleccionar presupuesto" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-            {budgets?.map((budget: any) => (
-              <SelectItem key={budget.id} value={budget.id.toString()}>
-                {budget.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -274,12 +277,12 @@ export default function BudgetMaterials() {
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
-              <TableHead className="text-foreground font-semibold h-12 text-center">Material</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Tarea Asociada</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Cantidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
-              <TableHead className="text-foreground font-semibold h-12 text-center">Acciones</TableHead>
+            <TableRow className="border-border bg-[#606060]">
+              <TableHead className="text-white text-sm h-12 text-left pl-6">Material</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Tarea Asociada</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Cantidad</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Unidad</TableHead>
+              <TableHead className="text-white text-sm h-12 text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -316,57 +319,50 @@ export default function BudgetMaterials() {
               </TableRow>
             ) : (
               filteredMaterials.map((material: any) => (
-                <TableRow key={material.id} className="border-border hover:bg-muted/30 transition-colors h-12">
-                  <TableCell className="py-1 text-center">
-                    <div className="font-medium text-foreground">{material.material_name}</div>
+                <TableRow key={material.id} className="border-border hover:bg-muted/20 transition-colors h-12">
+                  <TableCell className="pl-6 py-1">
+                    <div className="text-sm font-medium text-foreground">{material.material_name}</div>
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50">
-                      {material.task_name}
-                    </Badge>
+                    <div className="text-sm">{material.task_name}</div>
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <div className="font-semibold text-foreground">{material.amount}</div>
+                    <div className="text-sm font-medium">{material.amount}</div>
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-muted/50 text-xs">
                       {material.unit}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            toast({
-                              title: "Funcionalidad en desarrollo",
-                              description: "La edición de materiales estará disponible próximamente.",
-                            });
-                          }}
-                          className="flex items-center gap-2"
-                        >
-                          <Edit className="h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            toast({
-                              title: "Funcionalidad en desarrollo",
-                              description: "La eliminación de materiales estará disponible próximamente.",
-                            });
-                          }}
-                          className="flex items-center gap-2 text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          toast({
+                            title: "Funcionalidad en desarrollo",
+                            description: "La edición de materiales estará disponible próximamente.",
+                          });
+                        }}
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          toast({
+                            title: "Funcionalidad en desarrollo",
+                            description: "La eliminación de materiales estará disponible próximamente.",
+                          });
+                        }}
+                        className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
