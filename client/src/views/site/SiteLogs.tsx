@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { siteLogsService } from '@/lib/siteLogsService';
 import { projectsService } from '@/lib/projectsService';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useNavigationStore } from '@/stores/navigationStore';
 import SiteLogModal from '@/components/modals/SiteLogModalNew';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 import type { SiteLog } from '@shared/schema';

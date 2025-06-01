@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
 
 // Types
 interface Budget {
@@ -318,10 +319,11 @@ function BudgetTasksMultipleSkeleton() {
   );
 }
 
-export default function BudgetTasksMultiple() {
+export default function SiteTasksMultiple() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
   const [expandedBudgets, setExpandedBudgets] = useState<Set<string>>(new Set());
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -330,6 +332,19 @@ export default function BudgetTasksMultiple() {
     setSection('budgets');
     setView('budgets-tasks-multiple');
   }, [setSection, setView]);
+
+  // Listen for floating action button events
+  useEffect(() => {
+    const handleOpenCreateBudgetModal = () => {
+      setIsCreateModalOpen(true);
+    };
+
+    window.addEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
+    
+    return () => {
+      window.removeEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
+    };
+  }, []);
 
   // Query para obtener presupuestos
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
@@ -432,6 +447,12 @@ export default function BudgetTasksMultiple() {
           ))
         )}
       </div>
+
+      {/* Create Budget Modal */}
+      <CreateBudgetModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </div>
   );
 }

@@ -47,7 +47,7 @@ function BudgetMaterialsSkeleton() {
   );
 }
 
-export default function BudgetMaterials() {
+export default function SiteMaterials() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
   const [searchTerm, setSearchTerm] = useState('');
