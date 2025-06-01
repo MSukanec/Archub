@@ -55,7 +55,7 @@ function BudgetsListSkeleton() {
   );
 }
 
-export default function BudgetsList() {
+export default function SiteBudgetsList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

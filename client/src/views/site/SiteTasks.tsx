@@ -49,7 +49,7 @@ function BudgetTasksSkeleton() {
   );
 }
 
-export default function BudgetTasks() {
+export default function SiteTasks() {
   const { projectId, budgetId, setBudgetId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
