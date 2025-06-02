@@ -1,23 +1,29 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { supabase } from '@/lib/supabase';
-import { Plus, Calendar, Users, CheckSquare, FileText, Camera, Video, File, Clock, MapPin, Trash2, MoreHorizontal, ClipboardList, Building2, FileDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
-import { siteLogsService } from '@/lib/siteLogsService';
-import { projectsService } from '@/lib/projectsService';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
-import SiteLogModal from '@/components/modals/SiteLogModalNew';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import SiteLogModal from '@/components/modals/SiteLogModal';
 import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
-import type { SiteLog } from '@shared/schema';
+
+// Types
+interface SiteLog {
+  id: string;
+  project_id: string;
+  author_id?: string;
+  log_date: string;
+  comments?: string;
+  weather?: string;
+  created_at: string;
+}
 
 export default function SiteLogs() {
   const { projectId } = useUserContextStore();
@@ -35,9 +41,75 @@ export default function SiteLogs() {
     setView('sitelog-main');
   }, [setSection, setView]);
 
-  // Listen for floating action button events
+  // Query para obtener site logs
+  const { data: siteLogs = [], isLoading, error: siteLogsError } = useQuery({
+    queryKey: ['site-logs', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      
+      console.log('Fetching site logs for project:', projectId);
+      const { data, error } = await supabase
+        .from('site_logs')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('log_date', { ascending: false });
+      
+      if (error) throw error;
+      console.log('Site logs fetched:', data);
+      return data || [];
+    },
+    enabled: !!projectId,
+  });
+
+  // Query para obtener proyectos (para verificar si existe el proyecto)
+  const { error: projectsError } = useQuery({
+    queryKey: ['projects', projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name')
+        .eq('id', projectId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId,
+  });
+
+  // Mutación para eliminar site log
+  const deleteMutation = useMutation({
+    mutationFn: async (siteLogId: string) => {
+      const { error } = await supabase
+        .from('site_logs')
+        .delete()
+        .eq('id', siteLogId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-logs'] });
+      toast({
+        title: "Registro eliminado",
+        description: "El registro de bitácora ha sido eliminado exitosamente.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error al eliminar registro",
+        description: "No se pudo eliminar el registro. Intenta nuevamente.",
+        variant: "destructive",
+      });
+      console.error('Error deleting site log:', error);
+    },
+  });
+
+  // Event listeners para floating action button
   useEffect(() => {
     const handleOpenCreateSiteLogModal = () => {
+      console.log('Received openCreateSiteLogModal event');
       setSelectedSiteLog(null);
       setIsModalOpen(true);
     };
@@ -47,66 +119,6 @@ export default function SiteLogs() {
       window.removeEventListener('openCreateSiteLogModal', handleOpenCreateSiteLogModal);
     };
   }, []);
-
-  // Get projects to find current project name with error handling
-  const { data: projects = [], error: projectsError } = useQuery({
-    queryKey: ['/api/projects'],
-    queryFn: () => projectsService.getAll(),
-    retry: 1,
-    refetchOnWindowFocus: false,
-    staleTime: 10 * 60 * 1000, // 10 minutos
-    gcTime: 30 * 60 * 1000, // 30 minutos
-  });
-
-  const currentProject = projects.find((p: any) => p.id === projectId);
-
-  const { data: siteLogs = [], isLoading, error: siteLogsError } = useQuery({
-    queryKey: ['/api/site-logs', projectId],
-    queryFn: async () => {
-      if (!projectId) return [];
-      try {
-        console.log('Fetching site logs for project:', projectId);
-        const { data, error } = await supabase
-          .from('site_logs')
-          .select('*')
-          .eq('project_id', String(projectId))
-          .order('log_date', { ascending: false })
-          .limit(50);
-        
-        if (error) throw error;
-        console.log('Site logs fetched:', data);
-        return data || [];
-      } catch (error) {
-        console.error('Error fetching site logs:', error);
-        return [];
-      }
-    },
-    enabled: !!projectId,
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    refetchOnWindowFocus: false,
-    retry: 1,
-    gcTime: 10 * 60 * 1000, // 10 minutos
-  });
-
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: (siteLogId: number) => siteLogsService.deleteSiteLog(siteLogId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/site-logs'] });
-      toast({
-        title: 'Registro eliminado',
-        description: 'El registro de obra ha sido eliminado correctamente.',
-      });
-    },
-    onError: (error) => {
-      console.error('Error deleting site log:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo eliminar el registro de obra.',
-        variant: 'destructive',
-      });
-    },
-  });
 
   const handleCreateNew = () => {
     setSelectedSiteLog(null);
@@ -241,153 +253,110 @@ export default function SiteLogs() {
             className="pl-10 h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
           />
         </div>
-        <Button size="sm" className="w-96">
+        <Button size="sm" className="w-48">
           <FileDown className="h-4 w-4 mr-2" />
           Exportar PDF
         </Button>
       </div>
 
-      {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Timeline - Left side */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="sticky top-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Timeline
-            </h2>
-            
-            {isLoading ? (
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex gap-3">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="flex-1">
-                      <Skeleton className="h-4 w-20 mb-2" />
-                      <Skeleton className="h-3 w-32" />
-                    </div>
+      {/* Content - Unified Timeline */}
+      <div className="space-y-6">
+        {isLoading ? (
+          <div className="space-y-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex gap-6">
+                <div className="flex flex-col items-center">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  {i < 2 && <div className="w-0.5 h-20 bg-border mt-4" />}
+                </div>
+                <div className="flex-1">
+                  <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+                    <Skeleton className="h-6 w-32 mb-2" />
+                    <Skeleton className="h-4 w-48 mb-4" />
+                    <Skeleton className="h-20 w-full" />
                   </div>
-                ))}
-              </div>
-            ) : siteLogs.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground text-sm">
-                  Timeline vacío
-                </p>
-              </div>
-            ) : (
-              <div className="relative">
-                {/* Vertical line */}
-                <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-border"></div>
-                
-                <div className="space-y-6">
-                  {siteLogs.map((siteLog, index) => {
-                    const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
-                    const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
-                    
-                    return (
-                      <div key={siteLog.id} className="relative flex gap-3">
-                        {/* Timeline dot */}
-                        <div className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 ${
-                          isToday 
-                            ? 'bg-primary border-primary text-primary-foreground' 
-                            : 'bg-background border-border text-muted-foreground'
-                        }`}>
-                          <Calendar className="h-4 w-4" />
-                        </div>
-                        
-                        {/* Date and weather */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <time className="text-sm font-medium text-foreground">
-                              {format(logDate, 'dd MMM', { locale: es })}
-                            </time>
-                            {siteLog.weather && (
-                              <span className="text-sm">
-                                {getWeatherIcon(siteLog.weather)} {siteLog.weather}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {format(logDate, 'EEEE', { locale: es })}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
                 </div>
               </div>
-            )}
+            ))}
           </div>
-        </div>
-
-        {/* Cards - Right side */}
-        <div className="lg:col-span-8 space-y-4">
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <Card key={i}>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-32" />
-                    <Skeleton className="h-4 w-48" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-20 w-full" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : siteLogs.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-medium text-foreground mb-2">
-                Comienza tu bitácora de obra
-              </h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Registra las actividades diarias, tareas completadas, asistentes y archivos multimedia para mantener un control detallado del progreso.
-              </p>
-              <Button onClick={handleCreateNew} size="lg">
-                <Plus className="h-5 w-5 mr-2" />
-                Crear primer registro
-              </Button>
-            </div>
-          ) : (
-            siteLogs.map((siteLog) => {
+        ) : siteLogs.length === 0 ? (
+          <div className="text-center py-12">
+            <FileText className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-medium text-foreground mb-2">
+              Comienza tu bitácora de obra
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Registra las actividades diarias, tareas completadas, asistentes y archivos multimedia para mantener un control detallado del progreso.
+            </p>
+            <Button onClick={handleCreateNew} size="lg">
+              <Plus className="h-5 w-5 mr-2" />
+              Crear primer registro
+            </Button>
+          </div>
+        ) : (
+          <div className="relative">
+            {siteLogs.map((siteLog, index) => {
               const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
               const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+              const isLast = index === siteLogs.length - 1;
               
               return (
-                <Card 
-                  key={siteLog.id} 
-                  className={`transition-all hover:shadow-md ${
-                    isToday ? 'ring-2 ring-primary' : ''
-                  }`}
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => handleEditSiteLog(siteLog)}>
-                        <CardTitle className="flex items-center gap-2">
-                          <Calendar className="h-5 w-5" />
-                          {format(logDate, 'dd MMMM yyyy', { locale: es })}
-                          {isToday && <Badge variant="default">Hoy</Badge>}
-                        </CardTitle>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {siteLog.weather && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <span>{getWeatherIcon(siteLog.weather)}</span>
-                            <span>{siteLog.weather}</span>
+                <div key={siteLog.id} className="flex gap-6 group">
+                  {/* Timeline Node */}
+                  <div className="flex flex-col items-center">
+                    <div className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-lg transition-all group-hover:scale-110 ${
+                      isToday 
+                        ? 'bg-primary border-primary text-white shadow-primary/25' 
+                        : 'bg-card border-border text-muted-foreground hover:border-primary/50'
+                    }`}>
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    
+                    {/* Connecting Line */}
+                    {!isLast && (
+                      <div className="w-0.5 h-20 bg-gradient-to-b from-border to-transparent mt-4" />
+                    )}
+                  </div>
+                  
+                  {/* Content Card */}
+                  <div className="flex-1 pb-12">
+                    <div className={`rounded-2xl shadow-md bg-card p-6 border-0 transition-all hover:shadow-lg group-hover:shadow-xl ${
+                      isToday ? 'ring-2 ring-primary/20' : ''
+                    }`}>
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              {format(logDate, 'dd MMMM yyyy', { locale: es })}
+                              {isToday && (
+                                <Badge variant="default" className="text-xs">
+                                  Hoy
+                                </Badge>
+                              )}
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                              {siteLog.weather && (
+                                <>
+                                  <span className="text-base">{getWeatherIcon(siteLog.weather)}</span>
+                                  <span>{siteLog.weather}</span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                        )}
+                        </div>
+                        
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleEditSiteLog(siteLog)}>
-                              Editar registro
+                              <Edit className="h-4 w-4 mr-2" />
+                              Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => handleDeleteSiteLog(siteLog)}
@@ -399,55 +368,35 @@ export default function SiteLogs() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Comments */}
-                    {siteLog.description && (
-                      <div>
-                        <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                          <FileText className="h-4 w-4" />
-                          Comentarios
-                        </h4>
-                        <p className="text-sm text-muted-foreground line-clamp-3">
-                          {siteLog.description}
-                        </p>
-                      </div>
-                    )}
-
-                    <Separator />
-
-                    {/* Quick stats */}
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          <CheckSquare className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Tareas</span>
+                      
+                      {/* Content */}
+                      <div className="space-y-3">
+                        <div className="bg-muted/30 rounded-xl p-4">
+                          <p className="text-foreground leading-relaxed">
+                            {siteLog.comments || 'Sin comentarios registrados para este día.'}
+                          </p>
                         </div>
-                        <p className="text-2xl font-bold text-foreground">0</p>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Asistentes</span>
+                        
+                        {/* Quick Actions */}
+                        <div className="flex items-center gap-2 pt-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleEditSiteLog(siteLog)}
+                            className="text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            Editar registro
+                          </Button>
                         </div>
-                        <p className="text-2xl font-bold text-foreground">0</p>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          <Camera className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Archivos</span>
-                        </div>
-                        <p className="text-2xl font-bold text-foreground">0</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
       </div>
 
       {/* Modals */}
