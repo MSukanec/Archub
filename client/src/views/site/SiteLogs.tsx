@@ -198,7 +198,7 @@ export default function SiteLogs() {
 
       {/* Cards de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total de Registros</p>
@@ -210,7 +210,7 @@ export default function SiteLogs() {
           </div>
         </div>
         
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Registros Este Mes</p>

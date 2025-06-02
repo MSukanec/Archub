@@ -755,6 +755,16 @@ export default function SiteBudgets() {
     },
   });
 
+  // Establecer presupuesto activo por defecto y expandir
+  useEffect(() => {
+    if (!budgetsLoading && budgets.length > 0) {
+      // Si no hay presupuesto activo, establecer el primero como activo
+      if (!budgetId) {
+        setBudgetId(budgets[0].id);
+      }
+    }
+  }, [budgets, budgetsLoading, budgetId, setBudgetId]);
+
   // Solo expandir el presupuesto activo
   useEffect(() => {
     if (budgetId) {
