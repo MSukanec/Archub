@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
-import { ModernModal } from '@/components/ui/ModernModal';
+import ModernModal from '@/components/ui/ModernModal';
 
 interface BudgetTaskModalProps {
   isOpen: boolean;
@@ -23,8 +23,8 @@ interface Task {
   description?: string;
   unit_labor_price: number;
   unit_material_price: number;
-  unit: { name: string };
-  category: { name: string };
+  units?: { name: string }[];
+  task_categories?: { name: string }[];
 }
 
 interface SelectedTask extends Task {
@@ -59,8 +59,8 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
           description,
           unit_labor_price,
           unit_material_price,
-          unit:units(name),
-          category:task_categories(name)
+          units(name),
+          task_categories(name)
         `)
         .eq('organization_id', organizationId);
 

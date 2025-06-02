@@ -891,9 +891,9 @@ export default function SiteBudgets() {
       />
 
       {/* Task Modal */}
-      <TaskModalSimple
+      <BudgetTaskModal
         isOpen={isTaskModalOpen}
-        onOpenChange={setIsTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
       />
     </div>
   );
