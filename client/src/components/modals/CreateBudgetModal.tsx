@@ -40,9 +40,10 @@ interface CreateBudgetModalProps {
   isOpen: boolean;
   onClose: () => void;
   budget?: any; // Para edición
+  onBudgetCreated?: (budgetId: string) => void; // Callback cuando se crea un presupuesto
 }
 
-export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBudgetModalProps) {
+export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCreated }: CreateBudgetModalProps) {
   const { projectId, organizationId } = useUserContextStore();
   const { user } = useAuthStore();
   const { toast } = useToast();
@@ -169,7 +170,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
         return newBudget;
       }
     },
-    onSuccess: () => {
+    onSuccess: (newBudget) => {
       // Invalidar todas las queries relacionadas con presupuestos
       queryClient.invalidateQueries({ queryKey: ['/api/budgets'] });
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
@@ -182,6 +183,12 @@ export default function CreateBudgetModal({ isOpen, onClose, budget }: CreateBud
         description: budget?.id ? "Presupuesto actualizado correctamente" : "Presupuesto creado correctamente",
         duration: 2000,
       });
+      
+      // Si es un nuevo presupuesto y tenemos callback, establecerlo como activo
+      if (!budget?.id && onBudgetCreated && newBudget?.id) {
+        onBudgetCreated(newBudget.id);
+      }
+      
       form.reset();
       onClose();
     },

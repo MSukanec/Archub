@@ -915,6 +915,11 @@ export default function SiteBudgets() {
       <CreateBudgetModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        onBudgetCreated={(newBudgetId) => {
+          // Establecer el nuevo presupuesto como activo y expandirlo
+          setBudgetId(newBudgetId);
+          setExpandedBudgets(new Set([newBudgetId]));
+        }}
       />
 
       {/* Task Modal */}
