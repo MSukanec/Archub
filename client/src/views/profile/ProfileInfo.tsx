@@ -1,17 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { User, Mail, Calendar, LogOut, Edit, Building2, Shield, Crown } from 'lucide-react';
+import { User, Mail, Calendar, Edit, Building2, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore } from '@/stores/authStore';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -24,11 +14,9 @@ import { es } from 'date-fns/locale';
 import EditProfileModal from '@/components/modals/EditProfileModal';
 
 export default function ProfileInfo() {
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const { setSection, setView } = useNavigationStore();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Set navigation state when component mounts
@@ -67,41 +55,7 @@ export default function ProfileInfo() {
     refetchOnWindowFocus: false,
   });
 
-  const handleLogoutClick = () => {
-    setShowLogoutModal(true);
-  };
 
-  const handleConfirmLogout = async () => {
-    try {
-      console.log('Iniciando logout...');
-      const { error } = await authService.signOut();
-      console.log('Resultado signOut:', { error });
-      
-      if (error) {
-        throw error;
-      }
-      
-      console.log('Llamando logout del store...');
-      logout();
-      
-      console.log('Cerrando modal y redirigiendo...');
-      setShowLogoutModal(false);
-      setLocation('/'); // Redirigir a la página de landing
-      
-      toast({
-        description: "Has cerrado sesión exitosamente.",
-        duration: 2000,
-      });
-    } catch (error: any) {
-      console.error('Error en logout:', error);
-      toast({
-        variant: "destructive",
-        description: `Error al cerrar sesión: ${error.message}`,
-        duration: 2000,
-      });
-      setShowLogoutModal(false);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
@@ -238,29 +192,7 @@ export default function ProfileInfo() {
         onClose={() => setIsEditModalOpen(false)}
       />
 
-      {/* Modal de confirmación para cerrar sesión */}
-      <AlertDialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <LogOut className="h-5 w-5 text-yellow-500" />
-              Cerrar Sesión
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              ¿Estás seguro de que quieres cerrar sesión? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleConfirmLogout}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Cerrar Sesión
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
     </div>
   );
 }
