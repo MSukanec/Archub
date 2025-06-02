@@ -41,7 +41,7 @@ import Profile from '@/views/profile/Profile';
 import ProfileInfo from '@/views/profile/ProfileInfo';
 import ProfileSecurity from '@/views/profile/ProfileSecurity';
 import ProfileSubscription from '@/views/profile/ProfileSubscription';
-import SubscriptionTables from '@/views/profile/SubscriptionTables';
+import SubscriptionTables from '@/views/others/SubscriptionTables';
 
 import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';

@@ -85,17 +85,7 @@ export default function OrganizationTeam() {
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-  // Event listener for floating action button
-  useEffect(() => {
-    const handleOpenInviteModal = () => {
-      setIsInviteModalOpen(true);
-    };
 
-    window.addEventListener('openInviteTeamMemberModal', handleOpenInviteModal);
-    return () => {
-      window.removeEventListener('openInviteTeamMemberModal', handleOpenInviteModal);
-    };
-  }, []);
 
   const { data: organization, isLoading } = useQuery({
     queryKey: ['organization', organizationId],
@@ -259,6 +249,14 @@ export default function OrganizationTeam() {
             </p>
           </div>
         </div>
+        
+        <Button 
+          onClick={() => setIsInviteModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-white rounded-xl"
+        >
+          <UserPlus className="w-4 h-4 mr-2" />
+          Invitar Miembro
+        </Button>
       </div>
 
       {/* Team Stats */}
