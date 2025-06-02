@@ -110,7 +110,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
 
       // Paso 3: Obtener materiales de las tareas
       const { data: taskMaterials, error: taskMaterialsError } = await supabase
-        .from('tasks_materials')
+        .from('task_materials')
         .select('task_id, quantity, material_id')
         .in('task_id', taskIds);
 
