@@ -14,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
-import { TaskModalSimple } from '@/components/modals/TaskModalSimple';
+import { BudgetTaskModal } from '@/components/modals/BudgetTaskModal';
 
 // Types
 interface Budget {
@@ -661,18 +661,7 @@ export default function SiteBudgets() {
     setView('budgets-tasks-multiple');
   }, [setSection, setView]);
 
-  // Listen for floating action button events
-  useEffect(() => {
-    const handleOpenCreateBudgetModal = () => {
-      setIsCreateModalOpen(true);
-    };
 
-    window.addEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
-    
-    return () => {
-      window.removeEventListener('openCreateBudgetModal', handleOpenCreateBudgetModal);
-    };
-  }, []);
 
   // Query para obtener presupuestos
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
