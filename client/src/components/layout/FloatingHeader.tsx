@@ -39,6 +39,11 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'admin-units', label: 'Unidades' },
     { id: 'admin-elements', label: 'Elementos' },
     { id: 'admin-actions', label: 'Acciones' }
+  ],
+  profile: [
+    { id: 'profile-info', label: 'Información Personal' },
+    { id: 'profile-security', label: 'Seguridad' },
+    { id: 'profile-subscription', label: 'Suscripción' }
   ]
 };
 
