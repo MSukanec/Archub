@@ -155,7 +155,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
 
         const budgetTask = budgetTasks.find(bt => bt.task_id === taskMaterial.task_id);
         const taskQuantity = budgetTask?.quantity || 1;
-        const materialQuantity = taskMaterial.quantity || 0;
+        const materialQuantity = taskMaterial.amount || 0;
         const totalQuantity = taskQuantity * materialQuantity;
 
         const category = categoriesMap.get(material.category_id);
