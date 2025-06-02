@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText, Trash2, FileDown } from 'lucide-react';
+import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText, Trash2, FileDown, Edit } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { Button } from '@/components/ui/button';
@@ -199,6 +199,17 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                     size="sm"
                   >
                     Hacer Activo
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // TODO: Abrir modal de edición de presupuesto
+                      console.log('Editar presupuesto:', budget.id);
+                    }}
+                  >
+                    <Edit className="h-4 w-4" />
                   </Button>
                   
                   <AlertDialog>
@@ -760,12 +771,18 @@ export default function SiteBudgets() {
     if (!budgetsLoading && budgets.length > 0) {
       // Si no hay presupuesto activo, establecer el primero como activo
       if (!budgetId) {
-        setBudgetId(budgets[0].id);
+        const firstBudgetId = budgets[0].id;
+        setBudgetId(firstBudgetId);
+        // Expandir inmediatamente el presupuesto activo
+        setExpandedBudgets(new Set([firstBudgetId]));
+      } else {
+        // Si ya hay un presupuesto activo, asegurar que esté expandido
+        setExpandedBudgets(new Set([budgetId]));
       }
     }
   }, [budgets, budgetsLoading, budgetId, setBudgetId]);
 
-  // Solo expandir el presupuesto activo
+  // Expandir el presupuesto cuando cambie el activo
   useEffect(() => {
     if (budgetId) {
       setExpandedBudgets(new Set([budgetId]));
