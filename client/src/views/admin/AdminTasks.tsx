@@ -65,13 +65,18 @@ export default function AdminTasks() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Data fetching
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: tasks = [], isLoading, error: tasksError } = useQuery({
     queryKey: ['/api/admin/tasks']
   });
 
   const { data: categories = [] } = useQuery({
     queryKey: ['/api/admin/categories']
   });
+
+  // Debug logging
+  console.log('Tasks data:', tasks);
+  console.log('Tasks loading:', isLoading);
+  console.log('Tasks error:', tasksError);
 
   // Filter and search logic
   const filteredAndSortedTasks = (tasks as any[]).filter((task: any) => {
