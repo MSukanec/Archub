@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { User, Mail, Calendar, Edit, Building2, Crown } from 'lucide-react';
+import { User, Mail, Calendar, Edit, Building2, Crown, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore } from '@/stores/authStore';
@@ -166,10 +166,10 @@ export default function ProfileInfo() {
               <label className="text-xs font-medium text-muted-foreground">ORGANIZACIÓN ACTUAL</label>
               <p className="text-foreground font-medium">{organization?.name || 'Sin organización'}</p>
             </div>
-            {organization?.description && (
+            {organization?.name && (
               <div>
-                <label className="text-xs font-medium text-muted-foreground">DESCRIPCIÓN</label>
-                <p className="text-foreground font-medium">{organization.description}</p>
+                <label className="text-xs font-medium text-muted-foreground">TIPO</label>
+                <p className="text-foreground font-medium">Organización</p>
               </div>
             )}
             {organization?.created_at && (
