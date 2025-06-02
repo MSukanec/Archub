@@ -154,11 +154,19 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       console.log('Categories result:', categoriesResult);
       console.log('Units result:', unitsResult);
 
-      const categoriesMap = new Map(categoriesResult.data?.map(c => [c.id, c]) || []);
-      const unitsMap = new Map(unitsResult.data?.map(u => [u.id, u]) || []);
+      const categoriesMap = new Map();
+      const unitsMap = new Map();
+      
+      if (categoriesResult.data) {
+        categoriesResult.data.forEach(c => categoriesMap.set(c.id, c));
+      }
+      
+      if (unitsResult.data) {
+        unitsResult.data.forEach(u => unitsMap.set(u.id, u));
+      }
 
-      console.log('Categories map:', categoriesMap);
-      console.log('Units map:', unitsMap);
+      console.log('Categories map size:', categoriesMap.size);
+      console.log('Units map size:', unitsMap.size);
 
       // Paso 6: Procesar datos para calcular cantidades totales
       const materialMap = new Map();
@@ -357,7 +365,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                         sum + material.total_value, 0
                       );
 
-                      return Object.entries(groupedMaterials).flatMap(([categoryName, categoryMaterials]: [string, any]) => {
+                      const allRows = Object.entries(groupedMaterials).flatMap(([categoryName, categoryMaterials]: [string, any]) => {
                         const categoryTotal = categoryMaterials.reduce((sum: number, material: MaterialData) => 
                           sum + material.total_value, 0
                         );
@@ -449,6 +457,27 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                           })
                         ];
                       });
+
+                      // Agregar fila de TOTALES
+                      allRows.push(
+                        <tr key="totals" className="bg-black border-black hover:bg-black">
+                          <td colSpan={2} className="pl-6 py-4 font-bold text-white text-base">
+                            TOTALES
+                          </td>
+                          <td className="py-4 text-center text-white"></td>
+                          <td className="py-4 text-center text-white"></td>
+                          <td className="py-4 text-center text-white"></td>
+                          <td className="py-4 text-center font-bold text-white text-base">
+                            ${totalGeneral.toFixed(2)}
+                          </td>
+                          <td className="py-4 text-center font-bold text-white text-base">
+                            100.0%
+                          </td>
+                          <td className="py-4 text-center text-white"></td>
+                        </tr>
+                      );
+
+                      return allRows;
                     })()
                   )}
                 </tbody>

@@ -395,7 +395,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                           sum + task.total_price, 0
                         );
 
-                        return Object.entries(groupedTasks).flatMap(([categoryName, categoryTasks]: [string, any]) => {
+                        const allRows = Object.entries(groupedTasks).flatMap(([categoryName, categoryTasks]: [string, any]) => {
                           // Calculate category totals
                           const categoryTotal = categoryTasks.reduce((sum: number, task: TaskData) => 
                             sum + task.total_price, 0
@@ -488,6 +488,27 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                             })
                           ];
                         });
+
+                        // Agregar fila de TOTALES
+                        allRows.push(
+                          <tr key="totals" className="bg-black border-black hover:bg-black">
+                            <td colSpan={2} className="pl-6 py-4 font-bold text-white text-base">
+                              TOTALES
+                            </td>
+                            <td className="py-4 text-center text-white"></td>
+                            <td className="py-4 text-center text-white"></td>
+                            <td className="py-4 text-center text-white"></td>
+                            <td className="py-4 text-center font-bold text-white text-base">
+                              ${totalGeneral.toFixed(2)}
+                            </td>
+                            <td className="py-4 text-center font-bold text-white text-base">
+                              100.0%
+                            </td>
+                            <td className="py-4 text-center text-white"></td>
+                          </tr>
+                        );
+
+                        return allRows;
                       })()
                     )}
                   </tbody>
