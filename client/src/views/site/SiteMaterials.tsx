@@ -143,10 +143,16 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       const categoryIds = Array.from(new Set(materialsData?.map(m => m.category_id).filter(Boolean)));
       const unitIds = Array.from(new Set(materialsData?.map(m => m.unit_id).filter(Boolean)));
 
+      console.log('Category IDs to fetch:', categoryIds);
+      console.log('Unit IDs to fetch:', unitIds);
+
       const [categoriesResult, unitsResult] = await Promise.all([
         categoryIds.length > 0 ? supabase.from('material_categories').select('id, name, code').in('id', categoryIds) : { data: [] },
         unitIds.length > 0 ? supabase.from('units').select('id, name').in('id', unitIds) : { data: [] }
       ]);
+
+      console.log('Categories result:', categoriesResult);
+      console.log('Units result:', unitsResult);
 
       const categoriesMap = new Map(categoriesResult.data?.map(c => [c.id, c]) || []);
       const unitsMap = new Map(unitsResult.data?.map(u => [u.id, u]) || []);
@@ -177,14 +183,14 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
           materialMap.set(material.id, {
             id: material.id,
             name: material.name,
-            description: material.description || '',
+            description: '',
             category_name: category?.name || 'Sin categoría',
             category_code: category?.code || '',
             parent_category_name: category?.name || 'Sin categoría',
             unit_name: unit?.name || 'und',
             stock: totalQuantity,
-            unit_price: parseFloat(material.unit_material_price || '0'),
-            total_value: totalQuantity * parseFloat(material.unit_material_price || '0')
+            unit_price: parseFloat(material.cost || '0'),
+            total_value: totalQuantity * parseFloat(material.cost || '0')
           });
         }
       });
