@@ -1,7 +1,8 @@
-import { Activity, BarChart3, Calendar, TrendingUp, Building2 } from 'lucide-react';
+import { Activity, BarChart3, Calendar, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
 
 export default function Organization() {
   const { organizationId } = useUserContextStore();
@@ -106,6 +107,13 @@ export default function Organization() {
             </p>
           </div>
         </div>
+        <Button
+          onClick={() => window.dispatchEvent(new CustomEvent('openCreateOrganizationModal'))}
+          className="bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8bef] rounded-xl"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Nueva Organización
+        </Button>
       </div>
       
       {/* Organization Stats */}
