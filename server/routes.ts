@@ -261,8 +261,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin Task Categories routes
   app.get('/api/admin/task-categories', async (req, res) => {
     try {
-      // Return empty array for now - we'll implement this with real data later
-      res.json([]);
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      const { data: categories, error } = await supabase
+        .from('task_categories')
+        .select('*')
+        .order('position', { ascending: true });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(500).json({ message: "Error fetching task categories from Supabase" });
+      }
+      
+      res.json(categories || []);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -271,8 +285,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin Categories routes
   app.get('/api/admin/categories', async (req, res) => {
     try {
-      // Return empty array for now - we'll implement this with real data later
-      res.json([]);
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      const { data: categories, error } = await supabase
+        .from('task_categories')
+        .select('*')
+        .order('position', { ascending: true });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(500).json({ message: "Error fetching categories from Supabase" });
+      }
+      
+      res.json(categories || []);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -281,8 +309,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin Tasks routes
   app.get('/api/admin/tasks', async (req, res) => {
     try {
-      // Return empty array for now - this will stop the loading
-      res.json([]);
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      const { data: tasks, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(500).json({ message: "Error fetching tasks from Supabase" });
+      }
+      
+      console.log('Tasks from Supabase:', tasks);
+      res.json(tasks || []);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
