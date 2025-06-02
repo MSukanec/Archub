@@ -129,14 +129,19 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       // Paso 4: Obtener datos de materiales
       const { data: materialsData, error: materialsError } = await supabase
         .from('materials')
-        .select('id, name, description, unit_material_price, category_id, unit_id')
+        .select('*')
         .in('id', materialIds);
 
-      if (materialsError) throw materialsError;
+      if (materialsError) {
+        console.error('Materials error:', materialsError);
+        throw materialsError;
+      }
+      
+      console.log('Materials data found:', materialsData);
 
       // Paso 5: Obtener categorías y unidades
-      const categoryIds = [...new Set(materialsData?.map(m => m.category_id).filter(Boolean))];
-      const unitIds = [...new Set(materialsData?.map(m => m.unit_id).filter(Boolean))];
+      const categoryIds = Array.from(new Set(materialsData?.map(m => m.category_id).filter(Boolean)));
+      const unitIds = Array.from(new Set(materialsData?.map(m => m.unit_id).filter(Boolean)));
 
       const [categoriesResult, unitsResult] = await Promise.all([
         categoryIds.length > 0 ? supabase.from('material_categories').select('id, name, code').in('id', categoryIds) : { data: [] },
@@ -145,6 +150,9 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
 
       const categoriesMap = new Map(categoriesResult.data?.map(c => [c.id, c]) || []);
       const unitsMap = new Map(unitsResult.data?.map(u => [u.id, u]) || []);
+
+      console.log('Categories map:', categoriesMap);
+      console.log('Units map:', unitsMap);
 
       // Paso 6: Procesar datos para calcular cantidades totales
       const materialMap = new Map();
