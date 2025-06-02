@@ -51,6 +51,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
     queryFn: async () => {
       if (!organizationId) return [];
       
+      // Primero obtener las tareas básicas
       let query = supabase
         .from('tasks')
         .select(`
@@ -60,9 +61,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
           unit_labor_price,
           unit_material_price,
           unit_id,
-          category_id,
-          units(name),
-          task_categories(name)
+          category_id
         `)
         .eq('organization_id', organizationId);
 
@@ -70,24 +69,44 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         query = query.ilike('name', `%${searchQuery.trim()}%`);
       }
 
-      const { data, error } = await query;
+      const { data: tasks, error } = await query;
       
       if (error) {
         console.error('Error fetching tasks:', error);
         return [];
       }
       
-      console.log('Tasks fetched:', data);
+      if (!tasks || tasks.length === 0) {
+        return [];
+      }
+
+      // Obtener nombres de unidades y categorías por separado
+      const unitIds = [...new Set(tasks.map(t => t.unit_id).filter(Boolean))];
+      const categoryIds = [...new Set(tasks.map(t => t.category_id).filter(Boolean))];
+
+      const [unitsResult, categoriesResult] = await Promise.all([
+        unitIds.length > 0 
+          ? supabase.from('units').select('id, name').in('id', unitIds)
+          : Promise.resolve({ data: [], error: null }),
+        categoryIds.length > 0 
+          ? supabase.from('task_categories').select('id, name').in('id', categoryIds)
+          : Promise.resolve({ data: [], error: null })
+      ]);
+
+      const unitsMap = new Map((unitsResult.data || []).map(u => [u.id, u.name]));
+      const categoriesMap = new Map((categoriesResult.data || []).map(c => [c.id, c.name]));
+
+      console.log('Tasks fetched:', tasks.length);
       
       // Transform data to match our interface
-      return (data || []).map(task => ({
+      return tasks.map(task => ({
         id: task.id,
         name: task.name,
         description: task.description,
         unit_labor_price: Number(task.unit_labor_price) || 0,
         unit_material_price: Number(task.unit_material_price) || 0,
-        unit_name: task.units?.name || 'Sin unidad',
-        category_name: task.task_categories?.name || 'Sin categoría'
+        unit_name: unitsMap.get(task.unit_id) || 'Sin unidad',
+        category_name: categoriesMap.get(task.category_id) || 'Sin categoría'
       }));
     },
     enabled: !!organizationId && isOpen,
