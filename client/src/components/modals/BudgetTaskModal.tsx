@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Search, X, Plus, Calculator, Package } from 'lucide-react';
+import { Search, X, Plus, Calculator, CheckSquare, Wrench } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
@@ -23,8 +23,8 @@ interface Task {
   description?: string;
   unit_labor_price: number;
   unit_material_price: number;
-  units?: { name: string }[];
-  task_categories?: { name: string }[];
+  unit_name?: string;
+  category_name?: string;
 }
 
 interface SelectedTask extends Task {
@@ -59,8 +59,8 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
           description,
           unit_labor_price,
           unit_material_price,
-          units(name),
-          task_categories(name)
+          units!inner(name),
+          task_categories!inner(name)
         `)
         .eq('organization_id', organizationId);
 
@@ -70,8 +70,21 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
 
       const { data, error } = await query;
       
-      if (error) throw error;
-      return data || [];
+      if (error) {
+        console.error('Error fetching tasks:', error);
+        return [];
+      }
+      
+      // Transform data to match our interface
+      return (data || []).map(task => ({
+        id: task.id,
+        name: task.name,
+        description: task.description,
+        unit_labor_price: Number(task.unit_labor_price) || 0,
+        unit_material_price: Number(task.unit_material_price) || 0,
+        unit_name: task.units?.name || 'Sin unidad',
+        category_name: task.task_categories?.name || 'Sin categoría'
+      }));
     },
     enabled: !!organizationId && isOpen,
   });
@@ -160,169 +173,178 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
     <ModernModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Agregar Tareas al Presupuesto"
+      title="Gestión de Tareas"
       subtitle="Selecciona las tareas que deseas agregar al presupuesto"
       width="4xl"
     >
-      <Tabs defaultValue="available" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="available" className="flex items-center gap-2">
-            <Search className="w-4 h-4" />
-            Tareas Disponibles
-          </TabsTrigger>
-          <TabsTrigger value="selected" className="flex items-center gap-2">
-            <Package className="w-4 h-4" />
-            Seleccionadas ({selectedTasks.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="available" className="mt-6 space-y-4">
-          {/* Barra de búsqueda */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar tareas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
-            />
-          </div>
-
-          {/* Lista de tareas disponibles */}
-          <div className="max-h-96 overflow-y-auto space-y-3">
-            {tasksLoading ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Cargando tareas...
+      <div className="space-y-6">
+        <Accordion type="multiple" defaultValue={["search", "selected"]} className="w-full space-y-2">
+          {/* Búsqueda de Tareas */}
+          <AccordionItem value="search" className="border-[#919191]/20">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+              <div className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-primary" />
+                Buscar Tareas Disponibles
               </div>
-            ) : filteredTasks.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchQuery ? 'No se encontraron tareas que coincidan con la búsqueda.' : 'No hay tareas disponibles.'}
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-3">
+              {/* Barra de búsqueda */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Buscar tareas..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                />
               </div>
-            ) : (
-              filteredTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted/30 transition-colors"
-                >
-                  <div className="flex items-center space-x-3 flex-1">
-                    <Checkbox
-                      checked={selectedTasks.some(t => t.id === task.id)}
-                      onCheckedChange={(checked) => handleTaskSelect(task, checked as boolean)}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-foreground truncate">{task.name}</h4>
-                      {task.description && (
-                        <p className="text-sm text-muted-foreground truncate">{task.description}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
-                          {task.category?.name || 'Sin categoría'}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {task.unit?.name || 'Sin unidad'}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium text-foreground">
-                      ${(task.unit_labor_price + task.unit_material_price).toFixed(2)}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      M.O: ${task.unit_labor_price.toFixed(2)} | Mat: ${task.unit_material_price.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </TabsContent>
 
-        <TabsContent value="selected" className="mt-6 space-y-4">
-          {selectedTasks.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No has seleccionado ninguna tarea
-            </div>
-          ) : (
-            <>
+              {/* Lista de tareas disponibles */}
               <div className="max-h-96 overflow-y-auto space-y-3">
-                {selectedTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex items-center justify-between p-4 border border-border rounded-xl"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-foreground truncate">{task.name}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
-                          {task.category?.name || 'Sin categoría'}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {task.unit?.name || 'Sin unidad'}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm text-muted-foreground">Cantidad:</label>
-                        <Input
-                          type="number"
-                          value={task.quantity}
-                          onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
-                          min="0.01"
-                          step="0.01"
-                          className="w-20 h-8 text-center"
+                {tasksLoading ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Cargando tareas...
+                  </div>
+                ) : filteredTasks.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    {searchQuery ? 'No se encontraron tareas que coincidan con la búsqueda.' : 'No hay tareas disponibles.'}
+                  </div>
+                ) : (
+                  filteredTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="flex items-center space-x-3 flex-1">
+                        <Checkbox
+                          checked={selectedTasks.some(t => t.id === task.id)}
+                          onCheckedChange={(checked) => handleTaskSelect(task, checked as boolean)}
                         />
-                      </div>
-                      <div className="text-right min-w-[80px]">
-                        <div className="font-medium text-foreground">
-                          ${((task.unit_labor_price + task.unit_material_price) * task.quantity).toFixed(2)}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-foreground truncate">{task.name}</h4>
+                          {task.description && (
+                            <p className="text-sm text-muted-foreground truncate">{task.description}</p>
+                          )}
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {task.category_name}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {task.unit_name}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveTask(task.id)}
-                        className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0"
+                      <div className="text-right">
+                        <div className="font-medium text-foreground">
+                          ${(task.unit_labor_price + task.unit_material_price).toFixed(2)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          M.O: ${task.unit_labor_price.toFixed(2)} | Mat: ${task.unit_material_price.toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Tareas Seleccionadas */}
+          <AccordionItem value="selected" className="border-[#919191]/20">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+              <div className="flex items-center gap-2">
+                <CheckSquare className="w-4 h-4 text-primary" />
+                Tareas Seleccionadas ({selectedTasks.length})
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-3">
+              {selectedTasks.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No has seleccionado ninguna tarea
+                </div>
+              ) : (
+                <>
+                  <div className="max-h-96 overflow-y-auto space-y-3">
+                    {selectedTasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className="flex items-center justify-between p-4 border border-border rounded-xl"
                       >
-                        <X className="w-4 h-4" />
-                      </Button>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-foreground truncate">{task.name}</h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {task.category_name}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {task.unit_name}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm text-muted-foreground">Cantidad:</label>
+                            <Input
+                              type="number"
+                              value={task.quantity}
+                              onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
+                              min="0.01"
+                              step="0.01"
+                              className="w-20 h-8 text-center bg-[#d2d2d2] border-[#919191]/20 rounded-lg text-sm"
+                            />
+                          </div>
+                          <div className="text-right min-w-[80px]">
+                            <div className="font-medium text-foreground">
+                              ${((task.unit_labor_price + task.unit_material_price) * task.quantity).toFixed(2)}
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveTask(task.id)}
+                            className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Total */}
+                  <div className="border-t border-border pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-foreground">Total del presupuesto:</span>
+                      <span className="text-xl font-bold text-primary">
+                        ${totalAmount.toFixed(2)}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-              
-              {/* Total */}
-              <div className="border-t border-border pt-4">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-foreground">Total del presupuesto:</span>
-                  <span className="text-xl font-bold text-primary">
-                    ${totalAmount.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
-        </TabsContent>
-      </Tabs>
+                </>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
-      {/* Botones de acción */}
-      <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-border">
-        <Button
-          variant="outline"
-          onClick={onClose}
-          className="rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-[#d0d0d0]"
-        >
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
-          className="rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
-        >
-          <Calculator className="w-4 h-4 mr-2" />
-          {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
-        </Button>
+        {/* Botones de acción */}
+        <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-border">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-[#d0d0d0]"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
+            className="rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
+          >
+            <Calculator className="w-4 h-4 mr-2" />
+            {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
+          </Button>
+        </div>
       </div>
     </ModernModal>
   );
