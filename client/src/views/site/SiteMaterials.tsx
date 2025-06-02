@@ -329,7 +329,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
               </div>
               
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-96">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filtrar por categoría" />
                 </SelectTrigger>
@@ -344,7 +344,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
               </Select>
               
               <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-96">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filtrar por presupuesto" />
                 </SelectTrigger>
@@ -366,10 +366,10 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
               <table className="w-full">
                 <thead className="bg-muted/50 border-b border-border">
                   <tr className="text-left h-12">
-                    <th className="pl-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
+                    <th className="pl-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[10%]">
                       Código
                     </th>
-                    <th className="py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[25%]">
+                    <th className="pl-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[25%]">
                       Material
                     </th>
                     <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
@@ -457,7 +457,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                             const percentage = totalGeneral > 0 ? (material.total_value / totalGeneral) * 100 : 0;
                             return (
                               <tr key={material.id} className="border-border hover:bg-muted/50 transition-colors h-12">
-                                <td className="pl-12 py-1 w-[15%]">
+                                <td className="pl-6 py-1 w-[10%]">
                                   <div className="text-sm font-medium text-foreground">{material.category_code}</div>
                                 </td>
                                 <td className="py-1 text-left pl-6">

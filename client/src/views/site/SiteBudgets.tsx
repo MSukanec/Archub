@@ -345,10 +345,10 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border bg-muted/50">
-                      <th className="text-left pl-6 py-3 font-medium text-muted-foreground text-sm w-[5%]">
+                      <th className="text-left pl-6 py-3 font-medium text-muted-foreground text-sm w-[10%]">
                         Rubro
                       </th>
-                      <th className="text-left py-3 font-medium text-muted-foreground text-sm">
+                      <th className="text-left pl-6 py-3 font-medium text-muted-foreground text-sm">
                         Tarea
                       </th>
                       <th className="text-center py-3 font-medium text-muted-foreground text-sm w-[5%]">
@@ -424,7 +424,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                               const percentage = totalGeneral > 0 ? (task.total_price / totalGeneral) * 100 : 0;
                               return (
                                 <tr key={task.id} className="border-border hover:bg-muted/50 transition-colors h-12">
-                                  <td className="pl-12 py-1 w-[15%]">
+                                  <td className="pl-6 py-1 w-[10%]">
                                     <div className="text-sm font-medium text-foreground">{task.category_code}</div>
                                   </td>
                                   <td className="py-1 text-left pl-6">
@@ -863,7 +863,7 @@ export default function SiteBudgets() {
             className="pl-10"
           />
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="w-96">
           <Filter className="h-4 w-4 mr-2" />
           Más recientes
         </Button>
