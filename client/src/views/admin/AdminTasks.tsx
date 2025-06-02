@@ -74,12 +74,12 @@ export default function AdminTasks() {
   });
 
   // Filter and search logic
-  const filteredAndSortedTasks = tasks.filter((task: any) => {
+  const filteredAndSortedTasks = (tasks as any[]).filter((task: any) => {
     const matchesSearch = searchTerm === '' || 
       task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesCategory = categoryFilter === '' || task.category_id === categoryFilter;
+    const matchesCategory = categoryFilter === '' || categoryFilter === 'all' || task.category_id === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -185,8 +185,8 @@ export default function AdminTasks() {
               <SelectValue placeholder="Filtrar por categoría" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas las categorías</SelectItem>
-              {categories.map((category: any) => (
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {(categories as any[]).filter(category => category.id && category.name).map((category: any) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
                 </SelectItem>
