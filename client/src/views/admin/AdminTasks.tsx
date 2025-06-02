@@ -73,10 +73,7 @@ export default function AdminTasks() {
     queryKey: ['/api/admin/categories']
   });
 
-  // Debug logging
-  console.log('Tasks data:', tasks);
-  console.log('Tasks loading:', isLoading);
-  console.log('Tasks error:', tasksError);
+
 
   // Filter and search logic
   const filteredAndSortedTasks = (tasks as any[]).filter((task: any) => {

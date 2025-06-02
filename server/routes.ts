@@ -258,6 +258,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Task Categories routes
+  app.get('/api/admin/task-categories', async (req, res) => {
+    try {
+      // Return empty array for now - we'll implement this with real data later
+      res.json([]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin Categories routes
+  app.get('/api/admin/categories', async (req, res) => {
+    try {
+      // Return empty array for now - we'll implement this with real data later
+      res.json([]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin Tasks routes
+  app.get('/api/admin/tasks', async (req, res) => {
+    try {
+      // Return empty array for now - this will stop the loading
+      res.json([]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/admin/tasks', async (req, res) => {
+    try {
+      // Basic task creation - return mock success for now
+      const taskData = req.body;
+      const newTask = {
+        id: Date.now(),
+        ...taskData,
+        created_at: new Date().toISOString()
+      };
+      res.status(201).json(newTask);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put('/api/admin/tasks/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const taskData = req.body;
+      const updatedTask = {
+        id,
+        ...taskData,
+        updated_at: new Date().toISOString()
+      };
+      res.json(updatedTask);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete('/api/admin/tasks/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Tasks routes
   app.get('/api/tasks', async (req, res) => {
     try {
