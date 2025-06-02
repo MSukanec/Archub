@@ -110,32 +110,39 @@ export default function Subscription() {
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Suscripción
-        </h1>
-        <p className="text-muted-foreground">
-          Gestiona tu plan de suscripción y método de pago.
-        </p>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <CreditCard className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Suscripción
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Gestiona tu plan de suscripción y método de pago
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Current Plan */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center">
-              <CreditCard className="mr-2" size={20} />
-              Plan Actual
-            </CardTitle>
-            <Badge variant="default" className="bg-primary/10 text-primary">
-              {currentPlan.name}
-            </Badge>
+      {/* Plan Actual */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-primary" />
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          <h3 className="text-xl font-semibold text-foreground">Plan Actual</h3>
+          <Badge variant="default" className="bg-primary/10 text-primary ml-auto">
+            {currentPlan.name}
+          </Badge>
+        </div>
+        
+        <div className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">Plan {currentPlan.name}</h3>
+            <h4 className="font-semibold text-foreground">Plan {currentPlan.name}</h4>
             <p className="text-sm text-muted-foreground">
               {String(currentPlan.price) === '0' 
                 ? 'Gratis para siempre • Hasta 5 proyectos'
@@ -150,13 +157,11 @@ export default function Subscription() {
               : 'Próxima renovación: Mensual'}
           </div>
 
-          <div className="pt-4">
-            <Button className="bg-primary hover:bg-primary/90">
-              Actualizar Plan
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          <Button className="bg-primary hover:bg-primary/90 rounded-xl">
+            Actualizar Plan
+          </Button>
+        </div>
+      </div>
 
       {/* Available Plans */}
       <div>
