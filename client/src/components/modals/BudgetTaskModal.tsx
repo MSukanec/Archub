@@ -59,8 +59,10 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
           description,
           unit_labor_price,
           unit_material_price,
-          units!inner(name),
-          task_categories!inner(name)
+          unit_id,
+          category_id,
+          units(name),
+          task_categories(name)
         `)
         .eq('organization_id', organizationId);
 
@@ -74,6 +76,8 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         console.error('Error fetching tasks:', error);
         return [];
       }
+      
+      console.log('Tasks fetched:', data);
       
       // Transform data to match our interface
       return (data || []).map(task => ({
@@ -176,6 +180,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
       title="Gestión de Tareas"
       subtitle="Selecciona las tareas que deseas agregar al presupuesto"
       width="4xl"
+      icon={Wrench}
     >
       <div className="space-y-6">
         <Accordion type="multiple" defaultValue={["search", "selected"]} className="w-full space-y-2">
@@ -328,18 +333,18 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         </Accordion>
 
         {/* Botones de acción */}
-        <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-border">
+        <div className="flex gap-3 mt-6 pt-6 border-t border-border">
           <Button
             variant="outline"
             onClick={onClose}
-            className="rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-[#d0d0d0]"
+            className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-[#d0d0d0]"
           >
             Cancelar
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
-            className="rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
+            className="flex-[0_0_75%] rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
           >
             <Calculator className="w-4 h-4 mr-2" />
             {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
