@@ -663,9 +663,10 @@ function MaterialsSkeleton() {
 
 export default function SiteMaterials() {
   const { toast } = useToast();
-  const { projectId } = useUserContextStore();
+  const { projectId, organizationId } = useUserContextStore();
   const queryClient = useQueryClient();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['Materiales']));
+  const [materialCategoryFilter, setMaterialCategoryFilter] = useState('all');
 
   // Mutación para eliminar material
   const deleteMaterialMutation = useMutation({
