@@ -163,11 +163,14 @@ export default function Subscription() {
         </div>
       </div>
 
-      {/* Available Plans */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-6">
-          Planes Disponibles
-        </h2>
+      {/* Planes Disponibles */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Crown className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">Planes Disponibles</h3>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plansLoading ? (
@@ -184,94 +187,102 @@ export default function Subscription() {
               const isCurrentPlan = plan.name === currentPlan.name;
             
               return (
-              <Card 
-                key={plan.id} 
-                className={isCurrentPlan ? 'border-primary border-2' : 'hover:border-border/60 transition-colors'}
-              >
-                <CardHeader className="text-center">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                      <IconComponent className="h-8 w-8 text-primary" />
+                <div 
+                  key={plan.id} 
+                  className={`rounded-xl p-6 border-2 transition-colors ${
+                    isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border hover:border-border/60 bg-card'
+                  }`}
+                >
+                  <div className="text-center mb-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <IconComponent className="h-8 w-8 text-primary" />
+                      </div>
                     </div>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <h4 className="text-lg font-semibold text-foreground">{plan.name}</h4>
+                      {isCurrentPlan && (
+                        <Badge variant="default" className="bg-primary/10 text-primary">
+                          Actual
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="py-2">
+                      <span className="text-3xl font-bold text-foreground">
+                        {String(plan.price) === '0' ? 'Gratis' : `$${plan.price}`}
+                      </span>
+                      {String(plan.price) !== '0' && (
+                        <span className="text-muted-foreground">/mes</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {plan.name === 'FREE' ? 'Perfecto para empezar' : 
+                       plan.name === 'PRO' ? 'Para equipos en crecimiento' :
+                       'Para empresas grandes'}
+                    </p>
                   </div>
-                  <CardTitle className="flex items-center justify-center">
-                    {plan.name}
-                    {isCurrentPlan && (
-                      <Badge variant="default" className="ml-2 bg-primary/10 text-primary">
-                        Actual
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <div className="py-4">
-                    <span className="text-3xl font-bold text-foreground">
-                      {String(plan.price) === '0' ? 'Gratis' : `$${plan.price}`}
-                    </span>
-                    {String(plan.price) !== '0' && (
-                      <span className="text-muted-foreground">/mes</span>
-                    )}
+                
+                  <div className="space-y-4">
+                    <ul className="space-y-2">
+                      {plan.features && Array.isArray(plan.features) && plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center text-sm">
+                          <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
+                          <span className="text-muted-foreground">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    <Button 
+                      className={`w-full rounded-xl ${
+                        isCurrentPlan 
+                          ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                          : 'bg-primary hover:bg-primary/90'
+                      }`}
+                      disabled={isCurrentPlan}
+                    >
+                      {isCurrentPlan ? 'Plan Actual' : 'Seleccionar Plan'}
+                    </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {plan.name === 'FREE' ? 'Perfecto para empezar' : 
-                     plan.name === 'PRO' ? 'Para equipos en crecimiento' :
-                     'Para empresas grandes'}
-                  </p>
-                </CardHeader>
-              
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2">
-                    {plan.features && Array.isArray(plan.features) && plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center text-sm">
-                        <Check size={16} className="mr-2 text-green-400 flex-shrink-0" />
-                        <span className="text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    className={`w-full ${
-                      isCurrentPlan 
-                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                        : 'bg-primary hover:bg-primary/90'
-                    }`}
-                    disabled={isCurrentPlan}
-                  >
-                    {isCurrentPlan ? 'Plan Actual' : 'Seleccionar Plan'}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 
-      {/* Billing Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Información de Facturación</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <CreditCard className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-medium text-foreground">
-              Sin método de pago configurado
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Configura un método de pago para actualizar tu plan.
-            </p>
-            <Button className="mt-4 bg-primary hover:bg-primary/90">
-              Añadir Método de Pago
-            </Button>
+      {/* Información de Facturación */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-primary" />
           </div>
-        </CardContent>
-      </Card>
+          <h3 className="text-xl font-semibold text-foreground">Información de Facturación</h3>
+        </div>
+        
+        <div className="text-center py-8">
+          <CreditCard className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h4 className="mt-4 text-lg font-medium text-foreground">
+            Sin método de pago configurado
+          </h4>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Configura un método de pago para actualizar tu plan.
+          </p>
+          <Button className="mt-4 bg-primary hover:bg-primary/90 rounded-xl">
+            Añadir Método de Pago
+          </Button>
+        </div>
+      </div>
 
-      {/* Usage Statistics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Uso Actual</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Estadísticas de Uso */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Calendar className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">Uso Actual</h3>
+        </div>
+        
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Proyectos</span>
             <span className="text-sm font-medium text-foreground">0 / 5</span>
@@ -284,8 +295,8 @@ export default function Subscription() {
           <p className="text-xs text-muted-foreground">
             Tienes 5 proyectos disponibles en tu plan actual.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

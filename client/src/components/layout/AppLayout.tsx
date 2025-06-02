@@ -76,10 +76,10 @@ const viewComponents = {
   'admin-actions': AdminActions,
   'admin-tasks': AdminTasks,
   'admin-permissions': AdminActions, // Temporarily using actions view
-  'profile-info': Profile,
-  'profile-security': Profile,
-  'profile-subscription': Profile,
-  'profile-notifications': Profile,
+  'profile-info': ProfileInfo,
+  'profile-security': ProfileSecurity,
+  'profile-subscription': ProfileSubscription,
+  'profile-notifications': ProfileInfo,
   'subscription-tables': SubscriptionTables,
 };
 
