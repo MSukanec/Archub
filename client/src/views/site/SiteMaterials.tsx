@@ -58,10 +58,50 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
   const { projectId } = useUserContextStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [budgetFilter, setBudgetFilter] = useState('all');
+
+  // Query para obtener presupuestos del proyecto
+  const { data: budgets = [] } = useQuery({
+    queryKey: ['budgets', projectId],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('budgets')
+          .select('id, name')
+          .eq('project_id', projectId);
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching budgets:', error);
+        return [];
+      }
+    },
+    enabled: !!projectId,
+  });
+
+  // Query para obtener categorías de materiales
+  const { data: materialCategories = [] } = useQuery({
+    queryKey: ['material-categories'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('material_categories')
+          .select('id, name')
+          .order('name');
+        
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching material categories:', error);
+        return [];
+      }
+    },
+  });
 
   // Query para obtener todos los materiales utilizados en el proyecto
   const { data: materials = [], isLoading: isLoadingMaterials } = useQuery({
-    queryKey: ['project-materials', projectId],
+    queryKey: ['project-materials', projectId, budgetFilter],
     queryFn: async () => {
       if (!projectId) {
         console.log('No project ID available');
@@ -70,11 +110,18 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       
       console.log('Fetching materials for project:', projectId);
       
-      // Primero obtenemos todos los presupuestos del proyecto
-      const { data: budgets, error: budgetsError } = await supabase
+      // Primero obtenemos presupuestos del proyecto (filtrar si se especifica)
+      let budgetsQuery = supabase
         .from('budgets')
         .select('id')
         .eq('project_id', projectId);
+      
+      // Si hay filtro por presupuesto específico, aplicarlo
+      if (budgetFilter !== 'all') {
+        budgetsQuery = budgetsQuery.eq('id', budgetFilter);
+      }
+
+      const { data: budgets, error: budgetsError } = await budgetsQuery;
 
       console.log('Budgets found:', budgets);
       if (budgetsError) {
@@ -288,9 +335,26 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas las categorías</SelectItem>
-                  <SelectItem value="estructura">Estructura</SelectItem>
-                  <SelectItem value="acabados">Acabados</SelectItem>
-                  <SelectItem value="instalaciones">Instalaciones</SelectItem>
+                  {materialCategories.map((category: any) => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select value={budgetFilter} onValueChange={setBudgetFilter}>
+                <SelectTrigger className="w-48">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Filtrar por presupuesto" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los presupuestos</SelectItem>
+                  {budgets.map((budget: any) => (
+                    <SelectItem key={budget.id} value={budget.id}>
+                      {budget.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

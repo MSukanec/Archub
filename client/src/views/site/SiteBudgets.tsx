@@ -825,6 +825,35 @@ export default function SiteBudgets() {
         </Button>
       </div>
 
+      {/* Cards de estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total de Presupuestos</p>
+              <p className="text-2xl font-bold text-foreground">{budgets.length}</p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Valor Total del Proyecto</p>
+              <p className="text-2xl font-bold text-foreground">
+                ${budgets.reduce((sum, budget) => sum + (budget.total_price || 0), 0).toFixed(2)}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center">
+              <Calculator className="h-5 w-5 text-green-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Barra de búsqueda */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
