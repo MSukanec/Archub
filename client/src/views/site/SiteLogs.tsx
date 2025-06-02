@@ -175,6 +175,78 @@ export default function SiteLogs() {
 
   return (
     <div className="flex-1 p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <ClipboardList className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Bitácora de Obra
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Registro diario de actividades y progreso de obra
+            </p>
+          </div>
+        </div>
+        <Button onClick={handleCreateNew}>
+          <Plus className="h-4 w-4 mr-2" />
+          Nuevo Registro
+        </Button>
+      </div>
+
+      {/* Cards de estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total de Registros</p>
+              <p className="text-2xl font-bold text-foreground">{siteLogs.length}</p>
+            </div>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Registros Este Mes</p>
+              <p className="text-2xl font-bold text-foreground">
+                {siteLogs.filter(log => {
+                  const logDate = new Date(log.log_date);
+                  const currentDate = new Date();
+                  return logDate.getMonth() === currentDate.getMonth() && 
+                         logDate.getFullYear() === currentDate.getFullYear();
+                }).length}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-green-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de búsqueda */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4">
+            <Calendar className="h-4 w-4" />
+          </div>
+          <input
+            placeholder="Buscar registros..."
+            className="pl-10 h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
+          />
+        </div>
+        <Button size="sm" className="w-96">
+          <FileDown className="h-4 w-4 mr-2" />
+          Exportar PDF
+        </Button>
+      </div>
+
       {/* Content */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Timeline - Left side */}

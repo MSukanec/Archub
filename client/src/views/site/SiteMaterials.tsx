@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Package2, Search, Plus, Trash2, Calculator, Filter } from 'lucide-react';
+import { Package2, Search, Plus, Trash2, Calculator, Filter, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -298,13 +298,13 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
         
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
             size="sm"
             onClick={() => {
               // TODO: Implementar exportación PDF
               console.log('Exportar PDF');
             }}
           >
+            <FileDown className="h-4 w-4 mr-2" />
             Exportar PDF
           </Button>
           

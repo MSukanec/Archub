@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText, Trash2 } from 'lucide-react';
+import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText, Trash2, FileDown } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { Button } from '@/components/ui/button';
@@ -244,13 +244,13 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
               ) : (
                 <>
                   <Button
-                    variant="outline"
                     size="sm"
                     onClick={() => {
                       // TODO: Implementar exportación PDF
                       console.log('Exportar PDF');
                     }}
                   >
+                    <FileDown className="h-4 w-4 mr-2" />
                     Exportar PDF
                   </Button>
                   
