@@ -290,18 +290,27 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
     console.log('Material loading effect triggered:', { 
       isOpen, 
       isEditing, 
-      existingTaskMaterialsLength: existingTaskMaterials.length,
+      editingTaskId: editingTask?.id,
+      existingTaskMaterialsLength: existingTaskMaterials?.length || 0,
       existingTaskMaterials 
     });
     
-    if (isOpen && isEditing && existingTaskMaterials.length > 0) {
-      console.log('Setting selected materials:', existingTaskMaterials);
-      setSelectedMaterials(existingTaskMaterials);
+    if (isOpen && isEditing && editingTask?.id) {
+      if (existingTaskMaterials && existingTaskMaterials.length > 0) {
+        console.log('Setting selected materials for task:', editingTask.id, existingTaskMaterials);
+        setSelectedMaterials([...existingTaskMaterials]);
+      } else {
+        console.log('No materials found for task:', editingTask.id);
+        setSelectedMaterials([]);
+      }
     } else if (isOpen && !isEditing) {
       console.log('Clearing materials for new task');
       setSelectedMaterials([]);
+    } else if (!isOpen) {
+      console.log('Modal closed, clearing materials');
+      setSelectedMaterials([]);
     }
-  }, [isOpen, isEditing, existingTaskMaterials]);
+  }, [isOpen, isEditing, editingTask?.id, existingTaskMaterials]);
 
   // Functions to handle materials
   const addMaterial = async (material: any) => {
