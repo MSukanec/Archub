@@ -14,6 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
+import { TaskModalSimple } from '@/components/modals/TaskModalSimple';
 
 // Types
 interface Budget {
@@ -650,6 +651,7 @@ export default function SiteBudgets() {
   const { setSection, setView } = useNavigationStore();
   const [expandedBudgets, setExpandedBudgets] = useState<Set<string>>(new Set());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -791,11 +793,8 @@ export default function SiteBudgets() {
   };
 
   const handleAddTask = (budgetIdForTask: string) => {
-    // Aquí se podría abrir un modal para crear tareas
-    toast({
-      title: "Función en desarrollo",
-      description: "La creación de tareas estará disponible pronto.",
-    });
+    setBudgetId(budgetIdForTask);
+    setIsTaskModalOpen(true);
   };
 
   if (budgetsLoading) {
@@ -900,6 +899,12 @@ export default function SiteBudgets() {
       <CreateBudgetModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Task Modal */}
+      <TaskModalSimple
+        isOpen={isTaskModalOpen}
+        onOpenChange={setIsTaskModalOpen}
       />
     </div>
   );

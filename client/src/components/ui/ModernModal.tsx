@@ -55,7 +55,7 @@ export default function ModernModal({
         <div className="flex items-center justify-between p-4 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">
           <div className="flex items-center gap-3">
             {Icon && (
-              <div className="w-8 h-8 bg-[#8fc700] rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                 <Icon className="w-4 h-4 text-white" />
               </div>
             )}
