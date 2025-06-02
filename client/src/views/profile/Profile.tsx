@@ -27,14 +27,30 @@ const profileTabs = [
 ];
 
 export default function Profile() {
-  const { setSection, setView } = useNavigationStore();
+  const { setSection, setView, currentView } = useNavigationStore();
   const [activeTab, setActiveTab] = useState('info');
 
   // Set navigation state when component mounts
   useEffect(() => {
     setSection('profile');
-    setView('profile-info');
-  }, [setSection, setView]);
+    if (!currentView.startsWith('profile-')) {
+      setView('profile-info');
+    }
+  }, [setSection, setView, currentView]);
+
+  // Sync active tab with current view
+  useEffect(() => {
+    if (currentView === 'profile-info') setActiveTab('info');
+    else if (currentView === 'profile-security') setActiveTab('security');
+    else if (currentView === 'profile-subscription') setActiveTab('subscription');
+  }, [currentView]);
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    if (tabId === 'info') setView('profile-info');
+    else if (tabId === 'security') setView('profile-security');
+    else if (tabId === 'subscription') setView('profile-subscription');
+  };
 
   const ActiveComponent = profileTabs.find(tab => tab.id === activeTab)?.component || ProfileInfo;
 
@@ -66,7 +82,7 @@ export default function Profile() {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`
                     flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${isActive 

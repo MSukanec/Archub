@@ -37,6 +37,7 @@ import AdminMaterials from '@/views/admin/AdminMaterials';
 import AdminTasks from '@/views/admin/AdminTasks';
 import Calendar from '@/views/dashboard/Calendar';
 
+import Profile from '@/views/profile/Profile';
 import ProfileInfo from '@/views/profile/ProfileInfo';
 import ProfileSecurity from '@/views/profile/ProfileSecurity';
 import ProfileSubscription from '@/views/profile/ProfileSubscription';
@@ -75,10 +76,10 @@ const viewComponents = {
   'admin-actions': AdminActions,
   'admin-tasks': AdminTasks,
   'admin-permissions': AdminActions, // Temporarily using actions view
-  'profile-info': ProfileInfo,
-  'profile-security': ProfileSecurity,
-  'profile-subscription': ProfileSubscription,
-  'profile-notifications': ProfileInfo,
+  'profile-info': Profile,
+  'profile-security': Profile,
+  'profile-subscription': Profile,
+  'profile-notifications': Profile,
   'subscription-tables': SubscriptionTables,
 };
 
