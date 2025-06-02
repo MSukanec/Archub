@@ -695,6 +695,24 @@ export default function SiteMaterials() {
     },
   });
 
+  // Query para obtener categorías de materiales
+  const { data: materialCategories = [] } = useQuery({
+    queryKey: ['material-categories', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const { data, error } = await supabase
+        .from('material_categories')
+        .select('id, name')
+        .eq('organization_id', organizationId)
+        .order('name');
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!organizationId,
+  });
+
   const handleToggleExpanded = (category: string) => {
     setExpandedCategories(prev => {
       const newSet = new Set(prev);
@@ -744,6 +762,20 @@ export default function SiteMaterials() {
             className="pl-10"
           />
         </div>
+        <Select value={materialCategoryFilter} onValueChange={setMaterialCategoryFilter}>
+          <SelectTrigger className="w-48">
+            <Filter className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="Filtrar por categoría" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas las categorías</SelectItem>
+            {materialCategories.map((category: any) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select defaultValue="all">
           <SelectTrigger className="w-48">
             <Filter className="h-4 w-4 mr-2" />
