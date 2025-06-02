@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { supabase } from '@/lib/supabase';
-import { Plus, Calendar, Users, CheckSquare, FileText, Camera, Video, File, Clock, MapPin, Trash2, MoreHorizontal, ClipboardList, Building2 } from 'lucide-react';
+import { Plus, Calendar, Users, CheckSquare, FileText, Camera, Video, File, Clock, MapPin, Trash2, MoreHorizontal, ClipboardList, Building2, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
