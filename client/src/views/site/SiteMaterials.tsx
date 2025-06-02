@@ -147,7 +147,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       console.log('Unit IDs to fetch:', unitIds);
 
       const [categoriesResult, unitsResult] = await Promise.all([
-        categoryIds.length > 0 ? supabase.from('material_categories').select('id, name, code').in('id', categoryIds) : { data: [] },
+        categoryIds.length > 0 ? supabase.from('material_categories').select('id, name').in('id', categoryIds) : { data: [] },
         unitIds.length > 0 ? supabase.from('units').select('id, name').in('id', unitIds) : { data: [] }
       ]);
 
@@ -185,7 +185,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
             name: material.name,
             description: '',
             category_name: category?.name || 'Sin categoría',
-            category_code: category?.code || '',
+            category_code: '',
             parent_category_name: category?.name || 'Sin categoría',
             unit_name: unit?.name || 'und',
             stock: totalQuantity,
