@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Lock, Shield, Smartphone, Monitor, MapPin, Calendar, Eye, EyeOff, Key } from 'lucide-react';
+import { Lock, Shield, Smartphone, Monitor, MapPin, Calendar, Eye, EyeOff, Key, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -10,15 +10,26 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function ProfileSecurity() {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { setSection, setView } = useNavigationStore();
   const { toast } = useToast();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Set navigation state when component mounts
   useEffect(() => {
@@ -83,6 +94,27 @@ export default function ProfileSecurity() {
     });
   };
 
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    try {
+      await logout();
+      setShowLogoutModal(false);
+      toast({
+        description: "Sesión cerrada correctamente",
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        description: "Error al cerrar sesión. Intenta nuevamente.",
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -100,6 +132,15 @@ export default function ProfileSecurity() {
             </p>
           </div>
         </div>
+        
+        <Button 
+          onClick={handleLogoutClick}
+          variant="outline" 
+          className="border-red-600/30 text-red-600 hover:bg-red-600 hover:text-white rounded-xl"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Cerrar Sesión
+        </Button>
       </div>
 
       {/* Cambio de Contraseña */}

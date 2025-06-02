@@ -230,51 +230,7 @@ export default function ProfileInfo() {
         </div>
       </div>
 
-      {/* Acciones de Cuenta */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Shield className="w-4 h-4 text-primary" />
-          </div>
-          <h3 className="text-xl font-semibold text-foreground">Configuraciones de Cuenta</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Button 
-            variant="outline" 
-            className="justify-start h-12 bg-[#e0e0e0] border-[#919191]/30 text-[#919191] hover:bg-[#d0d0d0] rounded-xl"
-          >
-            <Mail className="h-4 w-4 mr-3" />
-            <div className="text-left">
-              <div className="font-medium">Cambiar Contraseña</div>
-              <div className="text-xs text-muted-foreground">Actualizar contraseña</div>
-            </div>
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            className="justify-start h-12 bg-[#e0e0e0] border-[#919191]/30 text-[#919191] hover:bg-[#d0d0d0] rounded-xl"
-          >
-            <Shield className="h-4 w-4 mr-3" />
-            <div className="text-left">
-              <div className="font-medium">Autenticación 2FA</div>
-              <div className="text-xs text-muted-foreground">Seguridad adicional</div>
-            </div>
-          </Button>
-          
-          <Button 
-            onClick={handleLogoutClick}
-            variant="outline" 
-            className="justify-start h-12 border-red-600/30 text-red-600 hover:bg-red-600 hover:text-white rounded-xl"
-          >
-            <LogOut className="h-4 w-4 mr-3" />
-            <div className="text-left">
-              <div className="font-medium">Cerrar Sesión</div>
-              <div className="text-xs opacity-75">Salir de la cuenta</div>
-            </div>
-          </Button>
-        </div>
-      </div>
+
 
       {/* Edit Profile Modal */}
       <EditProfileModal
