@@ -9,9 +9,6 @@ import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawer';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
-
-
 import Dashboard from '@/views/dashboard/Dashboard';
 import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
 import CalendarView from '@/views/dashboard/Calendar';
@@ -42,8 +39,6 @@ import ProfileInfo from '@/views/profile/ProfileInfo';
 import ProfileSecurity from '@/views/profile/ProfileSecurity';
 import ProfileSubscription from '@/views/profile/ProfileSubscription';
 import SubscriptionTables from '@/views/others/SubscriptionTables';
-
-import FloatingProjectButton from '@/components/ui/FloatingProjectButton';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { useNavigationStore } from '@/stores/navigationStore';
 
@@ -180,8 +175,7 @@ export default function AppLayout() {
             </main>
           </div>
           
-          {/* Mobile Floating Action Button */}
-          <FloatingActionButton />
+
 
         </>
       ) : (
@@ -202,8 +196,7 @@ export default function AppLayout() {
           
           <SecondarySidebar />
           
-          {/* Desktop Floating Action Button */}
-          <FloatingActionButton />
+
         </>
       )}
       
