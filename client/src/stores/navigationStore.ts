@@ -29,6 +29,7 @@ export type View =
   | 'admin-tasks'
   | 'admin-permissions'
   | 'profile-info'
+  | 'profile-security'
   | 'profile-subscription'
   | 'profile-notifications'
   | 'subscription-tables';

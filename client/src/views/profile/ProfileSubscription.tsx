@@ -1,8 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Check, CreditCard, Calendar, Zap, Crown, Rocket } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useFeatures } from '@/hooks/useFeatures';
+import { useNavigationStore } from '@/stores/navigationStore';
 import { useQuery } from '@tanstack/react-query';
 import { plansService } from '@/lib/plansService';
 
@@ -60,6 +61,13 @@ const plans = [
 
 export default function Subscription() {
   const { getCurrentPlan, userPlan, isLoading } = useFeatures();
+  const { setSection, setView } = useNavigationStore();
+
+  // Set navigation state when component mounts
+  useEffect(() => {
+    setSection('profile');
+    setView('profile-subscription');
+  }, [setSection, setView]);
   
   // Fetch all available plans with error handling
   const { data: availablePlans = [], isLoading: plansLoading, error } = useQuery({
