@@ -1,9 +1,6 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { User, Mail, Calendar, Save, LogOut } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { User, Mail, Calendar, LogOut, Edit, Building2, Shield, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   AlertDialog,
@@ -15,36 +12,59 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore } from '@/stores/authStore';
+import { useNavigationStore } from '@/stores/navigationStore';
 import { useToast } from '@/hooks/use-toast';
-import { authService } from '@/lib/supabase';
+import { authService, supabase } from '@/lib/supabase';
 import { organizationsService } from '@/lib/organizationsService';
-import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
-
-const profileSchema = z.object({
-  firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  lastName: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import EditProfileModal from '@/components/modals/EditProfileModal';
 
 export default function ProfileInfo() {
   const { user, logout } = useAuthStore();
+  const { setSection, setView } = useNavigationStore();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Set navigation state when component mounts
+  useEffect(() => {
+    setSection('profile');
+    setView('profile-info');
+  }, [setSection, setView]);
 
 
   // Obtener la organización del usuario
   const { data: organization } = useQuery({
     queryKey: ['current-organization'],
     queryFn: organizationsService.getCurrentUserOrganization,
+  });
+
+  // Obtener datos del usuario desde la base de datos
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching current user:', error);
+        throw error;
+      }
+      
+      return data;
+    },
+    enabled: !!user?.id,
+    refetchOnWindowFocus: false,
   });
 
   const handleLogoutClick = () => {
@@ -69,209 +89,198 @@ export default function ProfileInfo() {
       setLocation('/'); // Redirigir a la página de landing
       
       toast({
-        title: "Sesión cerrada",
         description: "Has cerrado sesión exitosamente.",
+        duration: 2000,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error en logout:', error);
       toast({
-        title: "Error",
-        description: `Error al cerrar sesión: ${error.message}`,
         variant: "destructive",
+        description: `Error al cerrar sesión: ${error.message}`,
+        duration: 2000,
       });
       setShowLogoutModal(false);
     }
   };
 
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
+  };
 
-
-  const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || '',
-    },
-  });
-
-  const onSubmit = async (data: ProfileFormData) => {
-    try {
-      // TODO: Implement profile update API call
-      toast({
-        title: 'Perfil actualizado',
-        description: 'Tu información ha sido actualizada correctamente.',
-      });
-      setIsEditing(false);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'No se pudo actualizar el perfil.',
-        variant: 'destructive',
-      });
-    }
+  const getInitials = (firstName?: string, lastName?: string) => {
+    if (!firstName && !lastName) return 'U';
+    return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Información del Perfil
-        </h1>
-        <p className="text-muted-foreground">
-          Gestiona tu información personal y configuraciones de cuenta.
-        </p>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <User className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Mi Perfil
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Gestiona tu información personal y configuraciones de cuenta
+            </p>
+          </div>
+        </div>
+        <Button onClick={() => setIsEditModalOpen(true)}>
+          <Edit className="h-4 w-4 mr-2" />
+          Editar
+        </Button>
       </div>
 
-      {/* Perfil y configuraciones en una sola card */}
-      <Card>
-        <CardContent className="pt-6">
-          {/* Header del perfil */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <Avatar className="w-16 h-16">
-                <AvatarFallback className="text-lg">
-                  {user?.firstName?.[0]}{user?.lastName?.[0]}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  {user?.firstName} {user?.lastName}
-                </h2>
-                <p className="text-muted-foreground text-sm">{user?.email}</p>
-              </div>
+      {/* Cards de información */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Información Personal */}
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <User className="w-4 h-4 text-primary" />
             </div>
-            <div className="flex gap-2">
-              {isEditing && (
-                <Button 
-                  onClick={form.handleSubmit(onSubmit)}
-                  className="bg-primary hover:bg-primary/90"
-                  size="sm"
-                >
-                  <Save size={16} className="mr-2" />
-                  Guardar
-                </Button>
-              )}
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                {isEditing ? 'Cancelar' : 'Editar'}
-              </Button>
+            <h3 className="text-xl font-semibold text-foreground">Información Personal</h3>
+          </div>
+          
+          <div className="flex items-center gap-4 mb-6">
+            <Avatar className="w-16 h-16 rounded-xl">
+              <AvatarFallback className="text-lg bg-primary/10 text-primary rounded-xl">
+                {getInitials(currentUser?.first_name || user?.firstName, currentUser?.last_name || user?.lastName)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h4 className="text-lg font-semibold text-foreground">
+                {currentUser?.first_name || user?.firstName} {currentUser?.last_name || user?.lastName}
+              </h4>
+              <p className="text-sm text-muted-foreground">{currentUser?.email || user?.email}</p>
             </div>
           </div>
 
-          {/* Información personal */}
-          <div className="border-t pt-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center">
-              <User className="mr-2" size={16} />
-              INFORMACIÓN PERSONAL
-            </h3>
-            
-            {isEditing ? (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Apellido</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
-            ) : (
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">NOMBRE</label>
-                  <p className="text-foreground">{user?.firstName}</p>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">APELLIDO</label>
-                  <p className="text-foreground">{user?.lastName}</p>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">EMAIL</label>
-                  <p className="text-foreground">{user?.email}</p>
-                </div>
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">NOMBRE COMPLETO</label>
+              <p className="text-foreground font-medium">
+                {currentUser?.first_name || user?.firstName} {currentUser?.last_name || user?.lastName}
+              </p>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">EMAIL</label>
+              <p className="text-foreground font-medium">{currentUser?.email || user?.email}</p>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">ROL</label>
+              <div className="flex items-center gap-2">
+                {currentUser?.role === 'admin' ? (
+                  <>
+                    <Crown className="h-4 w-4 text-amber-600" />
+                    <span className="text-foreground font-medium">Administrador</span>
+                  </>
+                ) : (
+                  <>
+                    <Shield className="h-4 w-4 text-blue-600" />
+                    <span className="text-foreground font-medium">Usuario</span>
+                  </>
+                )}
+              </div>
+            </div>
+            {currentUser?.created_at && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">MIEMBRO DESDE</label>
+                <p className="text-foreground font-medium">
+                  {formatDate(currentUser.created_at)}
+                </p>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Configuraciones rápidas */}
-          <div className="border-t pt-6 mt-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-4">CONFIGURACIONES</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <Button variant="outline" size="sm" className="justify-start h-10">
-                <Mail className="h-4 w-4 mr-2" />
-                Cambiar Contraseña
-              </Button>
-              <Button variant="outline" size="sm" className="justify-start h-10">
-                <User className="h-4 w-4 mr-2" />
-                Autenticación 2FA
-              </Button>
-              <Button variant="outline" size="sm" className="justify-start h-10">
-                <Calendar className="h-4 w-4 mr-2" />
-                Sesiones Activas
-              </Button>
+        {/* Información de Organización */}
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-primary" />
             </div>
+            <h3 className="text-xl font-semibold text-foreground">Organización</h3>
           </div>
-
-          {/* Acciones de cuenta */}
-          <div className="border-t pt-6 mt-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-4">ACCIONES DE CUENTA</h3>
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleLogoutClick}
-                className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Cerrar Sesión
-              </Button>
-              
-
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">ORGANIZACIÓN ACTUAL</label>
+              <p className="text-foreground font-medium">{organization?.name || 'Sin organización'}</p>
             </div>
+            {organization?.description && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">DESCRIPCIÓN</label>
+                <p className="text-foreground font-medium">{organization.description}</p>
+              </div>
+            )}
+            {organization?.created_at && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">CREADA EL</label>
+                <p className="text-foreground font-medium">
+                  {formatDate(organization.created_at)}
+                </p>
+              </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Acciones de Cuenta */}
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Shield className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">Configuraciones de Cuenta</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Button 
+            variant="outline" 
+            className="justify-start h-12 bg-[#e0e0e0] border-[#919191]/30 text-[#919191] hover:bg-[#d0d0d0] rounded-xl"
+          >
+            <Mail className="h-4 w-4 mr-3" />
+            <div className="text-left">
+              <div className="font-medium">Cambiar Contraseña</div>
+              <div className="text-xs text-muted-foreground">Actualizar contraseña</div>
+            </div>
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            className="justify-start h-12 bg-[#e0e0e0] border-[#919191]/30 text-[#919191] hover:bg-[#d0d0d0] rounded-xl"
+          >
+            <Shield className="h-4 w-4 mr-3" />
+            <div className="text-left">
+              <div className="font-medium">Autenticación 2FA</div>
+              <div className="text-xs text-muted-foreground">Seguridad adicional</div>
+            </div>
+          </Button>
+          
+          <Button 
+            onClick={handleLogoutClick}
+            variant="outline" 
+            className="justify-start h-12 border-red-600/30 text-red-600 hover:bg-red-600 hover:text-white rounded-xl"
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            <div className="text-left">
+              <div className="font-medium">Cerrar Sesión</div>
+              <div className="text-xs opacity-75">Salir de la cuenta</div>
+            </div>
+          </Button>
+        </div>
+      </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
 
       {/* Modal de confirmación para cerrar sesión */}
       <AlertDialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
@@ -296,8 +305,6 @@ export default function ProfileInfo() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-
     </div>
   );
 }
