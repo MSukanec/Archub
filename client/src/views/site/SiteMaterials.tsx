@@ -114,8 +114,15 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
         .select('task_id, quantity, material_id')
         .in('task_id', taskIds);
 
-      if (taskMaterialsError) throw taskMaterialsError;
-      if (!taskMaterials || taskMaterials.length === 0) return [];
+      console.log('Task materials found:', taskMaterials);
+      if (taskMaterialsError) {
+        console.error('Task materials error:', taskMaterialsError);
+        throw taskMaterialsError;
+      }
+      if (!taskMaterials || taskMaterials.length === 0) {
+        console.log('No task materials found');
+        return [];
+      }
 
       const materialIds = [...new Set(taskMaterials.map(tm => tm.material_id))];
 
