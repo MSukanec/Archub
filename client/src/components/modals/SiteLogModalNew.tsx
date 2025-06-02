@@ -44,10 +44,10 @@ interface SiteLogModalProps {
 }
 
 const weatherOptions = [
-  { value: 'Soleado', label: 'Soleado', icon: Sun, color: 'text-yellow-500' },
-  { value: 'Nublado', label: 'Nublado', icon: Cloud, color: 'text-gray-500' },
-  { value: 'Lluvia', label: 'Lluvia', icon: CloudRain, color: 'text-blue-500' },
-  { value: 'Tormenta', label: 'Tormenta', icon: CloudSnow, color: 'text-purple-500' },
+  { value: 'Soleado', label: 'Soleado', icon: Sun, color: 'text-primary' },
+  { value: 'Nublado', label: 'Nublado', icon: Cloud, color: 'text-primary' },
+  { value: 'Lluvia', label: 'Lluvia', icon: CloudRain, color: 'text-primary' },
+  { value: 'Tormenta', label: 'Tormenta', icon: CloudSnow, color: 'text-primary' },
 ];
 
 export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, projectId }: SiteLogModalProps) {

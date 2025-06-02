@@ -38,8 +38,8 @@ export default function DayDetailModal({
 
   const getTypeConfig = (type: string) => {
     const configs: Record<string, { icon: any; color: string; label: string }> = {
-      sitelog: { icon: FileText, color: 'bg-blue-500/10 text-blue-600 border-blue-200', label: 'Bitácora' },
-      movement: { icon: DollarSign, color: 'bg-green-500/10 text-green-600 border-green-200', label: 'Movimiento' },
+      sitelog: { icon: FileText, color: 'bg-primary/10 text-primary border-primary/20', label: 'Bitácora' },
+      movement: { icon: DollarSign, color: 'bg-primary/10 text-primary border-primary/20', label: 'Movimiento' },
       task: { icon: CheckSquare, color: 'bg-purple-500/10 text-purple-600 border-purple-200', label: 'Tarea' },
       attendee: { icon: Users, color: 'bg-orange-500/10 text-orange-600 border-orange-200', label: 'Asistente' },
       file: { icon: Paperclip, color: 'bg-gray-500/10 text-gray-600 border-gray-200', label: 'Archivo' }

@@ -928,7 +928,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                           variant="ghost"
                           size="sm"
                           onClick={() => removeMaterial(material.material_id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 h-5 w-5 p-0"
+                          className="text-primary hover:text-primary/80 hover:bg-primary/10 h-5 w-5 p-0"
                         >
                           <X className="w-4 h-4" />
                         </Button>
