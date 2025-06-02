@@ -76,61 +76,81 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
       const budgetIds = budgets?.map(b => b.id) || [];
       if (budgetIds.length === 0) return [];
 
-      // Luego obtenemos todas las tareas de esos presupuestos y sus materiales
-      const { data, error } = await supabase
+      // Paso 2: Obtener tareas de esos presupuestos
+      const { data: budgetTasks, error: budgetTasksError } = await supabase
         .from('budget_tasks')
-        .select(`
-          task_id,
-          quantity,
-          tasks!inner(
-            id,
-            tasks_materials!inner(
-              quantity,
-              materials!inner(
-                id,
-                name,
-                description,
-                unit_material_price,
-                material_categories!inner(name, code),
-                units(name)
-              )
-            )
-          )
-        `)
+        .select('task_id, quantity')
         .in('budget_id', budgetIds);
 
-      if (error) throw error;
+      if (budgetTasksError) throw budgetTasksError;
+      if (!budgetTasks || budgetTasks.length === 0) return [];
 
-      // Procesamos los datos para obtener materiales únicos con cantidades totales
+      const taskIds = budgetTasks.map(bt => bt.task_id);
+
+      // Paso 3: Obtener materiales de las tareas
+      const { data: taskMaterials, error: taskMaterialsError } = await supabase
+        .from('tasks_materials')
+        .select('task_id, quantity, material_id')
+        .in('task_id', taskIds);
+
+      if (taskMaterialsError) throw taskMaterialsError;
+      if (!taskMaterials || taskMaterials.length === 0) return [];
+
+      const materialIds = [...new Set(taskMaterials.map(tm => tm.material_id))];
+
+      // Paso 4: Obtener datos de materiales
+      const { data: materialsData, error: materialsError } = await supabase
+        .from('materials')
+        .select('id, name, description, unit_material_price, category_id, unit_id')
+        .in('id', materialIds);
+
+      if (materialsError) throw materialsError;
+
+      // Paso 5: Obtener categorías y unidades
+      const categoryIds = [...new Set(materialsData?.map(m => m.category_id).filter(Boolean))];
+      const unitIds = [...new Set(materialsData?.map(m => m.unit_id).filter(Boolean))];
+
+      const [categoriesResult, unitsResult] = await Promise.all([
+        categoryIds.length > 0 ? supabase.from('material_categories').select('id, name, code').in('id', categoryIds) : { data: [] },
+        unitIds.length > 0 ? supabase.from('units').select('id, name').in('id', unitIds) : { data: [] }
+      ]);
+
+      const categoriesMap = new Map(categoriesResult.data?.map(c => [c.id, c]) || []);
+      const unitsMap = new Map(unitsResult.data?.map(u => [u.id, u]) || []);
+
+      // Paso 6: Procesar datos para calcular cantidades totales
       const materialMap = new Map();
       
-      data?.forEach((budgetTask: any) => {
-        const taskQuantity = budgetTask.quantity || 1;
-        
-        budgetTask.tasks?.tasks_materials?.forEach((taskMaterial: any) => {
-          const material = taskMaterial.materials;
-          const materialQuantity = taskMaterial.quantity || 0;
-          const totalQuantity = taskQuantity * materialQuantity;
-          
-          if (materialMap.has(material.id)) {
-            const existing = materialMap.get(material.id);
-            existing.stock += totalQuantity;
-            existing.total_value = existing.stock * existing.unit_price;
-          } else {
-            materialMap.set(material.id, {
-              id: material.id,
-              name: material.name,
-              description: material.description || '',
-              category_name: material.material_categories?.name || 'Sin categoría',
-              category_code: material.material_categories?.code || '',
-              parent_category_name: material.material_categories?.name || 'Sin categoría',
-              unit_name: material.units?.name || 'und',
-              stock: totalQuantity,
-              unit_price: parseFloat(material.unit_material_price || '0'),
-              total_value: totalQuantity * parseFloat(material.unit_material_price || '0')
-            });
-          }
-        });
+      taskMaterials.forEach((taskMaterial: any) => {
+        const material = materialsData?.find(m => m.id === taskMaterial.material_id);
+        if (!material) return;
+
+        const budgetTask = budgetTasks.find(bt => bt.task_id === taskMaterial.task_id);
+        const taskQuantity = budgetTask?.quantity || 1;
+        const materialQuantity = taskMaterial.quantity || 0;
+        const totalQuantity = taskQuantity * materialQuantity;
+
+        const category = categoriesMap.get(material.category_id);
+        const unit = unitsMap.get(material.unit_id);
+
+        if (materialMap.has(material.id)) {
+          const existing = materialMap.get(material.id);
+          existing.stock += totalQuantity;
+          existing.total_value = existing.stock * existing.unit_price;
+        } else {
+          materialMap.set(material.id, {
+            id: material.id,
+            name: material.name,
+            description: material.description || '',
+            category_name: category?.name || 'Sin categoría',
+            category_code: category?.code || '',
+            parent_category_name: category?.name || 'Sin categoría',
+            unit_name: unit?.name || 'und',
+            stock: totalQuantity,
+            unit_price: parseFloat(material.unit_material_price || '0'),
+            total_value: totalQuantity * parseFloat(material.unit_material_price || '0')
+          });
+        }
       });
       
       return Array.from(materialMap.values()).sort((a, b) => a.name.localeCompare(b.name));
