@@ -63,7 +63,12 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
   const { data: materials = [], isLoading: isLoadingMaterials } = useQuery({
     queryKey: ['project-materials', projectId],
     queryFn: async () => {
-      if (!projectId) return [];
+      if (!projectId) {
+        console.log('No project ID available');
+        return [];
+      }
+      
+      console.log('Fetching materials for project:', projectId);
       
       // Primero obtenemos todos los presupuestos del proyecto
       const { data: budgets, error: budgetsError } = await supabase
@@ -71,10 +76,18 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
         .select('id')
         .eq('project_id', projectId);
 
-      if (budgetsError) throw budgetsError;
+      console.log('Budgets found:', budgets);
+      if (budgetsError) {
+        console.error('Budget fetch error:', budgetsError);
+        throw budgetsError;
+      }
       
       const budgetIds = budgets?.map(b => b.id) || [];
-      if (budgetIds.length === 0) return [];
+      console.log('Budget IDs:', budgetIds);
+      if (budgetIds.length === 0) {
+        console.log('No budgets found for project');
+        return [];
+      }
 
       // Paso 2: Obtener tareas de esos presupuestos
       const { data: budgetTasks, error: budgetTasksError } = await supabase
@@ -82,10 +95,18 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
         .select('task_id, quantity')
         .in('budget_id', budgetIds);
 
-      if (budgetTasksError) throw budgetTasksError;
-      if (!budgetTasks || budgetTasks.length === 0) return [];
+      console.log('Budget tasks found:', budgetTasks);
+      if (budgetTasksError) {
+        console.error('Budget tasks error:', budgetTasksError);
+        throw budgetTasksError;
+      }
+      if (!budgetTasks || budgetTasks.length === 0) {
+        console.log('No budget tasks found');
+        return [];
+      }
 
       const taskIds = budgetTasks.map(bt => bt.task_id);
+      console.log('Task IDs:', taskIds);
 
       // Paso 3: Obtener materiales de las tareas
       const { data: taskMaterials, error: taskMaterialsError } = await supabase
