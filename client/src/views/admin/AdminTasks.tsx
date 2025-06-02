@@ -30,102 +30,104 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import AdminTasksModal from '@/components/modals/AdminTasksModal';
 
+const TASKS_PER_PAGE = 15;
+
+type TaskWithNewFields = {
+  id: string;
+  name: string;
+  description?: string | null;
+  organization_id: string;
+  category_id: string;
+  subcategory_id: string;
+  element_category_id: string;
+  unit_id: string;
+  unit_labor_price?: number | null;
+  unit_material_price?: number | null;
+  created_at: string;
+  action_id?: string | null;
+  element_id?: string | null;
+};
+
 export default function AdminTasks() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<any>(null);
-  
-  const ITEMS_PER_PAGE = 10;
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Event listener for floating action button
-  useEffect(() => {
-    const handleOpenCreateTaskModal = () => {
-      setIsCreateModalOpen(true);
-    };
+  // State management
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskWithNewFields | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
-    window.addEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
-    return () => {
-      window.removeEventListener('openCreateTaskModal', handleOpenCreateTaskModal);
-    };
-  }, []);
-
-  // Fetch tasks
-  const { data: tasks = [], isLoading, error } = useQuery({
-    queryKey: ['/api/admin/tasks'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select(`
-          *,
-          category:task_categories!category_id(name),
-          unit:units!unit_id(name)
-        `)
-        .order('name', { ascending: true });
-      
-      if (error) {
-        console.warn('Tasks table error, returning empty array:', error);
-        return [];
-      }
-      return data || [];
-    },
-    retry: 1,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+  // Data fetching
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ['/api/admin/tasks']
   });
 
-  // Fetch categories for filter
   const { data: categories = [] } = useQuery({
-    queryKey: ['/api/admin/task-categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('task_categories')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    },
+    queryKey: ['/api/admin/categories']
   });
+
+  // Filter and search logic
+  const filteredAndSortedTasks = tasks.filter((task: any) => {
+    const matchesSearch = searchTerm === '' || 
+      task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesCategory = categoryFilter === '' || task.category_id === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredAndSortedTasks.length / TASKS_PER_PAGE);
+  const startIndex = (currentPage - 1) * TASKS_PER_PAGE;
+  const endIndex = startIndex + TASKS_PER_PAGE;
+  const paginatedTasks = filteredAndSortedTasks.slice(startIndex, endIndex);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, categoryFilter]);
 
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (taskId: string) => {
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', taskId);
-      
-      if (error) throw error;
+      const response = await fetch(`/api/admin/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Error al eliminar la tarea');
+      }
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/tasks'] });
       toast({
         title: "Tarea eliminada",
-        description: "La tarea se ha eliminado exitosamente.",
+        description: "La tarea ha sido eliminada exitosamente.",
       });
       setIsDeleteDialogOpen(false);
       setSelectedTask(null);
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
-        description: error.message || "No se pudo eliminar la tarea.",
         variant: "destructive",
+        title: "Error",
+        description: error.message || "No se pudo eliminar la tarea",
       });
     },
   });
+
+  const handleDelete = (task: TaskWithNewFields) => {
+    setSelectedTask(task);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleDeleteConfirm = () => {
     if (selectedTask) {
@@ -133,90 +135,13 @@ export default function AdminTasks() {
     }
   };
 
-  if (error) {
-    return (
-      <div className="p-6 space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <CheckSquare className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
-            <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-foreground mb-2">Error al cargar tareas</h3>
-            <p className="text-muted-foreground max-w-md">No se pudieron cargar las tareas. Intenta recargar la página.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const handleDelete = (task: any) => {
-    setSelectedTask(task);
-    setIsDeleteDialogOpen(true);
+  const clearFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('');
   };
 
-  const filteredAndSortedTasks = tasks.filter((task: any) => {
-    const matchesSearch = (task.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (task.unit?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = !categoryFilter || categoryFilter === 'all' || task.category_id === categoryFilter;
-    
-    return matchesSearch && matchesCategory;
-  }).sort((a: any, b: any) => {
-    if (sortOrder === 'newest') {
-      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-    } else {
-      return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
-    }
-  });
-
-  const totalPages = Math.ceil(filteredAndSortedTasks.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedTasks = filteredAndSortedTasks.slice(startIndex, endIndex);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, categoryFilter, sortOrder]);
-
   if (isLoading) {
-    return (
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <CheckSquare className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
-              <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="rounded-2xl shadow-md bg-card border-0 p-6">
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="animate-pulse flex space-x-4">
-                <div className="rounded-full bg-muted h-10 w-10"></div>
-                <div className="flex-1 space-y-2 py-1">
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <AdminTasksSkeleton />;
   }
 
   return (
@@ -228,59 +153,61 @@ export default function AdminTasks() {
           </div>
           <div>
             <h1 className="text-2xl font-semibold text-foreground">Gestión de Tareas</h1>
-            <p className="text-sm text-muted-foreground">Administra todas las tareas del sistema</p>
+            <p className="text-muted-foreground">
+              Administra el catálogo de tareas de la organización
+            </p>
           </div>
         </div>
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground border-primary"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva Tarea
+        </Button>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar tareas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
-            />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Buscar tareas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-shadow focus:shadow-xl"
+          />
+        </div>
+        <div className="flex items-center gap-2">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-              <SelectValue placeholder="Todas las Categorías" />
+            <SelectTrigger className="w-48 h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl">
+              <FolderOpen className="w-4 h-4 mr-2 text-muted-foreground" />
+              <SelectValue placeholder="Filtrar por categoría" />
             </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              {categories.map((category) => (
+            <SelectContent>
+              <SelectItem value="">Todas las categorías</SelectItem>
+              {categories.map((category: any) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-
-          <Select value={sortOrder} onValueChange={setSortOrder as any}>
-            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
-              <SelectItem value="newest">Más reciente primero</SelectItem>
-              <SelectItem value="oldest">Más antiguo primero</SelectItem>
-            </SelectContent>
-          </Select>
+          {(searchTerm || categoryFilter) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearFilters}
+              className="rounded-xl"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      {/* Desktop Table */}
+      <div className="hidden xl:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -364,54 +291,128 @@ export default function AdminTasks() {
             )}
           </TableBody>
         </Table>
-        
-        {/* Paginación */}
-        {filteredAndSortedTasks.length > 0 && (
-          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
-              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedTasks.length)} de {filteredAndSortedTasks.length} elementos
-            </div>
-            
-            {totalPages > 1 && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="rounded-xl border-border"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className="w-8 h-8 p-0 rounded-lg"
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="rounded-xl border-border"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </>
-            )}
+      </div>
+
+      {/* Mobile/Tablet Cards */}
+      <div className="xl:hidden space-y-4">
+        {paginatedTasks.length === 0 ? (
+          <div className="rounded-2xl shadow-md bg-card border-0 p-6 text-center text-muted-foreground">
+            {searchTerm || categoryFilter 
+              ? 'No se encontraron tareas que coincidan con los filtros.'
+              : 'No hay tareas registradas.'
+            }
           </div>
+        ) : (
+          paginatedTasks.map((task: any) => (
+            <div key={task.id} className="rounded-2xl shadow-md bg-card border-0 p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-lg mb-2">{task.name}</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="bg-muted/50">
+                      {task.category?.name || 'Sin categoría'}
+                    </Badge>
+                    <Badge variant="outline" className="bg-muted/50">
+                      {task.unit?.name || 'Sin unidad'}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedTask(task);
+                      setIsEditModalOpen(true);
+                    }}
+                    className="rounded-xl"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(task)}
+                    className="text-destructive hover:text-destructive/90 rounded-xl"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              {task.description && (
+                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                  {task.description}
+                </p>
+              )}
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Precio M.O.</p>
+                    <p className="text-sm font-medium">${task.unit_labor_price ? task.unit_labor_price.toFixed(2) : '0.00'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Precio Mat.</p>
+                    <p className="text-sm font-medium">${task.unit_material_price ? task.unit_material_price.toFixed(2) : '0.00'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
         )}
       </div>
+
+      {/* Paginación */}
+      {filteredAndSortedTasks.length > 0 && (
+        <div className="flex items-center justify-center gap-2 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+            Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedTasks.length)} de {filteredAndSortedTasks.length} elementos
+          </div>
+          
+          {totalPages > 1 && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="rounded-xl border-border"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className="w-8 h-8 p-0 rounded-lg"
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+                
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="rounded-xl border-border"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
+      )}
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-card border-border rounded-2xl">
@@ -477,26 +478,12 @@ function AdminTasksSkeleton() {
           <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
         </div>
       </div>
-      
+
       <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
-        <div className="p-6">
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between py-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
-                    <div className="h-3 w-32 bg-muted rounded animate-pulse"></div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
-                  <div className="h-8 w-8 bg-muted rounded-lg animate-pulse"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="space-y-2 p-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-12 bg-muted rounded animate-pulse"></div>
+          ))}
         </div>
       </div>
     </div>

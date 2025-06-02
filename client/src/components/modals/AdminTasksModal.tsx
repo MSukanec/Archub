@@ -287,30 +287,28 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
 
   // Load existing materials when editing a task
   useEffect(() => {
-    console.log('Material loading effect triggered:', { 
-      isOpen, 
-      isEditing, 
-      editingTaskId: editingTask?.id,
-      existingTaskMaterialsLength: existingTaskMaterials?.length || 0,
-      existingTaskMaterials 
-    });
+    if (!isOpen) {
+      setSelectedMaterials([]);
+      return;
+    }
     
-    if (isOpen && isEditing && editingTask?.id) {
+    if (isEditing && editingTask?.id) {
+      // Only set materials if we have data and it's different from current state
       if (existingTaskMaterials && existingTaskMaterials.length > 0) {
-        console.log('Setting selected materials for task:', editingTask.id, existingTaskMaterials);
-        setSelectedMaterials([...existingTaskMaterials]);
-      } else {
-        console.log('No materials found for task:', editingTask.id);
+        const currentMaterialIds = selectedMaterials.map(m => m.material_id).sort();
+        const newMaterialIds = existingTaskMaterials.map(m => m.material_id).sort();
+        const isDifferent = JSON.stringify(currentMaterialIds) !== JSON.stringify(newMaterialIds);
+        
+        if (isDifferent) {
+          setSelectedMaterials([...existingTaskMaterials]);
+        }
+      } else if (selectedMaterials.length > 0) {
         setSelectedMaterials([]);
       }
-    } else if (isOpen && !isEditing) {
-      console.log('Clearing materials for new task');
-      setSelectedMaterials([]);
-    } else if (!isOpen) {
-      console.log('Modal closed, clearing materials');
+    } else if (!isEditing && selectedMaterials.length > 0) {
       setSelectedMaterials([]);
     }
-  }, [isOpen, isEditing, editingTask?.id, existingTaskMaterials]);
+  }, [isOpen, isEditing, editingTask?.id, existingTaskMaterials?.length]);
 
   // Functions to handle materials
   const addMaterial = async (material: any) => {
