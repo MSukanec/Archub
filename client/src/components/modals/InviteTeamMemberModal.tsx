@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, User, Shield, UserPlus, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Mail, User, Shield, UserPlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import {
@@ -14,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import ModernModal from '@/components/ui/ModernModal';
+import ModernModal, { useModalAccordion, ModalAccordion } from '@/components/ui/ModernModal';
 
 const inviteSchema = z.object({
   email: z.string().email('El email debe ser válido'),
@@ -48,7 +47,7 @@ const roleOptions = [
 export default function InviteTeamMemberModal({ isOpen, onClose }: InviteTeamMemberModalProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openAccordion, setOpenAccordion] = useState<string | null>('general');
+  const { toggleAccordion, isOpen: isAccordionOpen } = useModalAccordion('general');
 
   const form = useForm<InviteFormData>({
     resolver: zodResolver(inviteSchema),
@@ -83,12 +82,7 @@ export default function InviteTeamMemberModal({ isOpen, onClose }: InviteTeamMem
 
   const handleClose = () => {
     form.reset();
-    setOpenAccordion('general');
     onClose();
-  };
-
-  const toggleAccordion = (accordion: string) => {
-    setOpenAccordion(openAccordion === accordion ? null : accordion);
   };
 
   return (
@@ -97,103 +91,76 @@ export default function InviteTeamMemberModal({ isOpen, onClose }: InviteTeamMem
       onClose={handleClose}
       title="Invitar Miembro al Equipo"
       icon={UserPlus}
+      confirmText="Enviar Invitación"
+      onConfirm={form.handleSubmit(onSubmit)}
+      isLoading={isSubmitting}
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Información General */}
-          <div className="border rounded-xl overflow-hidden">
-            <button
-              type="button"
-              onClick={() => toggleAccordion('general')}
-              className="w-full px-4 py-3 bg-muted/30 flex items-center justify-between hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
-                <span className="font-medium">Información General</span>
-              </div>
-              <ChevronDown className={`h-4 w-4 transition-transform ${
-                openAccordion === 'general' ? 'rotate-180' : ''
-              }`} />
-            </button>
-            
-            {openAccordion === 'general' && (
-              <div className="p-4 space-y-4 bg-card">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="email@ejemplo.com"
-                          className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        <div className="space-y-4">
+          <ModalAccordion
+            id="general"
+            title="Información General"
+            icon={Mail}
+            isOpen={isAccordionOpen('general')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="email@ejemplo.com"
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rol en el equipo</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl">
-                            <SelectValue placeholder="Seleccionar rol" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {roleOptions.map((option) => {
-                            const IconComponent = option.icon;
-                            return (
-                              <SelectItem key={option.value} value={option.value}>
-                                <div className="flex items-center gap-2">
-                                  <IconComponent className="h-4 w-4" />
-                                  <div>
-                                    <div className="font-medium">{option.label}</div>
-                                    <div className="text-xs text-muted-foreground">{option.description}</div>
-                                  </div>
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rol en el equipo</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl">
+                          <SelectValue placeholder="Seleccionar rol" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {roleOptions.map((option) => {
+                          const IconComponent = option.icon;
+                          return (
+                            <SelectItem key={option.value} value={option.value}>
+                              <div className="flex items-center gap-2">
+                                <IconComponent className="h-4 w-4" />
+                                <div>
+                                  <div className="font-medium">{option.label}</div>
+                                  <div className="text-xs text-muted-foreground">{option.description}</div>
                                 </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-          </div>
-        </form>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </ModalAccordion>
+        </div>
       </Form>
-      
-      {/* Footer */}
-      <div className="flex gap-3 pt-4">
-        <Button
-          variant="outline"
-          onClick={handleClose}
-          className="flex-1 bg-[#e0e0e0] border-[#919191]/30 text-[#919191] hover:bg-[#d0d0d0] rounded-xl"
-          disabled={isSubmitting}
-        >
-          Cancelar
-        </Button>
-        <Button
-          onClick={form.handleSubmit(onSubmit)}
-          className="flex-[3] bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8bef] rounded-xl"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Enviando...' : 'Enviar Invitación'}
-        </Button>
-      </div>
     </ModernModal>
   );
 }
