@@ -121,8 +121,6 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         budget_id: budgetId,
         task_id: task.id,
         quantity: task.quantity,
-        unit_labor_price: task.unit_labor_price,
-        unit_material_price: task.unit_material_price,
       }));
 
       const { error } = await supabase
@@ -192,6 +190,36 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
     sum + (task.unit_labor_price + task.unit_material_price) * task.quantity, 0
   );
 
+  const footerContent = (
+    <div className="space-y-4">
+      {selectedTasks.length > 0 && (
+        <div className="flex justify-between items-center pb-4 border-b border-border">
+          <span className="font-medium text-foreground">Total del presupuesto:</span>
+          <span className="text-xl font-bold text-primary">
+            ${totalAmount.toFixed(2)}
+          </span>
+        </div>
+      )}
+      <div className="flex gap-3">
+        <Button
+          variant="outline"
+          onClick={onClose}
+          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-[#d0d0d0]"
+        >
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
+          className="flex-[0_0_75%] rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
+        >
+          <Calculator className="w-4 h-4 mr-2" />
+          {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <ModernModal
       isOpen={isOpen}
@@ -200,6 +228,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
       subtitle="Selecciona las tareas que deseas agregar al presupuesto"
       width="4xl"
       icon={Wrench}
+      footer={footerContent}
     >
       <div className="space-y-6">
         <Accordion type="multiple" defaultValue={["search", "selected"]} className="w-full space-y-2">
@@ -237,34 +266,28 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                   filteredTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted/30 transition-colors"
+                      className="flex items-center justify-between p-2 border border-border rounded-lg hover:bg-muted/30 transition-colors"
                     >
-                      <div className="flex items-center space-x-3 flex-1">
+                      <div className="flex items-center space-x-2 flex-1">
                         <Checkbox
                           checked={selectedTasks.some(t => t.id === task.id)}
                           onCheckedChange={(checked) => handleTaskSelect(task, checked as boolean)}
                         />
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-foreground truncate">{task.name}</h4>
-                          {task.description && (
-                            <p className="text-sm text-muted-foreground truncate">{task.description}</p>
-                          )}
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
+                          <h4 className="text-sm font-medium text-foreground truncate">{task.name}</h4>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Badge variant="outline" className="text-xs px-1 py-0 h-4">
                               {task.category_name}
                             </Badge>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs px-1 py-0 h-4">
                               {task.unit_name}
                             </Badge>
                           </div>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right text-xs">
                         <div className="font-medium text-foreground">
                           ${(task.unit_labor_price + task.unit_material_price).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          M.O: ${task.unit_labor_price.toFixed(2)} | Mat: ${task.unit_material_price.toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -289,36 +312,33 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                 </div>
               ) : (
                 <>
-                  <div className="max-h-96 overflow-y-auto space-y-3">
+                  <div className="max-h-96 overflow-y-auto space-y-2">
                     {selectedTasks.map((task) => (
                       <div
                         key={task.id}
-                        className="flex items-center justify-between p-4 border border-border rounded-xl"
+                        className="flex items-center justify-between p-2 border border-border rounded-lg"
                       >
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-foreground truncate">{task.name}</h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
+                          <h4 className="text-sm font-medium text-foreground truncate">{task.name}</h4>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Badge variant="outline" className="text-xs px-1 py-0 h-4">
                               {task.category_name}
                             </Badge>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs px-1 py-0 h-4">
                               {task.unit_name}
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2">
-                            <label className="text-sm text-muted-foreground">Cantidad:</label>
-                            <Input
-                              type="number"
-                              value={task.quantity}
-                              onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
-                              min="0.01"
-                              step="0.01"
-                              className="w-20 h-8 text-center bg-[#d2d2d2] border-[#919191]/20 rounded-lg text-sm"
-                            />
-                          </div>
-                          <div className="text-right min-w-[80px]">
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            value={task.quantity}
+                            onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
+                            min="0.01"
+                            step="0.01"
+                            className="w-16 h-7 text-center bg-[#d2d2d2] border-[#919191]/20 rounded-lg text-xs"
+                          />
+                          <div className="text-right text-xs min-w-[60px]">
                             <div className="font-medium text-foreground">
                               ${((task.unit_labor_price + task.unit_material_price) * task.quantity).toFixed(2)}
                             </div>
@@ -327,48 +347,19 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRemoveTask(task.id)}
-                            className="text-primary hover:text-primary/80 hover:bg-primary/10 h-8 w-8 p-0"
+                            className="text-primary hover:text-primary/80 hover:bg-primary/10 h-6 w-6 p-0"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
                     ))}
-                  </div>
-                  
-                  {/* Total */}
-                  <div className="border-t border-border pt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-foreground">Total del presupuesto:</span>
-                      <span className="text-xl font-bold text-primary">
-                        ${totalAmount.toFixed(2)}
-                      </span>
-                    </div>
                   </div>
                 </>
               )}
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-
-        {/* Botones de acción */}
-        <div className="flex gap-3 mt-6 pt-6 border-t border-border">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-[#d0d0d0]"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
-            className="flex-[0_0_75%] rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
-          >
-            <Calculator className="w-4 h-4 mr-2" />
-            {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
-          </Button>
-        </div>
       </div>
     </ModernModal>
   );
