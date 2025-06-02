@@ -6,7 +6,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsService, Project } from '@/lib/projectsService';
 import { Organization } from '@/lib/organizationsService';
 import { supabase } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { 
@@ -24,21 +23,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { 
   Loader2, 
   Building,
   MapPin,
-  Phone,
   FileText,
   CheckCircle,
   AlertCircle,
   User,
-  Mail
+  FolderPlus
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
-import ModernModal from '@/components/ui/ModernModal';
+import ModernModal, { useModalAccordion, ModalAccordion } from '@/components/ui/ModernModal';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 
 const createProjectSchema = z.object({
@@ -71,6 +68,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mapLat, setMapLat] = useState<number | null>(null);
   const [mapLng, setMapLng] = useState<number | null>(null);
+  const { toggleAccordion, isOpen: isAccordionOpen } = useModalAccordion('informacion-general');
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -262,318 +260,283 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
     createProjectMutation.mutate(dbData);
   };
 
-  const footer = (
-    <div className="flex justify-end gap-3">
-      <Button
-        type="button"
-        variant="outline"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          handleClose();
-        }}
-        disabled={isSubmitting}
-        className="bg-[#d2d2d2] border-[#919191]/20 text-foreground hover:bg-[#c2c2c2] rounded-lg"
-      >
-        Cancelar
-      </Button>
-      <Button
-        type="submit"
-        form="project-form"
-        disabled={isSubmitting || nameValidation === 'invalid'}
-        className="bg-[#8fc700] hover:bg-[#7fb600] text-white rounded-lg"
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            {project ? 'Actualizando...' : 'Creando...'}
-          </>
-        ) : (
-          <>
-            <Building className="h-4 w-4 mr-2" />
-            {project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
-          </>
-        )}
-      </Button>
-    </div>
-  );
-
   return (
     <ModernModal
       isOpen={isOpen}
       onClose={handleClose}
       title={project ? 'Editar Proyecto' : 'Crear Nuevo Proyecto'}
       subtitle="Gestiona los proyectos de construcción"
-      icon={Building}
-      footer={footer}
+      icon={project ? Building : FolderPlus}
+      confirmText={project ? 'Actualizar Proyecto' : 'Crear Proyecto'}
+      onConfirm={form.handleSubmit(onSubmit)}
+      isLoading={isSubmitting}
     >
       <Form {...form}>
-        <form id="project-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Accordion type="single" collapsible defaultValue="informacion-general" className="w-full space-y-1">
-            
-            {/* Información General */}
-            <AccordionItem value="informacion-general" className="border-[#919191]/20">
-              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Información General
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-3 pt-1">
-                {/* Organización */}
-                <div>
-                  <label className="text-xs font-medium text-foreground block mb-1">Organización</label>
-                  <Input 
-                    value={currentOrganization?.name || "Cargando..."}
-                    disabled
-                    className="bg-[#c8c8c8] border-[#919191]/20 text-muted-foreground rounded-lg text-sm"
-                  />
-                </div>
+        <div className="space-y-4">
+          {/* Información General */}
+          <ModalAccordion
+            id="informacion-general"
+            title="Información General"
+            subtitle="Datos básicos del proyecto"
+            icon={FileText}
+            isOpen={isAccordionOpen('informacion-general')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              {/* Organización */}
+              <div>
+                <label className="text-xs font-medium text-foreground block mb-1">Organización</label>
+                <Input 
+                  value={currentOrganization?.name || "Cargando..."}
+                  disabled
+                  className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg"
+                />
+              </div>
 
-                {/* Nombre del Proyecto */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <FormLabel className="text-xs font-medium text-foreground">Nombre del Proyecto *</FormLabel>
-                        {nameValidation === 'validating' && (
-                          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                        )}
-                        {nameValidation === 'valid' && (
-                          <CheckCircle className="h-3 w-3 text-green-600" />
-                        )}
-                        {nameValidation === 'invalid' && (
-                          <AlertCircle className="h-3 w-3 text-red-600" />
-                        )}
-                      </div>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value || ''}
-                          placeholder="Ej: Torre Norte – Etapa 2"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                            validateProjectName(e.target.value);
-                          }}
-                        />
-                      </FormControl>
-                      {nameValidation === 'invalid' && nameExists && (
-                        <p className="text-xs text-red-600 mt-1">Este nombre ya existe</p>
+              {/* Nombre del Proyecto */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-2">
+                      <FormLabel>Nombre del Proyecto *</FormLabel>
+                      {nameValidation === 'validating' && (
+                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
                       )}
                       {nameValidation === 'valid' && (
-                        <p className="text-xs text-green-600 mt-1">Nombre disponible</p>
+                        <CheckCircle className="h-3 w-3 text-green-600" />
                       )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Estado del Proyecto */}
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Estado del Proyecto</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
-                            <SelectValue placeholder="Selecciona el estado" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
-                          <SelectItem value="planning">Planificación</SelectItem>
-                          <SelectItem value="in_progress">En Progreso</SelectItem>
-                          <SelectItem value="on_hold">En Pausa</SelectItem>
-                          <SelectItem value="completed">Completado</SelectItem>
-                          <SelectItem value="cancelled">Cancelado</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Descripción */}
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Descripción</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Describe brevemente el alcance y características del proyecto..."
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm min-h-[60px]"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Información del Cliente */}
-            <AccordionItem value="informacion-cliente" className="border-[#919191]/20">
-              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Información del Cliente
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-3 pt-1">
-                {/* Nombre del Cliente */}
-                <FormField
-                  control={form.control}
-                  name="client_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Nombre del Cliente</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Ej: Constructora ABC S.A."
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Email */}
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Email de Contacto</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="email"
-                          placeholder="cliente@empresa.com"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Teléfono */}
-                <FormField
-                  control={form.control}
-                  name="contact_phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Teléfono de Contacto</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Ej: +54 11 1234-5678"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Ubicación */}
-            <AccordionItem value="ubicacion" className="border-[#919191]/20">
-              <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Ubicación del Proyecto
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-3 pt-1">
-                {/* Dirección con Autocompletado */}
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Dirección</FormLabel>
-                      <FormControl>
-                        <AddressAutocomplete
-                          value={field.value || ''}
-                          onChange={(address) => {
-                            field.onChange(address);
-                          }}
-                          onCoordinatesChange={(lat, lng) => {
-                            setMapLat(lat);
-                            setMapLng(lng);
-                          }}
-                          onCityChange={(city) => {
-                            form.setValue('city', city);
-                          }}
-                          onZipCodeChange={(zipCode) => {
-                            form.setValue('zip_code', zipCode);
-                          }}
-                          placeholder="Buscar dirección..."
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Ciudad */}
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-muted-foreground">Ciudad</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Se completa automáticamente"
-                            disabled
-                            className="bg-[#f0f0f0] border-[#919191]/20 text-muted-foreground rounded-lg text-sm cursor-not-allowed"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                      {nameValidation === 'invalid' && (
+                        <AlertCircle className="h-3 w-3 text-red-600" />
+                      )}
+                    </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ''}
+                        placeholder="Ej: Torre Norte – Etapa 2"
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          validateProjectName(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    {nameValidation === 'invalid' && nameExists && (
+                      <p className="text-xs text-red-600 mt-1">Este nombre ya existe</p>
                     )}
-                  />
-
-                  {/* Código Postal */}
-                  <FormField
-                    control={form.control}
-                    name="zip_code"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-muted-foreground">Código Postal</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Se completa automáticamente"
-                            disabled
-                            className="bg-[#f0f0f0] border-[#919191]/20 text-muted-foreground rounded-lg text-sm cursor-not-allowed"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    {nameValidation === 'valid' && (
+                      <p className="text-xs text-green-600 mt-1">Nombre disponible</p>
                     )}
-                  />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          </Accordion>
-        </form>
+              {/* Estado del Proyecto */}
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado del Proyecto</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl">
+                          <SelectValue placeholder="Selecciona el estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="planning">Planificación</SelectItem>
+                        <SelectItem value="in_progress">En Progreso</SelectItem>
+                        <SelectItem value="on_hold">En Pausa</SelectItem>
+                        <SelectItem value="completed">Completado</SelectItem>
+                        <SelectItem value="cancelled">Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Descripción */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Describe brevemente el alcance y características del proyecto..."
+                        className="min-h-[100px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl resize-none"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </ModalAccordion>
+
+          {/* Información del Cliente */}
+          <ModalAccordion
+            id="informacion-cliente"
+            title="Información del Cliente"
+            subtitle="Datos de contacto del cliente"
+            icon={User}
+            isOpen={isAccordionOpen('informacion-cliente')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              {/* Nombre del Cliente */}
+              <FormField
+                control={form.control}
+                name="client_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre del Cliente</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Ej: Constructora ABC S.A."
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email de Contacto</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="cliente@empresa.com"
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Teléfono */}
+              <FormField
+                control={form.control}
+                name="contact_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teléfono de Contacto</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Ej: +54 11 1234-5678"
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </ModalAccordion>
+
+          {/* Ubicación */}
+          <ModalAccordion
+            id="ubicacion"
+            title="Ubicación del Proyecto"
+            subtitle="Dirección y datos de ubicación"
+            icon={MapPin}
+            isOpen={isAccordionOpen('ubicacion')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              {/* Dirección con Autocompletado */}
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dirección</FormLabel>
+                    <FormControl>
+                      <AddressAutocomplete
+                        value={field.value || ''}
+                        onChange={(address) => {
+                          field.onChange(address);
+                        }}
+                        onCoordinatesChange={(lat, lng) => {
+                          setMapLat(lat);
+                          setMapLng(lng);
+                        }}
+                        onCityChange={(city) => {
+                          form.setValue('city', city);
+                        }}
+                        onZipCodeChange={(zipCode) => {
+                          form.setValue('zip_code', zipCode);
+                        }}
+                        placeholder="Buscar dirección..."
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Ciudad */}
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground">Ciudad</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Se completa automáticamente"
+                          disabled
+                          className="h-10 bg-[#f0f0f0] border-[#919191]/20 text-muted-foreground rounded-xl cursor-not-allowed"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Código Postal */}
+                <FormField
+                  control={form.control}
+                  name="zip_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground">Código Postal</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Se completa automáticamente"
+                          disabled
+                          className="h-10 bg-[#f0f0f0] border-[#919191]/20 text-muted-foreground rounded-xl cursor-not-allowed"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </ModalAccordion>
+        </div>
       </Form>
     </ModernModal>
   );
