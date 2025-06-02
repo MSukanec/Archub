@@ -131,6 +131,8 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['materials'] });
+      queryClient.invalidateQueries({ queryKey: ['budget-materials'] });
       toast({
         title: "Tareas agregadas",
         description: `Se agregaron ${selectedTasks.length} tarea(s) al presupuesto correctamente.`,

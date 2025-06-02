@@ -271,14 +271,9 @@ export default function SiteLogs() {
               </div>
             ) : siteLogs.length === 0 ? (
               <div className="text-center py-8">
-                <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">Sin registros</h3>
-                <p className="text-muted-foreground mb-4">
-                  Aún no hay entradas en la bitácora de obra
+                <p className="text-muted-foreground text-sm">
+                  Timeline vacío
                 </p>
-                <Button onClick={handleCreateNew} variant="outline">
-                  Crear primer registro
-                </Button>
               </div>
             ) : (
               <div className="relative">

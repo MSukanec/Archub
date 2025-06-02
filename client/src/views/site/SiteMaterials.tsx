@@ -376,7 +376,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                       Unidad
                     </th>
                     <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
-                      Stock
+                      Cantidad
                     </th>
                     <th className="text-center py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-[5%]">
                       Precio Unit.
@@ -474,7 +474,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                                   </Badge>
                                 </td>
                                 <td className="text-center py-1">
-                                  <div className="text-sm">{material.stock}</div>
+                                  <div className="text-sm">{material.stock.toFixed(2)}</div>
                                 </td>
                                 <td className="text-center py-1">
                                   <div className="text-sm">${material.unit_price ? material.unit_price.toFixed(2) : '0.00'}</div>
@@ -611,8 +611,8 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                   
                   <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border">
                     <div>
-                      <div className="text-xs text-muted-foreground">Stock</div>
-                      <div className="font-medium">{material.stock}</div>
+                      <div className="text-xs text-muted-foreground">Cantidad</div>
+                      <div className="font-medium">{material.stock.toFixed(2)}</div>
                     </div>
                     <div>
                       <div className="text-xs text-muted-foreground">Precio Unitario</div>
