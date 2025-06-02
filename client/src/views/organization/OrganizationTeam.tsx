@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -80,6 +81,7 @@ const roleConfig = {
 
 export default function OrganizationTeam() {
   const { organizationId } = useUserContextStore();
+  const { user } = useAuthStore();
   const [expandedMember, setExpandedMember] = useState<string | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -114,6 +116,29 @@ export default function OrganizationTeam() {
       return data;
     },
     enabled: !!organizationId,
+    refetchOnWindowFocus: false,
+  });
+
+  // Obtener datos del usuario actual
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching current user:', error);
+        throw error;
+      }
+      
+      return data;
+    },
+    enabled: !!user?.id,
     refetchOnWindowFocus: false,
   });
 
@@ -197,16 +222,16 @@ export default function OrganizationTeam() {
     );
   }
 
-  // Mock team members data for now since it's not implemented in the backend
-  const teamMembers = [
+  // Crear datos del equipo basados en el usuario actual
+  const teamMembers = currentUser ? [
     {
-      id: '1',
-      firstName: 'Matias',
-      lastName: 'Sukanec',
-      email: 'lenga@gmail.com',
+      id: currentUser.id,
+      firstName: currentUser.first_name || user?.firstName || 'Usuario',
+      lastName: currentUser.last_name || user?.lastName || '',
+      email: currentUser.email || user?.email || '',
       role: 'owner' as const,
-      joinedAt: '2025-05-26T21:36:17.711297+00:00',
-      lastActive: '2025-05-29T15:16:01.678952Z',
+      joinedAt: currentUser.created_at || new Date().toISOString(),
+      lastActive: new Date().toISOString(),
       permissions: {
         projects: { view: true, create: true, edit: true, delete: true },
         budgets: { view: true, create: true, edit: true, delete: true },
@@ -215,7 +240,7 @@ export default function OrganizationTeam() {
         team: { view: true, invite: true, manage: true }
       }
     }
-  ];
+  ] : [];
 
   return (
     <div className="p-6 space-y-6">
