@@ -149,7 +149,7 @@ export default function ModernModal({
         />
         
         {/* Body - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#e0e0e0]">
+        <div className="flex-1 overflow-y-auto px-4 py-4 bg-[#e0e0e0]">
           {children}
         </div>
         
