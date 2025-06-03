@@ -284,14 +284,37 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       <form id="movement-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
           {/* Información Básica */}
-          <AccordionItem value="basic-info" className="border-input">
-            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
-                Información Básica
+          <AccordionItem value="basic-info" className="border border-input rounded-none w-full">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline px-4 py-3 w-full [&[data-state=open]>.accordion-icon]:rotate-45">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary" />
+                  Información Básica
+                </div>
+                <Plus className="accordion-icon w-4 h-4 text-primary transition-transform duration-200" />
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-1">
+              {/* Fecha */}
+              <FormField
+                control={form.control}
+                name="created_at"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Fecha <span className="text-primary">*</span></FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="date" 
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Tipo */}
                 <FormField
@@ -359,26 +382,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 />
               </div>
 
-              {/* Fecha */}
-              <FormField
-                control={form.control}
-                name="created_at"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">Fecha *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="date" 
-                        value={field.value || ''}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Descripción */}
               <FormField
                 control={form.control}
@@ -402,11 +405,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           </AccordionItem>
 
           {/* Detalle de Movimiento */}
-          <AccordionItem value="movement-details" className="border-input">
-            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-primary" />
-                Detalle de Movimiento
+          <AccordionItem value="movement-details" className="border border-input rounded-none w-full">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline px-4 py-3 w-full [&[data-state=open]>.accordion-icon]:rotate-45">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  Detalle de Movimiento
+                </div>
+                <Plus className="accordion-icon w-4 h-4 text-primary transition-transform duration-200" />
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pt-1">
@@ -467,7 +473,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">Cantidad *</FormLabel>
+                    <FormLabel className="text-xs font-medium text-foreground">Cantidad <span className="text-primary">*</span></FormLabel>
                     <FormControl>
                       <Input
                         type="number"
