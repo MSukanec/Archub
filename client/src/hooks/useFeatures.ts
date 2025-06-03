@@ -52,23 +52,38 @@ export function useUserPlan() {
           const { data: userData, error: userError } = await supabase
             .rpc('get_users_for_admin');
           
+          console.log('Admin user data from RPC:', userData);
+          console.log('Admin user error:', userError);
+          
           if (!userError && userData && Array.isArray(userData)) {
             const currentUser = userData.find(u => u.auth_id === user.id);
+            console.log('Current admin user found:', currentUser);
+            
             if (currentUser) {
-              // Get plan data - admin should have PRO plan
-              const { data: planData } = await supabase
+              // Get actual plan data from database
+              const { data: planData, error: planError } = await supabase
                 .from('plans')
                 .select('*')
                 .eq('id', currentUser.plan_id)
                 .single();
               
+              console.log('Plan data for admin:', planData);
+              console.log('Plan error:', planError);
+              
+              if (!planError && planData) {
+                const result = {
+                  ...currentUser,
+                  plan: planData
+                };
+                console.log('Final admin user result:', result);
+                return result;
+              }
+              
+              // Fallback if plan not found
+              console.log('Plan not found, returning user without plan');
               return {
                 ...currentUser,
-                plan: planData || {
-                  id: 'd0de319e-2b8c-40a5-abb9-3ea6bbf1fc08',
-                  name: 'pro',
-                  features: { max_organizations: 1, export_pdf_custom: false }
-                }
+                plan: null
               };
             }
           }
