@@ -9,6 +9,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ModernTemplate, TEMPLATE_OPTIONS, TemplateType } from '@/components/pdf-templates';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;
@@ -110,7 +111,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   });
 
   // Estado para selector de plantilla
-  const [selectedTemplate, setSelectedTemplate] = useState<'default' | 'custom'>('custom');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
 
   const toggleAccordion = (accordionId: string) => {
     setActiveAccordion(activeAccordion === accordionId ? null : accordionId);
@@ -341,6 +342,33 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
   const calculateTotal = () => {
     return data.reduce((total, item) => total + (item.total_price || 0), 0);
+  };
+
+  // Función para renderizar la plantilla seleccionada
+  const renderSelectedTemplate = () => {
+    switch (selectedTemplate) {
+      case 'modern':
+        return (
+          <ModernTemplate
+            template={template}
+            organization={organization}
+            pdfParams={pdfParams}
+            sectionStates={sectionStates}
+            data={data}
+            type={type}
+            getGridCols={getGridCols}
+            calculateTotal={calculateTotal}
+          />
+        );
+      case 'default':
+        return renderDefaultTemplate();
+      case 'technical':
+      case 'compact':
+        // Por ahora renderizar la plantilla por defecto hasta que se implementen
+        return renderDefaultTemplate();
+      default:
+        return renderDefaultTemplate();
+    }
   };
 
   // Función para renderizar plantilla por defecto
@@ -930,28 +958,17 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
             {/* Selector de plantilla inline */}
             <div className="flex items-center space-x-3 border-l border-border pl-6">
               <span className="text-sm font-medium text-muted-foreground">Plantilla:</span>
-              <div className="flex rounded-lg border border-border bg-surface p-1">
-                <button
-                  onClick={() => setSelectedTemplate('default')}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                    selectedTemplate === 'default'
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Por Defecto
-                </button>
-                <button
-                  onClick={() => setSelectedTemplate('custom')}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                    selectedTemplate === 'custom'
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Personalizable
-                </button>
-              </div>
+              <select 
+                value={selectedTemplate}
+                onChange={(e) => setSelectedTemplate(e.target.value as TemplateType)}
+                className="px-3 py-1 text-sm border border-border rounded-md bg-background text-foreground min-w-[200px]"
+              >
+                {TEMPLATE_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
