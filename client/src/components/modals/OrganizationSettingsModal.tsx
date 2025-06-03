@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Save, X } from 'lucide-react';
+import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Save, X, ImageIcon } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import { PhoneInputField } from '@/components/ui/PhoneInput';
+import { FileUpload } from '@/components/ui/FileUpload';
 
 const organizationSettingsSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -67,6 +68,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     general: true,
     location: false,
     contact: false,
+    branding: false,
     regional: false,
   });
 
@@ -508,6 +510,40 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         type="url"
                         placeholder="https://miorganizacion.com"
                         className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </ModalAccordion>
+
+          {/* Logo y Branding */}
+          <ModalAccordion
+            id="branding"
+            title="Logo y Branding"
+            icon={ImageIcon}
+            isOpen={openSections.branding}
+            onToggle={() => toggleSection('branding')}
+          >
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="logo_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Logo de la Organización</FormLabel>
+                    <FormControl>
+                      <FileUpload
+                        bucket="organization-logo"
+                        folder="logos"
+                        value={field.value}
+                        onChange={field.onChange}
+                        accept="image/*"
+                        maxSizeBytes={1024 * 1024} // 1MB
+                        placeholder="Subir logo de la organización"
+                        className="w-full"
                       />
                     </FormControl>
                     <FormMessage />
