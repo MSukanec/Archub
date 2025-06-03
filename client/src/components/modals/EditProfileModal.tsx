@@ -139,6 +139,11 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     }
   };
 
+  const handleThemeChange = async (isDark: boolean) => {
+    const newTheme = isDark ? 'dark' : 'light';
+    await setTheme(newTheme);
+  };
+
   const handleClose = () => {
     form.reset();
     onClose();
@@ -316,6 +321,29 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+            </div>
+          </div>
+
+          {/* Configuración de Apariencia */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground border-b border-border pb-2">
+              <Palette className="h-4 w-4" />
+              Configuración de Apariencia
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="text-sm font-medium text-foreground">Modo Oscuro</div>
+                <div className="text-xs text-muted-foreground">
+                  Cambia entre el tema claro y oscuro de la aplicación
+                </div>
+              </div>
+              <Switch
+                checked={theme === 'dark'}
+                onCheckedChange={handleThemeChange}
+                disabled={themeLoading}
+                className="data-[state=checked]:bg-primary"
               />
             </div>
           </div>

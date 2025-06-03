@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useThemeStore } from '@/stores/themeStore';
 import { useSidebarStore } from '@/stores/sidebarStore';
 import { authService } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/useMediaQuery';
@@ -86,7 +87,8 @@ export default function AppLayout() {
   const { setUser, setLoading } = useAuthStore();
   const { currentView } = useNavigationStore();
   const { setSecondarySidebarVisible } = useSidebarStore();
-  const { initializeUserContext } = useUserContextStore();
+  const { initializeUserContext, userId } = useUserContextStore();
+  const { initializeTheme } = useThemeStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const isMobile = useIsMobile();

@@ -18,35 +18,8 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     set({ isLoading: true });
     
     try {
-      // Obtener el user_id actual
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Usuario no autenticado');
-      }
-
-      // Obtener el usuario interno
-      const { data: internalUser } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
-
-      if (!internalUser) {
-        throw new Error('Usuario interno no encontrado');
-      }
-
-      // Actualizar o insertar la preferencia de tema
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: internalUser.id,
-          theme: theme
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (error) throw error;
+      // Guardar en localStorage como respaldo
+      localStorage.setItem('archmony-theme', theme);
 
       // Actualizar el tema en el store
       set({ theme });
@@ -67,14 +40,9 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
 
   initializeTheme: async (userId: string) => {
     try {
-      // Obtener la preferencia de tema del usuario
-      const { data: preferences } = await supabase
-        .from('user_preferences')
-        .select('theme')
-        .eq('user_id', userId)
-        .single();
-
-      const theme = preferences?.theme || 'light';
+      // Intentar cargar desde localStorage primero
+      const savedTheme = localStorage.getItem('archmony-theme') as Theme | null;
+      const theme = savedTheme || 'light';
       
       // Aplicar el tema
       set({ theme });
