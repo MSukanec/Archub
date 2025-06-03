@@ -15,10 +15,7 @@ const navigationItems = [
     section: 'dashboard' as const, 
     icon: Home, 
     label: 'Dashboard',
-    subItems: [
-      { id: 'dashboard-main', label: 'Resumen' },
-      { id: 'dashboard-timeline', label: 'Timeline' }
-    ]
+    subItems: []
   },
   { 
     section: 'organization' as const, 
@@ -26,28 +23,21 @@ const navigationItems = [
     label: 'Organización',
     subItems: [
       { id: 'organization-overview', label: 'Organización' },
-      { id: 'organization-team', label: 'Equipo' }
+      { id: 'organization-team', label: 'Equipo' },
+      { id: 'organization-settings', label: 'Configuración' }
     ]
   },
   { 
     section: 'projects' as const, 
     icon: FolderOpen, 
     label: 'Proyectos',
-    subItems: [
-      { id: 'projects-overview', label: 'Vista General' },
-      { id: 'projects-list', label: 'Lista de Proyectos' }
-    ]
+    subItems: []
   },
   { 
-    section: 'budgets' as const, 
-    icon: CreditCard, 
-    label: 'Obra',
-    subItems: [
-      { id: 'budgets-list', label: 'Lista de Presupuestos' },
-      { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
-      { id: 'budgets-materials', label: 'Lista de Materiales' },
-      { id: 'sitelog-main', label: 'Bitácora' }
-    ]
+    section: 'movements' as const, 
+    icon: DollarSign, 
+    label: 'Finanzas',
+    subItems: []
   },
   { 
     section: 'calendar' as const, 
@@ -56,18 +46,20 @@ const navigationItems = [
     subItems: []
   },
   { 
-    section: 'movements' as const, 
-    icon: DollarSign, 
-    label: 'Finanzas',
-    subItems: [
-      { id: 'transactions', label: 'Movimientos' }
-    ]
-  },
-  { 
     section: 'contacts' as const, 
     icon: Users, 
     label: 'Contactos',
     subItems: []
+  },
+  { 
+    section: 'budgets' as const, 
+    icon: CreditCard, 
+    label: 'Obra',
+    subItems: [
+      { id: 'budgets-tasks', label: 'Cómputo y Presupuesto' },
+      { id: 'budgets-materials', label: 'Materiales' },
+      { id: 'sitelog-main', label: 'Bitácora' }
+    ]
   },
   { 
     section: 'profile' as const, 

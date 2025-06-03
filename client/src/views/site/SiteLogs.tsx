@@ -209,22 +209,7 @@ export default function SiteLogs() {
           </Button>
         </div>
 
-        {/* Mobile Header */}
-        <div className="md:hidden">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                Bitácora de Obra
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Registro diario de actividades y progreso de obra
-              </p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Cards de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
