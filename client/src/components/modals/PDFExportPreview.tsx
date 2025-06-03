@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, Settings } from 'lucide-react';
+import { Download, Settings, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -158,37 +158,38 @@ startxref
       isOpen={isOpen}
       onClose={onClose}
       title="Vista Previa de Exportación PDF"
-      confirmText={isExporting ? 'Exportando...' : 'Exportar PDF'}
-      onConfirm={handleExport}
-      isLoading={isExporting}
+      subtitle="Revisa el documento antes de exportar"
+      icon={FileText}
       footer={
-        <div className="flex items-center justify-between px-4 py-4 border-t border-border/20 bg-surface-secondary flex-shrink-0">
+        <div className="flex gap-3 w-full">
           <Button
+            type="button"
             variant="outline"
             onClick={handleGoToSettings}
-            className="bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
+            disabled={isExporting}
+            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
           >
             <Settings className="w-4 h-4 mr-2" />
-            Configurar PDF
+            Configurar
           </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={isExporting}
-              className="bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleExport}
-              disabled={isExporting}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              {isExporting ? 'Exportando...' : 'Exportar PDF'}
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={isExporting}
+            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="w-2/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+          </Button>
         </div>
       }
     >
