@@ -197,9 +197,9 @@ export default function AppLayout() {
           {/* Floating Header */}
           <FloatingHeader />
           
-          <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '0px', marginRight: '55px' }}>
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '55px', marginRight: '55px' }}>
             <main className="flex-1 overflow-auto relative bg-surface-views">
-              <div className="mx-auto" style={{ maxWidth: 'calc(100vw - 110px)', paddingTop: '64px', paddingLeft: '55px', paddingRight: '55px', paddingBottom: '37px' }}>
+              <div className="w-full" style={{ paddingTop: '64px', paddingBottom: '37px' }}>
                 <ViewComponent />
               </div>
             </main>
