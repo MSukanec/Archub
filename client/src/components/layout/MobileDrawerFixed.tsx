@@ -34,6 +34,16 @@ const navigationItems = [
     subItems: []
   },
   { 
+    section: 'budgets' as const, 
+    icon: CreditCard, 
+    label: 'Obra',
+    subItems: [
+      { id: 'budgets-tasks', label: 'Cómputo y Presupuesto' },
+      { id: 'budgets-materials', label: 'Materiales' },
+      { id: 'sitelog-main', label: 'Bitácora' }
+    ]
+  },
+  { 
     section: 'movements' as const, 
     icon: DollarSign, 
     label: 'Finanzas',
@@ -50,16 +60,6 @@ const navigationItems = [
     icon: Users, 
     label: 'Contactos',
     subItems: []
-  },
-  { 
-    section: 'budgets' as const, 
-    icon: CreditCard, 
-    label: 'Obra',
-    subItems: [
-      { id: 'budgets-tasks', label: 'Cómputo y Presupuesto' },
-      { id: 'budgets-materials', label: 'Materiales' },
-      { id: 'sitelog-main', label: 'Bitácora' }
-    ]
   },
   { 
     section: 'profile' as const, 

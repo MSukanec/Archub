@@ -181,38 +181,39 @@ export default function ProjectsOverview() {
   const activeProjects = projects.filter((p: any) => p.status === 'active').length;
 
   return (
-    <div className="flex-1 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Building className="w-5 h-5 text-primary" />
+    <>
+      <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Building className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Gestión de Proyectos
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Dashboard general de tus proyectos de construcción
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Gestión de Proyectos
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Dashboard general de tus proyectos de construcción
-            </p>
-          </div>
-        </div>
-        <FeatureLock
-          feature="unlimited_projects"
-          showLockIcon={false}
-        >
-          <Button 
-            onClick={projectLimit.isLimited ? undefined : handleCreate}
-            disabled={projectLimit.isLimited}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          <FeatureLock
+            feature="unlimited_projects"
+            showLockIcon={false}
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Nuevo Proyecto
-          </Button>
-        </FeatureLock>
-      </div>
+            <Button 
+              onClick={projectLimit.isLimited ? undefined : handleCreate}
+              disabled={projectLimit.isLimited}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Proyecto
+            </Button>
+          </FeatureLock>
+        </div>
 
-      {/* Plan Limit Info for FREE users */}
+        {/* Plan Limit Info for FREE users */}
       {currentPlan === 'FREE' && projectLimit.limit > 0 && (
         <div className="rounded-2xl shadow-md bg-amber-500/10 border border-amber-500/20 p-4">
           <div className="flex items-center gap-3">
@@ -494,6 +495,24 @@ export default function ProjectsOverview() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+
+      {/* Floating Action Button - Mobile only */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <FeatureLock
+          feature="unlimited_projects"
+          showLockIcon={false}
+        >
+          <Button 
+            onClick={projectLimit.isLimited ? undefined : handleCreate}
+            disabled={projectLimit.isLimited}
+            size="lg"
+            className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Plus className="w-6 h-6" />
+          </Button>
+        </FeatureLock>
+      </div>
+    </>
   );
 }

@@ -417,7 +417,7 @@ export default function Movements() {
 
   return (
     <>
-      <div className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-3">
