@@ -53,6 +53,8 @@ interface PDFTemplate {
   show_signature_section?: boolean;
   signature_text?: string;
   company_info_size?: number;
+  show_signature_fields?: boolean;
+  signature_layout?: 'vertical' | 'horizontal';
 }
 
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
@@ -89,7 +91,9 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     showCompanySignature: true,
     showPageNumbers: true,
     companyInfoSize: 10,
-    signatureText: 'Acepto esta orden de cambio y autorizo los trabajos descritos anteriormente. Acepto que esta orden de cambio formará parte del contrato y acepto el total del contrato ajustado y cualquier retraso en la fecha de finalización como se indica anteriormente.'
+    signatureText: 'Acepto esta orden de cambio y autorizo los trabajos descritos anteriormente. Acepto que esta orden de cambio formará parte del contrato y acepto el total del contrato ajustado y cualquier retraso en la fecha de finalización como se indica anteriormente.',
+    showSignatureFields: true,
+    signatureLayout: 'vertical' as 'vertical' | 'horizontal'
   });
 
   // Estado para selector de plantilla
@@ -175,8 +179,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         show_project_section: true,
         show_details_section: true,
         show_signature_section: pdfParams.showCompanySignature,
-        signature_text: template?.signature_text || '',
-        company_info_size: pdfParams.companyInfoSize
+        signature_text: pdfParams.signatureText,
+        company_info_size: pdfParams.companyInfoSize,
+        show_signature_fields: pdfParams.showSignatureFields,
+        signature_layout: pdfParams.signatureLayout
       };
 
       // Verificar si ya existe una plantilla para esta organización
@@ -766,10 +772,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               color: template?.text_color || '#000000'
                             }}
                           >
-                            Firmado en nombre del cliente:
+                            Firma del cliente:
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-6">
+                          <div className={pdfParams.signatureLayout === 'horizontal' ? "grid grid-cols-3 gap-6" : "space-y-2"}>
                             <div>
                               <div 
                                 className="mb-1"
@@ -778,31 +784,57 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                   color: template?.text_color || '#000000'
                                 }}
                               >
-                                FIRMADO: ________________________
+                                Firma: ________________________
                               </div>
+                              {pdfParams.showSignatureFields && (
+                                <>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Aclaración: ________________________
+                                  </div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Fecha: _____ / _____ / _____
+                                  </div>
+                                </>
+                              )}
                             </div>
-                            <div>
-                              <div 
-                                className="mb-1"
-                                style={{ 
-                                  fontSize: `${template?.body_size || 10}px`,
-                                  color: template?.text_color || '#000000'
-                                }}
-                              >
-                                Nombre: ________________________
-                              </div>
-                            </div>
-                            <div>
-                              <div 
-                                className="mb-1"
-                                style={{ 
-                                  fontSize: `${template?.body_size || 10}px`,
-                                  color: template?.text_color || '#000000'
-                                }}
-                              >
-                                Fecha: _____ / _____ / _____
-                              </div>
-                            </div>
+                            {pdfParams.signatureLayout === 'horizontal' && pdfParams.showSignatureFields && (
+                              <>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Aclaración: ________________________
+                                  </div>
+                                </div>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Fecha: _____ / _____ / _____
+                                  </div>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       )}
@@ -816,10 +848,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               color: template?.text_color || '#000000'
                             }}
                           >
-                            Firmado en nombre de {organization?.name || 'Empresa'}:
+                            Firma de {organization?.name || 'Empresa'}:
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-6">
+                          <div className={pdfParams.signatureLayout === 'horizontal' ? "grid grid-cols-3 gap-6" : "space-y-2"}>
                             <div>
                               <div 
                                 className="mb-1"
@@ -828,31 +860,57 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                   color: template?.text_color || '#000000'
                                 }}
                               >
-                                FIRMADO: ________________________
+                                Firma: ________________________
                               </div>
+                              {pdfParams.showSignatureFields && (
+                                <>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Aclaración: ________________________
+                                  </div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Fecha: _____ / _____ / _____
+                                  </div>
+                                </>
+                              )}
                             </div>
-                            <div>
-                              <div 
-                                className="mb-1"
-                                style={{ 
-                                  fontSize: `${template?.body_size || 10}px`,
-                                  color: template?.text_color || '#000000'
-                                }}
-                              >
-                                Nombre: ________________________
-                              </div>
-                            </div>
-                            <div>
-                              <div 
-                                className="mb-1"
-                                style={{ 
-                                  fontSize: `${template?.body_size || 10}px`,
-                                  color: template?.text_color || '#000000'
-                                }}
-                              >
-                                Fecha: _____ / _____ / _____
-                              </div>
-                            </div>
+                            {pdfParams.signatureLayout === 'horizontal' && pdfParams.showSignatureFields && (
+                              <>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Aclaración: ________________________
+                                  </div>
+                                </div>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Fecha: _____ / _____ / _____
+                                  </div>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       )}
@@ -1121,6 +1179,25 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showCompanySignature: checked }))}
                                 className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Campos de Nombre y Fecha</span>
+                              <Switch 
+                                checked={pdfParams.showSignatureFields}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showSignatureFields: checked }))}
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium">Disposición de las Firmas</label>
+                              <select 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded bg-background text-foreground"
+                                value={pdfParams.signatureLayout}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, signatureLayout: e.target.value as 'vertical' | 'horizontal' }))}
+                              >
+                                <option value="vertical">Una debajo del otra (Vertical)</option>
+                                <option value="horizontal">Una al lado de la otra (Horizontal)</option>
+                              </select>
                             </div>
                           </div>
                         )}
