@@ -194,28 +194,32 @@ export function ModalAccordion({
   children 
 }: ModalAccordionProps) {
   return (
-    <div className="border rounded-xl overflow-hidden">
+    <div className={`flex flex-col ${isOpen ? 'flex-1' : 'flex-shrink-0'} border-b border-border/10 last:border-b-0`}>
       <button
         type="button"
         onClick={() => onToggle(id)}
-        className="w-full px-4 py-3 bg-muted/30 flex items-center justify-between hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] transition-colors text-white flex-shrink-0"
       >
-        <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-primary" />
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <Icon className="w-3 h-3 text-white" />
+          </div>
           <div className="text-left">
-            <span className="font-medium">{title}</span>
+            <div className="font-medium text-white text-sm">{title}</div>
             {subtitle && (
-              <div className="text-xs text-muted-foreground">{subtitle}</div>
+              <div className="text-xs text-gray-400">{subtitle}</div>
             )}
           </div>
         </div>
-        <ChevronDown className={`h-4 w-4 transition-transform ${
-          isOpen ? 'rotate-180' : ''
-        }`} />
+        <ChevronDown 
+          className={`w-4 h-4 text-gray-400 transition-transform ${
+            isOpen ? 'rotate-180' : ''
+          }`} 
+        />
       </button>
       
       {isOpen && (
-        <div className="px-4 py-4 space-y-4 bg-card">
+        <div className="flex-1 overflow-y-auto p-4 bg-[#e0e0e0]">
           {children}
         </div>
       )}

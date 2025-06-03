@@ -770,34 +770,36 @@ export default function SiteBudgets() {
   // Función para manejar la exportación PDF
   const handleExportPDF = async (budget: Budget) => {
     try {
-      // Obtener las tareas del presupuesto con una consulta simplificada
+      // Obtener las tareas del presupuesto usando la misma estructura que funciona
       const { data: budgetTasks, error } = await supabase
         .from('budget_tasks')
         .select(`
-          id,
-          quantity,
-          price,
-          tasks (
+          *,
+          tasks(
             id,
             name,
-            description
+            description,
+            unit_id,
+            category_id,
+            units(name),
+            task_categories!tasks_category_id_fkey(name, code)
           )
         `)
         .eq('budget_id', budget.id);
 
       if (error) throw error;
 
-      // Formatear los datos para el PDF de forma simple
+      // Formatear los datos para el PDF usando la estructura correcta
       const formattedTasks = (budgetTasks || []).map((budgetTask: any) => ({
         id: budgetTask.id,
         name: budgetTask.tasks?.name || 'Tarea sin nombre',
         description: budgetTask.tasks?.description || '',
-        category_name: 'General',
-        category_code: 'GEN',
-        unit_name: 'Unidad',
+        category_name: budgetTask.tasks?.task_categories?.name || 'General',
+        category_code: budgetTask.tasks?.task_categories?.code || 'GEN',
+        unit_name: budgetTask.tasks?.units?.name || 'Unidad',
         amount: parseFloat(budgetTask.quantity) || 0,
-        unit_price: parseFloat(budgetTask.price) || 0,
-        total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.price) || 0)
+        unit_price: parseFloat(budgetTask.unit_price) || 0,
+        total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.unit_price) || 0)
       }));
 
       // Configurar los datos para el modal PDF

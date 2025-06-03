@@ -161,35 +161,38 @@ startxref
       isOpen={isOpen}
       onClose={onClose}
       title="Vista Previa de Exportación PDF"
-      headerActions={
-        <Button
-          variant="outline"
-          onClick={handleGoToSettings}
-          className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Configurar PDF
-        </Button>
-      }
-      footerActions={
-        <div className="flex gap-2">
+      confirmText={isExporting ? 'Exportando...' : 'Exportar PDF'}
+      onConfirm={handleExport}
+      isLoading={isExporting}
+      footer={
+        <div className="flex items-center justify-between px-4 py-4 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
           <Button
             variant="outline"
-            onClick={onClose}
-            disabled={isExporting}
+            onClick={handleGoToSettings}
             className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
           >
-            <X className="w-4 h-4 mr-2" />
-            Cancelar
+            <Settings className="w-4 h-4 mr-2" />
+            Configurar PDF
           </Button>
-          <Button
-            onClick={handleExport}
-            disabled={isExporting}
-            className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {isExporting ? 'Exportando...' : 'Exportar PDF'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={isExporting}
+              className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {isExporting ? 'Exportando...' : 'Exportar PDF'}
+            </Button>
+          </div>
         </div>
       }
     >
