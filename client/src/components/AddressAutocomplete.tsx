@@ -120,27 +120,65 @@ export default function AddressAutocomplete({
           }
         );
 
-        // Escuchar evento place_changed
+        // Escuchar evento place_changed con mejor manejo de errores
         autocompleteRef.current.addListener('place_changed', () => {
-          const place = autocompleteRef.current.getPlace();
-          
-          console.log('Place object:', place);
-          
-          if (!place || !place.geometry) {
-            console.warn('No se encontró información de ubicación para esta dirección');
-            return;
-          }
+          // Pequeño delay para asegurar que el place se haya cargado completamente
+          setTimeout(() => {
+            const place = autocompleteRef.current.getPlace();
+            
+            console.log('Place object:', place);
+            
+            if (!place) {
+              console.warn('No place selected');
+              return;
+            }
 
+            // Si no tiene geometry, intentar obtenerlo con place_id
+            if (!place.geometry && place.place_id) {
+              console.log('No geometry found, trying to get details for place_id:', place.place_id);
+              
+              try {
+                const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+                
+                service.getDetails({
+                  placeId: place.place_id,
+                  fields: ['formatted_address', 'geometry', 'address_components']
+                }, (detailedPlace: any, status: any) => {
+                  if (status === window.google.maps.places.PlacesServiceStatus.OK && detailedPlace) {
+                    console.log('Got detailed place:', detailedPlace);
+                    processPlace(detailedPlace);
+                  } else {
+                    console.warn('Failed to get place details:', status);
+                  }
+                });
+              } catch (error) {
+                console.warn('Error getting place details:', error);
+              }
+              return;
+            }
+
+            if (!place.geometry) {
+              console.warn('No se encontró información de ubicación para esta dirección');
+              return;
+            }
+
+            processPlace(place);
+          }, 50);
+        });
+
+        function processPlace(place: any) {
           // Obtener dirección formateada
           const formattedAddress = place.formatted_address || '';
           onChange(formattedAddress);
 
           // Obtener coordenadas
-          const lat = place.geometry.location.lat();
-          const lng = place.geometry.location.lng();
-          setLat(lat);
-          setLng(lng);
-          onCoordinatesChange(lat, lng);
+          if (place.geometry) {
+            const lat = place.geometry.location.lat();
+            const lng = place.geometry.location.lng();
+            setLat(lat);
+            setLng(lng);
+            onCoordinatesChange(lat, lng);
+          }
 
           // Limpiar campos anteriores antes de llenar nuevos datos
           if (onCityChange) onCityChange('');
@@ -148,11 +186,11 @@ export default function AddressAutocomplete({
           if (onStateChange) onStateChange('');
           if (onCountryChange) onCountryChange('');
 
-          // Usar setTimeout para asegurar que los campos se limpien antes de llenar nuevos datos
+          // Extraer información de address_components
           setTimeout(() => {
             extractAddressComponents(place.address_components || []);
           }, 10);
-        });
+        }
 
 
 
