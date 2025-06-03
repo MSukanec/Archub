@@ -42,6 +42,16 @@ interface PDFTemplate {
   footer_text?: string;
   footer_show_page_numbers: boolean;
   footer_show_date: boolean;
+  // Nuevos campos para el diseño Change Order
+  company_address?: string;
+  company_email?: string;
+  company_phone?: string;
+  document_number?: string;
+  show_client_section?: boolean;
+  show_project_section?: boolean;
+  show_details_section?: boolean;
+  show_signature_section?: boolean;
+  signature_text?: string;
 }
 
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
@@ -331,49 +341,113 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               padding: `${template?.margin_top || 48}px ${template?.margin_right || 48}px ${template?.margin_bottom || 48}px ${template?.margin_left || 48}px`
             }}
           >
-            {/* Header del PDF */}
-            <div className="mb-8 pb-4" style={{ borderBottom: `1px solid ${template?.secondary_color || '#cccccc'}` }}>
-              <div className="flex items-center justify-between mb-4">
-                {template?.logo_url && (
-                  <img 
-                    src={template.logo_url} 
-                    alt="Logo" 
-                    className="object-contain"
-                    style={{
-                      width: `${template.logo_width}px`,
-                      height: `${template.logo_height}px`
-                    }}
-                  />
-                )}
-                {template?.company_name_show && organization?.name && (
-                  <h1 
-                    className="font-bold"
-                    style={{
-                      fontSize: `${template.company_name_size}px`,
-                      color: template.company_name_color || '#000000'
-                    }}
-                  >
-                    {organization.name}
-                  </h1>
-                )}
+            {/* Header estilo Change Order */}
+            <div className="mb-6">
+              {/* Header superior con logo y datos de empresa */}
+              <div className="flex justify-between items-start mb-6">
+                {/* Logo y nombre de la empresa */}
+                <div className="flex items-center space-x-4">
+                  {template?.logo_url && (
+                    <img 
+                      src={template.logo_url} 
+                      alt="Logo" 
+                      className="object-contain"
+                      style={{
+                        width: `${template.logo_width}px`,
+                        height: `${template.logo_height}px`
+                      }}
+                    />
+                  )}
+                  {template?.company_name_show && organization?.name && (
+                    <div>
+                      <h1 
+                        className="font-bold leading-tight"
+                        style={{
+                          fontSize: `${template.company_name_size}px`,
+                          color: template.company_name_color || '#000000'
+                        }}
+                      >
+                        {organization.name}
+                      </h1>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Datos de la empresa (derecha) */}
+                <div className="text-right" style={{ fontSize: `${template?.body_size || 10}px`, color: template?.text_color || '#000000' }}>
+                  {template?.company_address && (
+                    <div className="mb-1">{template.company_address}</div>
+                  )}
+                  <div className="mb-1">
+                    {template?.company_email && <div>Email: {template.company_email}</div>}
+                    {template?.company_phone && <div>Ph: {template.company_phone}</div>}
+                  </div>
+                </div>
               </div>
-              <h2 
-                className="font-semibold mb-2"
-                style={{
-                  fontSize: `${template?.title_size || 18}px`,
-                  color: template?.primary_color || '#000000'
-                }}
-              >
-                {title}
-              </h2>
-              <p 
-                style={{
-                  color: template?.text_color || '#666666',
-                  fontSize: `${template?.body_size || 12}px`
-                }}
-              >
-                Fecha: {new Date().toLocaleDateString()}
-              </p>
+
+              {/* Título del documento y metadatos */}
+              <div className="flex justify-between items-center mb-6" style={{ borderBottom: `2px solid ${template?.secondary_color || '#000000'}`, paddingBottom: '8px' }}>
+                <h2 
+                  className="font-bold"
+                  style={{
+                    fontSize: `${template?.title_size || 24}px`,
+                    color: template?.primary_color || '#000000'
+                  }}
+                >
+                  CHANGE ORDER
+                </h2>
+                
+                <div className="text-right" style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                  <div className="mb-1">Change Order #: {template?.document_number || '1'}</div>
+                  <div className="mb-1">{new Date().toLocaleDateString()}</div>
+                  <div>Page: 1/1</div>
+                </div>
+              </div>
+
+              {/* Secciones To: y Job: */}
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                {/* Sección To: (Cliente) */}
+                <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+                  <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                    To:
+                  </div>
+                  <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                    <div>Dr Samuel Johnstone</div>
+                    <div>28 Westview Drive</div>
+                    <div>North Vancouver, BC</div>
+                  </div>
+                </div>
+
+                {/* Sección Job: (Proyecto) */}
+                <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+                  <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                    Job:
+                  </div>
+                  <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                    <div>J1278 - Johnstone Family Custom Home</div>
+                    <div className="mt-2">
+                      <div>Start Date: ___________</div>
+                      <div>Delay Days: ___0___</div>
+                      <div className="text-xs italic">(Delay days are a reasonable estimate only)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sección Details */}
+              <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px', marginBottom: '16px' }}>
+                <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                  Details:
+                </div>
+                <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                  New Change Order
+                </div>
+              </div>
+
+              {/* Título de la tabla */}
+              <div className="font-semibold mb-3" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                Tasks and costs involved:
+              </div>
             </div>
 
             {/* Contenido del presupuesto */}
@@ -385,84 +459,74 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               ) : (
                 <>
                   <div className="overflow-x-auto">
-                    <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#666666'}` }}>
+                    <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#000000'}` }}>
                       <thead>
-                        <tr style={{ backgroundColor: template?.secondary_color || '#f0f0f0' }}>
+                        <tr style={{ backgroundColor: '#f8f8f8' }}>
                           <th 
-                            className="px-3 py-2 text-left font-semibold"
+                            className="px-3 py-2 text-left font-normal"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
                               color: template?.text_color || '#000000',
-                              fontSize: `${template?.subtitle_size || 14}px`
+                              fontSize: `${template?.body_size || 11}px`,
+                              width: '50%'
                             }}
                           >
-                            Descripción
+                            Item Description
                           </th>
                           <th 
-                            className="px-3 py-2 text-center font-semibold"
+                            className="px-3 py-2 text-center font-normal"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
                               color: template?.text_color || '#000000',
-                              fontSize: `${template?.subtitle_size || 14}px`
+                              fontSize: `${template?.body_size || 11}px`,
+                              width: '15%'
                             }}
                           >
-                            Cantidad
+                            Qty Unit
                           </th>
                           <th 
-                            className="px-3 py-2 text-center font-semibold"
+                            className="px-3 py-2 text-center font-normal"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
                               color: template?.text_color || '#000000',
-                              fontSize: `${template?.subtitle_size || 14}px`
+                              fontSize: `${template?.body_size || 11}px`,
+                              width: '15%'
                             }}
                           >
-                            Precio Unit.
+                            Unit Price
                           </th>
                           <th 
-                            className="px-3 py-2 text-right font-semibold"
+                            className="px-3 py-2 text-right font-normal"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
                               color: template?.text_color || '#000000',
-                              fontSize: `${template?.subtitle_size || 14}px`
+                              fontSize: `${template?.body_size || 11}px`,
+                              width: '20%'
                             }}
                           >
-                            Total
+                            Sub Total (Ex)
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {data.map((item, index) => (
-                          <tr key={index} style={{ backgroundColor: template?.background_color || '#ffffff' }}>
+                          <tr key={index} style={{ backgroundColor: '#ffffff' }}>
                             <td 
                               className="px-3 py-2"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#666666'}`,
-                                color: template?.text_color || '#000000'
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`
                               }}
                             >
-                              <div>
-                                <div className="font-medium" style={{ fontSize: `${template?.body_size || 12}px` }}>
-                                  {item.name}
-                                </div>
-                                {item.description && (
-                                  <div 
-                                    className="text-sm"
-                                    style={{ 
-                                      color: template?.text_color || '#666666',
-                                      fontSize: `${(template?.body_size || 12) - 2}px`
-                                    }}
-                                  >
-                                    {item.description}
-                                  </div>
-                                )}
-                              </div>
+                              {item.name}
                             </td>
                             <td 
                               className="px-3 py-2 text-center"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
                                 color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 12}px`
+                                fontSize: `${template?.body_size || 11}px`
                               }}
                             >
                               {item.amount} {item.unit_name}
@@ -470,77 +534,292 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td 
                               className="px-3 py-2 text-center"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
                                 color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 12}px`
+                                fontSize: `${template?.body_size || 11}px`
                               }}
                             >
                               ${item.unit_price?.toFixed(2) || '0.00'}
                             </td>
                             <td 
-                              className="px-3 py-2 text-right font-medium"
+                              className="px-3 py-2 text-right"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
                                 color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 12}px`
+                                fontSize: `${template?.body_size || 11}px`
                               }}
                             >
-                              ${item.total_price?.toFixed(2) || '0.00'}
+                              (${item.total_price?.toFixed(2) || '0.00'})
                             </td>
                           </tr>
                         ))}
-                      </tbody>
-                      <tfoot>
-                        <tr style={{ backgroundColor: template?.primary_color || '#f8f8f8' }}>
-                          <td 
-                            colSpan={3} 
-                            className="px-3 py-2 text-right font-bold"
+                        
+                        {/* Filas de totales como en la imagen */}
+                        <tr>
+                          <td colSpan={3} 
+                            className="px-3 py-2 text-right font-semibold"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
                               color: template?.text_color || '#000000',
-                              fontSize: `${template?.subtitle_size || 14}px`
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
                             }}
                           >
-                            Total General:
+                            Change Order Total (Ex):
                           </td>
                           <td 
-                            className="px-3 py-2 text-right font-bold"
+                            className="px-3 py-2 text-right"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
                               color: template?.text_color || '#000000',
-                              fontSize: `${template?.subtitle_size || 14}px`
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
                             }}
                           >
-                            ${calculateTotal().toFixed(2)}
+                            (${calculateTotal().toFixed(2)})
                           </td>
                         </tr>
-                      </tfoot>
+                        
+                        <tr>
+                          <td colSpan={3} 
+                            className="px-3 py-2 text-right font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
+                            }}
+                          >
+                            Tax:
+                          </td>
+                          <td 
+                            className="px-3 py-2 text-right"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
+                            }}
+                          >
+                            (${(calculateTotal() * 0.1).toFixed(2)})
+                          </td>
+                        </tr>
+                        
+                        <tr style={{ backgroundColor: '#f0f0f0' }}>
+                          <td colSpan={3} 
+                            className="px-3 py-2 text-right font-bold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`
+                            }}
+                          >
+                            Change Order Total (Incl. Tax):
+                          </td>
+                          <td 
+                            className="px-3 py-2 text-right font-bold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`
+                            }}
+                          >
+                            (${(calculateTotal() * 1.1).toFixed(2)})
+                          </td>
+                        </tr>
+
+                        {/* Espaciador */}
+                        <tr>
+                          <td colSpan={4} style={{ padding: '10px', border: 'none' }}></td>
+                        </tr>
+
+                        {/* Totales del contrato */}
+                        <tr>
+                          <td colSpan={3} 
+                            className="px-3 py-2 text-right font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
+                            }}
+                          >
+                            Current Contract Total (Incl. Tax):
+                          </td>
+                          <td 
+                            className="px-3 py-2 text-right"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
+                            }}
+                          >
+                            $444,458.26
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td colSpan={3} 
+                            className="px-3 py-2 text-right font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
+                            }}
+                          >
+                            Proposed Contract Total (Incl. Tax):
+                          </td>
+                          <td 
+                            className="px-3 py-2 text-right"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              backgroundColor: '#ffffff'
+                            }}
+                          >
+                            $443,140.43
+                          </td>
+                        </tr>
+                      </tbody>
                     </table>
                   </div>
 
-                  {/* Footer */}
-                  {template?.footer_text && (
+                  {/* Texto legal y sección de firmas */}
+                  <div className="mt-8 space-y-4">
+                    {/* Texto de aceptación */}
                     <div 
-                      className="mt-8 pt-4"
+                      className="text-justify leading-relaxed"
                       style={{ 
-                        borderTop: `1px solid ${template?.secondary_color || '#cccccc'}`,
-                        color: template?.text_color || '#666666',
-                        fontSize: `${template?.body_size || 12}px`
+                        fontSize: `${template?.body_size || 10}px`,
+                        color: template?.text_color || '#000000'
                       }}
                     >
-                      {template.footer_text}
-                      {template?.footer_show_date && (
-                        <div className="mt-2">
-                          Generado el: {new Date().toLocaleDateString()}
-                        </div>
-                      )}
-                      {template?.footer_show_page_numbers && (
-                        <div className="mt-2 text-center">
-                          Página 1 de 1
-                        </div>
-                      )}
+                      <p className="mb-3">
+                        I accept this change order and authorize works described above to be undertaken. I accept that this change order will form part of the contract 
+                        and agree to the adjusted contract total and any delay to the completion date as stated above.
+                      </p>
+                      
+                      <p>
+                        I also understand and accept that any increase or decrease in the price due to this change order will be due and included in either the next 
+                        payment or a future payment as set out in the contract payment schedule.
+                      </p>
                     </div>
-                  )}
+
+                    {/* Sección de firmas del cliente */}
+                    <div 
+                      className="mt-6"
+                      style={{ 
+                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                        padding: '12px',
+                        backgroundColor: '#f8f8f8'
+                      }}
+                    >
+                      <div 
+                        className="font-semibold mb-3"
+                        style={{ 
+                          fontSize: `${template?.body_size || 11}px`,
+                          color: template?.text_color || '#000000'
+                        }}
+                      >
+                        Signed on behalf of client:
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-6">
+                        <div>
+                          <div 
+                            className="mb-1"
+                            style={{ 
+                              fontSize: `${template?.body_size || 10}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            SIGNED: ________________________
+                          </div>
+                        </div>
+                        <div>
+                          <div 
+                            className="mb-1"
+                            style={{ 
+                              fontSize: `${template?.body_size || 10}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            Name: ________________________
+                          </div>
+                        </div>
+                        <div>
+                          <div 
+                            className="mb-1"
+                            style={{ 
+                              fontSize: `${template?.body_size || 10}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            Date: _____ / _____ / _____
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sección de firmas de la empresa */}
+                    <div 
+                      className="mt-4"
+                      style={{ 
+                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                        padding: '12px',
+                        backgroundColor: '#f8f8f8'
+                      }}
+                    >
+                      <div 
+                        className="font-semibold mb-3"
+                        style={{ 
+                          fontSize: `${template?.body_size || 11}px`,
+                          color: template?.text_color || '#000000'
+                        }}
+                      >
+                        Signed on behalf of {organization?.name || 'Buildact Builders'}
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-6">
+                        <div>
+                          <div 
+                            className="mb-1"
+                            style={{ 
+                              fontSize: `${template?.body_size || 10}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            SIGNED: ________________________
+                          </div>
+                        </div>
+                        <div>
+                          <div 
+                            className="mb-1"
+                            style={{ 
+                              fontSize: `${template?.body_size || 10}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            Name: ________________________
+                          </div>
+                        </div>
+                        <div>
+                          <div 
+                            className="mb-1"
+                            style={{ 
+                              fontSize: `${template?.body_size || 10}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            Date: _____ / _____ / _____
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
             </div>
