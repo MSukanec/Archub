@@ -64,16 +64,27 @@ export default function AdminUsers() {
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['/api/admin/users'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select(`
-          *,
-          plan:plans(name, price)
-        `)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
+      try {
+        // Use RPC function to avoid RLS recursion
+        const { data: rpcData, error: rpcError } = await supabase
+          .rpc('get_users_for_admin');
+        
+        if (!rpcError && rpcData) {
+          return rpcData;
+        }
+        
+        // Fallback to direct query
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        return data || [];
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        throw err;
+      }
     },
     retry: 1,
     staleTime: 5 * 60 * 1000,
