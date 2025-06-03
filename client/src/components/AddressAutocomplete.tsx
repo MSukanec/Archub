@@ -166,7 +166,7 @@ export default function AddressAutocomplete({
           }, 50);
         });
 
-        function processPlace(place: any) {
+        const processPlace = (place: any) => {
           // Obtener dirección formateada
           const formattedAddress = place.formatted_address || '';
           onChange(formattedAddress);
@@ -190,7 +190,7 @@ export default function AddressAutocomplete({
           setTimeout(() => {
             extractAddressComponents(place.address_components || []);
           }, 10);
-        }
+        };
 
 
 

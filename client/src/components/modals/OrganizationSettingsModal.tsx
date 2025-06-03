@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
+import { PhoneInputField } from '@/components/ui/PhoneInput';
 
 const organizationSettingsSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -375,7 +376,9 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <FormControl>
                         <Input
                           {...field}
-                          className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                          disabled
+                          readOnly
+                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -392,7 +395,9 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <FormControl>
                         <Input
                           {...field}
-                          className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                          disabled
+                          readOnly
+                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -411,7 +416,9 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <FormControl>
                         <Input
                           {...field}
-                          className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                          disabled
+                          readOnly
+                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -428,7 +435,9 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <FormControl>
                         <Input
                           {...field}
-                          className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                          disabled
+                          readOnly
+                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -451,14 +460,16 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
               <FormField
                 control={form.control}
                 name="phone"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className="text-xs font-medium text-foreground">Teléfono</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        type="tel"
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                      <PhoneInputField
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="Ingresa el teléfono de la organización"
+                        error={!!fieldState.error}
                       />
                     </FormControl>
                     <FormMessage />
@@ -476,6 +487,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <Input
                         {...field}
                         type="email"
+                        placeholder="correo@organizacion.com"
                         className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
@@ -494,7 +506,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <Input
                         {...field}
                         type="url"
-                        placeholder="https://..."
+                        placeholder="https://miorganizacion.com"
                         className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
