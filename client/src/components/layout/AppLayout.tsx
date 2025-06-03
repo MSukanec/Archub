@@ -50,6 +50,7 @@ const viewComponents = {
 
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
+  'organization-pdf': OrganizationPDF,
   'organization-activity': Organization,
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
