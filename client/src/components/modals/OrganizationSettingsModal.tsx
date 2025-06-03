@@ -537,7 +537,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                     <FormControl>
                       <FileUpload
                         bucket="organization-logo"
-                        folder=""
+                        folder="logos"
                         value={field.value}
                         onChange={field.onChange}
                         accept="image/*"
