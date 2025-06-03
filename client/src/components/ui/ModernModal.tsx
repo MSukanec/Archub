@@ -32,19 +32,19 @@ interface ModernModalProps {
 // Componente Header del Modal
 function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-4 border-b border-border/20 bg-surface-views flex-shrink-0">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between px-2 sm:px-4 py-3 sm:py-4 border-b border-border/20 bg-surface-views flex-shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         {Icon && (
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <Icon className="w-4 h-4 text-white" />
+          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+            <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
           </div>
         )}
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground truncate">
               {subtitle}
             </p>
           )}
@@ -65,12 +65,12 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
 // Componente Footer del Modal
 function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading = false }: ModalFooterProps) {
   return (
-    <div className="border-t border-border/20 bg-surface-views p-4">
-      <div className="flex gap-3">
+    <div className="border-t border-border/20 bg-surface-views p-2 sm:p-4">
+      <div className="flex gap-2 sm:gap-3">
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-9 sm:h-10 text-sm"
           disabled={isLoading}
         >
           Cancelar
@@ -78,7 +78,7 @@ function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading 
         {onConfirm && (
           <Button
             onClick={onConfirm}
-            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-10"
+            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-9 sm:h-10 text-sm"
             disabled={isLoading}
           >
             {isLoading ? 'Procesando...' : confirmText}
@@ -127,19 +127,11 @@ export default function ModernModal({
       
       {/* Modal */}
       <div 
-        className="modern-modal absolute bg-surface-views shadow-2xl border-l border-border/20"
-        style={{ 
-          top: 0, 
-          right: 0, 
-          bottom: 0, 
-          width: 'min(33.333vw, 90vw)', 
-          minWidth: '420px',
-          height: '100vh',
-          margin: 0,
-          padding: 0,
-          display: 'flex',
-          flexDirection: 'column'
-        }}
+        className="modern-modal absolute top-0 right-0 bottom-0 
+                   w-full md:w-[33.333vw] md:min-w-[420px] md:max-w-[90vw] 
+                   max-w-full h-full overflow-hidden
+                   bg-surface-views shadow-2xl border-l border-border/20 
+                   flex flex-col m-0 p-0"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
