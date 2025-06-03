@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
+import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -57,6 +58,8 @@ interface PDFTemplate {
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
   const { organizationId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isExporting, setIsExporting] = useState(false);
   
   // Estados para acordeones y secciones
@@ -86,7 +89,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     showClientSignature: true,
     showCompanySignature: true,
     showPageNumbers: true,
-    companyInfoSize: 10
+    companyInfoSize: template?.company_info_size || 10
   });
 
   // Estado para selector de plantilla
@@ -133,6 +136,94 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
       return data;
     },
     enabled: !!organizationId && isOpen,
+  });
+
+  // Mutación para guardar la plantilla personalizada
+  const saveTemplateMutation = useMutation({
+    mutationFn: async () => {
+      if (!organizationId) throw new Error('No organization selected');
+
+      const templateData = {
+        organization_id: organizationId,
+        name: 'Plantilla Personalizada',
+        logo_url: template?.logo_url || null,
+        logo_width: template?.logo_width || 100,
+        logo_height: template?.logo_height || 50,
+        company_name_show: template?.company_name_show || true,
+        company_name_size: template?.company_name_size || 24,
+        company_name_color: template?.company_name_color || '#000000',
+        primary_color: template?.primary_color || '#1e40af',
+        secondary_color: template?.secondary_color || '#64748b',
+        text_color: template?.text_color || '#000000',
+        background_color: template?.background_color || '#ffffff',
+        font_family: template?.font_family || 'Arial',
+        title_size: template?.title_size || 18,
+        subtitle_size: template?.subtitle_size || 14,
+        body_size: template?.body_size || 10,
+        margin_top: template?.margin_top || 20,
+        margin_bottom: template?.margin_bottom || 20,
+        margin_left: template?.margin_left || 20,
+        margin_right: template?.margin_right || 20,
+        footer_text: template?.footer_text || '',
+        footer_show_page_numbers: template?.footer_show_page_numbers || false,
+        footer_show_date: template?.footer_show_date || false,
+        company_address: template?.company_address || '',
+        company_email: template?.company_email || '',
+        company_phone: template?.company_phone || '',
+        document_number: template?.document_number || '',
+        show_client_section: pdfParams.showClientSignature,
+        show_project_section: true,
+        show_details_section: true,
+        show_signature_section: pdfParams.showCompanySignature,
+        signature_text: template?.signature_text || '',
+        company_info_size: pdfParams.companyInfoSize
+      };
+
+      // Verificar si ya existe una plantilla para esta organización
+      const { data: existingTemplate } = await supabase
+        .from('pdf_templates')
+        .select('id')
+        .eq('organization_id', organizationId)
+        .single();
+
+      if (existingTemplate) {
+        // Actualizar plantilla existente
+        const { data, error } = await supabase
+          .from('pdf_templates')
+          .update(templateData)
+          .eq('organization_id', organizationId)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return data;
+      } else {
+        // Crear nueva plantilla
+        const { data, error } = await supabase
+          .from('pdf_templates')
+          .insert(templateData)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return data;
+      }
+    },
+    onSuccess: () => {
+      toast({
+        title: "Plantilla guardada",
+        description: "La plantilla personalizada se ha guardado correctamente.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['pdf-template', organizationId] });
+    },
+    onError: (error) => {
+      console.error('Error saving template:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo guardar la plantilla. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    }
   });
 
   const handleExport = async () => {
@@ -1083,23 +1174,34 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               type="button"
               variant="outline"
               onClick={handleGoToSettings}
-              disabled={isExporting}
+              disabled={isExporting || saveTemplateMutation.isPending}
             >
               Configurar
+            </Button>
+          )}
+          {selectedTemplate === 'custom' && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => saveTemplateMutation.mutate()}
+              disabled={isExporting || saveTemplateMutation.isPending}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saveTemplateMutation.isPending ? 'Guardando...' : 'Guardar Plantilla Personalizada'}
             </Button>
           )}
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={isExporting}
+            disabled={isExporting || saveTemplateMutation.isPending}
           >
             Cancelar
           </Button>
           <Button
             type="button"
             onClick={handleExport}
-            disabled={isExporting}
+            disabled={isExporting || saveTemplateMutation.isPending}
           >
             <Download className="w-4 h-4 mr-2" />
             {isExporting ? 'Exportando...' : 'Exportar PDF'}
