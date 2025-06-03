@@ -85,6 +85,11 @@ export default function ProjectsOverview() {
 
 
 
+  const handleCreate = () => {
+    setSelectedProject(null);
+    setIsCreateModalOpen(true);
+  };
+
   const handleEdit = (project: Project) => {
     setSelectedProject(project);
     setIsCreateModalOpen(true);
@@ -174,6 +179,13 @@ export default function ProjectsOverview() {
             </p>
           </div>
         </div>
+        <Button 
+          onClick={handleCreate}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nuevo Proyecto
+        </Button>
       </div>
 
       {/* Cards de Estadísticas */}

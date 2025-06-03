@@ -32,7 +32,7 @@ interface ModernModalProps {
 // Componente Header del Modal
 function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-4 border-b border-border/20 bg-[#e0e0e0] flex-shrink-0">
+    <div className="flex items-center justify-between px-4 py-4 border-b border-border/20 bg-surface-secondary flex-shrink-0">
       <div className="flex items-center gap-3">
         {Icon && (
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
@@ -54,7 +54,7 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
         variant="ghost"
         size="sm"
         onClick={onClose}
-        className="h-8 w-8 p-0 rounded-lg hover:bg-[#d0d0d0] text-muted-foreground hover:text-foreground"
+        className="h-8 w-8 p-0 rounded-lg hover:bg-surface-primary text-muted-foreground hover:text-foreground"
       >
         <X className="h-4 w-4" />
       </Button>

@@ -339,8 +339,8 @@
   
   /* Background hierarchy for dark mode - Views, Primary Components, Secondary Cards */
   --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
-  --background-primary: 280 100% 50%; /* #8000ff - VIOLETA TEMPORAL PARA DEBUGGING */
-  --background-secondary: 0 100% 50%; /* #ff0000 - ROJO TEMPORAL PARA DEBUGGING */
+  --background-primary: 0 0% 18%; /* #2d2d2d - Primary components background */
+  --background-secondary: 0 0% 20%; /* #323232 - Secondary cards background */
 }
 
 @layer base {
