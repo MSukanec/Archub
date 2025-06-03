@@ -188,7 +188,7 @@ export default function ProfileInfo() {
           </div>
         </div>
 
-        {/* Configuración de Apariencia */}
+        {/* Información de la Aplicación */}
         <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -201,15 +201,12 @@ export default function ProfileInfo() {
             <div className="space-y-1">
               <div className="text-sm font-medium text-foreground">Modo Oscuro</div>
               <div className="text-xs text-muted-foreground">
-                Cambia entre el tema claro y oscuro de la aplicación
+                Archmony utiliza modo oscuro para reducir la fatiga visual
               </div>
             </div>
-            <Switch
-              checked={theme === 'dark'}
-              onCheckedChange={handleThemeChange}
-              disabled={themeLoading}
-              className="data-[state=checked]:bg-primary"
-            />
+            <div className="w-11 h-6 bg-primary rounded-full flex items-center justify-end px-1">
+              <div className="w-4 h-4 bg-white rounded-full"></div>
+            </div>
           </div>
         </div>
       </div>
