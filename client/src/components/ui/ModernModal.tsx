@@ -151,14 +151,7 @@ export default function ModernModal({
         />
         
         {/* Body - Constrained between header and footer */}
-        <div 
-          className="flex flex-col overflow-hidden"
-          style={{ 
-            flex: '1 1 auto',
-            minHeight: 0,
-            maxHeight: 'calc(100vh - 120px)' // Ajustado para header y footer
-          }}
-        >
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {children}
         </div>
         
@@ -203,7 +196,7 @@ export function ModalAccordion({
   children 
 }: ModalAccordionProps) {
   return (
-    <div className={`flex flex-col ${isOpen ? 'flex-1 h-full' : 'flex-shrink-0'}`}>
+    <div className={`flex flex-col ${isOpen ? 'flex-1' : 'flex-shrink-0'}`}>
       <button
         type="button"
         onClick={() => onToggle(id)}
@@ -228,7 +221,7 @@ export function ModalAccordion({
       </button>
       
       {isOpen && (
-        <div className="flex-1 overflow-y-auto p-4 bg-surface-views min-h-0">
+        <div className="flex-1 overflow-y-auto p-4 bg-surface-views">
           {children}
         </div>
       )}
