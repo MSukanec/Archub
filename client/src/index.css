@@ -64,6 +64,20 @@
   z-index: 99999 !important;
 }
 
+/* Radix Select Content Portal z-index fix */
+[data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
+}
+
+/* Additional select fixes */
+.radix-select-content {
+  z-index: 99999 !important;
+}
+
+[role="dialog"] [data-radix-select-content] {
+  z-index: 99999 !important;
+}
+
 .pac-item {
   background-color: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
