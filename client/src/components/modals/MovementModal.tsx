@@ -293,7 +293,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-2">
               {/* Fecha */}
               <FormField
                 control={form.control}
@@ -400,7 +399,6 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   </FormItem>
                 )}
               />
-              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -412,7 +410,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 Detalle de Movimiento
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-3 pt-1">
+            <AccordionContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Moneda */}
                 <FormField
