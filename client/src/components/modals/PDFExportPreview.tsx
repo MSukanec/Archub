@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { FileText, Download, X, Settings } from 'lucide-react';
+import { Download, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -162,11 +162,11 @@ startxref
       onConfirm={handleExport}
       isLoading={isExporting}
       footer={
-        <div className="flex items-center justify-between px-4 py-4 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-4 border-t border-border/20 bg-surface-secondary flex-shrink-0">
           <Button
             variant="outline"
             onClick={handleGoToSettings}
-            className="bg-[#e0e0e0] hover:bg-surface-secondary text-muted-foreground border-input rounded-xl"
+            className="bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
           >
             <Settings className="w-4 h-4 mr-2" />
             Configurar PDF
@@ -176,15 +176,14 @@ startxref
               variant="outline"
               onClick={onClose}
               disabled={isExporting}
-              className="bg-[#e0e0e0] hover:bg-surface-secondary text-muted-foreground border-input rounded-xl"
+              className="bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
             >
-              <X className="w-4 h-4 mr-2" />
               Cancelar
             </Button>
             <Button
               onClick={handleExport}
               disabled={isExporting}
-              className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
             >
               <Download className="w-4 h-4 mr-2" />
               {isExporting ? 'Exportando...' : 'Exportar PDF'}
@@ -193,118 +192,122 @@ startxref
         </div>
       }
     >
-      {/* Vista previa del PDF que ocupa todo el modal con fondo blanco */}
-      <div 
-        className="w-full h-full overflow-auto"
-        style={{ 
-          fontFamily: template?.font_family || 'Arial',
-          backgroundColor: '#ffffff',
-          color: '#000000'
-        }}
-      >
-        {/* Contenido del PDF simulando una hoja de impresión */}
-        <div className="bg-white text-black p-8 min-h-full shadow-sm border border-gray-200">
-          {/* Header del PDF */}
-          <div className="mb-8 pb-4 border-b border-gray-300">
-            <div className="flex items-center justify-between mb-4">
-              {template?.logo_url && (
-                <img 
-                  src={template.logo_url} 
-                  alt="Logo" 
-                  className="object-contain"
-                  style={{
-                    width: `${template.logo_width}px`,
-                    height: `${template.logo_height}px`
-                  }}
-                />
-              )}
-              {template?.company_name_show && organization?.name && (
-                <h1 
-                  className="font-bold text-black"
-                  style={{
-                    fontSize: `${template.company_name_size}px`,
-                    color: '#000000'
-                  }}
-                >
-                  {organization.name}
-                </h1>
-              )}
-            </div>
-            <h2 
-              className="font-semibold text-black mb-2"
-              style={{
-                fontSize: `${template?.title_size || 18}px`
-              }}
-            >
-              {title}
-            </h2>
-            <p className="text-gray-600 text-sm">
-              Fecha: {new Date().toLocaleDateString()}
-            </p>
-          </div>
-
-          {/* Contenido del presupuesto */}
-          <div className="space-y-4">
-            {data.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
+      {/* Vista previa del PDF con proporción A4 exacta */}
+      <div className="w-full h-full overflow-auto bg-gray-100 p-6 flex justify-center">
+        {/* Hoja A4 con proporciones exactas (210mm x 297mm ratio = 0.707) */}
+        <div 
+          className="bg-white shadow-lg border border-gray-300"
+          style={{ 
+            width: '595px', // 210mm en pixels a 72 DPI
+            minHeight: '842px', // 297mm en pixels a 72 DPI
+            fontFamily: template?.font_family || 'Arial',
+            color: '#000000'
+          }}
+        >
+          {/* Contenido del PDF simulando exactamente una hoja A4 */}
+          <div className="p-12 text-black">
+            {/* Header del PDF */}
+            <div className="mb-8 pb-4 border-b border-gray-300">
+              <div className="flex items-center justify-between mb-4">
+                {template?.logo_url && (
+                  <img 
+                    src={template.logo_url} 
+                    alt="Logo" 
+                    className="object-contain"
+                    style={{
+                      width: `${template.logo_width}px`,
+                      height: `${template.logo_height}px`
+                    }}
+                  />
+                )}
+                {template?.company_name_show && organization?.name && (
+                  <h1 
+                    className="font-bold text-black"
+                    style={{
+                      fontSize: `${template.company_name_size}px`,
+                      color: '#000000'
+                    }}
+                  >
+                    {organization.name}
+                  </h1>
+                )}
+              </div>
+              <h2 
+                className="font-semibold text-black mb-2"
+                style={{
+                  fontSize: `${template?.title_size || 18}px`
+                }}
+              >
+                {title}
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Fecha: {new Date().toLocaleDateString()}
               </p>
-            ) : (
-              <>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-gray-400">
-                    <thead>
-                      <tr className="bg-gray-100">
-                        <th className="border border-gray-400 px-3 py-2 text-left text-black font-semibold">Descripción</th>
-                        <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Cantidad</th>
-                        <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Precio Unit.</th>
-                        <th className="border border-gray-400 px-3 py-2 text-right text-black font-semibold">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.map((item, index) => (
-                        <tr key={index} className="bg-white">
-                          <td className="border border-gray-400 px-3 py-2 text-black">
-                            <div>
-                              <div className="font-medium">{item.name}</div>
-                              {item.description && (
-                                <div className="text-sm text-gray-600">{item.description}</div>
-                              )}
-                            </div>
+            </div>
+
+            {/* Contenido del presupuesto */}
+            <div className="space-y-4">
+              {data.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">
+                  No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
+                </p>
+              ) : (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse border border-gray-400">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-400 px-3 py-2 text-left text-black font-semibold">Descripción</th>
+                          <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Cantidad</th>
+                          <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Precio Unit.</th>
+                          <th className="border border-gray-400 px-3 py-2 text-right text-black font-semibold">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.map((item, index) => (
+                          <tr key={index} className="bg-white">
+                            <td className="border border-gray-400 px-3 py-2 text-black">
+                              <div>
+                                <div className="font-medium">{item.name}</div>
+                                {item.description && (
+                                  <div className="text-sm text-gray-600">{item.description}</div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="border border-gray-400 px-3 py-2 text-center text-black">
+                              {item.amount} {item.unit_name}
+                            </td>
+                            <td className="border border-gray-400 px-3 py-2 text-center text-black">
+                              ${item.unit_price?.toFixed(2) || '0.00'}
+                            </td>
+                            <td className="border border-gray-400 px-3 py-2 text-right text-black font-medium">
+                              ${item.total_price?.toFixed(2) || '0.00'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="bg-gray-50">
+                          <td colSpan={3} className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
+                            Total General:
                           </td>
-                          <td className="border border-gray-400 px-3 py-2 text-center text-black">
-                            {item.amount} {item.unit_name}
-                          </td>
-                          <td className="border border-gray-400 px-3 py-2 text-center text-black">
-                            ${item.unit_price?.toFixed(2) || '0.00'}
-                          </td>
-                          <td className="border border-gray-400 px-3 py-2 text-right text-black font-medium">
-                            ${item.total_price?.toFixed(2) || '0.00'}
+                          <td className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
+                            ${calculateTotal().toFixed(2)}
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr className="bg-gray-50">
-                        <td colSpan={3} className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
-                          Total General:
-                        </td>
-                        <td className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
-                          ${calculateTotal().toFixed(2)}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-
-                {/* Footer */}
-                {template?.footer_text && (
-                  <div className="mt-8 pt-4 border-t border-gray-300 text-sm text-gray-600">
-                    {template.footer_text}
+                      </tfoot>
+                    </table>
                   </div>
-                )}
-              </>
-            )}
+
+                  {/* Footer */}
+                  {template?.footer_text && (
+                    <div className="mt-8 pt-4 border-t border-gray-300 text-sm text-gray-600">
+                      {template.footer_text}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
