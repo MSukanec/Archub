@@ -197,7 +197,9 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         show_signature_fields: pdfParams.showSignatureFields,
         show_clarification_field: pdfParams.showClarificationField,
         show_date_field: pdfParams.showDateField,
-        signature_layout: 'horizontal'
+        signature_layout: 'horizontal',
+        footer_info: pdfParams.footerInfo,
+        show_footer_info: pdfParams.showFooterInfo
       };
 
       // Verificar si ya existe una plantilla para esta organización
@@ -295,14 +297,16 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
       await new Promise(resolve => setTimeout(resolve, 100));
 
       const canvas = await html2canvas(tempContainer, {
-        scale: 1,
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
         x: 0,
-        y: 0
+        y: 0,
+        logging: false,
+        removeContainer: true
       });
 
       // Limpiar el contenedor temporal
@@ -569,13 +573,13 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
             <>
               {sectionStates.table && (
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#000000'}` }}>
+                  <table className="w-full border-collapse" style={{ border: '1px solid #000000' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f8f8f8' }}>
                         <th 
                           className="px-3 py-2 text-left font-normal"
                           style={{ 
-                            border: `1px solid ${template?.secondary_color || '#000000'}`,
+                            border: '1px solid #000000',
                             color: template?.text_color || '#000000',
                             fontSize: `${template?.body_size || 11}px`,
                             width: pdfParams.showUnitColumn && pdfParams.showPriceColumn ? '50%' : '70%'
@@ -587,7 +591,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           <th 
                             className="px-3 py-2 text-center font-normal"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              border: '1px solid #000000',
                               color: template?.text_color || '#000000',
                               fontSize: `${template?.body_size || 11}px`,
                               width: '15%'
@@ -600,7 +604,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           <th 
                             className="px-3 py-2 text-center font-normal"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              border: '1px solid #000000',
                               color: template?.text_color || '#000000',
                               fontSize: `${template?.body_size || 11}px`,
                               width: '15%'
@@ -612,7 +616,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         <th 
                           className="px-3 py-2 text-right font-normal"
                           style={{ 
-                            border: `1px solid ${template?.secondary_color || '#000000'}`,
+                            border: '1px solid #000000',
                             color: template?.text_color || '#000000',
                             fontSize: `${template?.body_size || 11}px`,
                             width: '20%'
@@ -628,7 +632,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           <td 
                             className="px-3 py-2"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              border: '1px solid #000000',
                               color: template?.text_color || '#000000',
                               fontSize: `${template?.body_size || 11}px`
                             }}
@@ -639,7 +643,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td 
                               className="px-3 py-2 text-center"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                border: '1px solid #000000',
                                 color: template?.text_color || '#000000',
                                 fontSize: `${template?.body_size || 11}px`
                               }}
@@ -651,7 +655,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td 
                               className="px-3 py-2 text-center"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                border: '1px solid #000000',
                                 color: template?.text_color || '#000000',
                                 fontSize: `${template?.body_size || 11}px`
                               }}
@@ -662,7 +666,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           <td 
                             className="px-3 py-2 text-right"
                             style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              border: '1px solid #000000',
                               color: template?.text_color || '#000000',
                               fontSize: `${template?.body_size || 11}px`
                             }}
@@ -678,7 +682,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
                               className="px-3 py-2 text-right font-semibold"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                border: '1px solid #000000',
                                 color: template?.text_color || '#000000',
                                 fontSize: `${template?.body_size || 11}px`,
                                 backgroundColor: '#ffffff'
@@ -689,7 +693,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td 
                               className="px-3 py-2 text-right"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                border: '1px solid #000000',
                                 color: template?.text_color || '#000000',
                                 fontSize: `${template?.body_size || 11}px`,
                                 backgroundColor: '#ffffff'
@@ -704,7 +708,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
                                 className="px-3 py-2 text-right font-semibold"
                                 style={{ 
-                                  border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                  border: '1px solid #000000',
                                   color: template?.text_color || '#000000',
                                   fontSize: `${template?.body_size || 11}px`,
                                   backgroundColor: '#ffffff'
@@ -715,7 +719,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <td 
                                 className="px-3 py-2 text-right"
                                 style={{ 
-                                  border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                  border: '1px solid #000000',
                                   color: template?.text_color || '#000000',
                                   fontSize: `${template?.body_size || 11}px`,
                                   backgroundColor: '#ffffff'
@@ -730,7 +734,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
                               className="px-3 py-2 text-right font-bold"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                border: '1px solid #000000',
                                 color: template?.text_color || '#000000',
                                 fontSize: `${template?.body_size || 11}px`
                               }}
@@ -740,7 +744,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <td 
                               className="px-3 py-2 text-right font-bold"
                               style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                border: '1px solid #000000',
                                 color: template?.text_color || '#000000',
                                 fontSize: `${template?.body_size || 11}px`
                               }}
@@ -865,6 +869,27 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                       </div>
                     </div>
                   </div>
+
+                  {/* Footer del documento */}
+                  {pdfParams.showFooterInfo && pdfParams.footerInfo && (
+                    <div 
+                      className="mt-8 pt-4"
+                      style={{ 
+                        borderTop: '1px solid #000000',
+                        textAlign: 'center'
+                      }}
+                    >
+                      <p 
+                        style={{ 
+                          fontSize: '8px',
+                          color: '#666666',
+                          margin: '0'
+                        }}
+                      >
+                        {pdfParams.footerInfo}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </>
