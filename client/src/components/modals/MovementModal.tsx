@@ -403,14 +403,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           </AccordionItem>
 
           {/* Detalle de Movimiento */}
-          <AccordionItem value="movement-details" className="border border-input rounded-none w-full">
-            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline px-4 py-3 w-full [&[data-state=open]>.accordion-icon]:rotate-45">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-primary" />
-                  Detalle de Movimiento
-                </div>
-                <Plus className="accordion-icon w-4 h-4 text-primary transition-transform duration-200" />
+          <AccordionItem value="movement-details">
+            <AccordionTrigger>
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-primary" />
+                Detalle de Movimiento
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-3 pt-1">
@@ -490,14 +487,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           </AccordionItem>
 
           {/* Relaciones */}
-          <AccordionItem value="relations" className="border border-input rounded-none w-full">
-            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline px-4 py-3 w-full [&[data-state=open]>.accordion-icon]:rotate-45">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-primary" />
-                  Relaciones
-                </div>
-                <Plus className="accordion-icon w-4 h-4 text-primary transition-transform duration-200" />
+          <AccordionItem value="relations">
+            <AccordionTrigger>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-primary" />
+                Relaciones
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-1">
