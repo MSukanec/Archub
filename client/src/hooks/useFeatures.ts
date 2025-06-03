@@ -70,14 +70,26 @@ export function useFeatures() {
     
     const planFeatures = userWithPlan.plan.features;
     
-    // Handle different feature format structures
-    if (Array.isArray(planFeatures)) {
-      return planFeatures.includes(featureName);
+    // Handle specific feature checks based on plan features structure
+    if (typeof planFeatures === 'object' && planFeatures !== null) {
+      // For multiple_organizations, check max_organizations limit
+      if (featureName === 'multiple_organizations') {
+        const maxOrgs = planFeatures.max_organizations || 1;
+        return maxOrgs > 1;
+      }
+      
+      // For export_pdf, check export_pdf_custom
+      if (featureName === 'export_pdf') {
+        return planFeatures.export_pdf_custom === true;
+      }
+      
+      // For other features, check if they exist as properties
+      return featureName in planFeatures || planFeatures[featureName] === true;
     }
     
-    // If features is an object, check if the feature exists as a property
-    if (typeof planFeatures === 'object' && planFeatures !== null) {
-      return featureName in planFeatures || planFeatures[featureName] === true;
+    // Handle array format for backwards compatibility
+    if (Array.isArray(planFeatures)) {
+      return planFeatures.includes(featureName);
     }
     
     return false;
