@@ -201,7 +201,7 @@ export default function Contacts() {
               placeholder="Buscar contactos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl"
             />
             {searchTerm && (
               <Button
