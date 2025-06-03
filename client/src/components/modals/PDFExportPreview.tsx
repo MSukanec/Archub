@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { FileText, Download, X, Eye } from 'lucide-react';
+import { FileText, Download, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useNavigationStore } from '@/stores/navigationStore';
+import ModernModal from '@/components/ui/ModernModal';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ interface PDFTemplate {
 
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
   const { organizationId } = useUserContextStore();
+  const { setSection, setView } = useNavigationStore();
   const [isExporting, setIsExporting] = useState(false);
 
   // Fetch PDF template
@@ -88,8 +90,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Aquí se implementaría la lógica de exportación real
-      // Por ahora simularemos la exportación
+      // Simular exportación
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Crear un blob con el contenido PDF simulado
@@ -115,318 +116,240 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   };
 
   const generatePDFContent = () => {
-    // Esta función generaría el contenido PDF real
-    // Por ahora devolvemos un contenido simulado
     return `%PDF-1.4
-1 0 obj
-<<
-/Type /Catalog
-/Pages 2 0 R
->>
-endobj
-2 0 obj
-<<
-/Type /Pages
-/Kids [3 0 R]
-/Count 1
->>
-endobj
-3 0 obj
-<<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 4 0 R
->>
-endobj
-4 0 obj
-<<
-/Length 44
->>
-stream
-BT
-/F1 12 Tf
-100 700 Td
-(${title}) Tj
-ET
-endstream
-endobj
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
+2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj
+3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<<>>>>endobj
 xref
-0 5
+0 4
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
 0000000115 00000 n 
-0000000208 00000 n 
-trailer
-<<
-/Size 5
-/Root 1 0 R
->>
+trailer<</Size 4/Root 1 0 R>>
 startxref
-295
+200
 %%EOF`;
   };
 
-  const renderTableContent = () => {
-    if (type === 'budget') {
-      return (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold" style={{ color: template?.primary_color || '#4f9eff' }}>
-            Cómputo y Presupuesto
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr style={{ backgroundColor: template?.secondary_color || '#e5e7eb' }}>
-                  <th className="border border-gray-300 px-3 py-2 text-left text-sm font-medium">Ítem</th>
-                  <th className="border border-gray-300 px-3 py-2 text-left text-sm font-medium">Descripción</th>
-                  <th className="border border-gray-300 px-3 py-2 text-right text-sm font-medium">Cantidad</th>
-                  <th className="border border-gray-300 px-3 py-2 text-right text-sm font-medium">Precio Unit.</th>
-                  <th className="border border-gray-300 px-3 py-2 text-right text-sm font-medium">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.length > 0 ? data.slice(0, 10).map((item, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-3 py-2 text-sm">{index + 1}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-sm">{item.name || item.description || 'Ítem de presupuesto'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-right text-sm">{item.quantity || '1'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-right text-sm">${item.price || '0.00'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-right text-sm">${item.total || '0.00'}</td>
-                  </tr>
-                )) : (
-                  <tr>
-                    <td colSpan={5} className="border border-gray-300 px-3 py-4 text-center text-sm text-gray-500">
-                      No hay datos para mostrar
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold" style={{ color: template?.primary_color || '#4f9eff' }}>
-            Lista de Materiales
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr style={{ backgroundColor: template?.secondary_color || '#e5e7eb' }}>
-                  <th className="border border-gray-300 px-3 py-2 text-left text-sm font-medium">Material</th>
-                  <th className="border border-gray-300 px-3 py-2 text-left text-sm font-medium">Categoría</th>
-                  <th className="border border-gray-300 px-3 py-2 text-right text-sm font-medium">Cantidad</th>
-                  <th className="border border-gray-300 px-3 py-2 text-left text-sm font-medium">Unidad</th>
-                  <th className="border border-gray-300 px-3 py-2 text-right text-sm font-medium">Precio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.length > 0 ? data.slice(0, 10).map((item, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-3 py-2 text-sm">{item.name || 'Material'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-sm">{item.category || 'Sin categoría'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-right text-sm">{item.quantity || '1'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-sm">{item.unit || 'und'}</td>
-                    <td className="border border-gray-300 px-3 py-2 text-right text-sm">${item.price || '0.00'}</td>
-                  </tr>
-                )) : (
-                  <tr>
-                    <td colSpan={5} className="border border-gray-300 px-3 py-4 text-center text-sm text-gray-500">
-                      No hay datos para mostrar
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      );
-    }
+  const handleGoToSettings = () => {
+    onClose();
+    setSection('organization');
+    setView('pdf');
+  };
+
+  const calculateTotal = () => {
+    return data.reduce((total, item) => total + (item.total_price || 0), 0);
   };
 
   if (isLoading) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-5xl max-h-[90vh] bg-white">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ModernModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Vista Previa PDF"
+        size="xl"
+      >
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </ModernModal>
     );
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] bg-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            Vista Previa de Exportación PDF
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-hidden">
-          {/* Vista previa */}
-          <div className="lg:col-span-2 overflow-auto">
-            <Card className="rounded-2xl shadow-md border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Eye className="w-4 h-4 text-primary" />
-                  Vista Previa del Documento
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div 
-                  className="w-full border border-gray-300 rounded-lg p-6 overflow-auto"
-                  style={{ 
-                    aspectRatio: '210 / 297',
-                    backgroundColor: template?.background_color || '#ffffff',
-                    fontFamily: template?.font_family || 'Arial',
-                    color: template?.text_color || '#1f2937',
-                    fontSize: `${template?.body_size || 12}px`,
-                    minHeight: '600px'
-                  }}
-                >
-                  {/* Header */}
-                  <div 
-                    className="flex items-center gap-6 mb-6 pb-4 border-b-2"
-                    style={{ 
-                      borderColor: template?.primary_color || '#4f9eff',
-                      paddingTop: `${(template?.margin_top || 20) / 2}px`,
-                      paddingLeft: `${(template?.margin_left || 20) / 2}px`,
-                      paddingRight: `${(template?.margin_right || 20) / 2}px`
-                    }}
-                  >
-                    {template?.logo_url && (
-                      <div 
-                        className="bg-gray-200 rounded flex items-center justify-center text-sm font-bold text-gray-500"
-                        style={{ 
-                          width: `${(template.logo_width || 80) / 1.5}px`, 
-                          height: `${(template.logo_height || 60) / 1.5}px`
-                        }}
-                      >
-                        LOGO
-                      </div>
-                    )}
-                    {template?.company_name_show && (
-                      <div>
-                        <h1 
-                          style={{ 
-                            fontSize: `${(template.company_name_size || 24) / 1.2}px`,
-                            color: template.company_name_color || '#1f2937',
-                            fontWeight: 'bold',
-                            margin: 0
-                          }}
-                        >
-                          {organization?.name || 'Nombre de la Empresa'}
-                        </h1>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div 
-                    style={{ 
-                      paddingLeft: `${(template?.margin_left || 20) / 2}px`,
-                      paddingRight: `${(template?.margin_right || 20) / 2}px`
-                    }}
-                  >
-                    <h2 
-                      style={{ 
-                        fontSize: `${(template?.title_size || 18) * 1.2}px`,
-                        color: template?.primary_color || '#4f9eff',
-                        fontWeight: 'bold',
-                        margin: '0 0 1rem 0'
+    <ModernModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Vista Previa de Exportación PDF"
+      size="xl"
+      headerActions={
+        <Button
+          variant="outline"
+          onClick={handleGoToSettings}
+          className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+        >
+          <Settings className="w-4 h-4 mr-2" />
+          Configurar PDF
+        </Button>
+      }
+      footerActions={
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={isExporting}
+            className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+          </Button>
+        </div>
+      }
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-hidden">
+        {/* Vista previa */}
+        <div className="lg:col-span-2 overflow-auto">
+          <Card className="rounded-2xl shadow-md border-0">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <FileText className="w-4 h-4" />
+                Vista Previa del {type === 'budget' ? 'Presupuesto' : 'Reporte de Materiales'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {/* Header del PDF */}
+              <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+                <div className="flex items-center justify-between mb-4">
+                  {template?.logo_url && (
+                    <img 
+                      src={template.logo_url} 
+                      alt="Logo" 
+                      className="h-12 object-contain"
+                      style={{
+                        width: `${template.logo_width}px`,
+                        height: `${template.logo_height}px`
+                      }}
+                    />
+                  )}
+                  {template?.company_name_show && organization?.name && (
+                    <h1 
+                      className="font-bold"
+                      style={{
+                        fontSize: `${template.company_name_size}px`,
+                        color: template.company_name_color
                       }}
                     >
-                      {title}
-                    </h2>
-                    
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-600">
-                        Fecha: {new Date().toLocaleDateString('es-ES')}
-                      </p>
+                      {organization.name}
+                    </h1>
+                  )}
+                </div>
+                <h2 
+                  className="font-semibold"
+                  style={{
+                    fontSize: `${template?.title_size || 18}px`,
+                    color: template?.text_color || '#1f2937'
+                  }}
+                >
+                  {title}
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  Fecha: {new Date().toLocaleDateString()}
+                </p>
+              </div>
+
+              {/* Contenido del presupuesto */}
+              <div className="space-y-4">
+                {data.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">
+                    No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
+                  </p>
+                ) : (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse border border-gray-300">
+                        <thead>
+                          <tr style={{ backgroundColor: template?.secondary_color || '#e5e7eb' }}>
+                            <th className="border border-gray-300 px-3 py-2 text-left">Descripción</th>
+                            <th className="border border-gray-300 px-3 py-2 text-center">Cantidad</th>
+                            <th className="border border-gray-300 px-3 py-2 text-center">Precio Unit.</th>
+                            <th className="border border-gray-300 px-3 py-2 text-right">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {data.map((item, index) => (
+                            <tr key={index}>
+                              <td className="border border-gray-300 px-3 py-2">
+                                <div>
+                                  <div className="font-medium">{item.name}</div>
+                                  {item.description && (
+                                    <div className="text-sm text-gray-600">{item.description}</div>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="border border-gray-300 px-3 py-2 text-center">
+                                {item.amount} {item.unit_name}
+                              </td>
+                              <td className="border border-gray-300 px-3 py-2 text-center">
+                                ${item.unit_price?.toFixed(2) || '0.00'}
+                              </td>
+                              <td className="border border-gray-300 px-3 py-2 text-right font-medium">
+                                ${item.total_price?.toFixed(2) || '0.00'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot>
+                          <tr style={{ backgroundColor: template?.primary_color || '#4f9eff', color: 'white' }}>
+                            <td colSpan={3} className="border border-gray-300 px-3 py-2 text-right font-bold">
+                              Total General:
+                            </td>
+                            <td className="border border-gray-300 px-3 py-2 text-right font-bold">
+                              ${calculateTotal().toFixed(2)}
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
                     </div>
 
-                    {renderTableContent()}
-                  </div>
-
-                  {/* Footer */}
-                  <div 
-                    className="absolute bottom-0 left-0 right-0 text-sm border-t pt-3"
-                    style={{ 
-                      borderColor: template?.secondary_color || '#e5e7eb',
-                      paddingBottom: `${(template?.margin_bottom || 20) / 2}px`,
-                      paddingLeft: `${(template?.margin_left || 20) / 2}px`,
-                      paddingRight: `${(template?.margin_right || 20) / 2}px`,
-                      fontSize: `${(template?.body_size || 12) * 0.9}px`
-                    }}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span>{template?.footer_text || 'Documento generado automáticamente'}</span>
-                      <div className="flex gap-4 text-xs">
-                        {template?.footer_show_date && <span>{new Date().toLocaleDateString('es-ES')}</span>}
-                        {template?.footer_show_page_numbers && <span>Página 1</span>}
+                    {/* Footer */}
+                    {template?.footer_text && (
+                      <div className="mt-6 pt-4 border-t text-sm text-gray-600">
+                        {template.footer_text}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Panel de información */}
-          <div className="space-y-4">
-            <Card className="rounded-2xl shadow-md border-0">
-              <CardHeader>
-                <CardTitle className="text-sm">Información del Documento</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div>
-                  <span className="font-medium">Tipo:</span> {type === 'budget' ? 'Cómputo y Presupuesto' : 'Lista de Materiales'}
-                </div>
-                <div>
-                  <span className="font-medium">Elementos:</span> {data.length}
-                </div>
-                <div>
-                  <span className="font-medium">Fecha:</span> {new Date().toLocaleDateString('es-ES')}
-                </div>
-                <div>
-                  <span className="font-medium">Organización:</span> {organization?.name || 'Sin nombre'}
-                </div>
-                <div>
-                  <span className="font-medium">Plantilla:</span> {template?.name || 'Plantilla por defecto'}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex flex-col gap-2">
-              <Button
-                onClick={handleExport}
-                disabled={isExporting}
-                className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                {isExporting ? 'Exportando...' : 'Exportar PDF'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={onClose}
-                disabled={isExporting}
-                className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
-              >
-                <X className="w-4 h-4 mr-2" />
-                Cancelar
-              </Button>
-            </div>
-          </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* Panel de configuración */}
+        <div className="overflow-auto">
+          <Card className="rounded-2xl shadow-md border-0">
+            <CardHeader>
+              <CardTitle className="text-sm">Información del Documento</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-xs font-medium text-gray-600">Título</label>
+                <p className="text-sm">{title}</p>
+              </div>
+              
+              <div>
+                <label className="text-xs font-medium text-gray-600">Tipo</label>
+                <p className="text-sm capitalize">{type === 'budget' ? 'Presupuesto' : 'Materiales'}</p>
+              </div>
+              
+              <div>
+                <label className="text-xs font-medium text-gray-600">Total de elementos</label>
+                <p className="text-sm">{data.length}</p>
+              </div>
+              
+              <div>
+                <label className="text-xs font-medium text-gray-600">Valor total</label>
+                <p className="text-sm font-semibold">${calculateTotal().toFixed(2)}</p>
+              </div>
+
+              {template && (
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Plantilla</label>
+                  <p className="text-sm">{template.name}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </ModernModal>
   );
 }
