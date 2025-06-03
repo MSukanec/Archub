@@ -940,7 +940,6 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 {/* Acordeones */}
                 {[
                   { id: 'header' as keyof typeof sectionStates, label: 'Encabezado e Información de Empresa', enabled: sectionStates.header, icon: Building2 },
-                  { id: 'client' as keyof typeof sectionStates, label: 'Información del Cliente', enabled: sectionStates.client, icon: User },
                   { id: 'project' as keyof typeof sectionStates, label: 'Detalles del Proyecto', enabled: sectionStates.project, icon: Briefcase },
                   { id: 'details' as keyof typeof sectionStates, label: 'Descripción y Detalles', enabled: sectionStates.details, icon: FileCheck },
                   { id: 'table' as keyof typeof sectionStates, label: 'Tabla de Elementos', enabled: sectionStates.table, icon: Table },
@@ -1001,28 +1000,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             </div>
                           </div>
                         )}
-                        {section.id === 'client' && (
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-xs font-medium">Nombre del Cliente</label>
-                              <input 
-                                type="text" 
-                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
-                                value={pdfParams.clientName}
-                                onChange={(e) => setPdfParams(prev => ({ ...prev, clientName: e.target.value }))}
-                              />
-                            </div>
-                            <div>
-                              <label className="text-xs font-medium">Dirección del Cliente</label>
-                              <textarea 
-                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
-                                rows={3}
-                                value={pdfParams.clientAddress}
-                                onChange={(e) => setPdfParams(prev => ({ ...prev, clientAddress: e.target.value }))}
-                              />
-                            </div>
-                          </div>
-                        )}
+
                         {section.id === 'project' && (
                           <div className="space-y-3">
                             <div>
