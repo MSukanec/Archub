@@ -38,7 +38,7 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-[#919191]/20 z-30" style={{ backgroundColor: '#d2d2d2' }}>
+    <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-input z-30" style={{ backgroundColor: '#d2d2d2' }}>
       <div className="flex items-center justify-around h-full px-2">
         {bottomNavItems.map((item) => {
           const Icon = item.icon;

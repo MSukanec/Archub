@@ -305,7 +305,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                         id={type.id}
                         checked={selectedTypeIds.includes(type.id)}
                         onCheckedChange={() => handleTypeToggle(type.id)}
-                        className="border-[#919191]/30"
+                        className="border-input"
                       />
                       <label
                         htmlFor={type.id}
@@ -437,7 +437,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
-              className="border-[#919191]/30 text-[#919191] hover:bg-[#919191]/10"
+              className="border-input text-[#919191] hover:bg-[#919191]/10"
             >
               Cancelar
             </Button>

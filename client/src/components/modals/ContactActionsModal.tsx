@@ -51,7 +51,7 @@ export default function ContactActionsModal({ isOpen, onClose, contact }: Contac
       <Button
         variant="outline"
         onClick={onClose}
-        className="bg-transparent border-[#919191]/30 text-foreground hover:bg-[#d0d0d0] rounded-lg"
+        className="bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cerrar
       </Button>

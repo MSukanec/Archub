@@ -235,7 +235,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
             variant="outline"
             onClick={handleClose}
             disabled={updateOrganizationMutation.isPending}
-            className="w-1/4 bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-input rounded-xl"
+            className="w-1/4 bg-[#e0e0e0] hover:bg-surface-secondary text-[#919191] border-input rounded-xl"
           >
             <X className="w-4 h-4 mr-2" />
             Cancelar

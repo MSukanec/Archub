@@ -66,7 +66,7 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 border-b border-[#919191]/20 z-30" style={{ backgroundColor: '#d2d2d2' }}>
+    <header className="fixed top-0 left-0 right-0 h-14 border-b border-input z-30" style={{ backgroundColor: '#d2d2d2' }}>
       <div className="flex items-center justify-between h-full px-4">
         {/* Botón hamburguesa */}
         <button

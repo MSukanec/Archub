@@ -263,7 +263,7 @@ export default function AddressAutocomplete({
           onChange={handleInputChange}
           disabled={!isReady}
           placeholder={isReady ? placeholder : 'Cargando Google Maps...'}
-          className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+          className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
         />
         {value && (
           <Button

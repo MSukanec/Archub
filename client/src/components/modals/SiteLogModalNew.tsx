@@ -603,7 +603,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                 {/* File Upload */}
                 <div className="space-y-2">
                   <FormLabel className="text-xs font-medium text-foreground">Subir Archivos</FormLabel>
-                  <div className="border-2 border-dashed border-[#919191]/30 rounded-lg p-4 text-center">
+                  <div className="border-2 border-dashed border-input rounded-lg p-4 text-center">
                     <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground mb-2">
                       Arrastra archivos aquí o haz clic para seleccionar

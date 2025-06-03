@@ -211,7 +211,7 @@ export default function ProjectsOverview() {
               placeholder="Buscar proyectos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
             />
             {searchQuery && (
               <Button
@@ -225,10 +225,10 @@ export default function ProjectsOverview() {
             )}
           </div>
           <Select value={sortOrder} onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}>
-            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="w-[200px] bg-surface-secondary border-input rounded-xl">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+            <SelectContent className="bg-surface-secondary border-input">
               <SelectItem value="newest">Más reciente primero</SelectItem>
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>

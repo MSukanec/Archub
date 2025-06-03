@@ -234,7 +234,7 @@ export default function PrimarySidebar() {
                     </p>
                   </button>
                 ))}
-                <button className="w-full text-left p-2 rounded-lg hover:bg-black/5 border border-dashed border-[#919191] mt-2">
+                <button className="w-full text-left p-2 rounded-lg hover:bg-black/5 border border-dashed border-input mt-2">
                   <Plus className="w-3 h-3 inline mr-1 text-[#919191]" />
                   <span className="font-medium text-xs text-black">Crear Nuevo Proyecto</span>
                 </button>

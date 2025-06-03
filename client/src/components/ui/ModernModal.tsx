@@ -70,7 +70,7 @@ function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading 
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-[#e0e0e0] border-[#919191]/30 text-[#919191] hover:bg-[#d0d0d0] rounded-xl"
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-xl"
           disabled={isLoading}
         >
           Cancelar
