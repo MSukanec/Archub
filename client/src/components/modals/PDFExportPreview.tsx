@@ -66,7 +66,6 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const [activeAccordion, setActiveAccordion] = useState<string | null>('header');
   const [sectionStates, setSectionStates] = useState({
     header: true,
-    client: true,
     project: true,
     details: true,
     table: true,
@@ -980,7 +979,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <span className="text-xs font-medium">Mostrar Nombre de Empresa</span>
                               <Switch 
                                 checked={template?.company_name_show || false} 
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                             <div>
@@ -1066,7 +1065,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showUnitColumn}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showUnitColumn: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -1074,7 +1073,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showPriceColumn}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPriceColumn: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                           </div>
@@ -1086,7 +1085,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showTaxCalculation}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showTaxCalculation: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                             <div>
@@ -1115,7 +1114,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showPageNumbers}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPageNumbers: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                           </div>
@@ -1127,7 +1126,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showClientSignature}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showClientSignature: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -1135,7 +1134,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showCompanySignature}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showCompanySignature: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
                           </div>
