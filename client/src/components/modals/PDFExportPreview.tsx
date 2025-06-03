@@ -681,6 +681,31 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                     {/* Accordion Content */}
                     {activeAccordion === section.id && (
                       <div className="p-4 bg-surface border-t border-border space-y-3">
+                        {section.id === 'header' && (
+                          <div>
+                            <label className="text-xs font-medium mb-1 block">Ancho del Logo (px)</label>
+                            <input
+                              type="number"
+                              value={template?.logo_width || 120}
+                              onChange={(e) => {
+                                const newWidth = Number(e.target.value);
+                                saveTemplateMutation.mutate({
+                                  logo_width: newWidth,
+                                  organization_id: organizationId,
+                                  name: 'Mi Plantilla'
+                                });
+                              }}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              min="50"
+                              max="300"
+                              step="10"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Ajusta el ancho del logo de la organización (la altura se ajusta automáticamente)
+                            </p>
+                          </div>
+                        )}
+                        
                         {section.id === 'project' && (
                           <>
                             <div>
@@ -866,37 +891,36 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         </div>
 
         {/* Footer with buttons */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-background">
-          {selectedTemplate === 'modern' && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleGoToSettings}
-              disabled={isExporting || saveTemplateMutation.isPending}
-            >
-              Configurar
-            </Button>
-          )}
-          {selectedTemplate === 'modern' && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => saveTemplateMutation.mutate()}
-              disabled={isExporting || saveTemplateMutation.isPending}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Guardar Plantilla
-            </Button>
-          )}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-background">
           <Button
             type="button"
-            onClick={handleExport}
+            variant="outline"
+            onClick={handleSaveTemplate}
             disabled={isExporting || saveTemplateMutation.isPending}
-            className="bg-primary hover:bg-primary/90"
           >
-            <Download className="w-4 h-4 mr-2" />
-            {isExporting ? 'Exportando...' : 'Exportar PDF'}
+            <Save className="w-4 h-4 mr-2" />
+            {saveTemplateMutation.isPending ? 'Guardando...' : 'Guardar Plantilla'}
           </Button>
+          
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isExporting || saveTemplateMutation.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={handleExport}
+              disabled={isExporting || saveTemplateMutation.isPending}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {isExporting ? 'Exportando...' : 'Exportar PDF'}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

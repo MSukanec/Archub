@@ -51,14 +51,14 @@ export default function ModernTemplate({
         {sectionStates.header && (
           <div className="flex justify-between items-start mb-6">
             <div className="flex-1">
-            {template?.logo_url && (
+            {organization?.logo_url && (
               <img 
-                src={template.logo_url} 
-                alt="Logo" 
+                src={organization.logo_url} 
+                alt="Logo de la organización" 
                 className="mb-3"
                 style={{ 
-                  width: `${template.logo_width || 80}px`, 
-                  height: `${template.logo_height || 60}px`,
+                  width: `${template?.logo_width || 120}px`, 
+                  height: 'auto',
                   objectFit: 'contain'
                 }} 
               />

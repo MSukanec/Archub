@@ -49,20 +49,33 @@ export default function TechnicalTemplate({
           <>
             <div className="flex justify-between items-start mb-8">
               {/* Logo y nombre de empresa */}
-              <div>
-                <h1 className="text-2xl font-bold mb-2" style={{ color: '#000000' }}>
-                  {organization?.name || 'EMPRESA'}
-                </h1>
-                <div className="text-xs text-gray-600 leading-tight">
-                  {organization?.address && (
-                    <div>{organization.address}</div>
-                  )}
-                  {organization?.email && (
-                    <div>{organization.email}</div>
-                  )}
-                  {organization?.phone && (
-                    <div>{organization.phone}</div>
-                  )}
+              <div className="flex items-center space-x-4">
+                {organization?.logo_url && (
+                  <img 
+                    src={organization.logo_url} 
+                    alt="Logo de la organización" 
+                    style={{ 
+                      width: `${template?.logo_width || 120}px`,
+                      height: 'auto',
+                      objectFit: 'contain'
+                    }} 
+                  />
+                )}
+                <div>
+                  <h1 className="text-2xl font-bold mb-2" style={{ color: '#000000' }}>
+                    {organization?.name || 'EMPRESA'}
+                  </h1>
+                  <div className="text-xs text-gray-600 leading-tight">
+                    {organization?.address && (
+                      <div>{organization.address}</div>
+                    )}
+                    {organization?.email && (
+                      <div>{organization.email}</div>
+                    )}
+                    {organization?.phone && (
+                      <div>{organization.phone}</div>
+                    )}
+                  </div>
                 </div>
               </div>
 

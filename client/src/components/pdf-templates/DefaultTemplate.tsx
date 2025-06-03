@@ -47,12 +47,25 @@ export default function DefaultTemplate({
         {/* Header básico */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              {organization?.name && (
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  {organization.name}
-                </h1>
+            <div className="flex items-center space-x-4">
+              {organization?.logo_url && (
+                <img 
+                  src={organization.logo_url} 
+                  alt="Logo de la organización" 
+                  style={{ 
+                    width: `${template?.logo_width || 120}px`,
+                    height: 'auto',
+                    objectFit: 'contain'
+                  }} 
+                />
               )}
+              <div>
+                {organization?.name && (
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    {organization.name}
+                  </h1>
+                )}
+              </div>
             </div>
             
             <div className="text-right text-sm text-gray-600">
