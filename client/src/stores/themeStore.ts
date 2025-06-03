@@ -51,11 +51,10 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       set({ theme });
       
       // Aplicar la clase al documento
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      console.log('Aplicando clase al documento:', theme);
+      document.documentElement.classList.remove('light', 'dark');
+      document.documentElement.classList.add(theme);
+      console.log('Clases actuales del documento:', document.documentElement.className);
       
     } catch (error) {
       console.error('Error updating theme:', error);
@@ -77,11 +76,10 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       
       // Aplicar el tema
       set({ theme });
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      console.log('Aplicando tema inicial:', theme);
+      document.documentElement.classList.remove('light', 'dark');
+      document.documentElement.classList.add(theme);
+      console.log('Clases del documento tras inicialización:', document.documentElement.className);
 
       // Guardar en localStorage como respaldo
       localStorage.setItem('archmony-theme', theme);
@@ -92,11 +90,10 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       const theme = savedTheme || 'light';
       
       set({ theme });
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      console.log('Aplicando tema de fallback:', theme);
+      document.documentElement.classList.remove('light', 'dark');
+      document.documentElement.classList.add(theme);
+      console.log('Clases del documento tras fallback:', document.documentElement.className);
     }
   }
 }));
