@@ -196,7 +196,7 @@ export function ModalAccordion({
   children 
 }: ModalAccordionProps) {
   return (
-    <div className={`flex flex-col ${isOpen ? 'flex-1' : 'flex-shrink-0'}`}>
+    <div className="flex flex-col flex-shrink-0">
       <button
         type="button"
         onClick={() => onToggle(id)}
@@ -222,7 +222,7 @@ export function ModalAccordion({
       </button>
       
       {isOpen && (
-        <div className="flex-1 overflow-y-auto p-4 bg-surface-views">
+        <div className="p-4 bg-surface-views">
           {children}
         </div>
       )}

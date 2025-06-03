@@ -3,7 +3,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Building2, FileText } from 'lucide-react';
+import { Building2, FileText, Info, Settings } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -26,7 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
-import ModernModal from '@/components/ui/ModernModal';
+import ModernModal, { ModalAccordion, useModalAccordion } from '@/components/ui/ModernModal';
 
 const budgetSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -48,6 +48,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
   const { user } = useAuthStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { openAccordion, toggleAccordion, isOpen: isAccordionOpen } = useModalAccordion('general');
 
   // Get internal user ID from the users table
   const { data: internalUser } = useQuery({
@@ -261,137 +262,143 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
       isOpen={isOpen}
       onClose={handleClose}
       title={budget?.id ? 'Editar Presupuesto' : 'Crear Nuevo Presupuesto'}
-      subtitle={budget?.id ? 'Modifica los datos del presupuesto existente' : 'Crea un nuevo presupuesto para el proyecto actual'}
+      subtitle={budget?.id ? 'Modifica los datos del presupuesto existente' : 'Gestiona los presupuestos de construcción'}
       icon={FileText}
-      footer={
-        <div className="flex gap-2 w-full">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={budgetMutation.isPending}
-            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={budgetMutation.isPending}
-            className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
-          >
-            {budgetMutation.isPending ? 'Guardando...' : (budget?.id ? 'Actualizar' : 'Crear')}
-          </Button>
-        </div>
-      }
+      confirmText={budget?.id ? 'Actualizar' : 'Crear Presupuesto'}
+      onConfirm={form.handleSubmit(onSubmit)}
+      isLoading={budgetMutation.isPending}
     >
       <Form {...form}>
-        <div className="space-y-4">
-          {/* Campo del proyecto */}
-          <FormItem>
-            <FormLabel className="text-xs font-medium text-foreground flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              Proyecto
-            </FormLabel>
-            <FormControl>
-              {currentProject ? (
-                <Input
-                  value={currentProject.name}
-                  disabled
-                  className="bg-muted cursor-not-allowed rounded-lg"
-                />
-              ) : availableProjects.length > 0 ? (
-                <Select 
-                  value={activeProjectId || ''}
-                  onValueChange={(value) => {
-                    // Aquí podrías actualizar el proyecto seleccionado si fuera necesario
-                  }}
-                >
-                  <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
-                    <SelectValue placeholder="Selecciona un proyecto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableProjects.map((project) => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  value="No hay proyectos disponibles"
-                  disabled
-                  className="bg-muted cursor-not-allowed rounded-lg text-muted-foreground"
-                />
-              )}
-            </FormControl>
-          </FormItem>
-
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* Información General */}
+          <ModalAccordion
+            id="general"
+            title="Información General"
+            subtitle="Datos básicos del presupuesto"
+            icon={Info}
+            isOpen={isAccordionOpen('general')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              {/* Campo del proyecto */}
               <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Nombre del Presupuesto <span className="text-primary">*</span></FormLabel>
+                <FormLabel className="text-white flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Proyecto
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Ej: Presupuesto General de Obra"
-                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium text-foreground">Descripción (opcional)</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Descripción del presupuesto..."
-                    rows={3}
-                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {budget?.id && (
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">Estado <span className="text-primary">*</span></FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    value={field.value || 'draft'}
-                    defaultValue="draft"
-                  >
-                    <FormControl>
-                      <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
-                        <SelectValue placeholder="Selecciona el estado" />
+                  {currentProject ? (
+                    <Input
+                      value={currentProject.name}
+                      disabled
+                      className="bg-input border-surface-primary text-white cursor-not-allowed"
+                    />
+                  ) : availableProjects.length > 0 ? (
+                    <Select 
+                      value={activeProjectId || ''}
+                      onValueChange={(value) => {
+                        // Aquí podrías actualizar el proyecto seleccionado si fuera necesario
+                      }}
+                    >
+                      <SelectTrigger className="bg-input border-surface-primary text-white">
+                        <SelectValue placeholder="Selecciona un proyecto" />
                       </SelectTrigger>
+                      <SelectContent>
+                        {availableProjects.map((project) => (
+                          <SelectItem key={project.id} value={project.id}>
+                            {project.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      value="No hay proyectos disponibles"
+                      disabled
+                      className="bg-input border-surface-primary text-muted-foreground cursor-not-allowed"
+                    />
+                  )}
+                </FormControl>
+              </FormItem>
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Nombre del Presupuesto *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: Presupuesto General de Obra"
+                        className="bg-input border-surface-primary text-white placeholder:text-muted-foreground"
+                        {...field}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="draft">Borrador</SelectItem>
-                      <SelectItem value="approved">Aprobado</SelectItem>
-                      <SelectItem value="rejected">Rechazado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Descripción del presupuesto..."
+                        rows={3}
+                        className="bg-input border-surface-primary text-white placeholder:text-muted-foreground resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </ModalAccordion>
+
+          {/* Configuración (solo para edición) */}
+          {budget?.id && (
+            <ModalAccordion
+              id="settings"
+              title="Configuración"
+              subtitle="Estado y configuraciones del presupuesto"
+              icon={Settings}
+              isOpen={isAccordionOpen('settings')}
+              onToggle={toggleAccordion}
+            >
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Estado *</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value || 'draft'}
+                        defaultValue="draft"
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-input border-surface-primary text-white">
+                            <SelectValue placeholder="Selecciona el estado" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="draft">Borrador</SelectItem>
+                          <SelectItem value="approved">Aprobado</SelectItem>
+                          <SelectItem value="rejected">Rechazado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </ModalAccordion>
           )}
         </div>
       </Form>
