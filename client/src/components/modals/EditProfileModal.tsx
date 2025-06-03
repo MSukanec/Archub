@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Mail, Lock, Palette } from 'lucide-react';
+import { User, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useAuthStore } from '@/stores/authStore';
-import { useThemeStore } from '@/stores/themeStore';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import ModernModal from '@/components/ui/ModernModal';
@@ -42,7 +40,6 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
   const { user, setUser } = useAuthStore();
-  const { theme, setTheme, isLoading: themeLoading } = useThemeStore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -139,10 +136,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     }
   };
 
-  const handleThemeChange = async (isDark: boolean) => {
-    const newTheme = isDark ? 'dark' : 'light';
-    await setTheme(newTheme);
-  };
+
 
   const handleClose = () => {
     form.reset();
@@ -321,29 +315,6 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-            </div>
-          </div>
-
-          {/* Configuración de Apariencia */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground border-b border-border pb-2">
-              <Palette className="h-4 w-4" />
-              Configuración de Apariencia
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="text-sm font-medium text-foreground">Modo Oscuro</div>
-                <div className="text-xs text-muted-foreground">
-                  Cambia entre el tema claro y oscuro de la aplicación
-                </div>
-              </div>
-              <Switch
-                checked={theme === 'dark'}
-                onCheckedChange={handleThemeChange}
-                disabled={themeLoading}
-                className="data-[state=checked]:bg-primary"
               />
             </div>
           </div>
