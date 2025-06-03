@@ -62,7 +62,7 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
     if (currentSection && sectionTitles[currentSection]) {
       return sectionTitles[currentSection];
     }
-    return 'Archmony';
+    return 'Archub';
   };
 
   return (

@@ -201,7 +201,7 @@ export default function ProfileInfo() {
             <div className="space-y-1">
               <div className="text-sm font-medium text-foreground">Modo Oscuro</div>
               <div className="text-xs text-muted-foreground">
-                Archmony utiliza modo oscuro para reducir la fatiga visual
+                Archub utiliza modo oscuro para reducir la fatiga visual
               </div>
             </div>
             <div className="w-11 h-6 bg-primary rounded-full flex items-center justify-end px-1">

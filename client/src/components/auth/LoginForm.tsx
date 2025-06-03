@@ -88,7 +88,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </div>
         <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
         <CardDescription>
-          Ingresa a tu cuenta de Archmony
+          Ingresa a tu cuenta de Archub
         </CardDescription>
       </CardHeader>
       <CardContent>

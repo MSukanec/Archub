@@ -22,7 +22,7 @@ export default function LandingPage() {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <Building2 className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-foreground">Archmony</span>
+            <span className="text-2xl font-bold text-foreground">Archub</span>
           </div>
           <Link href="/auth">
             <Button className="bg-primary hover:bg-primary/90">
@@ -150,7 +150,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                ¿Por qué elegir Archmony?
+                ¿Por qué elegir Archub?
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">

@@ -39,10 +39,13 @@ const navigationItems = [
     ]
   },
   { 
-    section: 'sitelog' as const, 
-    icon: ClipboardList, 
-    label: 'Bitácora',
+    section: 'budgets' as const, 
+    icon: CreditCard, 
+    label: 'Obra',
     subItems: [
+      { id: 'budgets-list', label: 'Lista de Presupuestos' },
+      { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
+      { id: 'budgets-materials', label: 'Lista de Materiales' },
       { id: 'sitelog-main', label: 'Bitácora' }
     ]
   },
@@ -50,12 +53,6 @@ const navigationItems = [
     section: 'calendar' as const, 
     icon: Calendar, 
     label: 'Agenda',
-    subItems: []
-  },
-  { 
-    section: 'contacts' as const, 
-    icon: Users, 
-    label: 'Contactos',
     subItems: []
   },
   { 
@@ -67,14 +64,10 @@ const navigationItems = [
     ]
   },
   { 
-    section: 'budgets' as const, 
-    icon: CreditCard, 
-    label: 'Presupuestos',
-    subItems: [
-      { id: 'budgets-list', label: 'Lista de Presupuestos' },
-      { id: 'budgets-tasks', label: 'Tabla de Cómputo' },
-      { id: 'budgets-materials', label: 'Lista de Materiales' }
-    ]
+    section: 'contacts' as const, 
+    icon: Users, 
+    label: 'Contactos',
+    subItems: []
   },
   { 
     section: 'profile' as const, 
@@ -184,7 +177,7 @@ export default function MobileDrawerFixed({ isOpen, onClose }: MobileDrawerProps
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-80 bg-surface-primary shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
+          "fixed top-0 left-0 h-full w-full bg-surface-primary shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -194,7 +187,7 @@ export default function MobileDrawerFixed({ isOpen, onClose }: MobileDrawerProps
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
-            <span className="font-semibold text-lg text-foreground">Archmony</span>
+            <span className="font-semibold text-lg text-foreground">Archub</span>
           </div>
           <button
             onClick={onClose}
