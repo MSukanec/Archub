@@ -128,93 +128,106 @@ export default function TechnicalTemplate({
         {/* Tabla técnica */}
         {sectionStates.table && (
           <div className="mb-8">
-            <h3 className="text-sm font-bold mb-3 bg-gray-100 p-2">
-              {type === 'budget' ? 'DESGLOSE DE PRESUPUESTO' : 'DETALLE DE MATERIALES'}
-            </h3>
-            <table className="w-full border-collapse border border-gray-400 text-xs">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-400 p-2 font-bold text-left">ITEM</th>
-                  <th className="border border-gray-400 p-2 font-bold text-left">DESCRIPCIÓN</th>
-                  {pdfParams.showUnitColumn && (
-                    <th className="border border-gray-400 p-2 font-bold text-center">UNIDAD</th>
-                  )}
-                  <th className="border border-gray-400 p-2 font-bold text-center">CANTIDAD</th>
+            <div className="w-full text-xs">
+              {/* Header de la tabla */}
+              <div className="flex border-b-2 border-black pb-2 mb-2 font-bold">
+                <div className="w-8 text-left">#</div>
+                <div className="flex-1 text-left">Desc. of Goods/Services</div>
+                <div className="w-16 text-center">Qty.</div>
+                {pdfParams.showPriceColumn && (
+                  <>
+                    <div className="w-20 text-right">Rate (₹)</div>
+                    <div className="w-16 text-center">Dis.</div>
+                    <div className="w-16 text-center">CGST</div>
+                    <div className="w-16 text-center">SGST</div>
+                    <div className="w-20 text-right">Total (₹)</div>
+                  </>
+                )}
+              </div>
+              
+              {/* Filas de datos */}
+              {data.map((item, index) => (
+                <div key={item.id || index} className="flex border-b border-gray-300 py-2">
+                  <div className="w-8 text-left">{index + 1}</div>
+                  <div className="flex-1 text-left">{item.name || item.description}</div>
+                  <div className="w-16 text-center">{item.quantity || 1} {pdfParams.showUnitColumn ? (item.unit || 'U') : 'U'}</div>
                   {pdfParams.showPriceColumn && (
                     <>
-                      <th className="border border-gray-400 p-2 font-bold text-right">PRECIO UNIT.</th>
-                      <th className="border border-gray-400 p-2 font-bold text-right">TOTAL</th>
+                      <div className="w-20 text-right">
+                        {(item.unit_price || 0).toLocaleString('es-ES', { minimumFractionDigits: 0 })}
+                      </div>
+                      <div className="w-16 text-center">0</div>
+                      <div className="w-16 text-center">9</div>
+                      <div className="w-16 text-center">9</div>
+                      <div className="w-20 text-right">
+                        {(item.total_price || 0).toLocaleString('es-ES', { minimumFractionDigits: 0 })}
+                      </div>
                     </>
                   )}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item, index) => (
-                  <tr key={item.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="border border-gray-400 p-2 font-mono">{String(index + 1).padStart(3, '0')}</td>
-                    <td className="border border-gray-400 p-2">{item.name || item.description}</td>
-                    {pdfParams.showUnitColumn && (
-                      <td className="border border-gray-400 p-2 text-center">{item.unit || 'UN'}</td>
-                    )}
-                    <td className="border border-gray-400 p-2 text-center">{item.quantity || 1}</td>
-                    {pdfParams.showPriceColumn && (
-                      <>
-                        <td className="border border-gray-400 p-2 text-right">
-                          ${(item.unit_price || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className="border border-gray-400 p-2 text-right font-bold">
-                          ${(item.total_price || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </div>
+              ))}
+              
+              {/* Línea final */}
+              <div className="border-b-2 border-black mt-4"></div>
+            </div>
           </div>
         )}
 
-        {/* Totales técnicos */}
+        {/* Sección de método de pago y totales */}
         {sectionStates.totals && pdfParams.showPriceColumn && (
           <div className="mb-8">
-            <div className="flex justify-end">
-              <div className="w-80">
-                <table className="w-full border-collapse border border-gray-400 text-sm">
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-400 p-3 font-bold bg-gray-100">SUBTOTAL:</td>
-                      <td className="border border-gray-400 p-3 text-right">
-                        ${calculateTotal().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-                      </td>
-                    </tr>
-                    {pdfParams.showTaxCalculation && (
-                      <>
-                        <tr>
-                          <td className="border border-gray-400 p-3 font-bold bg-gray-100">
-                            IVA ({pdfParams.taxRate}%):
-                          </td>
-                          <td className="border border-gray-400 p-3 text-right">
-                            ${(calculateTotal() * pdfParams.taxRate / 100).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-                          </td>
-                        </tr>
-                        <tr className="bg-red-600 text-white">
-                          <td className="border border-gray-400 p-3 font-bold">TOTAL FINAL:</td>
-                          <td className="border border-gray-400 p-3 text-right font-bold">
-                            ${(calculateTotal() * (1 + pdfParams.taxRate / 100)).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-                          </td>
-                        </tr>
-                      </>
-                    )}
-                    {!pdfParams.showTaxCalculation && (
-                      <tr className="bg-red-600 text-white">
-                        <td className="border border-gray-400 p-3 font-bold">TOTAL:</td>
-                        <td className="border border-gray-400 p-3 text-right font-bold">
-                          ${calculateTotal().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+            <div className="flex justify-between">
+              {/* Método de pago */}
+              <div className="w-1/2">
+                <div className="text-xs">
+                  <div className="font-bold mb-2">Payment Method</div>
+                  <div>Cash</div>
+                  
+                  <div className="font-bold mt-4 mb-2">In Words</div>
+                  <div>
+                    {(() => {
+                      const total = pdfParams.showTaxCalculation 
+                        ? calculateTotal() * (1 + pdfParams.taxRate / 100)
+                        : calculateTotal();
+                      return total > 100000 
+                        ? `${Math.floor(total / 100000)} Lakh ${Math.floor((total % 100000) / 1000)} Thousand Rupees Only`
+                        : `${Math.floor(total / 1000)} Thousand Rupees Only`;
+                    })()}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Totales */}
+              <div className="w-1/2">
+                <div className="text-xs space-y-1">
+                  <div className="flex justify-between border-b border-gray-300 pb-1">
+                    <span>Sub Total</span>
+                    <span>{calculateTotal().toLocaleString('es-ES', { minimumFractionDigits: 0 })}</span>
+                  </div>
+                  
+                  {pdfParams.showTaxCalculation && (
+                    <>
+                      <div className="flex justify-between border-b border-gray-300 pb-1">
+                        <span>CGST</span>
+                        <span>{(calculateTotal() * (pdfParams.taxRate / 2) / 100).toLocaleString('es-ES', { minimumFractionDigits: 0 })}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-gray-300 pb-1">
+                        <span>SGST</span>
+                        <span>{(calculateTotal() * (pdfParams.taxRate / 2) / 100).toLocaleString('es-ES', { minimumFractionDigits: 0 })}</span>
+                      </div>
+                    </>
+                  )}
+                  
+                  <div className="flex justify-between border-b-2 border-black pt-2 pb-1 font-bold">
+                    <span>Total</span>
+                    <span>
+                      {pdfParams.showTaxCalculation 
+                        ? (calculateTotal() * (1 + pdfParams.taxRate / 100)).toLocaleString('es-ES', { minimumFractionDigits: 0 })
+                        : calculateTotal().toLocaleString('es-ES', { minimumFractionDigits: 0 })
+                      }
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
