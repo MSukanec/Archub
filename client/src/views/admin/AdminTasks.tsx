@@ -212,7 +212,7 @@ export default function AdminTasks() {
       <div className="hidden xl:block rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
+            <TableRow className="border-border bg-surface-primary">
               <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Tarea</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Descripción</TableHead>
@@ -234,9 +234,9 @@ export default function AdminTasks() {
               </TableRow>
             ) : (
               paginatedTasks.map((task: any) => (
-                <TableRow key={task.id} className="border-border hover:bg-muted/30 transition-colors h-12">
+                <TableRow key={task.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors h-12">
                   <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-surface-primary">
                       {task.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
@@ -249,7 +249,7 @@ export default function AdminTasks() {
                     </div>
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-surface-primary">
                       {task.unit?.name || 'Sin unidad'}
                     </Badge>
                   </TableCell>
@@ -274,7 +274,7 @@ export default function AdminTasks() {
                           setSelectedTask(task);
                           setIsEditModalOpen(true);
                         }}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -358,10 +358,10 @@ export default function AdminTasks() {
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground text-lg mb-2">{task.name}</h3>
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-surface-primary">
                       {task.category?.name || 'Sin categoría'}
                     </Badge>
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-surface-primary">
                       {task.unit?.name || 'Sin unidad'}
                     </Badge>
                   </div>

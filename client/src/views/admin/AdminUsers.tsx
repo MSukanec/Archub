@@ -209,7 +209,7 @@ export default function AdminUsers() {
       <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
+            <TableRow className="border-border bg-surface-primary">
               <TableHead className="text-foreground font-semibold h-12 text-center">Usuario</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Email</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Plan</TableHead>
@@ -283,7 +283,7 @@ export default function AdminUsers() {
                           setSelectedUser(user);
                           setIsEditModalOpen(true);
                         }}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>

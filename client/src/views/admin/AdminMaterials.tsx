@@ -249,7 +249,7 @@ export default function AdminMaterials() {
       <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
+            <TableRow className="border-border bg-surface-primary">
               <TableHead className="text-foreground font-semibold h-12 text-center">Categoría</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Material</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Unidad</TableHead>
@@ -271,7 +271,7 @@ export default function AdminMaterials() {
               paginatedMaterials.map((material: any) => (
                 <TableRow key={material.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
                   <TableCell className="text-center py-2">
-                    <Badge variant="secondary" className="bg-muted/50">
+                    <Badge variant="secondary" className="bg-surface-primary">
                       {material.category?.name || 'Sin categoría'}
                     </Badge>
                   </TableCell>
@@ -279,7 +279,7 @@ export default function AdminMaterials() {
                     <div className="font-medium text-foreground">{material.name}</div>
                   </TableCell>
                   <TableCell className="text-center py-2">
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-surface-primary">
                       {material.unit?.name || 'No especificada'}
                     </Badge>
                   </TableCell>
@@ -295,7 +295,7 @@ export default function AdminMaterials() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(material)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>

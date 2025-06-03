@@ -254,7 +254,7 @@ export default function AdminElements() {
       <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
+            <TableRow className="border-border bg-surface-primary">
               <TableHead className="text-foreground font-semibold h-12 text-center">Elemento</TableHead>
               <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
@@ -281,7 +281,7 @@ export default function AdminElements() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(element)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>

@@ -211,7 +211,7 @@ export default function AdminUnits() {
       <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted/50">
+            <TableRow className="border-border bg-surface-primary">
               <TableHead className="text-foreground font-semibold h-12 text-center">Símbolo</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Descripción</TableHead>
               <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
@@ -231,7 +231,7 @@ export default function AdminUnits() {
               paginatedUnits.map((unit: any) => (
                 <TableRow key={unit.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
                   <TableCell className="py-2 text-center">
-                    <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
+                    <span className="font-mono bg-surface-primary px-2 py-1 rounded text-sm">
                       {unit.name || 'N/A'}
                     </span>
                   </TableCell>
@@ -247,7 +247,7 @@ export default function AdminUnits() {
                           setSelectedUnit(unit);
                           setIsEditModalOpen(true);
                         }}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50 h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
