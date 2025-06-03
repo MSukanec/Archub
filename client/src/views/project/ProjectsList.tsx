@@ -221,13 +221,43 @@ export default function ProjectsOverview() {
         )}
       </div>
 
+      {/* Plan Limit Info for FREE users */}
+      {currentPlan === 'FREE' && projectLimit.limit > 0 && (
+        <div className="rounded-2xl shadow-md bg-amber-500/10 border border-amber-500/20 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-amber-500/10 rounded-xl flex items-center justify-center">
+              <Building className="h-4 w-4 text-amber-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                Plan FREE - Límite de Proyectos
+              </p>
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                {projectLimit.remaining > 0 
+                  ? `Puedes crear ${projectLimit.remaining} proyecto${projectLimit.remaining !== 1 ? 's' : ''} más`
+                  : 'Has alcanzado el límite de proyectos. Actualiza a PRO para proyectos ilimitados.'
+                }
+              </p>
+            </div>
+            <div className="text-sm font-bold text-amber-800 dark:text-amber-200">
+              {totalProjects}/{projectLimit.limit}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Cards de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Proyectos</p>
-              <p className="text-3xl font-bold text-foreground">{totalProjects}</p>
+              <p className="text-3xl font-bold text-foreground">
+                {totalProjects}
+                {currentPlan === 'FREE' && projectLimit.limit > 0 && (
+                  <span className="text-base text-muted-foreground ml-2">/ {projectLimit.limit}</span>
+                )}
+              </p>
             </div>
             <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
               <Building className="h-5 w-5 text-primary" />
@@ -296,13 +326,28 @@ export default function ProjectsOverview() {
               }
             </p>
             {!searchQuery && (
-              <Button 
-                className="mt-4 bg-primary hover:bg-primary/90"
-                onClick={() => setIsCreateModalOpen(true)}
-              >
-                <Plus size={16} className="mr-2" />
-                Crear Proyecto
-              </Button>
+              projectLimit.isLimited ? (
+                <FeatureLock
+                  feature="unlimited_projects"
+                  showLockIcon={false}
+                >
+                  <Button 
+                    disabled
+                    className="mt-4 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                  >
+                    <Plus size={16} className="mr-2" />
+                    Crear Proyecto
+                  </Button>
+                </FeatureLock>
+              ) : (
+                <Button 
+                  className="mt-4 bg-primary hover:bg-primary/90"
+                  onClick={() => setIsCreateModalOpen(true)}
+                >
+                  <Plus size={16} className="mr-2" />
+                  Crear Proyecto
+                </Button>
+              )
             )}
           </CardContent>
         </Card>

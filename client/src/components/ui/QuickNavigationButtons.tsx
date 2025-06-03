@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Building2, FolderOpen, Plus } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeatures } from '@/hooks/useFeatures';
 import { projectsService } from '@/lib/projectsService';
 import { supabase } from '@/lib/supabase';
+import { FeatureLock } from '@/components/features/FeatureLock';
 
 interface Organization {
   id: string;
@@ -21,6 +23,7 @@ interface Project {
 export default function QuickNavigationButtons() {
   const { organizationId, projectId, setUserContext } = useUserContextStore();
   const { user } = useAuthStore();
+  const { checkLimit, getCurrentPlan } = useFeatures();
   const [isOrgMenuOpen, setIsOrgMenuOpen] = useState(false);
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
 
@@ -47,6 +50,10 @@ export default function QuickNavigationButtons() {
   });
 
   const currentProject = projects.find(p => p.id === projectId);
+  
+  // Check project limits
+  const projectLimit = checkLimit('max_projects', projects.length);
+  const currentPlan = getCurrentPlan();
 
   // Generate initials for organization
   const getOrgInitials = (name: string) => {
@@ -209,13 +216,28 @@ export default function QuickNavigationButtons() {
             )}
             
             <div className="p-2">
-              <button 
-                onClick={handleCreateProject}
-                className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[#282828] rounded transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Crear nuevo proyecto</span>
-              </button>
+              {projectLimit.isLimited ? (
+                <FeatureLock
+                  feature="unlimited_projects"
+                  showLockIcon={false}
+                >
+                  <button 
+                    disabled
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground opacity-50 cursor-not-allowed rounded"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Crear nuevo proyecto</span>
+                  </button>
+                </FeatureLock>
+              ) : (
+                <button 
+                  onClick={handleCreateProject}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[#282828] rounded transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Crear nuevo proyecto</span>
+                </button>
+              )}
             </div>
           </div>
         )}
