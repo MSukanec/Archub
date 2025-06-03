@@ -164,7 +164,7 @@ export default function AppLayout() {
   // Removemos la renderización sin layout para dashboard-timeline
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-surface-views">
       {isMobile ? (
         // Mobile Layout
         <>
