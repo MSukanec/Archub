@@ -43,39 +43,24 @@ export function useUserPlan() {
       if (!user?.id) return null;
       
       try {
-        // First get all plans
-        const { data: plans } = await supabase
-          .from('plans')
-          .select('*');
+        // Get plans and user data in parallel
+        const [plansResult, usersResult] = await Promise.all([
+          supabase.from('plans').select('*'),
+          supabase.rpc('get_users_for_admin')
+        ]);
         
-        // Try using RPC function like AdminUsers does
-        const { data: rpcData, error: rpcError } = await supabase
-          .rpc('get_users_for_admin');
+        const plans = plansResult.data;
+        const users = usersResult.data;
         
-        if (!rpcError && rpcData && Array.isArray(rpcData)) {
-          const currentUser = rpcData.find(u => u.auth_id === user.id);
-          if (currentUser && plans) {
-            // Find the plan by plan_id
+        if (users && Array.isArray(users) && plans) {
+          const currentUser = users.find(u => u.auth_id === user.id);
+          if (currentUser) {
             const userPlan = plans.find(p => p.id === currentUser.plan_id);
             return {
               ...currentUser,
-              plan: userPlan
+              plan: userPlan || null
             };
           }
-        }
-        
-        // Fallback: direct query for regular users
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select(`
-            *,
-            plan:plans(*)
-          `)
-          .eq('auth_id', user.id)
-          .single();
-
-        if (!userError && userData) {
-          return userData;
         }
 
         return null;
@@ -85,10 +70,10 @@ export function useUserPlan() {
       }
     },
     enabled: !!user?.id,
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 30000, // Cache for 30 seconds
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
-    retry: 1,
+    retry: 2,
   });
 }
 
