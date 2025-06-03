@@ -18,17 +18,15 @@ import EditProfileModal from '@/components/modals/EditProfileModal';
 
 export default function ProfileInfo() {
   const { user } = useAuthStore();
-  const { theme, setTheme, isLoading: themeLoading } = useThemeStore();
+  const { theme, initializeTheme } = useThemeStore();
   const { setSection, setView } = useNavigationStore();
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const handleThemeChange = async (isDark: boolean) => {
-    const newTheme = isDark ? 'dark' : 'light';
-    console.log('Cambiando tema a:', newTheme);
-    await setTheme(newTheme);
-    console.log('Tema cambiado exitosamente');
-  };
+  // Initialize dark theme on mount
+  useEffect(() => {
+    initializeTheme();
+  }, [initializeTheme]);
 
 
 

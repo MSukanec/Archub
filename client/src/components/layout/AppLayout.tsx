@@ -134,7 +134,7 @@ export default function AppLayout() {
   // Initialize theme when user context is ready
   useEffect(() => {
     if (userId) {
-      initializeTheme(userId);
+      initializeTheme();
     }
   }, [userId, initializeTheme]);
 
