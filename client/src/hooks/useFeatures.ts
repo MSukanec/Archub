@@ -31,7 +31,7 @@ const FEATURE_PLANS: Record<FeatureName, PlanType> = {
   priority_support: 'PRO',
   dedicated_support: 'ENTERPRISE',
   custom_training: 'ENTERPRISE',
-  multiple_organizations: 'PRO',
+  multiple_organizations: 'ENTERPRISE',
 };
 
 export function useUserPlan() {
@@ -72,10 +72,12 @@ export function useFeatures() {
     
     // Handle specific feature checks based on plan features structure
     if (typeof planFeatures === 'object' && planFeatures !== null) {
-      // For multiple_organizations, check max_organizations limit
+      // For multiple_organizations, check max_organizations limit AND plan type
       if (featureName === 'multiple_organizations') {
+        const planName = getCurrentPlan();
         const maxOrgs = planFeatures.max_organizations || 1;
-        return maxOrgs > 1;
+        // Only Enterprise plans can have multiple organizations
+        return planName === 'ENTERPRISE' && maxOrgs > 1;
       }
       
       // For export_pdf, check export_pdf_custom
