@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, Settings, FileText, ChevronDown, ChevronRight } from 'lucide-react';
+import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabase';
@@ -212,39 +212,170 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               
               {/* Acordeones */}
               {[
-                { id: 'header' as keyof typeof sectionStates, label: 'Header & Company Info', enabled: sectionStates.header },
-                { id: 'client' as keyof typeof sectionStates, label: 'Client Information', enabled: sectionStates.client },
-                { id: 'project' as keyof typeof sectionStates, label: 'Project Details', enabled: sectionStates.project },
-                { id: 'details' as keyof typeof sectionStates, label: 'Description & Details', enabled: sectionStates.details },
-                { id: 'table' as keyof typeof sectionStates, label: 'Items Table', enabled: sectionStates.table },
-                { id: 'totals' as keyof typeof sectionStates, label: 'Totals & Calculations', enabled: sectionStates.totals },
-                { id: 'footer' as keyof typeof sectionStates, label: 'Footer Information', enabled: sectionStates.footer },
-                { id: 'signatures' as keyof typeof sectionStates, label: 'Signature Section', enabled: sectionStates.signatures }
+                { id: 'header' as keyof typeof sectionStates, label: 'Header & Company Info', enabled: sectionStates.header, icon: Building2 },
+                { id: 'client' as keyof typeof sectionStates, label: 'Client Information', enabled: sectionStates.client, icon: User },
+                { id: 'project' as keyof typeof sectionStates, label: 'Project Details', enabled: sectionStates.project, icon: Briefcase },
+                { id: 'details' as keyof typeof sectionStates, label: 'Description & Details', enabled: sectionStates.details, icon: FileCheck },
+                { id: 'table' as keyof typeof sectionStates, label: 'Items Table', enabled: sectionStates.table, icon: Table },
+                { id: 'totals' as keyof typeof sectionStates, label: 'Totals & Calculations', enabled: sectionStates.totals, icon: Calculator },
+                { id: 'footer' as keyof typeof sectionStates, label: 'Footer Information', enabled: sectionStates.footer, icon: MessageSquare },
+                { id: 'signatures' as keyof typeof sectionStates, label: 'Signature Section', enabled: sectionStates.signatures, icon: PenTool }
               ].map((section) => (
-                <div key={section.id} className="border border-border rounded-lg overflow-hidden">
+                <div key={section.id} className="border-2 border-border rounded-lg overflow-hidden">
                   <div 
-                    className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover"
+                    className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover transition-colors"
                     onClick={() => toggleAccordion(section.id)}
                   >
-                    <div className="flex items-center space-x-2">
-                      {activeAccordion === section.id ? 
-                        <ChevronDown className="w-4 h-4" /> : 
-                        <ChevronRight className="w-4 h-4" />
-                      }
+                    <div className="flex items-center space-x-3">
+                      <section.icon className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm font-medium">{section.label}</span>
                     </div>
-                    <Switch
-                      checked={section.enabled}
-                      onCheckedChange={() => toggleSection(section.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={section.enabled}
+                        onCheckedChange={() => toggleSection(section.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="data-[state=checked]:bg-primary"
+                      />
+                      {activeAccordion === section.id ? 
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" /> : 
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      }
+                    </div>
                   </div>
                   
                   {activeAccordion === section.id && section.enabled && (
-                    <div className="p-4 bg-background border-t border-border">
-                      <p className="text-xs text-muted-foreground">
-                        Configure options for {section.label.toLowerCase()}
-                      </p>
+                    <div className="p-4 bg-background border-t-2 border-border">
+                      {section.id === 'header' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Company Name</span>
+                            <Switch 
+                              checked={template?.company_name_show || false} 
+                              className="data-[state=checked]:bg-primary" 
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium">Company Name Size</label>
+                            <input 
+                              type="number" 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              defaultValue={template?.company_name_size || 24}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'client' && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-xs font-medium">Client Name</label>
+                            <input 
+                              type="text" 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              placeholder="Dr Samuel Johnstone"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium">Client Address</label>
+                            <textarea 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              rows={3}
+                              placeholder="28 Westview Drive, North Vancouver, BC"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'project' && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-xs font-medium">Project Code</label>
+                            <input 
+                              type="text" 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              placeholder="J1278"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium">Project Name</label>
+                            <input 
+                              type="text" 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              placeholder="Johnstone Family Custom Home"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'details' && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-xs font-medium">Description</label>
+                            <textarea 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              rows={3}
+                              placeholder="New Change Order"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'table' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Unit Column</span>
+                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Price Column</span>
+                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'totals' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Tax Calculation</span>
+                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium">Tax Rate (%)</label>
+                            <input 
+                              type="number" 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              defaultValue="10"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'footer' && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-xs font-medium">Footer Text</label>
+                            <textarea 
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                              rows={2}
+                              defaultValue={template?.footer_text || ''}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Page Numbers</span>
+                            <Switch 
+                              className="data-[state=checked]:bg-primary" 
+                              defaultChecked={template?.footer_show_page_numbers}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {section.id === 'signatures' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Client Signature</span>
+                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Show Company Signature</span>
+                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -259,11 +390,14 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 id="pdf-preview-content"
                 className="bg-white shadow-lg border border-gray-300"
                 style={{ 
-                  width: '595px',
-                  minHeight: '842px',
+                  width: '210mm', // Usar unidades exactas para consistencia
+                  height: '297mm', // Altura fija A4
                   fontFamily: template?.font_family || 'Arial',
                   color: template?.text_color || '#000000',
-                  backgroundColor: template?.background_color || '#ffffff'
+                  backgroundColor: template?.background_color || '#ffffff',
+                  transform: 'scale(0.7)', // Escalar para vista previa
+                  transformOrigin: 'top center',
+                  overflow: 'hidden' // Evitar contenido que se desborde
                 }}
               >
                 <div 
