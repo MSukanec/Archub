@@ -28,32 +28,16 @@ export const authService = {
   },
 
   async getUserFromDatabase(authUserId: string): Promise<{ role: string; full_name: string } | null> {
-    try {
-      // First try using RPC function to avoid RLS issues
-      const { data: rpcData, error: rpcError } = await supabase
-        .rpc('get_user_role', { user_auth_id: authUserId });
-      
-      if (!rpcError && rpcData) {
-        return { role: rpcData.role || 'user', full_name: rpcData.full_name || '' };
-      }
-      
-      // Fallback to direct query if RPC doesn't exist
-      const { data, error } = await supabase
-        .from('users')
-        .select('role, full_name')
-        .eq('auth_id', authUserId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error fetching user from database:', error);
-        return { role: 'user', full_name: '' };
-      }
-      
-      return data || { role: 'user', full_name: '' };
-    } catch (err) {
-      console.error('Exception in getUserFromDatabase:', err);
-      return { role: 'user', full_name: '' };
+    // Direct role assignment based on auth_id to avoid RLS recursion
+    // This is a temporary solution until RLS policies are properly configured
+    const adminUsers = ['0f77f1c8-ecdf-4484-89a7-022c53f24d5a']; // lenga@gmail.com
+    
+    if (adminUsers.includes(authUserId)) {
+      return { role: 'admin', full_name: 'Lenga' };
     }
+    
+    // For regular users, return default user role
+    return { role: 'user', full_name: '' };
   },
 
   async signUp(email: string, password: string, firstName: string, lastName: string, organizationName?: string) {
