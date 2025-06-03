@@ -27,6 +27,10 @@
   /* Surface variations for better hierarchy */
   --surface: 0 0% 98%; /* #fafafa */
   --surface-light: 0 0% 95%; /* #f2f2f2 */
+  
+  /* Background variations - Primary and Secondary */
+  --background-primary: 0 0% 88%; /* #e1e1e1 - Main background for cards, inputs */
+  --background-secondary: 0 0% 92%; /* #ebebeb - Secondary background for nested elements */
 }
 
 /* Custom pressed effect - stays pressed on hover */
@@ -331,6 +335,10 @@
   /* Surface variations for dark mode */
   --surface: 0 0% 18%; /* #2d2d2d */
   --surface-light: 0 0% 18%; /* #2d2d2d */
+  
+  /* Background variations for dark mode - Primary and Secondary */
+  --background-primary: 139 51% 54%; /* #8bc34a - Green primary background */
+  --background-secondary: 0 0% 20%; /* #333333 - Dark secondary background */
 }
 
 @layer base {
@@ -341,6 +349,15 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Custom background utility classes */
+  .bg-primary-surface {
+    background-color: hsl(var(--background-primary));
+  }
+  
+  .bg-secondary-surface {
+    background-color: hsl(var(--background-secondary));
   }
 
   /* Force dark mode styles */
