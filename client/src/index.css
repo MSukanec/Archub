@@ -351,7 +351,7 @@
 
   .dark .bg-card,
   .dark [class*="bg-card"] {
-    background-color: #2d2d2d !important;
+    background-color: #8bc34a !important;
   }
 
   .dark .bg-muted,
