@@ -437,27 +437,31 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   );
 
   // Función para renderizar plantilla personalizable
-  const renderCustomTemplate = () => (
-    <div 
-      id="pdf-preview-content"
-      className="bg-white shadow-lg border border-gray-300"
-      style={{ 
-        width: '210mm',
-        height: '297mm',
-        fontFamily: template?.font_family || 'Arial',
-        color: template?.text_color || '#000000',
-        backgroundColor: template?.background_color || '#ffffff',
-        transform: 'scale(0.7)',
-        transformOrigin: 'top center',
-        overflow: 'hidden'
-      }}
-    >
+  const renderCustomTemplate = () => {
+    return (
       <div 
-        className="text-black"
+        id="pdf-preview-content"
+        className="bg-white shadow-lg border border-gray-300"
         style={{ 
-          padding: `${template?.margin_top || 48}px ${template?.margin_right || 48}px ${template?.margin_bottom || 48}px ${template?.margin_left || 48}px`
+          width: '210mm',
+          height: '297mm',
+          fontFamily: template?.font_family || 'Arial',
+          color: template?.text_color || '#000000',
+          backgroundColor: template?.background_color || '#ffffff',
+          transform: 'scale(0.7)',
+          transformOrigin: 'top center',
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
+        <div 
+          className="text-black"
+          style={{ 
+            padding: `${template?.margin_top || 48}px ${template?.margin_right || 48}px ${template?.margin_bottom || 48}px ${template?.margin_left || 48}px`,
+            position: 'relative',
+            minHeight: 'calc(297mm - 96px)'
+          }}
+        >
         {/* Header estilo Change Order */}
         {sectionStates.header && (
           <div className="mb-6">
@@ -869,30 +873,34 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Footer del documento */}
-                  {pdfParams.showFooterInfo && pdfParams.footerInfo && (
-                    <div 
-                      className="mt-8 pt-4"
+                {/* Footer del documento - posición absoluta al final de la página */}
+                {pdfParams.showFooterInfo && pdfParams.footerInfo && (
+                  <div 
+                    style={{ 
+                      position: 'absolute',
+                      bottom: '20px',
+                      left: '20px',
+                      right: '20px',
+                      borderTop: '1px solid #000000',
+                      paddingTop: '8px',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <p 
                       style={{ 
-                        borderTop: '1px solid #000000',
-                        textAlign: 'center'
+                        fontSize: '8px',
+                        color: '#666666',
+                        margin: '0'
                       }}
                     >
-                      <p 
-                        style={{ 
-                          fontSize: '8px',
-                          color: '#666666',
-                          margin: '0'
-                        }}
-                      >
-                        {pdfParams.footerInfo}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </>
+                      {pdfParams.footerInfo}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
