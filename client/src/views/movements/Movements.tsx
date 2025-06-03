@@ -531,7 +531,7 @@ export default function Movements() {
         {/* Desktop: Filters first row - Distributed width */}
         <div className="hidden lg:grid grid-cols-5 gap-3 w-full">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -542,7 +542,7 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -554,7 +554,7 @@ export default function Movements() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -566,7 +566,7 @@ export default function Movements() {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -682,7 +682,7 @@ export default function Movements() {
         {/* Legacy filters - hidden now */}
         <div className="hidden">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -693,7 +693,7 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -705,7 +705,7 @@ export default function Movements() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
@@ -716,7 +716,7 @@ export default function Movements() {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder as any}>
-            <SelectTrigger className="bg-surface-secondary border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-surface-secondary border-input">
