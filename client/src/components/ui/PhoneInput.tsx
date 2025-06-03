@@ -35,9 +35,9 @@ const PhoneInputField = forwardRef<HTMLInputElement, PhoneInputFieldProps>(
           )}
           containerClass="!w-full"
           buttonClass={cn(
-            "!bg-background !border !border-border !border-r-0 !rounded-l-xl !rounded-r-none",
+            "!bg-surface-secondary !border !border-input !border-r-0 !rounded-l-xl !rounded-r-none",
             "!h-10 !w-12 !flex !items-center !justify-center",
-            "hover:!bg-muted !transition-colors",
+            "hover:!bg-muted !transition-colors shadow-lg",
             error && "!border-destructive"
           )}
           dropdownClass="!bg-background !border !border-border !rounded-xl !shadow-lg !z-50 !max-h-40 !overflow-y-auto"

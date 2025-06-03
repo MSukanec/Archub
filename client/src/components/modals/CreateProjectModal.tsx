@@ -8,6 +8,7 @@ import { Organization } from '@/lib/organizationsService';
 import { supabase } from '@/lib/supabase';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { PhoneInputField } from '@/components/ui/PhoneInput';
 import { 
   Form, 
   FormControl, 
@@ -470,14 +471,16 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
               <FormField
                 control={form.control}
                 name="contact_phone"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Teléfono de Contacto</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Ej: +54 11 1234-5678"
-                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl"
+                      <PhoneInputField
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="Ingresa el teléfono del cliente"
+                        error={!!fieldState.error}
                       />
                     </FormControl>
                     <FormMessage />
