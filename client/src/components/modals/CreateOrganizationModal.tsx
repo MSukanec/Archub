@@ -30,7 +30,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { openAccordions, toggleAccordion } = useModalAccordion('general');
+  const { openAccordion, toggleAccordion, isOpen: isAccordionOpen } = useModalAccordion('general');
 
   const form = useForm<CreateOrganizationFormData>({
     resolver: zodResolver(createOrganizationSchema),
@@ -155,7 +155,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
             title="Información General"
             subtitle="Datos básicos de la organización"
             icon={Info}
-            isOpen={openAccordions.has('general')}
+            isOpen={isAccordionOpen('general')}
             onToggle={toggleAccordion}
           >
             <div className="space-y-4">
@@ -203,7 +203,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
             title="Información de Contacto"
             subtitle="Datos de contacto de la organización"
             icon={MapPin}
-            isOpen={openAccordions.has('contact')}
+            isOpen={isAccordionOpen('contact')}
             onToggle={toggleAccordion}
           >
             <div className="space-y-4">
