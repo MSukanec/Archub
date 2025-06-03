@@ -183,24 +183,24 @@ export default function Contacts() {
     <>
       <div className="p-6 space-y-6">
         {/* Desktop Header */}
-      <div className="hidden md:flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Users className="w-5 h-5 text-primary" />
+        <div className="hidden md:flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Users className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Gestión de Contactos</h1>
+              <p className="text-sm text-muted-foreground">Administra todos los contactos del sistema</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Gestión de Contactos</h1>
-            <p className="text-sm text-muted-foreground">Administra todos los contactos del sistema</p>
-          </div>
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo Contacto
+          </Button>
         </div>
-        <Button 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Contacto
-        </Button>
-      </div>
 
       {/* Mobile Header */}
       <div className="md:hidden space-y-4">
@@ -583,7 +583,7 @@ export default function Contacts() {
         }}
         contact={selectedContact}
       />
-    </div>
+    </>
   );
 }
 
