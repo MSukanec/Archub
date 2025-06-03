@@ -1,3 +1,4 @@
+export { default as DefaultTemplate } from './DefaultTemplate';
 export { default as ModernTemplate } from './ModernTemplate';
 
 // Exportar tipos de plantillas disponibles

@@ -9,7 +9,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { ModernTemplate, TEMPLATE_OPTIONS, TemplateType } from '@/components/pdf-templates';
+import { DefaultTemplate, ModernTemplate, TEMPLATE_OPTIONS, TemplateType } from '@/components/pdf-templates';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;
@@ -346,123 +346,32 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
   // Función para renderizar la plantilla seleccionada
   const renderSelectedTemplate = () => {
+    const templateProps = {
+      template,
+      organization,
+      pdfParams,
+      sectionStates,
+      data,
+      type,
+      getGridCols,
+      calculateTotal
+    };
+
     switch (selectedTemplate) {
       case 'modern':
-        return (
-          <ModernTemplate
-            template={template}
-            organization={organization}
-            pdfParams={pdfParams}
-            sectionStates={sectionStates}
-            data={data}
-            type={type}
-            getGridCols={getGridCols}
-            calculateTotal={calculateTotal}
-          />
-        );
+        return <ModernTemplate {...templateProps} />;
       case 'default':
-        return renderDefaultTemplate();
+        return <DefaultTemplate {...templateProps} />;
       case 'technical':
       case 'compact':
         // Por ahora renderizar la plantilla por defecto hasta que se implementen
-        return renderDefaultTemplate();
+        return <DefaultTemplate {...templateProps} />;
       default:
-        return renderDefaultTemplate();
+        return <DefaultTemplate {...templateProps} />;
     }
   };
 
-  // Función para renderizar plantilla por defecto
-  const renderDefaultTemplate = () => (
-    <div 
-      id="pdf-preview-content"
-      className="bg-white shadow-lg border border-gray-300"
-      style={{ 
-        width: '210mm',
-        height: '297mm',
-        fontFamily: 'Arial',
-        color: '#000000',
-        backgroundColor: '#ffffff',
-        transform: 'scale(0.7)',
-        transformOrigin: 'top center',
-        overflow: 'hidden'
-      }}
-    >
-      <div 
-        className="text-black"
-        style={{ padding: '48px' }}
-      >
-        {/* Header simple */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4" style={{ color: '#1e40af' }}>
-            {organization?.name || 'EMPRESA'}
-          </h1>
-          <div className="text-right">
-            <div className="mb-4" style={{ fontSize: `${pdfParams.companyInfoSize}px` }}>
-              {organization?.address && <div>{organization.address}</div>}
-              {organization?.website && <div>{organization.website}</div>}
-              {organization?.email && <div>{organization.email}</div>}
-              {organization?.phone && <div>+{organization.phone}</div>}
-            </div>
-            <h2 className="text-2xl font-bold mb-2">ORDEN DE CAMBIO</h2>
-            <div className="text-sm">
-              <div>Fecha: {new Date().toLocaleDateString()}</div>
-              <div>Orden #: CO-001</div>
-            </div>
-          </div>
-          <hr className="my-4 border-2 border-gray-300" />
-        </div>
 
-        {/* Solo información del Proyecto */}
-        <div className="border border-gray-300 p-4 mb-6">
-          <div className="font-bold mb-2">Proyecto:</div>
-          <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
-        </div>
-
-        {/* Descripción */}
-        <div className="border border-gray-300 p-4 mb-6">
-          <div className="font-bold mb-2">Descripción:</div>
-          <div>{pdfParams.description}</div>
-        </div>
-
-        {/* Tabla simple */}
-        <div className="mb-6">
-          <h3 className="font-bold mb-3">Elementos:</h3>
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-3 py-2 text-left">Descripción</th>
-                <th className="border border-gray-300 px-3 py-2 text-center">Cantidad</th>
-                <th className="border border-gray-300 px-3 py-2 text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index}>
-                  <td className="border border-gray-300 px-3 py-2">{item.name}</td>
-                  <td className="border border-gray-300 px-3 py-2 text-center">{item.amount} {item.unit_name}</td>
-                  <td className="border border-gray-300 px-3 py-2 text-right">${item.total_price?.toFixed(2) || '0.00'}</td>
-                </tr>
-              ))}
-              <tr className="bg-gray-50 font-bold">
-                <td colSpan={2} className="border border-gray-300 px-3 py-2 text-right">TOTAL:</td>
-                <td className="border border-gray-300 px-3 py-2 text-right">${calculateTotal().toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Firmas simples */}
-        <div className="mt-12 grid grid-cols-2 gap-8">
-          <div className="border-t border-gray-300 pt-2">
-            <div className="text-center text-sm">Firma del Cliente</div>
-          </div>
-          <div className="border-t border-gray-300 pt-2">
-            <div className="text-center text-sm">Firma de la Empresa</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   // Función para renderizar plantilla personalizable
   const renderCustomTemplate = () => (
