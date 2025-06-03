@@ -80,7 +80,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     clientAddress: '28 Westview Drive\nNorth Vancouver, BC',
     projectCode: 'J1278',
     projectName: 'Johnstone Family Custom Home',
-    description: 'New Change Order',
+    description: 'Nueva Orden de Cambio',
     showUnitColumn: true,
     showPriceColumn: true,
     showTaxCalculation: true,
@@ -88,7 +88,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     showClientSignature: true,
     showCompanySignature: true,
     showPageNumbers: true,
-    companyInfoSize: 10
+    companyInfoSize: 10,
+    signatureText: 'Acepto esta orden de cambio y autorizo los trabajos descritos anteriormente. Acepto que esta orden de cambio formará parte del contrato y acepto el total del contrato ajustado y cualquier retraso en la fecha de finalización como se indica anteriormente.'
   });
 
   // Estado para selector de plantilla
@@ -225,12 +226,13 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     }
   });
 
-  // Sincronizar companyInfoSize con la plantilla cargada
+  // Sincronizar valores con la plantilla cargada
   useEffect(() => {
-    if (template?.company_info_size) {
+    if (template) {
       setPdfParams(prev => ({
         ...prev,
-        companyInfoSize: template.company_info_size
+        companyInfoSize: template.company_info_size || 10,
+        signatureText: template.signature_text || prev.signatureText
       }));
     }
   }, [template]);
@@ -742,125 +744,120 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                     }}
                   >
                     <p className="mb-3">
-                      I accept this change order and authorize works described above to be undertaken. I accept that this change order will form part of the contract 
-                      and agree to the adjusted contract total and any delay to the completion date as stated above.
-                    </p>
-                    
-                    <p>
-                      I also understand and accept that any increase or decrease in the price due to this change order will be due and included in either the next 
-                      payment or a future payment as set out in the contract payment schedule.
+                      {pdfParams.signatureText}
                     </p>
                   </div>
 
-                  <div 
-                    className="mt-6"
-                    style={{ 
-                      border: `1px solid ${template?.secondary_color || '#000000'}`,
-                      padding: '12px',
-                      backgroundColor: '#f8f8f8'
-                    }}
-                  >
+                  {(pdfParams.showClientSignature || pdfParams.showCompanySignature) && (
                     <div 
-                      className="font-semibold mb-3"
+                      className="mt-6"
                       style={{ 
-                        fontSize: `${template?.body_size || 11}px`,
-                        color: template?.text_color || '#000000'
+                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                        padding: '12px',
+                        backgroundColor: '#f8f8f8'
                       }}
                     >
-                      Signed on behalf of client:
-                    </div>
-                    
-                    <div className="grid grid-cols-3 gap-6">
-                      <div>
-                        <div 
-                          className="mb-1"
-                          style={{ 
-                            fontSize: `${template?.body_size || 10}px`,
-                            color: template?.text_color || '#000000'
-                          }}
-                        >
-                          SIGNED: ________________________
+                      {pdfParams.showClientSignature && (
+                        <div className="mb-6">
+                          <div 
+                            className="font-semibold mb-3"
+                            style={{ 
+                              fontSize: `${template?.body_size || 11}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            Firmado en nombre del cliente:
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-6">
+                            <div>
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                FIRMADO: ________________________
+                              </div>
+                            </div>
+                            <div>
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Nombre: ________________________
+                              </div>
+                            </div>
+                            <div>
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Fecha: _____ / _____ / _____
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <div 
-                          className="mb-1"
-                          style={{ 
-                            fontSize: `${template?.body_size || 10}px`,
-                            color: template?.text_color || '#000000'
-                          }}
-                        >
-                          Name: ________________________
-                        </div>
-                      </div>
-                      <div>
-                        <div 
-                          className="mb-1"
-                          style={{ 
-                            fontSize: `${template?.body_size || 10}px`,
-                            color: template?.text_color || '#000000'
-                          }}
-                        >
-                          Date: _____ / _____ / _____
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      )}
 
-                  <div 
-                    className="mt-4"
-                    style={{ 
-                      border: `1px solid ${template?.secondary_color || '#000000'}`,
-                      padding: '12px',
-                      backgroundColor: '#f8f8f8'
-                    }}
-                  >
-                    <div 
-                      className="font-semibold mb-3"
-                      style={{ 
-                        fontSize: `${template?.body_size || 11}px`,
-                        color: template?.text_color || '#000000'
-                      }}
-                    >
-                      Signed on behalf of {organization?.name || 'Buildact Builders'}
+                      {pdfParams.showCompanySignature && (
+                        <div className="mt-4">
+                          <div 
+                            className="font-semibold mb-3"
+                            style={{ 
+                              fontSize: `${template?.body_size || 11}px`,
+                              color: template?.text_color || '#000000'
+                            }}
+                          >
+                            Firmado en nombre de {organization?.name || 'Empresa'}:
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-6">
+                            <div>
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                FIRMADO: ________________________
+                              </div>
+                            </div>
+                            <div>
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Nombre: ________________________
+                              </div>
+                            </div>
+                            <div>
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Fecha: _____ / _____ / _____
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    
-                    <div className="grid grid-cols-3 gap-6">
-                      <div>
-                        <div 
-                          className="mb-1"
-                          style={{ 
-                            fontSize: `${template?.body_size || 10}px`,
-                            color: template?.text_color || '#000000'
-                          }}
-                        >
-                          SIGNED: ________________________
-                        </div>
-                      </div>
-                      <div>
-                        <div 
-                          className="mb-1"
-                          style={{ 
-                            fontSize: `${template?.body_size || 10}px`,
-                            color: template?.text_color || '#000000'
-                          }}
-                        >
-                          Name: ________________________
-                        </div>
-                      </div>
-                      <div>
-                        <div 
-                          className="mb-1"
-                          style={{ 
-                            fontSize: `${template?.body_size || 10}px`,
-                            color: template?.text_color || '#000000'
-                          }}
-                        >
-                          Date: _____ / _____ / _____
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
             </>
@@ -1099,6 +1096,16 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         )}
                         {section.id === 'signatures' && (
                           <div className="space-y-3">
+                            <div>
+                              <label className="text-xs font-medium">Texto sobre las Firmas</label>
+                              <textarea 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded bg-background text-foreground" 
+                                rows={3}
+                                value={pdfParams.signatureText}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, signatureText: e.target.value }))}
+                                placeholder="Texto que aparecerá sobre las firmas..."
+                              />
+                            </div>
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-medium">Mostrar Firma del Cliente</span>
                               <Switch 
