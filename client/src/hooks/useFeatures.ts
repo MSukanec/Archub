@@ -48,14 +48,14 @@ export function useUserPlan() {
           .rpc('is_admin');
         
         if (!adminError && isAdminResult) {
-          // User is admin, use RPC to get user data
+          // User is admin, get their specific data
           const { data: userData, error: userError } = await supabase
             .rpc('get_users_for_admin');
           
           if (!userError && userData && Array.isArray(userData)) {
             const currentUser = userData.find(u => u.auth_id === user.id);
             if (currentUser) {
-              // Get plan data
+              // Get plan data - admin should have PRO plan
               const { data: planData } = await supabase
                 .from('plans')
                 .select('*')
@@ -64,7 +64,11 @@ export function useUserPlan() {
               
               return {
                 ...currentUser,
-                plan: planData
+                plan: planData || {
+                  id: 'd0de319e-2b8c-40a5-abb9-3ea6bbf1fc08',
+                  name: 'pro',
+                  features: { max_organizations: 1, export_pdf_custom: false }
+                }
               };
             }
           }

@@ -261,10 +261,10 @@ export default function AdminUsers() {
                       variant="outline"
                       className={
                         user.plan?.name === 'pro' 
-                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
                           : user.plan?.name === 'enterprise'
-                          ? "bg-purple-50 text-purple-700 border-purple-200"
-                          : "bg-surface-secondary text-gray-700 border-gray-200"
+                          ? "bg-purple-600 text-white border-purple-600 hover:bg-purple-700"
+                          : "bg-primary text-white border-primary hover:bg-primary/90"
                       }
                     >
                       {user.plan?.name ? user.plan.name.toUpperCase() : 'FREE'}
