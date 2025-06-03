@@ -327,7 +327,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         form.setValue('concept_id', '');
                       }} value={selectedTypeId} disabled={false}>
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder="Seleccionar tipo" />
                           </SelectTrigger>
                         </FormControl>
@@ -357,7 +357,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         disabled={!selectedTypeId || conceptsLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder={
                               conceptsLoading ? "Cargando categorías..." :
                               !selectedTypeId ? "Primero selecciona un tipo" :
@@ -421,7 +421,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Moneda <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder="Seleccionar moneda" />
                           </SelectTrigger>
                         </FormControl>
@@ -444,7 +444,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Billetera <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder="Seleccionar billetera" />
                           </SelectTrigger>
                         </FormControl>
@@ -494,7 +494,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 Relaciones
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-2 pt-1">
+            <AccordionContent>
               {/* Contacto Relacionado */}
               <FormField
                 control={form.control}
@@ -508,7 +508,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           <Button
                             variant="outline"
                             role="combobox"
-                            className="w-full justify-between bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8] h-10 font-normal"
+                            className="w-full justify-between bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm  h-10 font-normal"
                           >
                             <span className="truncate">
                               {field.value 
