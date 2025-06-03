@@ -97,7 +97,7 @@ export default function OrganizationSettings() {
   });
 
   // Update form when organization data loads
-  useState(() => {
+  useEffect(() => {
     if (organization) {
       form.reset({
         name: organization.name || '',
@@ -116,7 +116,7 @@ export default function OrganizationSettings() {
         logo_url: organization.logo_url || '',
       });
     }
-  });
+  }, [organization, form]);
 
   const updateOrganizationMutation = useMutation({
     mutationFn: async (data: OrganizationSettingsForm) => {
