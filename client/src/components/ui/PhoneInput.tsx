@@ -25,10 +25,11 @@ const PhoneInputField = forwardRef<HTMLInputElement, PhoneInputFieldProps>(
           disabled={disabled}
           placeholder={placeholder || "Ingresa tu teléfono"}
           inputClass={cn(
-            "!w-full !h-10 !pl-12 !pr-3 !py-2 !text-sm !bg-background !border !border-border !rounded-xl",
+            "!w-full !h-10 !pl-12 !pr-3 !py-2 !text-sm !bg-surface-secondary !border !border-input !rounded-xl",
             "!text-foreground placeholder:!text-muted-foreground",
-            "focus:!outline-none focus:!ring-2 focus:!ring-primary focus:!ring-offset-2 focus:!ring-offset-background",
+            "focus:!outline-none focus:!ring-1 focus:!ring-primary focus:!border-primary",
             "disabled:!cursor-not-allowed disabled:!opacity-50",
+            "shadow-lg hover:shadow-xl",
             error && "!border-destructive focus:!ring-destructive",
             "transition-colors"
           )}
