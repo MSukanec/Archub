@@ -183,7 +183,7 @@ export default function PrimarySidebar() {
   });
 
   return (
-    <div className="w-[56px] flex flex-col relative z-30">
+    <div className="w-[55px] flex flex-col relative z-30">
       {/* Dashboard button - moved to top */}
       <div className="flex items-center justify-center pt-2.5 pl-2.5">
         <CircularButton
