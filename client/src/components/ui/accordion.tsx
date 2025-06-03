@@ -12,7 +12,7 @@ const AccordionItem = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
-    className={cn("flex flex-col flex-shrink-0", className)}
+    className={cn("flex flex-col flex-shrink-0 mb-0.5", className)}
     {...props}
   />
 ))
@@ -53,7 +53,7 @@ const AccordionTrigger = React.forwardRef<
       </div>
       <div className="relative">
         <Plus className="plus-icon w-4 h-4 text-muted-foreground" />
-        <Minus className="minus-icon w-4 h-4 text-muted-foreground absolute top-0" />
+        <Minus className="minus-icon w-4 h-4 text-muted-foreground absolute top-0 left-0" />
       </div>
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
