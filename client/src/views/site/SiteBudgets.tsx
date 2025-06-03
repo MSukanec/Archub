@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
 import { BudgetTaskModal } from '@/components/modals/BudgetTaskModal';
+import PDFExportPreview from '@/components/modals/PDFExportPreview';
 
 // Types
 interface Budget {
@@ -257,10 +258,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 <>
                   <Button
                     size="sm"
-                    onClick={() => {
-                      // TODO: Implementar exportación PDF
-                      console.log('Exportar PDF');
-                    }}
+                    onClick={() => handleExportPDF(budget)}
                   >
                     <FileDown className="h-4 w-4 mr-2" />
                     Exportar PDF
@@ -663,6 +661,8 @@ export default function SiteBudgets() {
   const [expandedBudgets, setExpandedBudgets] = useState<Set<string>>(new Set());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isPDFModalOpen, setIsPDFModalOpen] = useState(false);
+  const [pdfExportData, setPdfExportData] = useState<{budgetName: string; tasks: any[]}>({budgetName: '', tasks: []});
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -765,6 +765,87 @@ export default function SiteBudgets() {
       console.error('Error deleting task:', error);
     },
   });
+
+  // Función para manejar la exportación PDF
+  const handleExportPDF = (budget: Budget) => {
+    // Buscar las tareas en el query existente usando el budget ID
+    const budgetWithTasks = budgets.find(b => b.id === budget.id);
+    if (!budgetWithTasks) {
+      toast({
+        title: "Error al preparar exportación",
+        description: "No se encontraron datos del presupuesto.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Obtener las tareas usando el query existente
+    const { data: tasksData } = useQuery({
+      queryKey: ['budget-tasks', budget.id, projectId],
+      queryFn: async () => {
+        if (!budget.id || !projectId) return [];
+        
+        try {
+          const { data: budgetTasks, error } = await supabase
+            .from('budget_tasks')
+            .select(`
+              id,
+              budget_id,
+              task_id,
+              quantity,
+              unit_price,
+              tasks!inner (
+                id,
+                name,
+                description,
+                category_id,
+                unit_id,
+                categories!inner (
+                  id,
+                  name,
+                  code,
+                  parent_id,
+                  parent_category:categories!budget_tasks_task_id_fkey_categories_parent_id_fkey (
+                    name
+                  )
+                ),
+                units!inner (
+                  id,
+                  name
+                )
+              )
+            `)
+            .eq('budget_id', budget.id);
+
+          if (error) throw error;
+
+          return (budgetTasks || []).map((budgetTask: any) => ({
+            id: budgetTask.id,
+            name: budgetTask.tasks?.name || '',
+            description: budgetTask.tasks?.description || '',
+            category_name: budgetTask.tasks?.categories?.name || '',
+            category_code: budgetTask.tasks?.categories?.code || '',
+            parent_category_name: budgetTask.tasks?.categories?.parent_category?.[0]?.name || '',
+            unit_name: budgetTask.tasks?.units?.name || '',
+            amount: parseFloat(budgetTask.quantity) || 0,
+            unit_price: parseFloat(budgetTask.unit_price) || 0,
+            total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.unit_price) || 0)
+          }));
+        } catch (error) {
+          console.error('Error fetching budget tasks:', error);
+          return [];
+        }
+      },
+    });
+
+    // Configurar los datos para el modal PDF
+    setPdfExportData({
+      budgetName: budget.name,
+      tasks: tasksData || []
+    });
+    
+    setIsPDFModalOpen(true);
+  };
 
   // Establecer presupuesto activo por defecto y expandir
   useEffect(() => {
