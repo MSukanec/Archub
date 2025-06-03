@@ -2,15 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Building2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Building2, Info, MapPin } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import ModernModal, { ModalAccordion, useModalAccordion } from '@/components/ui/ModernModal';
 
 const createOrganizationSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -31,6 +30,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const { openAccordions, toggleAccordion } = useModalAccordion('general');
 
   const form = useForm<CreateOrganizationFormData>({
     resolver: zodResolver(createOrganizationSchema),
@@ -55,34 +55,48 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
         .single();
 
       if (userError || !internalUser) {
-        throw new Error('No se pudo obtener la información del usuario');
+        throw new Error('Usuario interno no encontrado');
       }
 
       // Crear la organización
       const { data: organization, error: orgError } = await supabase
         .from('organizations')
-        .insert({
+        .insert([{
           name: data.name,
           description: data.description || null,
           address: data.address || null,
           phone: data.phone || null,
           email: data.email || null,
           owner_id: internalUser.id,
-        })
+        }])
         .select()
         .single();
 
       if (orgError) throw orgError;
 
-      // Actualizar las preferencias del usuario para usar la nueva organización
+      // Crear el member record para el owner
+      const { error: memberError } = await supabase
+        .from('organization_members')
+        .insert([{
+          organization_id: organization.id,
+          user_id: internalUser.id,
+          role: 'owner',
+          status: 'active'
+        }]);
+
+      if (memberError) throw memberError;
+
+      // Actualizar las preferencias del usuario con la nueva organización
       const { error: prefsError } = await supabase
         .from('user_preferences')
-        .update({ last_organization_id: organization.id })
+        .update({ 
+          last_organization_id: organization.id,
+          last_project_id: null,
+          last_budget_id: null
+        })
         .eq('user_id', internalUser.id);
 
-      if (prefsError) {
-        console.error('Error updating user preferences:', prefsError);
-      }
+      if (prefsError) throw prefsError;
 
       return organization;
     },
@@ -123,83 +137,105 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] bg-surface-secondary">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-primary" />
-            Nueva Organización
-          </DialogTitle>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre de la Organización *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Ej: Constructora ABC S.A."
-                      {...field}
-                      className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <ModernModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Crear Nueva Organización"
+      subtitle="Gestiona los equipos de construcción"
+      icon={Building2}
+      confirmText="Crear Organización"
+      onConfirm={form.handleSubmit(handleSubmit)}
+      isLoading={createOrganizationMutation.isPending}
+    >
+      <Form {...form}>
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* Información General */}
+          <ModalAccordion
+            id="general"
+            title="Información General"
+            subtitle="Datos básicos de la organización"
+            icon={Info}
+            isOpen={openAccordions.has('general')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Nombre de la Organización *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: Constructora ABC S.A."
+                        {...field}
+                        className="bg-input border-surface-primary text-white placeholder:text-muted-foreground"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Breve descripción de la organización..."
-                      {...field}
-                      className="min-h-[80px] bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe el tipo de organización o su enfoque..."
+                        {...field}
+                        className="min-h-[80px] bg-input border-surface-primary text-white placeholder:text-muted-foreground resize-none"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </ModalAccordion>
 
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dirección</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Dirección completa de la organización..."
-                      {...field}
-                      className="min-h-[60px] bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Información de Contacto */}
+          <ModalAccordion
+            id="contact"
+            title="Información de Contacto"
+            subtitle="Datos de contacto de la organización"
+            icon={MapPin}
+            isOpen={openAccordions.has('contact')}
+            onToggle={toggleAccordion}
+          >
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Dirección</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Dirección de la oficina principal"
+                        {...field}
+                        className="bg-input border-surface-primary text-white placeholder:text-muted-foreground"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Teléfono</FormLabel>
+                    <FormLabel className="text-white">Teléfono</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Ej: +54 11 1234-5678"
                         {...field}
-                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="bg-input border-surface-primary text-white placeholder:text-muted-foreground"
                       />
                     </FormControl>
                     <FormMessage />
@@ -212,13 +248,13 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-white">Email de Contacto</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="contacto@empresa.com"
                         {...field}
-                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="bg-input border-surface-primary text-white placeholder:text-muted-foreground"
                       />
                     </FormControl>
                     <FormMessage />
@@ -226,28 +262,9 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                 )}
               />
             </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                disabled={createOrganizationMutation.isPending}
-                className="bg-[#e0e0e0] hover:bg-surface-secondary text-muted-foreground border-input rounded-xl"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={createOrganizationMutation.isPending}
-                className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
-              >
-                {createOrganizationMutation.isPending ? 'Creando...' : 'Crear Organización'}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          </ModalAccordion>
+        </div>
+      </Form>
+    </ModernModal>
   );
 }

@@ -200,7 +200,8 @@ export function ModalAccordion({
       <button
         type="button"
         onClick={() => onToggle(id)}
-        className="w-full flex items-center justify-between p-4 bg-surface-views hover:bg-surface-primary transition-colors text-white flex-shrink-0 border-b border-surface-primary"
+        className="w-full flex items-center justify-between p-4 bg-surface-views hover:bg-surface-primary transition-colors text-white flex-shrink-0 border-t border-b border-surface-primary"
+        style={{ borderWidth: '2px' }}
       >
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
