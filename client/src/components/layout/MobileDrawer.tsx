@@ -47,11 +47,18 @@ const navigationItems = [
     ]
   },
   { 
-    section: 'contacts' as const, 
+    section: 'calendar' as const, 
     icon: Calendar, 
     label: 'Agenda',
     subItems: [
-      { id: 'calendar', label: 'Agenda' },
+      { id: 'calendar', label: 'Agenda' }
+    ]
+  },
+  { 
+    section: 'contacts' as const, 
+    icon: User, 
+    label: 'Contactos',
+    subItems: [
       { id: 'contacts', label: 'Contactos' }
     ]
   },
@@ -265,11 +272,11 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                           "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
                           isActive
                             ? "bg-black text-white"
-                            : "text-[#333] hover:bg-black/5 bg-surface-secondary"
+                            : "text-white hover:bg-black/20 bg-surface-secondary"
                         )}
                       >
                         <div className="flex items-center space-x-3">
-                          <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-[#666]")} />
+                          <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-white")} />
                           <span className="font-normal text-sm">{item.label}</span>
                         </div>
                         {item.subItems.length > 1 && (
@@ -293,7 +300,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                   "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
                                   isSubActive
                                     ? "bg-black text-white"
-                                    : "text-[#666] hover:bg-black/5 bg-surface-secondary"
+                                    : "text-white hover:bg-black/20 bg-surface-secondary"
                                 )}
                               >
                                 <span className="text-sm">{subItem.label}</span>
