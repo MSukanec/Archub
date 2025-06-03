@@ -359,27 +359,58 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {/* Fecha */}
-                <FormField
-                  control={form.control}
-                  name="created_at"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Fecha *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="date" 
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value)}
-                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {/* Fecha */}
+              <FormField
+                control={form.control}
+                name="created_at"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Fecha *</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="date" 
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              {/* Descripción */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe el detalle del movimiento... (opcional)"
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
+                        rows={3}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Detalle de Movimiento */}
+          <AccordionItem value="movement-details" className="border-input">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-primary" />
+                Detalle de Movimiento
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-3 pt-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Moneda */}
                 <FormField
                   control={form.control}
@@ -402,9 +433,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Billetera */}
                 <FormField
                   control={form.control}
@@ -430,43 +459,23 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     </FormItem>
                   )}
                 />
-
-                {/* Cantidad */}
-                <FormField
-                  control={form.control}
-                  name="amount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground">Cantidad *</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
-              {/* Descripción */}
+              {/* Cantidad */}
               <FormField
                 control={form.control}
-                name="description"
+                name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">Descripción</FormLabel>
+                    <FormLabel className="text-xs font-medium text-foreground">Cantidad *</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Describe el detalle del movimiento... (opcional)"
-                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
-                        rows={3}
-                        {...field}
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                       />
                     </FormControl>
                     <FormMessage />
