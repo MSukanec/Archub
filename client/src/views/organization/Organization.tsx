@@ -4,6 +4,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import CreateOrganizationModal from '@/components/modals/CreateOrganizationModal';
 
 export default function Organization() {
@@ -112,7 +113,7 @@ export default function Organization() {
         </div>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8bef] rounded-xl"
+          className="bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva Organización
@@ -121,7 +122,7 @@ export default function Organization() {
       
       {/* Organization Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <Card className="rounded-2xl shadow-md p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Proyectos Totales</p>
@@ -131,9 +132,9 @@ export default function Organization() {
               <BarChart3 className="h-5 w-5 text-primary" />
             </div>
           </div>
-        </div>
+        </Card>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <Card className="rounded-2xl shadow-md p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Presupuesto Total</p>
@@ -145,9 +146,9 @@ export default function Organization() {
               <TrendingUp className="h-5 w-5 text-primary" />
             </div>
           </div>
-        </div>
+        </Card>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <Card className="rounded-2xl shadow-md p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Actividad Mensual</p>
@@ -157,9 +158,9 @@ export default function Organization() {
               <Activity className="h-5 w-5 text-primary" />
             </div>
           </div>
-        </div>
+        </Card>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <Card className="rounded-2xl shadow-md p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Días Activos</p>
@@ -169,12 +170,12 @@ export default function Organization() {
               <Calendar className="h-5 w-5 text-primary" />
             </div>
           </div>
-        </div>
+        </Card>
       </div>
       
       {/* Organization Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <Card className="rounded-2xl shadow-md p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <Building2 className="w-4 h-4 text-primary" />
@@ -204,9 +205,9 @@ export default function Organization() {
               <p className="text-foreground font-medium">1 miembro activo</p>
             </div>
           </div>
-        </div>
+        </Card>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <Card className="rounded-2xl shadow-md p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <Activity className="w-4 h-4 text-primary" />
@@ -218,7 +219,7 @@ export default function Organization() {
               Aquí se mostrará la actividad reciente de la organización.
             </p>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Create Organization Modal */}
