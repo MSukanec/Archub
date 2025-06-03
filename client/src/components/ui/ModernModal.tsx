@@ -149,7 +149,7 @@ export default function ModernModal({
         />
         
         {/* Body - Full Height Accordions */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {children}
         </div>
         
