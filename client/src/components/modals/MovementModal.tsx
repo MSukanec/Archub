@@ -282,8 +282,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
   const content = (
     <Form {...form}>
-      <form id="movement-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
+      <form id="movement-form" onSubmit={form.handleSubmit(onSubmit)}>
+        <Accordion type="single" collapsible defaultValue="basic-info">
           {/* Información Básica */}
           <AccordionItem value="basic-info">
             <AccordionTrigger>
@@ -292,7 +292,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 Información Básica
               </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-2 pt-1">
+            <AccordionContent>
+              <div className="space-y-2">
               {/* Fecha */}
               <FormField
                 control={form.control}
@@ -399,6 +400,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                   </FormItem>
                 )}
               />
+              </div>
             </AccordionContent>
           </AccordionItem>
 
