@@ -158,7 +158,7 @@ export default function AdminUnits() {
               placeholder="Buscar unidades..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -229,7 +229,7 @@ export default function AdminUnits() {
               </TableRow>
             ) : (
               paginatedUnits.map((unit: any) => (
-                <TableRow key={unit.id} className="border-border hover:bg-muted/30 transition-colors">
+                <TableRow key={unit.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
                   <TableCell className="py-2 text-center">
                     <span className="font-mono bg-muted/50 px-2 py-1 rounded text-sm">
                       {unit.name || 'N/A'}

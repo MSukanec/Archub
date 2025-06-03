@@ -163,7 +163,7 @@ export default function AdminActions() {
               placeholder="Buscar acciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -231,7 +231,7 @@ export default function AdminActions() {
               </TableRow>
             ) : (
               paginatedActions.map((action: any) => (
-                <TableRow key={action.id} className="border-border hover:bg-muted/30 transition-colors">
+                <TableRow key={action.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
                   <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">{action.name}</div>
                   </TableCell>

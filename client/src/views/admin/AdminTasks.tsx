@@ -177,12 +177,12 @@ export default function AdminTasks() {
             placeholder="Buscar tareas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-shadow focus:shadow-xl"
+            className="pl-10 h-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl transition-shadow focus:shadow-xl"
           />
         </div>
         <div className="flex items-center gap-2">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-48 h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl">
+            <SelectTrigger className="w-48 h-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl">
               <FolderOpen className="w-4 h-4 mr-2 text-muted-foreground" />
               <SelectValue placeholder="Filtrar por categoría" />
             </SelectTrigger>

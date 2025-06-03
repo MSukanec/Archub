@@ -191,7 +191,7 @@ export default function AdminMaterialCategories() {
               placeholder="Buscar categorías de materiales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl"
             />
             {searchTerm && (
               <Button
