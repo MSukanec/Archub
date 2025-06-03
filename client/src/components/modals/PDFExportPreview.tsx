@@ -881,7 +881,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               >
                                 Firma del cliente:
                               </div>
-                              <div className="grid grid-cols-3 gap-6">
+                              <div className={`grid gap-6 ${getGridCols()}`}>
                                 <div>
                                   <div 
                                     className="mb-1"
@@ -934,7 +934,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               >
                                 Firma de {organization?.name || 'Empresa'}:
                               </div>
-                              <div className="grid grid-cols-3 gap-6">
+                              <div className={`grid gap-6 ${getGridCols()}`}>
                                 <div>
                                   <div 
                                     className="mb-1"
