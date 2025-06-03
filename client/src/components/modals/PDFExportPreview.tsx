@@ -88,17 +88,14 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Generate PDF content
-      const pdfContent = generatePDFContent();
+      // Generate HTML content for PDF
+      const htmlBlob = generatePDFContent();
+      const url = URL.createObjectURL(htmlBlob);
       
-      // Create blob and download
-      const blob = new Blob([pdfContent], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      
-      // Create download link
+      // Create download link for HTML file (which can be printed as PDF)
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
+      link.download = `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -113,26 +110,121 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   };
 
   const generatePDFContent = () => {
-    return `%PDF-1.4
-1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
-2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj
-3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<<>>>>endobj
-xref
-0 4
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-trailer<</Size 4/Root 1 0 R>>
-startxref
-200
-%%EOF`;
+    // Generate HTML content for PDF conversion
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${title}</title>
+          <style>
+            body {
+              font-family: ${template?.font_family || 'Arial'};
+              margin: 0;
+              padding: 40px;
+              background: white;
+              color: black;
+            }
+            .header {
+              border-bottom: 1px solid #ccc;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .company-name {
+              font-size: ${template?.company_name_size || 24}px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .title {
+              font-size: ${template?.title_size || 18}px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            th, td {
+              border: 1px solid #666;
+              padding: 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #f0f0f0;
+              font-weight: bold;
+            }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+            .total-row {
+              background-color: #f8f8f8;
+              font-weight: bold;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            ${template?.company_name_show && organization?.name ? `<div class="company-name">${organization.name}</div>` : ''}
+            <div class="title">${title}</div>
+            <div>Fecha: ${new Date().toLocaleDateString()}</div>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Descripción</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-center">Precio Unit.</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.map(item => `
+                <tr>
+                  <td>
+                    <div><strong>${item.name}</strong></div>
+                    ${item.description ? `<div style="font-size: 12px; color: #666;">${item.description}</div>` : ''}
+                  </td>
+                  <td class="text-center">${item.amount} ${item.unit_name || ''}</td>
+                  <td class="text-center">$${(item.unit_price || 0).toFixed(2)}</td>
+                  <td class="text-right">$${(item.total_price || 0).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="3" class="text-right">Total General:</td>
+                <td class="text-right">$${calculateTotal().toFixed(2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+          
+          ${template?.footer_text ? `
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #666;">
+              ${template.footer_text}
+            </div>
+          ` : ''}
+        </body>
+      </html>
+    `;
+    
+    // Convert HTML to PDF-like content (simplified version)
+    // In a real implementation, you'd use a library like jsPDF or html2pdf
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    return blob;
   };
 
   const handleGoToSettings = () => {
     onClose();
     setSection('organization');
     setView('organization-overview');
+    // Navigate to PDF configuration tab
+    setTimeout(() => {
+      const pdfTab = document.querySelector('[data-tab="pdf"]');
+      if (pdfTab) {
+        (pdfTab as HTMLElement).click();
+      }
+    }, 100);
   };
 
   const calculateTotal = () => {
@@ -167,9 +259,8 @@ startxref
             variant="outline"
             onClick={handleGoToSettings}
             disabled={isExporting}
-            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
+            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary"
           >
-            <Settings className="w-4 h-4 mr-2" />
             Configurar
           </Button>
           <Button
@@ -177,7 +268,7 @@ startxref
             variant="outline"
             onClick={onClose}
             disabled={isExporting}
-            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
+            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary"
           >
             Cancelar
           </Button>
@@ -185,7 +276,7 @@ startxref
             type="button"
             onClick={handleExport}
             disabled={isExporting}
-            className="w-2/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+            className="w-2/4 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Download className="w-4 h-4 mr-2" />
             {isExporting ? 'Exportando...' : 'Exportar PDF'}
