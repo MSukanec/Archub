@@ -210,14 +210,14 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             
             {/* Información Personal */}
             <AccordionItem value="personal" className="border border-input rounded-lg bg-surface-secondary">
-              <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
+              <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
-                    <User className="h-4 w-4 text-[#919191]" />
+                    <User className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-medium text-[#919191]">Información Personal</h3>
-                    <p className="text-sm text-[#919191]/70">Nombre y datos básicos del contacto</p>
+                    <h3 className="font-medium text-muted-foreground">Información Personal</h3>
+                    <p className="text-sm text-muted-foreground/70">Nombre y datos básicos del contacto</p>
                   </div>
                 </div>
               </AccordionTrigger>
@@ -229,7 +229,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                       name="first_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-medium text-[#919191]">
+                          <FormLabel className="text-xs font-medium text-muted-foreground">
                             Nombre *
                           </FormLabel>
                           <FormControl>
@@ -249,7 +249,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                       name="last_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-medium text-[#919191]">Apellido</FormLabel>
+                          <FormLabel className="text-xs font-medium text-muted-foreground">Apellido</FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
@@ -268,7 +268,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                     name="company_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-[#919191]">Empresa</FormLabel>
+                        <FormLabel className="text-xs font-medium text-muted-foreground">Empresa</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
@@ -286,14 +286,14 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
 
             {/* Tipos de Contacto */}
             <AccordionItem value="types" className="border border-input rounded-lg bg-surface-secondary">
-              <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
+              <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
-                    <Tags className="h-4 w-4 text-[#919191]" />
+                    <Tags className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-medium text-[#919191]">Tipos de Contacto</h3>
-                    <p className="text-sm text-[#919191]/70">Categorías que definen el rol del contacto</p>
+                    <h3 className="font-medium text-muted-foreground">Tipos de Contacto</h3>
+                    <p className="text-sm text-muted-foreground/70">Categorías que definen el rol del contacto</p>
                   </div>
                 </div>
               </AccordionTrigger>
@@ -309,7 +309,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                       />
                       <label
                         htmlFor={type.id}
-                        className="text-sm text-[#919191] cursor-pointer"
+                        className="text-sm text-muted-foreground cursor-pointer"
                       >
                         {type.name}
                       </label>
@@ -321,14 +321,14 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
 
             {/* Información de Contacto */}
             <AccordionItem value="contact" className="border border-input rounded-lg bg-surface-secondary">
-              <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
+              <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
-                    <Phone className="h-4 w-4 text-[#919191]" />
+                    <Phone className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-medium text-[#919191]">Información de Contacto</h3>
-                    <p className="text-sm text-[#919191]/70">Email, teléfono y ubicación</p>
+                    <h3 className="font-medium text-muted-foreground">Información de Contacto</h3>
+                    <p className="text-sm text-muted-foreground/70">Email, teléfono y ubicación</p>
                   </div>
                 </div>
               </AccordionTrigger>
@@ -340,7 +340,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-medium text-[#919191]">Email</FormLabel>
+                          <FormLabel className="text-xs font-medium text-muted-foreground">Email</FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
@@ -359,7 +359,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-medium text-[#919191]">Teléfono</FormLabel>
+                          <FormLabel className="text-xs font-medium text-muted-foreground">Teléfono</FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
@@ -378,7 +378,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                     name="location"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-medium text-[#919191]">Ubicación</FormLabel>
+                        <FormLabel className="text-xs font-medium text-muted-foreground">Ubicación</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
@@ -396,14 +396,14 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
 
             {/* Notas */}
             <AccordionItem value="notes" className="border border-input rounded-lg bg-surface-secondary">
-              <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
+              <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
-                    <FileText className="h-4 w-4 text-[#919191]" />
+                    <FileText className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-medium text-[#919191]">Notas Adicionales</h3>
-                    <p className="text-sm text-[#919191]/70">Información adicional sobre el contacto</p>
+                    <h3 className="font-medium text-muted-foreground">Notas Adicionales</h3>
+                    <p className="text-sm text-muted-foreground/70">Información adicional sobre el contacto</p>
                   </div>
                 </div>
               </AccordionTrigger>
@@ -413,7 +413,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-medium text-[#919191]">Notas</FormLabel>
+                      <FormLabel className="text-xs font-medium text-muted-foreground">Notas</FormLabel>
                       <FormControl>
                         <Textarea 
                           {...field} 
@@ -437,7 +437,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
-              className="border-input text-[#919191] hover:bg-[#919191]/10"
+              className="border-input text-muted-foreground hover:bg-surface-secondary"
             >
               Cancelar
             </Button>

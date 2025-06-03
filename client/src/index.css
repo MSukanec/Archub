@@ -339,7 +339,7 @@
   
   /* Background hierarchy for dark mode - Views, Primary Components, Secondary Cards */
   --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
-  --background-primary: 0 0% 14%; /* #232323 - Primary components (buttons, inputs, search) */
+  --background-primary: 25 100% 50%; /* #ff8000 - NARANJA TEMPORAL PARA DEBUGGING */
   --background-secondary: 0 100% 50%; /* #ff0000 - ROJO TEMPORAL PARA DEBUGGING */
 }
 

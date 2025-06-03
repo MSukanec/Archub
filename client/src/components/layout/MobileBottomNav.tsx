@@ -52,7 +52,7 @@ export default function MobileBottomNav() {
                 "flex flex-col items-center justify-center space-y-1 p-2 rounded-lg transition-colors min-w-0 flex-1 mx-1",
                 isActive
                   ? "text-white"
-                  : "text-black hover:bg-[#919191]/10"
+                  : "text-foreground hover:bg-surface-secondary"
               )}
               style={isActive ? { backgroundColor: '#6366f1' } : { backgroundColor: '#e1e1e1' }}
             >

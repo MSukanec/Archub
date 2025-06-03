@@ -336,7 +336,7 @@ function DashboardTimeline() {
           }}
           className="h-[60px] w-[60px] rounded-full bg-surface-secondary transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-95 flex items-center justify-center group"
         >
-          <span className="text-sm font-medium text-[#919191]">HOY</span>
+          <span className="text-sm font-medium text-muted-foreground">HOY</span>
         </button>
       </div>
       
@@ -355,11 +355,11 @@ function DashboardTimeline() {
               }}
               className="w-8 h-8 rounded-full bg-surface-secondary hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
             >
-              <span className="text-lg font-bold text-[#919191] group-hover:text-white">-</span>
+              <span className="text-lg font-bold text-muted-foreground group-hover:text-white">-</span>
             </button>
             
             {/* Mode label */}
-            <span className="text-sm font-medium text-[#919191] px-2">
+            <span className="text-sm font-medium text-muted-foreground px-2">
               {getTimelineModeLabel()}
             </span>
             
@@ -374,7 +374,7 @@ function DashboardTimeline() {
               }}
               className="w-8 h-8 rounded-full bg-surface-secondary hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
             >
-              <span className="text-lg font-bold text-[#919191] group-hover:text-white">+</span>
+              <span className="text-lg font-bold text-muted-foreground group-hover:text-white">+</span>
             </button>
           </div>
         </div>
@@ -408,18 +408,18 @@ function DashboardTimeline() {
             {/* Detailed event info card */}
             {hoveredEvent && (
               <div className="bg-surface-secondary border border-input rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4 animate-in slide-in-from-right-2 fade-in duration-300">
-                <h3 className="text-sm font-semibold text-[#919191] mb-3">INFORMACIÓN DEL EVENTO</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3">INFORMACIÓN DEL EVENTO</h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <hoveredEvent.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
-                    <div className="text-sm font-medium text-[#919191]">{hoveredEvent.title}</div>
+                    <hoveredEvent.icon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    <div className="text-sm font-medium text-muted-foreground">{hoveredEvent.title}</div>
                   </div>
                   {hoveredEvent.description && (
-                    <div className="text-xs text-[#919191]/70">
+                    <div className="text-xs text-muted-foreground/70">
                       <span className="font-medium">Descripción:</span> {hoveredEvent.description}
                     </div>
                   )}
-                  <div className="text-xs text-[#919191]/70">
+                  <div className="text-xs text-muted-foreground/70">
                     <span className="font-medium">Fecha:</span> {hoveredEvent.date.toLocaleDateString('es-ES', {
                       weekday: 'long',
                       day: 'numeric',
@@ -428,21 +428,21 @@ function DashboardTimeline() {
                     {hoveredEvent.time && `, ${hoveredEvent.time}`}
                   </div>
                   {hoveredEvent.location && (
-                    <div className="text-xs text-[#919191]/70">
+                    <div className="text-xs text-muted-foreground/70">
                       <span className="font-medium">Ubicación:</span> {hoveredEvent.location}
                     </div>
                   )}
                   {hoveredEvent.eventType && (
-                    <div className="text-xs text-[#919191]/70 flex items-center gap-2">
+                    <div className="text-xs text-muted-foreground/70 flex items-center gap-2">
                       <span className="font-medium">Tipo:</span> 
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-[#919191]/10 text-[#919191]">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-[#919191]/10 text-muted-foreground">
                         {getEventTypeIcon(hoveredEvent.eventType)}
                         {getEventTypeLabel(hoveredEvent.eventType)}
                       </span>
                     </div>
                   )}
                   {hoveredEvent.amount && (
-                    <div className="text-xs text-[#919191]/70">
+                    <div className="text-xs text-muted-foreground/70">
                       <span className="font-medium">Monto:</span> ${hoveredEvent.amount.toLocaleString()} {hoveredEvent.currency}
                     </div>
                   )}
@@ -453,7 +453,7 @@ function DashboardTimeline() {
             <div className="bg-surface-secondary border border-input rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
               {todayEvents.length > 0 ? (
                 <>
-                  <h3 className="text-sm font-semibold text-[#919191] mb-3">EVENTOS DE HOY</h3>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">EVENTOS DE HOY</h3>
                   <div className="space-y-2">
                     {todayEvents.slice(0, 3).map((event, index) => (
                       <button
@@ -462,16 +462,16 @@ function DashboardTimeline() {
                         className="w-full bg-surface-secondary/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <event.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
+                          <event.icon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-[#919191]">{event.title}</div>
-                            <div className="text-xs text-[#919191]/70">
+                            <div className="text-sm font-medium text-muted-foreground">{event.title}</div>
+                            <div className="text-xs text-muted-foreground/70">
                               {event.description && event.description.length > 30 
                                 ? `${event.description.substring(0, 30)}...` 
                                 : event.description}
                             </div>
                             {event.amount && (
-                              <div className="text-xs text-[#919191]/70 mt-1">
+                              <div className="text-xs text-muted-foreground/70 mt-1">
                                 ${event.amount.toLocaleString()}
                               </div>
                             )}
@@ -480,7 +480,7 @@ function DashboardTimeline() {
                       </button>
                     ))}
                     {todayEvents.length > 3 && (
-                      <div className="text-xs text-[#919191]/70 text-center pt-2">
+                      <div className="text-xs text-muted-foreground/70 text-center pt-2">
                         +{todayEvents.length - 3} eventos más
                       </div>
                     )}
@@ -488,7 +488,7 @@ function DashboardTimeline() {
                 </>
               ) : (
                 <>
-                  <h3 className="text-sm font-semibold text-[#919191] mb-3">PRÓXIMOS EVENTOS</h3>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">PRÓXIMOS EVENTOS</h3>
                   {upcomingEvents.length > 0 ? (
                     <div className="space-y-2">
                       {upcomingEvents.map((event, index) => (
@@ -498,19 +498,19 @@ function DashboardTimeline() {
                           className="w-full bg-surface-secondary/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
                         >
                           <div className="flex items-center gap-2">
-                            <event.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
+                            <event.icon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-[#919191]">{event.title}</div>
-                              <div className="text-xs text-[#919191]/70">
+                              <div className="text-sm font-medium text-muted-foreground">{event.title}</div>
+                              <div className="text-xs text-muted-foreground/70">
                                 {new Date(event.date).toLocaleDateString('es-ES')}
                               </div>
-                              <div className="text-xs text-[#919191]/70">
+                              <div className="text-xs text-muted-foreground/70">
                                 {event.description && event.description.length > 25 
                                   ? `${event.description.substring(0, 25)}...` 
                                   : event.description}
                               </div>
                               {event.amount && (
-                                <div className="text-xs text-[#919191]/70 mt-1">
+                                <div className="text-xs text-muted-foreground/70 mt-1">
                                   ${event.amount.toLocaleString()}
                                 </div>
                               )}
@@ -520,7 +520,7 @@ function DashboardTimeline() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-sm text-[#919191]/70 text-center py-4">
+                    <div className="text-sm text-muted-foreground/70 text-center py-4">
                       No hay eventos próximos
                     </div>
                   )}
@@ -661,7 +661,7 @@ function DashboardTimeline() {
                             onMouseEnter={() => setHoveredEvent(events[0])}
                             onMouseLeave={() => setHoveredEvent(null)}
                           >
-                            <Icon className="w-5 h-5 text-[#919191]" strokeWidth={1.5} />
+                            <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                             
                             {/* Badge for multiple events */}
                             {events.length > 1 && (
@@ -687,31 +687,31 @@ function DashboardTimeline() {
                                   className="bg-surface-secondary border border-input rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
                                 >
                                   <div className="flex items-center gap-2">
-                                    <event.icon className="w-4 h-4 text-[#919191]" />
+                                    <event.icon className="w-4 h-4 text-muted-foreground" />
                                     <div className="flex-1 text-left">
-                                      <div className="text-xs font-medium text-[#919191]">{event.title}</div>
-                                      <div className="text-xs text-[#919191]/70 truncate">
+                                      <div className="text-xs font-medium text-muted-foreground">{event.title}</div>
+                                      <div className="text-xs text-muted-foreground/70 truncate">
                                         {event.description && event.description.length > 20 
                                           ? `${event.description.substring(0, 20)}...` 
                                           : event.description}
                                       </div>
                                       {event.time && (
-                                        <div className="text-xs text-[#919191]/70">
+                                        <div className="text-xs text-muted-foreground/70">
                                           Hora: {event.time}
                                         </div>
                                       )}
                                       {event.location && (
-                                        <div className="text-xs text-[#919191]/70 truncate">
+                                        <div className="text-xs text-muted-foreground/70 truncate">
                                           📍 {event.location}
                                         </div>
                                       )}
                                       {event.eventType && (
-                                        <div className="text-xs text-[#919191]/70 capitalize">
+                                        <div className="text-xs text-muted-foreground/70 capitalize">
                                           {event.eventType}
                                         </div>
                                       )}
                                       {event.amount && (
-                                        <div className="text-xs text-[#919191]/70">
+                                        <div className="text-xs text-muted-foreground/70">
                                           ${event.amount.toLocaleString()}
                                         </div>
                                       )}
@@ -720,7 +720,7 @@ function DashboardTimeline() {
                                 </button>
                               ))}
                               {events.length > 3 && (
-                                <div className="text-xs text-[#919191]/70 text-center px-2">
+                                <div className="text-xs text-muted-foreground/70 text-center px-2">
                                   +{events.length - 3} eventos más
                                 </div>
                               )}

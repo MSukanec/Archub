@@ -206,7 +206,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-[#919191] hover:bg-surface-secondary"
+          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-muted-foreground hover:bg-surface-secondary"
         >
           Cancelar
         </Button>

@@ -675,7 +675,7 @@ export default function Movements() {
             size="sm"
             className="w-9 h-9 bg-surface-secondary border-0 rounded-full hover:bg-muted shadow-lg p-0"
           >
-            <Download className="h-4 w-4 text-black" />
+            <Download className="h-4 w-4 text-foreground" />
           </Button>
         </div>
 

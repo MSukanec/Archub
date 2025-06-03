@@ -176,10 +176,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-80 shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
+          "fixed top-0 left-0 h-full w-80 bg-surface-primary shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
-        style={{ backgroundColor: '#d2d2d2' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-input">
@@ -187,13 +186,13 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
-            <span className="font-semibold text-lg text-black">Archmony</span>
+            <span className="font-semibold text-lg text-foreground">Archmony</span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[#919191]/10 rounded-lg transition-colors"
+            className="p-2 hover:bg-surface-secondary rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-black" />
+            <X className="w-5 h-5 text-foreground" />
           </button>
         </div>
 
@@ -211,11 +210,11 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                   </span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-black text-sm">{currentProject.name}</p>
-                  <p className="text-xs text-[#919191]">Proyecto Activo</p>
+                  <p className="font-medium text-foreground text-sm">{currentProject.name}</p>
+                  <p className="text-xs text-muted-foreground">Proyecto Activo</p>
                 </div>
                 <ChevronDown className={cn(
-                  "w-4 h-4 text-black transition-transform",
+                  "w-4 h-4 text-foreground transition-transform",
                   showProjectMenu && "rotate-180"
                 )} />
               </button>
@@ -227,8 +226,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                       key={project.id}
                       onClick={() => handleProjectChange(project.id)}
                       className={cn(
-                        "w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-[#919191]/10 first:rounded-t-lg last:rounded-b-lg",
-                        project.id === projectId ? "bg-black text-white" : "text-black"
+                        "w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-surface-secondary first:rounded-t-lg last:rounded-b-lg",
+                        project.id === projectId ? "bg-black text-white" : "text-foreground"
                       )}
                     >
                       <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
@@ -447,8 +446,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 </span>
               </div>
               <div>
-                <p className="font-medium text-black">{user.firstName} {user.lastName}</p>
-                <p className="text-sm text-[#919191]">{user.email}</p>
+                <p className="font-medium text-foreground">{user.firstName} {user.lastName}</p>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
               </div>
             </div>
           </div>

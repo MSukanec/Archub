@@ -95,7 +95,7 @@ export default function QuickNavigationButtons() {
               className="w-5 h-5 rounded-sm object-cover"
             />
           ) : (
-            <div className="w-5 h-5 bg-primary rounded-sm flex items-center justify-center text-xs font-bold text-black">
+            <div className="w-5 h-5 bg-primary rounded-sm flex items-center justify-center text-xs font-bold text-foreground">
               {currentOrganization ? getOrgInitials(currentOrganization.name) : 'ORG'}
             </div>
           )}
@@ -120,7 +120,7 @@ export default function QuickNavigationButtons() {
                       className="w-8 h-8 rounded object-cover"
                     />
                   ) : (
-                    <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-sm font-bold text-black">
+                    <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-sm font-bold text-foreground">
                       {getOrgInitials(currentOrganization.name)}
                     </div>
                   )}

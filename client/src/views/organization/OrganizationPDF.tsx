@@ -242,7 +242,7 @@ export default function OrganizationPDF() {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-input rounded-xl"
+            className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-muted-foreground border-input rounded-xl"
           >
             <Eye className="w-4 h-4 mr-2" />
             Vista Previa

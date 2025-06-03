@@ -198,7 +198,7 @@ export default function PrimarySidebar() {
       {/* Project selector */}
       <div className="flex items-center justify-center pt-2 pl-2.5 relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <div className="w-11 h-11 rounded-full bg-surface-primary border-2 border-input shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group hover:pressed">
-          <span className="text-sm font-bold text-[#919191]">
+          <span className="text-sm font-bold text-muted-foreground">
             {getProjectInitials(currentProject)}
           </span>
           <ChevronDown className="w-3 h-3 text-gray-600 absolute -bottom-1 -right-1" />
@@ -209,7 +209,7 @@ export default function PrimarySidebar() {
           <div className="absolute top-0 left-full ml-3 bg-surface-secondary rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
             <div className="p-4">
               {/* Title in black */}
-              <div className="font-semibold text-sm text-black mb-2">
+              <div className="font-semibold text-sm text-foreground mb-2">
                 Seleccionar Proyecto
               </div>
               {/* Project list */}
@@ -224,19 +224,19 @@ export default function PrimarySidebar() {
                         : 'hover:bg-black/5'
                     }`}
                   >
-                    <span className={`font-medium text-xs ${project.id === projectId ? 'text-white' : 'text-black'}`}>
+                    <span className={`font-medium text-xs ${project.id === projectId ? 'text-white' : 'text-foreground'}`}>
                       {project.name}
                     </span>
                     <p className={`text-xs mt-1 leading-relaxed whitespace-normal ${
-                      project.id === projectId ? 'text-white/70' : 'text-[#919191]'
+                      project.id === projectId ? 'text-white/70' : 'text-muted-foreground'
                     }`}>
                       {project.description}
                     </p>
                   </button>
                 ))}
                 <button className="w-full text-left p-2 rounded-lg hover:bg-black/5 border border-dashed border-input mt-2">
-                  <Plus className="w-3 h-3 inline mr-1 text-[#919191]" />
-                  <span className="font-medium text-xs text-black">Crear Nuevo Proyecto</span>
+                  <Plus className="w-3 h-3 inline mr-1 text-muted-foreground" />
+                  <span className="font-medium text-xs text-foreground">Crear Nuevo Proyecto</span>
                 </button>
               </div>
             </div>

@@ -90,7 +90,7 @@ export default function CircularButton({
         `}
       >
         <Icon 
-          className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-[#919191]'}`}
+          className={`${iconSizes[size]} ${isActive ? 'text-white' : 'text-muted-foreground'}`}
         />
       </div>
       
@@ -104,12 +104,12 @@ export default function CircularButton({
         `}>
           <div className={description ? "p-4" : "px-4 py-2"}>
             {/* Title in black */}
-            <div className={`font-semibold text-sm text-black ${description ? "mb-2" : ""}`}>
+            <div className={`font-semibold text-sm text-foreground ${description ? "mb-2" : ""}`}>
               {label}
             </div>
             {/* Description in sidebar icon color */}
             {description && (
-              <div className="text-xs text-[#919191] leading-relaxed whitespace-normal">
+              <div className="text-xs text-muted-foreground leading-relaxed whitespace-normal">
                 {description}
               </div>
             )}

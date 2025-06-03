@@ -58,7 +58,7 @@ export function LimitLock({
                 {upgradeMessage}
               </p>
               <Button 
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-foreground"
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
                 }}

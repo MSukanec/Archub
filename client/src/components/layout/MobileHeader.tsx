@@ -66,18 +66,18 @@ export default function MobileHeader({ onMenuClick }: MobileHeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 border-b border-input z-30" style={{ backgroundColor: '#d2d2d2' }}>
+    <header className="fixed top-0 left-0 right-0 h-14 bg-surface-primary border-b border-input z-30">
       <div className="flex items-center justify-between h-full px-4">
         {/* Botón hamburguesa */}
         <button
           onClick={onMenuClick}
-          className="w-10 h-10 flex items-center justify-center hover:bg-[#919191]/10 transition-colors"
+          className="w-10 h-10 flex items-center justify-center hover:bg-surface-secondary transition-colors"
         >
-          <Menu className="w-8 h-8 text-black" />
+          <Menu className="w-8 h-8 text-foreground" />
         </button>
 
         {/* Título */}
-        <h1 className="text-lg font-semibold text-black truncate">
+        <h1 className="text-lg font-semibold text-foreground truncate">
           {getTitle()}
         </h1>
 
