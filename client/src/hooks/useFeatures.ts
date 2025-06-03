@@ -59,7 +59,41 @@ export function useUserPlan() {
           const userRecord = userData[0];
           console.log('User record from RPC:', userRecord);
           
-          // Transform the flat structure to match expected format
+          // Check if we got the plan data directly (temporary fallback)
+          if (userRecord.name && userRecord.price !== undefined) {
+            // The RPC is returning plan data directly, not user+plan structure
+            console.log('RPC returned plan data directly:', userRecord);
+            
+            // Create a mock user structure with the plan data
+            const result = {
+              id: 'mock-user-id',
+              auth_id: user.id,
+              email: user.email || '',
+              first_name: user.firstName || '',
+              last_name: user.lastName || '',
+              full_name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+              role: user.role || 'user',
+              avatar_url: null,
+              created_at: new Date().toISOString(),
+              plan_id: 'mock-plan-id',
+              plan: {
+                id: 'mock-plan-id',
+                name: userRecord.name,
+                price: userRecord.price,
+                features: userRecord.features || {
+                  max_organizations: userRecord.name.toLowerCase() === 'enterprise' ? 999 : 1,
+                  export_pdf_custom: true,
+                  multiple_organizations: userRecord.name.toLowerCase() === 'enterprise'
+                },
+                is_active: true
+              }
+            };
+            
+            console.log('Transformed user plan data:', result);
+            return result;
+          }
+          
+          // Normal user+plan structure
           const result = {
             id: userRecord.id,
             auth_id: userRecord.auth_id,
