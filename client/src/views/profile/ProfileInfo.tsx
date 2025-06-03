@@ -30,11 +30,7 @@ export default function ProfileInfo() {
     console.log('Tema cambiado exitosamente');
   };
 
-  // Set navigation state when component mounts
-  useEffect(() => {
-    setSection('profile');
-    setView('profile-info');
-  }, [setSection, setView]);
+
 
 
   // Obtener la organización del usuario

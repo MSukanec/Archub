@@ -31,11 +31,7 @@ export default function ProfileSecurity() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // Set navigation state when component mounts
-  useEffect(() => {
-    setSection('profile');
-    setView('profile-security');
-  }, [setSection, setView]);
+
 
   // Obtener sesiones activas (mock data por ahora)
   const activeSessions = [
