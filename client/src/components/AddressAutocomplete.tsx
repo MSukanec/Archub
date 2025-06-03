@@ -148,8 +148,10 @@ export default function AddressAutocomplete({
           if (onStateChange) onStateChange('');
           if (onCountryChange) onCountryChange('');
 
-          // Extraer información de address_components
-          extractAddressComponents(place.address_components || []);
+          // Usar setTimeout para asegurar que los campos se limpien antes de llenar nuevos datos
+          setTimeout(() => {
+            extractAddressComponents(place.address_components || []);
+          }, 10);
         });
 
 
@@ -203,6 +205,13 @@ export default function AddressAutocomplete({
     onChange('');
     setLat(null);
     setLng(null);
+    
+    // Limpiar también los campos relacionados
+    if (onCityChange) onCityChange('');
+    if (onZipCodeChange) onZipCodeChange('');
+    if (onStateChange) onStateChange('');
+    if (onCountryChange) onCountryChange('');
+    
     inputRef.current?.focus();
   };
 
