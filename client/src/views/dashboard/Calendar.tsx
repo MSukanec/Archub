@@ -474,7 +474,7 @@ export default function CalendarView() {
           </Card>
 
           {/* Upcoming Events */}
-          <Card className="rounded-2xl shadow-md bg-[#e1e1e1] border-0">
+          <Card className="rounded-2xl shadow-md bg-card border-0">
             <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold text-foreground">Próximos Eventos</CardTitle>
             </CardHeader>

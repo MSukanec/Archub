@@ -201,7 +201,7 @@ export default function Contacts() {
               placeholder="Buscar contactos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+              className="pl-10 pr-10 bg-card border-input rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -220,13 +220,13 @@ export default function Contacts() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[180px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
+                className="w-[180px] justify-start text-left font-normal rounded-xl bg-card border-input"
               >
                 <Tags className="mr-2 h-4 w-4" />
                 {contactTypeFilter === 'all' ? "Todos los tipos" : contactTypeFilter}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[180px] p-2 bg-[#e1e1e1]">
+            <PopoverContent className="w-[180px] p-2 bg-card">
               <div className="space-y-1">
                 <Button
                   variant={contactTypeFilter === 'all' ? 'default' : 'ghost'}
@@ -256,13 +256,13 @@ export default function Contacts() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-card border-input"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Orden alfabético"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
+            <PopoverContent className="w-[200px] p-2 bg-card">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}

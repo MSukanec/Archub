@@ -250,7 +250,7 @@ export default function SiteLogs() {
           </div>
           <input
             placeholder="Buscar registros..."
-            className="pl-10 h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
+            className="pl-10 h-10 bg-card border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
           />
         </div>
         <Button size="sm" className="w-48">
