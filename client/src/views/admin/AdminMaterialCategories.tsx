@@ -259,7 +259,7 @@ export default function AdminMaterialCategories() {
               </TableRow>
             ) : (
               paginatedCategories.map((category: any) => (
-                <TableRow key={category.id} className="border-border hover:bg-muted/30 transition-colors">
+                <TableRow key={category.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
                   <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">{category.name}</div>
                   </TableCell>

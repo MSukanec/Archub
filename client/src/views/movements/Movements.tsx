@@ -534,7 +534,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las monedas</SelectItem>
               <SelectItem value="ARS">ARS</SelectItem>
               <SelectItem value="USD">USD</SelectItem>
@@ -545,7 +545,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todos los tipos</SelectItem>
               <SelectItem value="ingresos">Ingresos</SelectItem>
               <SelectItem value="egresos">Egresos</SelectItem>
@@ -557,7 +557,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="movimientos">Movimientos</SelectItem>
               <SelectItem value="cuotas">Cuotas</SelectItem>
@@ -569,7 +569,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="newest">Más reciente primero</SelectItem>
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>
@@ -593,7 +593,7 @@ export default function Movements() {
               placeholder="Buscar movimientos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl shadow-lg"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg"
             />
             {searchTerm && (
               <Button
@@ -630,7 +630,7 @@ export default function Movements() {
               placeholder="Buscar movimientos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl shadow-lg"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg"
             />
             {searchTerm && (
               <Button
@@ -654,7 +654,7 @@ export default function Movements() {
               placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl shadow-lg h-9"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg h-9"
             />
             {searchTerm && (
               <Button
@@ -685,7 +685,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las monedas</SelectItem>
               <SelectItem value="ARS">ARS</SelectItem>
               <SelectItem value="USD">USD</SelectItem>
@@ -696,7 +696,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todos los tipos</SelectItem>
               <SelectItem value="ingresos">Ingresos</SelectItem>
               <SelectItem value="egresos">Egresos</SelectItem>
@@ -708,7 +708,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="movimientos">Movimientos</SelectItem>
               <SelectItem value="cuotas">Cuotas</SelectItem>
@@ -719,7 +719,7 @@ export default function Movements() {
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="newest">Más reciente primero</SelectItem>
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>
