@@ -203,7 +203,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             <div className="relative">
               <button
                 onClick={() => setShowProjectMenu(!showProjectMenu)}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left bg-[#e1e1e1] hover:bg-[#919191]/10"
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left bg-card hover:bg-accent"
               >
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-xs">
