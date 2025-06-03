@@ -32,7 +32,7 @@ interface ModernModalProps {
 // Componente Header del Modal
 function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-4 border-b border-border/20 bg-surface-secondary flex-shrink-0">
+    <div className="flex items-center justify-between px-4 py-4 border-b border-border/20 bg-surface-views flex-shrink-0">
       <div className="flex items-center gap-3">
         {Icon && (
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
@@ -65,7 +65,7 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
 // Componente Footer del Modal
 function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading = false }: ModalFooterProps) {
   return (
-    <div className="px-4 py-4 border-t border-border/20 bg-surface-secondary flex-shrink-0">
+    <div className="px-4 py-4 border-t border-border/20 bg-surface-views flex-shrink-0">
       <div className="flex gap-3">
         <Button
           variant="outline"
@@ -127,7 +127,7 @@ export default function ModernModal({
       
       {/* Modal */}
       <div 
-        className="modern-modal absolute bg-surface-secondary shadow-2xl flex flex-col border-l border-border/20"
+        className="modern-modal absolute bg-surface-views shadow-2xl flex flex-col border-l border-border/20"
         style={{ 
           top: 0, 
           right: 0, 
@@ -198,7 +198,7 @@ export function ModalAccordion({
       <button
         type="button"
         onClick={() => onToggle(id)}
-        className="w-full flex items-center justify-between p-4 bg-surface-secondary hover:bg-surface-primary transition-colors text-white flex-shrink-0"
+        className="w-full flex items-center justify-between p-4 bg-surface-views hover:bg-surface-primary transition-colors text-white flex-shrink-0 border-b border-surface-primary"
       >
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
@@ -219,7 +219,7 @@ export function ModalAccordion({
       </button>
       
       {isOpen && (
-        <div className="flex-1 overflow-y-auto p-4 bg-surface-secondary">
+        <div className="flex-1 overflow-y-auto p-4 bg-surface-views">
           {children}
         </div>
       )}
