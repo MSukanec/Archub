@@ -43,31 +43,41 @@ export function useUserPlan() {
       if (!user?.id) return null;
       
       try {
-        // Get plans and user data in parallel
-        const [plansResult, usersResult] = await Promise.all([
-          supabase.from('plans').select('*'),
-          supabase.rpc('get_users_for_admin')
-        ]);
+        // Use the new RPC function that gets current user with plan
+        const { data: userData, error } = await supabase
+          .rpc('get_current_user_with_plan');
         
-        const plans = plansResult.data;
-        const users = usersResult.data;
-        
-        if (users && Array.isArray(users) && plans) {
-          const currentUser = users.find(u => u.auth_id === user.id);
-          console.log('Current user found:', currentUser);
-          console.log('Available plans:', plans);
+        if (error) {
+          console.error('Error fetching user plan:', error);
+          return null;
+        }
+
+        if (userData && userData.length > 0) {
+          const userRecord = userData[0];
           
-          if (currentUser) {
-            const userPlan = plans.find(p => p.id === currentUser.plan_id);
-            console.log('User plan found:', userPlan);
-            
-            const result = {
-              ...currentUser,
-              plan: userPlan || null
-            };
-            console.log('Final useUserPlan result:', result);
-            return result;
-          }
+          // Transform the flat structure to match expected format
+          const result = {
+            id: userRecord.id,
+            auth_id: userRecord.auth_id,
+            email: userRecord.email,
+            first_name: userRecord.first_name,
+            last_name: userRecord.last_name,
+            full_name: userRecord.full_name,
+            role: userRecord.role,
+            avatar_url: userRecord.avatar_url,
+            created_at: userRecord.created_at,
+            plan_id: userRecord.plan_id,
+            plan: userRecord.plan_name ? {
+              id: userRecord.plan_id,
+              name: userRecord.plan_name,
+              price: userRecord.plan_price,
+              features: userRecord.plan_features,
+              is_active: userRecord.plan_is_active
+            } : null
+          };
+          
+          console.log('User plan data from RPC:', result);
+          return result;
         }
 
         return null;
@@ -77,7 +87,7 @@ export function useUserPlan() {
       }
     },
     enabled: !!user?.id,
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 30000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     retry: 2,
