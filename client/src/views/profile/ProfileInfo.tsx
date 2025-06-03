@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { User, Mail, Calendar, Edit, Building2, Crown, Shield } from 'lucide-react';
+import { User, Mail, Calendar, Edit, Building2, Crown, Shield, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore } from '@/stores/themeStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useToast } from '@/hooks/use-toast';
 import { authService, supabase } from '@/lib/supabase';
@@ -15,9 +18,15 @@ import EditProfileModal from '@/components/modals/EditProfileModal';
 
 export default function ProfileInfo() {
   const { user } = useAuthStore();
+  const { theme, setTheme, isLoading: themeLoading } = useThemeStore();
   const { setSection, setView } = useNavigationStore();
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleThemeChange = async (isDark: boolean) => {
+    const newTheme = isDark ? 'dark' : 'light';
+    await setTheme(newTheme);
+  };
 
   // Set navigation state when component mounts
   useEffect(() => {
@@ -182,17 +191,38 @@ export default function ProfileInfo() {
             )}
           </div>
         </div>
+
+        {/* Configuración de Apariencia */}
+        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Palette className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground">Configuración de Apariencia</h3>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <div className="text-sm font-medium text-foreground">Modo Oscuro</div>
+              <div className="text-xs text-muted-foreground">
+                Cambia entre el tema claro y oscuro de la aplicación
+              </div>
+            </div>
+            <Switch
+              checked={theme === 'dark'}
+              onCheckedChange={handleThemeChange}
+              disabled={themeLoading}
+              className="data-[state=checked]:bg-primary"
+            />
+          </div>
+        </div>
       </div>
-
-
 
       {/* Edit Profile Modal */}
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       />
-
-
     </div>
   );
 }
