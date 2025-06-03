@@ -377,9 +377,6 @@ export default function OrganizationTeam() {
                       Ver Permisos
                       <ChevronRight className={`h-4 w-4 ml-1 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                     </Button>
-                    <Button variant="outline" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-muted/50">
-                      <Settings className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
 

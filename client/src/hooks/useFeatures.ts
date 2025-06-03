@@ -109,6 +109,30 @@ export function useFeatures() {
     console.log('hasFeature called with:', featureName);
     console.log('userWithPlan?.plan:', userWithPlan?.plan);
     
+    // Temporary fix: Use plan name directly from userWithPlan if available
+    if (userWithPlan && (userWithPlan.name || userWithPlan.plan?.name)) {
+      const planName = (userWithPlan.name || userWithPlan.plan?.name || '').toUpperCase();
+      console.log('Using plan name from userWithPlan:', planName);
+      
+      // For multiple_organizations and multiple_members, only Enterprise
+      if (featureName === 'multiple_organizations' || featureName === 'multiple_members') {
+        return planName === 'ENTERPRISE';
+      }
+      
+      // For export_pdf and other PRO+ features
+      if (featureName === 'export_pdf' || featureName === 'financial_module' || featureName === 'advanced_reports') {
+        return planName === 'PRO' || planName === 'ENTERPRISE';
+      }
+      
+      // For Enterprise-only features
+      const enterpriseFeatures = ['api_access', 'custom_integrations', 'dedicated_support', 'custom_training'];
+      if (enterpriseFeatures.includes(featureName)) {
+        return planName === 'ENTERPRISE';
+      }
+      
+      return false;
+    }
+    
     if (!userWithPlan?.plan?.features) {
       console.log('No plan features found, returning false');
       return false;
