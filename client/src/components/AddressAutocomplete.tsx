@@ -51,7 +51,7 @@ export default function AddressAutocomplete({
           inputRef.current,
           {
             types: ['address'],
-            fields: ['formatted_address', 'geometry', 'address_components']
+            fields: ['formatted_address', 'geometry', 'address_components', 'place_id', 'name']
           }
         );
 
@@ -89,21 +89,31 @@ export default function AddressAutocomplete({
               const types = component.types;
               console.log('Component:', component.long_name, 'Types:', types);
               
-              if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+              // Ciudad - múltiples tipos posibles
+              if (types.includes('locality')) {
                 city = component.long_name;
-                console.log('City found:', city);
+                console.log('City found (locality):', city);
+              } else if (types.includes('administrative_area_level_2') && !city) {
+                city = component.long_name;
+                console.log('City found (admin_area_level_2):', city);
+              } else if (types.includes('sublocality') && !city) {
+                city = component.long_name;
+                console.log('City found (sublocality):', city);
               }
               
+              // Código postal
               if (types.includes('postal_code')) {
                 zipCode = component.long_name;
                 console.log('Zip code found:', zipCode);
               }
               
+              // Estado/Provincia
               if (types.includes('administrative_area_level_1')) {
                 state = component.long_name;
                 console.log('State found:', state);
               }
               
+              // País
               if (types.includes('country')) {
                 country = component.long_name;
                 console.log('Country found:', country);
