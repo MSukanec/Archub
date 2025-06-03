@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import AddressAutocomplete from '@/components/AddressAutocomplete';
 
 const organizationSettingsSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -334,9 +335,29 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                   <FormItem>
                     <FormLabel className="text-xs font-medium text-foreground">Dirección</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                      <AddressAutocomplete
+                        value={field.value || ''}
+                        onChange={(address) => {
+                          field.onChange(address);
+                        }}
+                        onCoordinatesChange={(lat, lng) => {
+                          // Opcionalmente almacenar coordenadas si las necesitas
+                          console.log('Coordinates:', lat, lng);
+                        }}
+                        onCityChange={(city) => {
+                          form.setValue('city', city);
+                        }}
+                        onZipCodeChange={(zipCode) => {
+                          form.setValue('postal_code', zipCode);
+                        }}
+                        onStateChange={(state: string) => {
+                          form.setValue('state', state);
+                        }}
+                        onCountryChange={(country: string) => {
+                          form.setValue('country', country);
+                        }}
+                        placeholder="Buscar dirección..."
+                        className="w-full"
                       />
                     </FormControl>
                     <FormMessage />

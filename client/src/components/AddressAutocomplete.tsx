@@ -9,6 +9,8 @@ interface AddressAutocompleteProps {
   onCoordinatesChange: (lat: number, lng: number) => void;
   onCityChange?: (city: string) => void;
   onZipCodeChange?: (zipCode: string) => void;
+  onStateChange?: (state: string) => void;
+  onCountryChange?: (country: string) => void;
   placeholder?: string;
   className?: string;
 }
@@ -25,6 +27,8 @@ export default function AddressAutocomplete({
   onCoordinatesChange,
   onCityChange,
   onZipCodeChange,
+  onStateChange,
+  onCountryChange,
   placeholder = 'Buscar dirección...',
   className = ''
 }: AddressAutocompleteProps) {
@@ -71,9 +75,11 @@ export default function AddressAutocomplete({
           setLng(lng);
           onCoordinatesChange(lat, lng);
 
-          // Extraer ciudad y código postal de address_components
+          // Extraer información de address_components
           let city = '';
           let zipCode = '';
+          let state = '';
+          let country = '';
           
           if (place.address_components) {
             place.address_components.forEach((component: any) => {
@@ -86,6 +92,14 @@ export default function AddressAutocomplete({
               if (types.includes('postal_code')) {
                 zipCode = component.long_name;
               }
+              
+              if (types.includes('administrative_area_level_1')) {
+                state = component.long_name;
+              }
+              
+              if (types.includes('country')) {
+                country = component.long_name;
+              }
             });
           }
 
@@ -95,6 +109,12 @@ export default function AddressAutocomplete({
           }
           if (onZipCodeChange && zipCode) {
             onZipCodeChange(zipCode);
+          }
+          if (onStateChange && state) {
+            onStateChange(state);
+          }
+          if (onCountryChange && country) {
+            onCountryChange(country);
           }
         });
 
@@ -126,7 +146,7 @@ export default function AddressAutocomplete({
 
       return () => clearInterval(checkGoogleMaps);
     }
-  }, [onChange, onCoordinatesChange, onCityChange, onZipCodeChange]);
+  }, [onChange, onCoordinatesChange, onCityChange, onZipCodeChange, onStateChange, onCountryChange]);
 
   // Actualizar valor del input cuando cambia la prop value
   useEffect(() => {
