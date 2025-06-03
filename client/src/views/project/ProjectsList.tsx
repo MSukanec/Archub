@@ -340,25 +340,26 @@ export default function ProjectsOverview() {
               // Active project first
               if (a.id === projectId && b.id !== projectId) return -1;
               if (b.id === projectId && a.id !== projectId) return 1;
-              // Then by date (newest first)
-              return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+              // Then by updated_at (newest first)
+              return new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime();
             })
             .map((project: any, sortedIndex: number) => {
-            const isActiveProject = project.id === projectId;
-            const matchesSearch = project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                 project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                 project.address?.toLowerCase().includes(searchQuery.toLowerCase());
-            
-            // For FREE plan, only allow access to the first N projects (sorted by date)
-            const isAccessible = currentPlan !== 'FREE' || 
-                                projectLimit.limit === -1 || 
-                                sortedIndex < projectLimit.limit ||
-                                isActiveProject; // Always allow access to active project
-            
-            // Skip projects that don't match search
-            if (!matchesSearch) return null;
-            
-            return (
+              const isActiveProject = project.id === projectId;
+              const matchesSearch = project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                   project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                   project.address?.toLowerCase().includes(searchQuery.toLowerCase());
+              
+              // For FREE plan, only allow access to the first N projects (sorted by updated_at)
+              // Always allow access to active project regardless of position
+              const isAccessible = currentPlan !== 'FREE' || 
+                                  projectLimit.limit === -1 || 
+                                  sortedIndex < projectLimit.limit ||
+                                  isActiveProject;
+              
+              // Skip projects that don't match search
+              if (!matchesSearch) return null;
+              
+              return (
               <div
                 key={project.id}
                 className={`p-3 rounded-2xl shadow-md transition-all duration-200 bg-surface-secondary relative ${
