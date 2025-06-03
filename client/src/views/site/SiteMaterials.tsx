@@ -324,7 +324,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                   placeholder="Buscar materiales..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl"
                 />
               </div>
               

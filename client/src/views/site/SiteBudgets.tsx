@@ -928,7 +928,7 @@ export default function SiteBudgets() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Buscar presupuestos..."
-            className="pl-10"
+            className="pl-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl"
           />
         </div>
         <Button variant="outline" size="sm" className="w-96">
