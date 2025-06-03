@@ -141,25 +141,47 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         throw new Error('PDF preview content not found');
       }
 
-      // Remover temporalmente el transform para captura exacta
-      const originalTransform = element.style.transform;
-      element.style.transform = 'none';
-      element.style.width = '794px'; // A4 width in pixels at 96 DPI
-      element.style.minHeight = '1123px'; // A4 height in pixels at 96 DPI
+      // Crear un contenedor temporal para la captura
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '0';
+      tempContainer.style.width = '794px';
+      tempContainer.style.height = '1123px';
+      tempContainer.style.backgroundColor = '#ffffff';
+      tempContainer.style.padding = '0';
+      tempContainer.style.margin = '0';
+      tempContainer.style.overflow = 'hidden';
+      
+      // Clonar el elemento y añadirlo al contenedor temporal
+      const clonedElement = element.cloneNode(true) as HTMLElement;
+      clonedElement.style.transform = 'none';
+      clonedElement.style.width = '794px';
+      clonedElement.style.height = '1123px';
+      clonedElement.style.margin = '0';
+      clonedElement.style.padding = '0';
+      clonedElement.style.border = 'none';
+      clonedElement.style.boxShadow = 'none';
+      
+      tempContainer.appendChild(clonedElement);
+      document.body.appendChild(tempContainer);
 
-      const canvas = await html2canvas(element, {
+      // Esperar un momento para que el DOM se actualice
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const canvas = await html2canvas(tempContainer, {
         scale: 1,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: 794,
-        height: 1123
+        height: 1123,
+        x: 0,
+        y: 0
       });
 
-      // Restaurar el transform original
-      element.style.transform = originalTransform;
-      element.style.width = '210mm';
-      element.style.minHeight = '297mm';
+      // Limpiar el contenedor temporal
+      document.body.removeChild(tempContainer);
 
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgWidth = 210;
