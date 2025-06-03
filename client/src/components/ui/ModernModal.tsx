@@ -65,12 +65,12 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
 // Componente Footer del Modal
 function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading = false }: ModalFooterProps) {
   return (
-    <div className="px-4 py-4 border-t border-border/20 bg-surface-views flex-shrink-0">
-      <div className="flex gap-3">
+    <div className="border-t border-border/20 bg-surface-views flex-shrink-0">
+      <div className="flex">
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-xl"
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-none h-14 m-0"
           disabled={isLoading}
         >
           Cancelar
@@ -78,7 +78,7 @@ function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading 
         {onConfirm && (
           <Button
             onClick={onConfirm}
-            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
+            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-none h-14 m-0"
             disabled={isLoading}
           >
             {isLoading ? 'Procesando...' : confirmText}
@@ -194,7 +194,7 @@ export function ModalAccordion({
   children 
 }: ModalAccordionProps) {
   return (
-    <div className={`flex flex-col ${isOpen ? 'flex-1' : 'flex-shrink-0'}`}>
+    <div className={`flex flex-col ${isOpen ? 'flex-1 h-full' : 'flex-shrink-0'}`}>
       <button
         type="button"
         onClick={() => onToggle(id)}
@@ -219,7 +219,7 @@ export function ModalAccordion({
       </button>
       
       {isOpen && (
-        <div className="flex-1 overflow-y-auto p-4 bg-surface-views">
+        <div className="flex-1 overflow-y-auto p-4 bg-surface-views min-h-0">
           {children}
         </div>
       )}
