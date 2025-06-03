@@ -535,15 +535,11 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                   <FormItem>
                     <FormLabel className="text-xs font-medium text-foreground">Logo de la Organización</FormLabel>
                     <FormControl>
-                      <FileUpload
-                        bucket="organization-logo"
-                        folder="logos"
-                        value={field.value}
-                        onChange={field.onChange}
-                        accept="image/*"
-                        maxSizeBytes={1024 * 1024} // 1MB
-                        placeholder="Subir logo de la organización"
-                        className="w-full"
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="https://ejemplo.com/logo.png"
+                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
