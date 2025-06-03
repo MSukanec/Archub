@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { X, LucideIcon, ChevronDown } from 'lucide-react';
+import { X, LucideIcon, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ModalHeaderProps {
@@ -198,7 +198,7 @@ export function ModalAccordion({
       <button
         type="button"
         onClick={() => onToggle(id)}
-        className="w-full flex items-center justify-between p-4 bg-[#2a2a2a] hover:bg-[#333333] transition-colors text-white flex-shrink-0"
+        className="w-full flex items-center justify-between p-4 bg-surface-secondary hover:bg-surface-primary transition-colors text-white flex-shrink-0"
       >
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
@@ -207,19 +207,19 @@ export function ModalAccordion({
           <div className="text-left">
             <div className="font-medium text-white text-sm">{title}</div>
             {subtitle && (
-              <div className="text-xs text-gray-400">{subtitle}</div>
+              <div className="text-xs text-muted-foreground">{subtitle}</div>
             )}
           </div>
         </div>
-        <ChevronDown 
-          className={`w-4 h-4 text-gray-400 transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
-        />
+        {isOpen ? (
+          <Minus className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <Plus className="w-4 h-4 text-muted-foreground" />
+        )}
       </button>
       
       {isOpen && (
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 bg-surface-secondary">
           {children}
         </div>
       )}

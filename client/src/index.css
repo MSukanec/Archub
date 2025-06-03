@@ -340,7 +340,7 @@
   /* Background hierarchy for dark mode - Views, Primary Components, Secondary Cards */
   --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
   --background-primary: 0 0% 18%; /* #2d2d2d - Primary components background */
-  --background-secondary: 0 0% 20%; /* #323232 - Secondary cards background */
+  --background-secondary: 0 0% 16%; /* #292929 - Secondary cards background (ModernModal) */
 }
 
 @layer base {
