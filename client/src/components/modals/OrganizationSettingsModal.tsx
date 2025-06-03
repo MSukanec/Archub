@@ -420,6 +420,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
           {/* Información de Contacto */}
           <ModalAccordion
+            id="contact"
             title="Información de Contacto"
             icon={Phone}
             isOpen={openSections.contact}
@@ -491,6 +492,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
           {/* Configuración Regional */}
           <ModalAccordion
+            id="regional"
             title="Configuración Regional"
             icon={DollarSign}
             isOpen={openSections.regional}
