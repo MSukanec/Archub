@@ -841,22 +841,21 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
         {/* Content */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Left Column - Options - Solo mostrar en plantilla personalizable */}
-          {selectedTemplate === 'custom' && (
-            <div className="w-1/3 border-r border-border p-6 overflow-y-auto bg-surface">
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-foreground mb-4">SECTIONS</h3>
+          {/* Left Column - Options - Mostrar siempre */}
+          <div className="w-1/3 border-r border-border p-6 overflow-y-auto bg-surface">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-foreground mb-4">SECCIONES</h3>
                 
                 {/* Acordeones */}
                 {[
-                  { id: 'header' as keyof typeof sectionStates, label: 'Header & Company Info', enabled: sectionStates.header, icon: Building2 },
-                  { id: 'client' as keyof typeof sectionStates, label: 'Client Information', enabled: sectionStates.client, icon: User },
-                  { id: 'project' as keyof typeof sectionStates, label: 'Project Details', enabled: sectionStates.project, icon: Briefcase },
-                  { id: 'details' as keyof typeof sectionStates, label: 'Description & Details', enabled: sectionStates.details, icon: FileCheck },
-                  { id: 'table' as keyof typeof sectionStates, label: 'Items Table', enabled: sectionStates.table, icon: Table },
-                  { id: 'totals' as keyof typeof sectionStates, label: 'Totals & Calculations', enabled: sectionStates.totals, icon: Calculator },
-                  { id: 'footer' as keyof typeof sectionStates, label: 'Footer Information', enabled: sectionStates.footer, icon: MessageSquare },
-                  { id: 'signatures' as keyof typeof sectionStates, label: 'Signature Section', enabled: sectionStates.signatures, icon: PenTool }
+                  { id: 'header' as keyof typeof sectionStates, label: 'Encabezado e Información de Empresa', enabled: sectionStates.header, icon: Building2 },
+                  { id: 'client' as keyof typeof sectionStates, label: 'Información del Cliente', enabled: sectionStates.client, icon: User },
+                  { id: 'project' as keyof typeof sectionStates, label: 'Detalles del Proyecto', enabled: sectionStates.project, icon: Briefcase },
+                  { id: 'details' as keyof typeof sectionStates, label: 'Descripción y Detalles', enabled: sectionStates.details, icon: FileCheck },
+                  { id: 'table' as keyof typeof sectionStates, label: 'Tabla de Elementos', enabled: sectionStates.table, icon: Table },
+                  { id: 'totals' as keyof typeof sectionStates, label: 'Totales y Cálculos', enabled: sectionStates.totals, icon: Calculator },
+                  { id: 'footer' as keyof typeof sectionStates, label: 'Información del Pie', enabled: sectionStates.footer, icon: MessageSquare },
+                  { id: 'signatures' as keyof typeof sectionStates, label: 'Sección de Firmas', enabled: sectionStates.signatures, icon: PenTool }
                 ].map((section) => (
                   <div key={section.id} className="border-2 border-border rounded-lg overflow-hidden">
                     <div 
@@ -883,16 +882,169 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                     
                     {activeAccordion === section.id && section.enabled && (
                       <div className="p-4 bg-background border-t-2 border-border">
-                        <p className="text-xs text-muted-foreground">
-                          Configure options for {section.label.toLowerCase()}
-                        </p>
+                        {section.id === 'header' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Nombre de Empresa</span>
+                              <Switch 
+                                checked={template?.company_name_show || false} 
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium">Tamaño del Nombre de Empresa</label>
+                              <input 
+                                type="number" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                defaultValue={template?.company_name_size || 24}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'client' && (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs font-medium">Nombre del Cliente</label>
+                              <input 
+                                type="text" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                value={pdfParams.clientName}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, clientName: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium">Dirección del Cliente</label>
+                              <textarea 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                rows={3}
+                                value={pdfParams.clientAddress}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, clientAddress: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'project' && (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs font-medium">Código del Proyecto</label>
+                              <input 
+                                type="text" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                value={pdfParams.projectCode}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, projectCode: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium">Nombre del Proyecto</label>
+                              <input 
+                                type="text" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                value={pdfParams.projectName}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, projectName: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'details' && (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs font-medium">Descripción</label>
+                              <textarea 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                rows={3}
+                                value={pdfParams.description}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, description: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'table' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Columna de Cantidad</span>
+                              <Switch 
+                                checked={pdfParams.showUnitColumn}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showUnitColumn: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Columna de Precio</span>
+                              <Switch 
+                                checked={pdfParams.showPriceColumn}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPriceColumn: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'totals' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Cálculo de Impuestos</span>
+                              <Switch 
+                                checked={pdfParams.showTaxCalculation}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showTaxCalculation: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium">Tasa de Impuesto (%)</label>
+                              <input 
+                                type="number" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                value={pdfParams.taxRate}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'footer' && (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs font-medium">Texto del Pie</label>
+                              <textarea 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                rows={2}
+                                defaultValue={template?.footer_text || ''}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Números de Página</span>
+                              <Switch 
+                                checked={pdfParams.showPageNumbers}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPageNumbers: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {section.id === 'signatures' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Firma del Cliente</span>
+                              <Switch 
+                                checked={pdfParams.showClientSignature}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showClientSignature: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Firma de la Empresa</span>
+                              <Switch 
+                                checked={pdfParams.showCompanySignature}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showCompanySignature: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             </div>
-          )}
 
           {/* Right Column - PDF Preview */}
           <div className="flex-1 overflow-auto bg-gray-100 p-6">
