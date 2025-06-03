@@ -51,6 +51,7 @@ interface PDFTemplate {
   show_details_section?: boolean;
   show_signature_section?: boolean;
   signature_text?: string;
+  company_info_size?: number;
 }
 
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
@@ -84,7 +85,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     taxRate: 10,
     showClientSignature: true,
     showCompanySignature: true,
-    showPageNumbers: true
+    showPageNumbers: true,
+    companyInfoSize: 10
   });
 
   // Estado para selector de plantilla
@@ -240,7 +242,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
             {organization?.name || 'EMPRESA'}
           </h1>
           <div className="text-right">
-            <div className="text-sm mb-4">
+            <div className="mb-4" style={{ fontSize: `${pdfParams.companyInfoSize}px` }}>
               {organization?.address && <div>{organization.address}</div>}
               {organization?.website && <div>{organization.website}</div>}
               {organization?.email && <div>{organization.email}</div>}
@@ -367,7 +369,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 )}
               </div>
               
-              <div className="text-right" style={{ fontSize: `${template?.body_size || 10}px`, color: template?.text_color || '#000000' }}>
+              <div className="text-right" style={{ fontSize: `${pdfParams.companyInfoSize}px`, color: template?.text_color || '#000000' }}>
                 {organization?.address && (
                   <div className="mb-1">{organization.address}</div>
                 )}
@@ -908,6 +910,15 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                 type="number" 
                                 className="w-full mt-1 px-2 py-1 text-xs border rounded" 
                                 defaultValue={template?.company_name_size || 24}
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium">Tamaño de Información de Empresa</label>
+                              <input 
+                                type="number" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                value={pdfParams.companyInfoSize}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, companyInfoSize: parseInt(e.target.value) || 10 }))}
                               />
                             </div>
                           </div>
