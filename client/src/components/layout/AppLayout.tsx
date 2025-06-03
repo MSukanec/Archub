@@ -180,7 +180,7 @@ export default function AppLayout() {
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden pt-14">
             <main className="flex-1 overflow-auto relative bg-surface-views">
-              <div className="mx-auto p-2">
+              <div className="mx-auto px-1 py-1">
                 <ViewComponent />
               </div>
             </main>
