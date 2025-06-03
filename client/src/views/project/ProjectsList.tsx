@@ -360,17 +360,17 @@ export default function ProjectsOverview() {
               if (!matchesSearch) return null;
               
               return (
-              <div
-                key={project.id}
-                className={`p-3 rounded-2xl shadow-md transition-all duration-200 bg-surface-secondary relative ${
-                  !isAccessible 
-                    ? 'opacity-60 cursor-not-allowed border-2 border-amber-500/30' 
-                    : isActiveProject 
-                      ? 'border-2 border-primary cursor-pointer hover:shadow-lg' 
-                      : 'border-2 border-transparent hover:border-primary cursor-pointer hover:shadow-lg'
-                }`}
-                onClick={isAccessible ? () => handleProjectClick(project) : undefined}
-              >
+                <div
+                  key={project.id}
+                  className={`p-3 rounded-2xl shadow-md transition-all duration-200 bg-surface-secondary relative ${
+                    !isAccessible 
+                      ? 'opacity-60 cursor-not-allowed border-2 border-amber-500/30' 
+                      : isActiveProject 
+                        ? 'border-2 border-primary cursor-pointer hover:shadow-lg' 
+                        : 'border-2 border-transparent hover:border-primary cursor-pointer hover:shadow-lg'
+                  }`}
+                  onClick={isAccessible ? () => handleProjectClick(project) : undefined}
+                >
                 {!isAccessible && (
                   <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs px-2 py-1 rounded">
                     Plan FREE
