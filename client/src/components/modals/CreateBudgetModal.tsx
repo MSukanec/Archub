@@ -66,21 +66,58 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
     enabled: !!user?.id,
   });
 
-  // Get current project data
-  const { data: currentProject } = useQuery({
-    queryKey: ['/api/projects', projectId],
+  // Get user preferences to find the active project
+  const { data: userPreferences } = useQuery({
+    queryKey: ['/api/user-preferences', user?.id],
     queryFn: async () => {
-      if (!projectId) return null;
+      if (!user?.id || !internalUser?.id) return null;
       const { data, error } = await supabase
-        .from('projects')
+        .from('user_preferences')
         .select('*')
-        .eq('id', projectId)
+        .eq('user_id', internalUser.id)
         .single();
       
       if (error) throw error;
       return data;
     },
-    enabled: !!projectId,
+    enabled: !!user?.id && !!internalUser?.id,
+  });
+
+  // Get current project data (either from context or user preferences)
+  const activeProjectId = projectId || userPreferences?.last_project_id;
+  
+  const { data: currentProject } = useQuery({
+    queryKey: ['/api/projects', activeProjectId],
+    queryFn: async () => {
+      if (!activeProjectId) return null;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', activeProjectId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activeProjectId,
+  });
+
+  // Get all projects for the organization in case we need to show a selector
+  const { data: availableProjects = [] } = useQuery({
+    queryKey: ['/api/organization-projects', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!organizationId,
   });
 
   const form = useForm<BudgetForm>({
@@ -144,11 +181,18 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
           userId = userData.id;
         }
         
+        // Usar el proyecto activo (desde contexto o preferencias del usuario)
+        const targetProjectId = activeProjectId;
+        
+        if (!targetProjectId) {
+          throw new Error('No hay proyecto seleccionado. Por favor selecciona o crea un proyecto primero.');
+        }
+
         // Crear objeto simplificado con solo los campos esenciales
         const budgetData = {
           name: data.name,
           description: data.description || null,
-          project_id: projectId, // Mantener como UUID string
+          project_id: targetProjectId, // Usar el proyecto activo correcto
           organization_id: organizationId,
           created_by: userId,
           status: data.status || 'draft'
@@ -243,18 +287,44 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
     >
       <Form {...form}>
         <div className="space-y-4">
-          {/* Campo del proyecto activo (bloqueado) */}
+          {/* Campo del proyecto */}
           <FormItem>
             <FormLabel className="text-xs font-medium text-foreground flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Proyecto
             </FormLabel>
             <FormControl>
-              <Input
-                value={currentProject?.name || 'Cargando...'}
-                disabled
-                className="bg-muted cursor-not-allowed rounded-lg"
-              />
+              {currentProject ? (
+                <Input
+                  value={currentProject.name}
+                  disabled
+                  className="bg-muted cursor-not-allowed rounded-lg"
+                />
+              ) : availableProjects.length > 0 ? (
+                <Select 
+                  value={activeProjectId || ''}
+                  onValueChange={(value) => {
+                    // Aquí podrías actualizar el proyecto seleccionado si fuera necesario
+                  }}
+                >
+                  <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                    <SelectValue placeholder="Selecciona un proyecto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableProjects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  value="No hay proyectos disponibles"
+                  disabled
+                  className="bg-muted cursor-not-allowed rounded-lg text-muted-foreground"
+                />
+              )}
             </FormControl>
           </FormItem>
 
