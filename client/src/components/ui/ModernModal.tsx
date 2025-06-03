@@ -65,7 +65,7 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
 // Componente Footer del Modal
 function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading = false }: ModalFooterProps) {
   return (
-    <div className="p-4 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
+    <div className="px-4 py-4 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
       <div className="flex gap-3">
         <Button
           variant="outline"
@@ -149,7 +149,7 @@ export default function ModernModal({
         />
         
         {/* Body - Scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 bg-[#e0e0e0]">
+        <div className="flex-1 overflow-y-auto p-4 bg-[#e0e0e0]">
           {children}
         </div>
         
@@ -215,7 +215,7 @@ export function ModalAccordion({
       </button>
       
       {isOpen && (
-        <div className="p-4 space-y-4 bg-card">
+        <div className="px-4 py-4 space-y-4 bg-card">
           {children}
         </div>
       )}

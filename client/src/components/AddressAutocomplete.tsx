@@ -38,6 +38,71 @@ export default function AddressAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<any>(null);
 
+  // Función para extraer componentes de dirección
+  const extractAddressComponents = (addressComponents: any[]) => {
+    let city = '';
+    let zipCode = '';
+    let state = '';
+    let country = '';
+    
+    console.log('Extracting from address components:', addressComponents);
+    
+    addressComponents.forEach((component: any) => {
+      const types = component.types;
+      console.log('Component:', component.long_name, 'Types:', types);
+      
+      // Ciudad - múltiples tipos posibles
+      if (types.includes('locality')) {
+        city = component.long_name;
+        console.log('City found (locality):', city);
+      } else if (types.includes('administrative_area_level_2') && !city) {
+        city = component.long_name;
+        console.log('City found (admin_area_level_2):', city);
+      } else if (types.includes('sublocality') && !city) {
+        city = component.long_name;
+        console.log('City found (sublocality):', city);
+      }
+      
+      // Código postal
+      if (types.includes('postal_code')) {
+        zipCode = component.long_name;
+        console.log('Zip code found:', zipCode);
+      }
+      
+      // Estado/Provincia
+      if (types.includes('administrative_area_level_1')) {
+        state = component.long_name;
+        console.log('State found:', state);
+      }
+      
+      // País
+      if (types.includes('country')) {
+        country = component.long_name;
+        console.log('Country found:', country);
+      }
+    });
+
+    // Llamar callbacks opcionales
+    console.log('Final extracted values:', { city, zipCode, state, country });
+    
+    if (onCityChange && city) {
+      console.log('Calling onCityChange with:', city);
+      onCityChange(city);
+    }
+    if (onZipCodeChange && zipCode) {
+      console.log('Calling onZipCodeChange with:', zipCode);
+      onZipCodeChange(zipCode);
+    }
+    if (onStateChange && state) {
+      console.log('Calling onStateChange with:', state);
+      onStateChange(state);
+    }
+    if (onCountryChange && country) {
+      console.log('Calling onCountryChange with:', country);
+      onCountryChange(country);
+    }
+  };
+
   // Inicializar Google Maps Autocomplete
   useEffect(() => {
     const initializeAutocomplete = () => {
@@ -56,120 +121,32 @@ export default function AddressAutocomplete({
         );
 
         // Escuchar evento place_changed
-        autocompleteRef.current.addListener('place_changed', async () => {
+        autocompleteRef.current.addListener('place_changed', () => {
           const place = autocompleteRef.current.getPlace();
           
           console.log('Place object:', place);
           
-          if (!place) {
-            console.warn('No place selected');
+          if (!place || !place.geometry) {
+            console.warn('No se encontró información de ubicación para esta dirección');
             return;
           }
 
           // Obtener dirección formateada
-          const formattedAddress = place.formatted_address || place.name || '';
+          const formattedAddress = place.formatted_address || '';
           onChange(formattedAddress);
 
-          // Obtener coordenadas si están disponibles
-          if (place.geometry) {
-            const lat = place.geometry.location.lat();
-            const lng = place.geometry.location.lng();
-            setLat(lat);
-            setLng(lng);
-            onCoordinatesChange(lat, lng);
-          }
+          // Obtener coordenadas
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          setLat(lat);
+          setLng(lng);
+          onCoordinatesChange(lat, lng);
 
-          // Si tenemos place_id pero no address_components, hacer una búsqueda de detalles
-          if (place.place_id && (!place.address_components || place.address_components.length === 0)) {
-            console.log('Getting additional place details for:', place.place_id);
-            
-            try {
-              const service = new window.google.maps.places.PlacesService(document.createElement('div'));
-              
-              service.getDetails({
-                placeId: place.place_id,
-                fields: ['address_components', 'formatted_address', 'geometry']
-              }, (detailedPlace: any, status: any) => {
-                if (status === window.google.maps.places.PlacesServiceStatus.OK && detailedPlace) {
-                  console.log('Detailed place:', detailedPlace);
-                  extractAddressComponents(detailedPlace.address_components || []);
-                } else {
-                  console.warn('Failed to get place details:', status);
-                  extractAddressComponents(place.address_components || []);
-                }
-              });
-            } catch (error) {
-              console.warn('Error getting place details:', error);
-              extractAddressComponents(place.address_components || []);
-            }
-          } else {
-            extractAddressComponents(place.address_components || []);
-          }
+          // Extraer información de address_components
+          extractAddressComponents(place.address_components || []);
         });
 
-        function extractAddressComponents(addressComponents: any[]) {
-          let city = '';
-          let zipCode = '';
-          let state = '';
-          let country = '';
-          
-          console.log('Extracting from address components:', addressComponents);
-          
-          addressComponents.forEach((component: any) => {
-            const types = component.types;
-            console.log('Component:', component.long_name, 'Types:', types);
-            
-            // Ciudad - múltiples tipos posibles
-            if (types.includes('locality')) {
-              city = component.long_name;
-              console.log('City found (locality):', city);
-            } else if (types.includes('administrative_area_level_2') && !city) {
-              city = component.long_name;
-              console.log('City found (admin_area_level_2):', city);
-            } else if (types.includes('sublocality') && !city) {
-              city = component.long_name;
-              console.log('City found (sublocality):', city);
-            }
-            
-            // Código postal
-            if (types.includes('postal_code')) {
-              zipCode = component.long_name;
-              console.log('Zip code found:', zipCode);
-            }
-            
-            // Estado/Provincia
-            if (types.includes('administrative_area_level_1')) {
-              state = component.long_name;
-              console.log('State found:', state);
-            }
-            
-            // País
-            if (types.includes('country')) {
-              country = component.long_name;
-              console.log('Country found:', country);
-            }
-          });
 
-          // Llamar callbacks opcionales
-          console.log('Final extracted values:', { city, zipCode, state, country });
-          
-          if (onCityChange && city) {
-            console.log('Calling onCityChange with:', city);
-            onCityChange(city);
-          }
-          if (onZipCodeChange && zipCode) {
-            console.log('Calling onZipCodeChange with:', zipCode);
-            onZipCodeChange(zipCode);
-          }
-          if (onStateChange && state) {
-            console.log('Calling onStateChange with:', state);
-            onStateChange(state);
-          }
-          if (onCountryChange && country) {
-            console.log('Calling onCountryChange with:', country);
-            onCountryChange(country);
-          }
-        }
 
         setIsReady(true);
       } catch (error) {
