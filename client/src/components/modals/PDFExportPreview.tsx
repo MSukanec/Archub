@@ -150,24 +150,19 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
   // Mutación para guardar plantilla
   const saveTemplateMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (templateData: any) => {
       if (!organizationId) throw new Error('No organization ID');
 
-      const templateData = {
+      const completeTemplateData = {
         organization_id: organizationId,
         name: 'Mi Plantilla',
-        show_clarification_field: pdfParams.showClarificationField,
-        show_date_field: pdfParams.showDateField,
-        footer_info: pdfParams.footerInfo,
-        show_footer_info: pdfParams.showFooterInfo,
-        signature_text: pdfParams.signatureText,
-        company_info_size: pdfParams.companyInfoSize
+        ...templateData
       };
 
       if (template?.id) {
         const { data, error } = await supabase
           .from('pdf_templates')
-          .update(templateData)
+          .update(completeTemplateData)
           .eq('id', template.id)
           .select()
           .single();
@@ -379,10 +374,40 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         showClarificationField: template.show_clarification_field !== false,
         showDateField: template.show_date_field !== false,
         footerInfo: template.footer_info || prev.footerInfo,
-        showFooterInfo: template.show_footer_info !== false
+        showFooterInfo: template.show_footer_info !== false,
+        pageSize: template.page_size || 'A4',
+        pageOrientation: template.page_orientation || 'portrait',
+        customWidth: template.custom_width || null,
+        customHeight: template.custom_height || null,
+        marginTop: template.margin_top || 20,
+        marginBottom: template.margin_bottom || 20,
+        marginLeft: template.margin_left || 20,
+        marginRight: template.margin_right || 20
       }));
     }
   }, [template]);
+
+  const handleSaveTemplate = () => {
+    const templateData = {
+      page_size: pdfParams.pageSize,
+      page_orientation: pdfParams.pageOrientation,
+      custom_width: pdfParams.customWidth,
+      custom_height: pdfParams.customHeight,
+      margin_top: pdfParams.marginTop,
+      margin_bottom: pdfParams.marginBottom,
+      margin_left: pdfParams.marginLeft,
+      margin_right: pdfParams.marginRight,
+      logo_width: template?.logo_width || 120,
+      company_info_size: pdfParams.companyInfoSize,
+      signature_text: pdfParams.signatureText,
+      show_clarification_field: pdfParams.showClarificationField,
+      show_date_field: pdfParams.showDateField,
+      footer_info: pdfParams.footerInfo,
+      show_footer_info: pdfParams.showFooterInfo
+    };
+    
+    saveTemplateMutation.mutate(templateData);
+  };
 
   if (!isOpen) return null;
 
