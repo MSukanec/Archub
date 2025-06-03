@@ -599,7 +599,7 @@ export default function Movements() {
               placeholder="Buscar movimientos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg"
+              className="pl-10 pr-10"
             />
             {searchTerm && (
               <Button
@@ -625,7 +625,7 @@ export default function Movements() {
               placeholder="Buscar movimientos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg"
+              className="pl-10 pr-10"
             />
             {searchTerm && (
               <Button
