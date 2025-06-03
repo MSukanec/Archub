@@ -57,6 +57,8 @@ interface PDFTemplate {
   show_clarification_field?: boolean;
   show_date_field?: boolean;
   signature_layout?: 'vertical' | 'horizontal';
+  footer_info?: string;
+  show_footer_info?: boolean;
 }
 
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
@@ -102,7 +104,9 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     showSignatureFields: true,
     showClarificationField: true,
     showDateField: true,
-    signatureLayout: 'vertical' as 'vertical' | 'horizontal'
+    signatureLayout: 'vertical' as 'vertical' | 'horizontal',
+    footerInfo: 'Documento generado por Archub. www.archub.com',
+    showFooterInfo: true
   });
 
   // Estado para selector de plantilla
@@ -768,7 +772,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                   <div 
                     className="mt-6"
                     style={{ 
-                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                      border: '1px solid #000000',
                       padding: '12px'
                     }}
                   >
@@ -1114,7 +1118,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showClarificationField}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showClarificationField: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-border data-[state=unchecked]:border-border [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white" 
                               />
                             </div>
                             <div className="flex items-center justify-between">
@@ -1122,9 +1126,29 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               <Switch 
                                 checked={pdfParams.showDateField}
                                 onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showDateField: checked }))}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                                className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-border data-[state=unchecked]:border-border [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white" 
                               />
                             </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Información del Pie</span>
+                              <Switch 
+                                checked={pdfParams.showFooterInfo}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showFooterInfo: checked }))}
+                                className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-border data-[state=unchecked]:border-border [&>span]:data-[state=checked]:bg-white [&>span]:data-[state=unchecked]:bg-white" 
+                              />
+                            </div>
+                            {pdfParams.showFooterInfo && (
+                              <div>
+                                <label className="text-xs font-medium">Texto del Pie</label>
+                                <input 
+                                  type="text"
+                                  className="w-full mt-1 px-2 py-1 text-xs border rounded bg-background text-foreground" 
+                                  value={pdfParams.footerInfo}
+                                  onChange={(e) => setPdfParams(prev => ({ ...prev, footerInfo: e.target.value }))}
+                                  placeholder="Información que aparecerá en el pie del documento..."
+                                />
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
