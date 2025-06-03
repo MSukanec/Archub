@@ -370,8 +370,389 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
           </div>
         )}
 
-        {/* Resto del contenido personalizable... */}
-        {/* (Se mantiene el resto del contenido igual que antes) */}
+        {/* Secciones To: y Job: */}
+        {(sectionStates.client || sectionStates.project) && (
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            {sectionStates.client && (
+              <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+                <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                  To:
+                </div>
+                <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                  {pdfParams.clientAddress.split('\n').map((line, index) => (
+                    <div key={index}>{line || pdfParams.clientName}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {sectionStates.project && (
+              <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+                <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                  Job:
+                </div>
+                <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                  <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
+                  <div className="mt-2">
+                    <div>Start Date: ___________</div>
+                    <div>Delay Days: ___0___</div>
+                    <div className="text-xs italic">(Delay days are a reasonable estimate only)</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sección Details */}
+        {sectionStates.details && (
+          <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px', marginBottom: '16px' }}>
+            <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+              Details:
+            </div>
+            <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+              {pdfParams.description}
+            </div>
+          </div>
+        )}
+
+        {/* Título de la tabla */}
+        {sectionStates.table && (
+          <div className="font-semibold mb-3" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+            Tasks and costs involved:
+          </div>
+        )}
+
+        {/* Contenido del presupuesto */}
+        <div className="space-y-4">
+          {data.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">
+              No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
+            </p>
+          ) : (
+            <>
+              {sectionStates.table && (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#000000'}` }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f8f8f8' }}>
+                        <th 
+                          className="px-3 py-2 text-left font-normal"
+                          style={{ 
+                            border: `1px solid ${template?.secondary_color || '#000000'}`,
+                            color: template?.text_color || '#000000',
+                            fontSize: `${template?.body_size || 11}px`,
+                            width: pdfParams.showUnitColumn && pdfParams.showPriceColumn ? '50%' : '70%'
+                          }}
+                        >
+                          Item Description
+                        </th>
+                        {pdfParams.showUnitColumn && (
+                          <th 
+                            className="px-3 py-2 text-center font-normal"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              width: '15%'
+                            }}
+                          >
+                            Qty Unit
+                          </th>
+                        )}
+                        {pdfParams.showPriceColumn && (
+                          <th 
+                            className="px-3 py-2 text-center font-normal"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`,
+                              width: '15%'
+                            }}
+                          >
+                            Unit Price
+                          </th>
+                        )}
+                        <th 
+                          className="px-3 py-2 text-right font-normal"
+                          style={{ 
+                            border: `1px solid ${template?.secondary_color || '#000000'}`,
+                            color: template?.text_color || '#000000',
+                            fontSize: `${template?.body_size || 11}px`,
+                            width: '20%'
+                          }}
+                        >
+                          Sub Total (Ex)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((item, index) => (
+                        <tr key={index} style={{ backgroundColor: '#ffffff' }}>
+                          <td 
+                            className="px-3 py-2"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`
+                            }}
+                          >
+                            {item.name}
+                          </td>
+                          {pdfParams.showUnitColumn && (
+                            <td 
+                              className="px-3 py-2 text-center"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`
+                              }}
+                            >
+                              {item.amount} {item.unit_name}
+                            </td>
+                          )}
+                          {pdfParams.showPriceColumn && (
+                            <td 
+                              className="px-3 py-2 text-center"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`
+                              }}
+                            >
+                              ${item.unit_price?.toFixed(2) || '0.00'}
+                            </td>
+                          )}
+                          <td 
+                            className="px-3 py-2 text-right"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#000000'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.body_size || 11}px`
+                            }}
+                          >
+                            (${item.total_price?.toFixed(2) || '0.00'})
+                          </td>
+                        </tr>
+                      ))}
+                      
+                      {sectionStates.totals && (
+                        <>
+                          <tr>
+                            <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
+                              className="px-3 py-2 text-right font-semibold"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`,
+                                backgroundColor: '#ffffff'
+                              }}
+                            >
+                              Change Order Total (Ex):
+                            </td>
+                            <td 
+                              className="px-3 py-2 text-right"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`,
+                                backgroundColor: '#ffffff'
+                              }}
+                            >
+                              (${calculateTotal().toFixed(2)})
+                            </td>
+                          </tr>
+                          
+                          {pdfParams.showTaxCalculation && (
+                            <tr>
+                              <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
+                                className="px-3 py-2 text-right font-semibold"
+                                style={{ 
+                                  border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                  color: template?.text_color || '#000000',
+                                  fontSize: `${template?.body_size || 11}px`,
+                                  backgroundColor: '#ffffff'
+                                }}
+                              >
+                                Tax ({pdfParams.taxRate}%):
+                              </td>
+                              <td 
+                                className="px-3 py-2 text-right"
+                                style={{ 
+                                  border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                  color: template?.text_color || '#000000',
+                                  fontSize: `${template?.body_size || 11}px`,
+                                  backgroundColor: '#ffffff'
+                                }}
+                              >
+                                (${(calculateTotal() * pdfParams.taxRate / 100).toFixed(2)})
+                              </td>
+                            </tr>
+                          )}
+                          
+                          <tr style={{ backgroundColor: '#f0f0f0' }}>
+                            <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
+                              className="px-3 py-2 text-right font-bold"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`
+                              }}
+                            >
+                              Change Order Total {pdfParams.showTaxCalculation ? '(Incl. Tax)' : '(Ex)'}:
+                            </td>
+                            <td 
+                              className="px-3 py-2 text-right font-bold"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 11}px`
+                              }}
+                            >
+                              (${(calculateTotal() * (1 + (pdfParams.showTaxCalculation ? pdfParams.taxRate / 100 : 0))).toFixed(2)})
+                            </td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {sectionStates.signatures && (
+                <div className="mt-8 space-y-4">
+                  <div 
+                    className="text-justify leading-relaxed"
+                    style={{ 
+                      fontSize: `${template?.body_size || 10}px`,
+                      color: template?.text_color || '#000000'
+                    }}
+                  >
+                    <p className="mb-3">
+                      I accept this change order and authorize works described above to be undertaken. I accept that this change order will form part of the contract 
+                      and agree to the adjusted contract total and any delay to the completion date as stated above.
+                    </p>
+                    
+                    <p>
+                      I also understand and accept that any increase or decrease in the price due to this change order will be due and included in either the next 
+                      payment or a future payment as set out in the contract payment schedule.
+                    </p>
+                  </div>
+
+                  <div 
+                    className="mt-6"
+                    style={{ 
+                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                      padding: '12px',
+                      backgroundColor: '#f8f8f8'
+                    }}
+                  >
+                    <div 
+                      className="font-semibold mb-3"
+                      style={{ 
+                        fontSize: `${template?.body_size || 11}px`,
+                        color: template?.text_color || '#000000'
+                      }}
+                    >
+                      Signed on behalf of client:
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-6">
+                      <div>
+                        <div 
+                          className="mb-1"
+                          style={{ 
+                            fontSize: `${template?.body_size || 10}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          SIGNED: ________________________
+                        </div>
+                      </div>
+                      <div>
+                        <div 
+                          className="mb-1"
+                          style={{ 
+                            fontSize: `${template?.body_size || 10}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          Name: ________________________
+                        </div>
+                      </div>
+                      <div>
+                        <div 
+                          className="mb-1"
+                          style={{ 
+                            fontSize: `${template?.body_size || 10}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          Date: _____ / _____ / _____
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className="mt-4"
+                    style={{ 
+                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                      padding: '12px',
+                      backgroundColor: '#f8f8f8'
+                    }}
+                  >
+                    <div 
+                      className="font-semibold mb-3"
+                      style={{ 
+                        fontSize: `${template?.body_size || 11}px`,
+                        color: template?.text_color || '#000000'
+                      }}
+                    >
+                      Signed on behalf of {organization?.name || 'Buildact Builders'}
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-6">
+                      <div>
+                        <div 
+                          className="mb-1"
+                          style={{ 
+                            fontSize: `${template?.body_size || 10}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          SIGNED: ________________________
+                        </div>
+                      </div>
+                      <div>
+                        <div 
+                          className="mb-1"
+                          style={{ 
+                            fontSize: `${template?.body_size || 10}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          Name: ________________________
+                        </div>
+                      </div>
+                      <div>
+                        <div 
+                          className="mb-1"
+                          style={{ 
+                            fontSize: `${template?.body_size || 10}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          Date: _____ / _____ / _____
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
