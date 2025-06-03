@@ -588,14 +588,7 @@ export default function Movements() {
             </SelectContent>
           </Select>
 
-          <Button
-            variant="outline"
-            onClick={handleExportToExcel}
-            className="bg-surface-secondary border-input rounded-xl hover:bg-muted shadow-lg"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Exportar
-          </Button>
+
         </div>
 
         {/* Desktop: Search bar second row */}
@@ -623,18 +616,7 @@ export default function Movements() {
 
         {/* Tablet/Mobile: Filters first, then search */}
         <div className="lg:hidden space-y-3">
-          {/* Export button for tablet/mobile */}
-          <div className="flex justify-end">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleExportToExcel}
-              className="rounded-xl shadow-lg bg-surface-secondary border-input hover:bg-[#c8c8c8] h-9 px-3"
-            >
-              <Download className="w-4 h-4 mr-1" />
-              Exportar
-            </Button>
-          </div>
+
 
           {/* Search Bar */}
           <div className="relative">
@@ -1043,9 +1025,9 @@ export default function Movements() {
           setModalKey(prev => prev + 1);
           setIsMovementModalOpen(true);
         }}
-        className="fixed bottom-6 right-6 z-50 md:hidden w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
+        className="fixed bottom-6 right-6 z-50 md:hidden w-21 h-21 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="h-8 w-8" />
       </Button>
     </>
   );
