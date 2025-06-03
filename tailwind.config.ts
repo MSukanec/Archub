@@ -62,6 +62,7 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         surface: {
+          views: "hsl(var(--background-views))",
           primary: "hsl(var(--background-primary))",
           secondary: "hsl(var(--background-secondary))",
         },

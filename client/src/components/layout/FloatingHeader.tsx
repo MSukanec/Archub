@@ -66,7 +66,7 @@ export default function FloatingHeader() {
 
   return (
     <div className="fixed top-2.5 left-1/2 transform -translate-x-1/2 z-40">
-      <div className="bg-card border border-input rounded-full px-2 py-1 shadow-lg">
+      <div className="bg-surface-primary border border-input rounded-full px-2 py-1 shadow-lg">
         <div className="flex items-center space-x-1">
           {views.map((view) => (
             <button

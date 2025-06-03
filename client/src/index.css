@@ -28,9 +28,10 @@
   --surface: 0 0% 98%; /* #fafafa */
   --surface-light: 0 0% 95%; /* #f2f2f2 */
   
-  /* Background variations - Primary and Secondary */
-  --background-primary: 0 0% 88%; /* #e1e1e1 - Main background for cards, inputs */
-  --background-secondary: 0 0% 92%; /* #ebebeb - Secondary background for nested elements */
+  /* Background hierarchy - Views, Primary Components, Secondary Cards */
+  --background-views: 0 0% 98%; /* #fafafa - Background for main views/pages */
+  --background-primary: 0 0% 88%; /* #e1e1e1 - Primary components (buttons, inputs, search) */
+  --background-secondary: 0 0% 92%; /* #ebebeb - Secondary elements (cards, containers) */
 }
 
 /* Custom pressed effect - stays pressed on hover */
@@ -336,9 +337,10 @@
   --surface: 0 0% 18%; /* #2d2d2d */
   --surface-light: 0 0% 18%; /* #2d2d2d */
   
-  /* Background variations for dark mode - Primary and Secondary */
-  --background-primary: 139 51% 54%; /* #8bc34a - Green primary background */
-  --background-secondary: 0 0% 20%; /* #333333 - Dark secondary background */
+  /* Background hierarchy for dark mode - Views, Primary Components, Secondary Cards */
+  --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
+  --background-primary: 0 0% 14%; /* #232323 - Primary components (buttons, inputs, search) */
+  --background-secondary: 0 0% 16%; /* #282828 - Secondary elements (cards, containers) */
 }
 
 @layer base {
@@ -352,6 +354,10 @@
   }
   
   /* Custom background utility classes */
+  .bg-views {
+    background-color: hsl(var(--background-views));
+  }
+  
   .bg-primary-surface {
     background-color: hsl(var(--background-primary));
   }
@@ -362,7 +368,7 @@
 
   /* Force dark mode styles */
   .dark body {
-    background-color: #282828 !important;
+    background-color: hsl(var(--background-views)) !important;
     color: #ffffff !important;
   }
 
