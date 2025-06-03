@@ -43,79 +43,37 @@ export function useUserPlan() {
       if (!user?.id) return null;
       
       try {
-        // Use the new RPC function that gets current user with plan
-        const { data: userData, error } = await supabase
-          .rpc('get_current_user_with_plan');
+        // Get user and plan data from existing queries
+        const [usersResult, plansResult] = await Promise.all([
+          supabase.rpc('get_users_for_admin'),
+          supabase.from('plans').select('*')
+        ]);
         
-        console.log('RPC get_current_user_with_plan result:', userData);
-        console.log('RPC get_current_user_with_plan error:', error);
+        console.log('Users result:', usersResult);
+        console.log('Plans result:', plansResult);
         
-        if (error) {
-          console.error('Error fetching user plan:', error);
-          return null;
-        }
-
-        if (userData && userData.length > 0) {
-          const userRecord = userData[0];
-          console.log('User record from RPC:', userRecord);
+        if (usersResult.data && plansResult.data) {
+          const currentUser = usersResult.data.find(u => u.auth_id === user.id);
+          console.log('Current user found:', currentUser);
           
-          // Check if we got the plan data directly (temporary fallback)
-          if (userRecord.name && userRecord.price !== undefined) {
-            // The RPC is returning plan data directly, not user+plan structure
-            console.log('RPC returned plan data directly:', userRecord);
+          if (currentUser) {
+            const userPlan = plansResult.data.find(p => p.id === currentUser.plan_id);
+            console.log('User plan found:', userPlan);
             
-            // Create a mock user structure with the plan data
             const result = {
-              id: 'mock-user-id',
-              auth_id: user.id,
-              email: user.email || '',
-              first_name: user.firstName || '',
-              last_name: user.lastName || '',
-              full_name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-              role: user.role || 'user',
-              avatar_url: null,
-              created_at: new Date().toISOString(),
-              plan_id: 'mock-plan-id',
-              plan: {
-                id: 'mock-plan-id',
-                name: userRecord.name,
-                price: userRecord.price,
-                features: userRecord.features || {
-                  max_organizations: userRecord.name.toLowerCase() === 'enterprise' ? 999 : 1,
-                  export_pdf_custom: true,
-                  multiple_organizations: userRecord.name.toLowerCase() === 'enterprise'
-                },
-                is_active: true
-              }
+              ...currentUser,
+              plan: userPlan ? {
+                id: userPlan.id,
+                name: userPlan.name,
+                price: userPlan.price,
+                features: userPlan.features,
+                is_active: userPlan.is_active
+              } : null
             };
             
-            console.log('Transformed user plan data:', result);
+            console.log('Final useUserPlan result:', result);
             return result;
           }
-          
-          // Normal user+plan structure
-          const result = {
-            id: userRecord.id,
-            auth_id: userRecord.auth_id,
-            email: userRecord.email,
-            first_name: userRecord.first_name,
-            last_name: userRecord.last_name,
-            full_name: userRecord.full_name,
-            role: userRecord.role,
-            avatar_url: userRecord.avatar_url,
-            created_at: userRecord.created_at,
-            plan_id: userRecord.plan_id,
-            plan: userRecord.plan_name ? {
-              id: userRecord.plan_id,
-              name: userRecord.plan_name,
-              price: userRecord.plan_price,
-              features: userRecord.plan_features,
-              is_active: userRecord.plan_is_active
-            } : null
-          };
-          
-          console.log('User plan data from RPC:', result);
-          return result;
         }
 
         return null;
