@@ -178,7 +178,7 @@ export default function ProjectsOverview() {
 
       {/* Cards de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Proyectos</p>
@@ -189,7 +189,7 @@ export default function ProjectsOverview() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Proyectos Activos</p>
@@ -203,7 +203,7 @@ export default function ProjectsOverview() {
       </div>
 
       {/* Search and Filters con Projects List incluida */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -238,7 +238,7 @@ export default function ProjectsOverview() {
 
       {/* Projects List - Moved outside the card */}
       {filteredProjects.length === 0 ? (
-        <Card className="rounded-2xl shadow-md bg-card p-12 border-0">
+        <Card className="rounded-2xl shadow-md bg-surface-secondary p-12 border-0">
           <CardContent className="text-center p-0">
             <Building className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-medium text-foreground">
@@ -269,7 +269,7 @@ export default function ProjectsOverview() {
             return (
               <div
                 key={project.id}
-                className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-card ${
+                className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-surface-secondary ${
                   isActiveProject 
                     ? 'border-2 border-primary' 
                     : 'border-2 border-transparent hover:border-primary'

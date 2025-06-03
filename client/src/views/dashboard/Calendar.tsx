@@ -292,7 +292,7 @@ export default function CalendarView() {
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar */}
-        <Card className="lg:col-span-2 rounded-2xl shadow-md bg-card border-0">
+        <Card className="lg:col-span-2 rounded-2xl shadow-md bg-surface-secondary border-0">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
               <CalendarIcon className="w-5 h-5" />
@@ -388,7 +388,7 @@ export default function CalendarView() {
         {/* Day Summary and Events */}
         <div className="space-y-6">
           {/* Day Summary */}
-          <Card className="rounded-2xl shadow-md bg-card border-0">
+          <Card className="rounded-2xl shadow-md bg-surface-secondary border-0">
             <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold text-foreground">
                 Resumen del día
@@ -474,7 +474,7 @@ export default function CalendarView() {
           </Card>
 
           {/* Upcoming Events */}
-          <Card className="rounded-2xl shadow-md bg-card border-0">
+          <Card className="rounded-2xl shadow-md bg-surface-secondary border-0">
             <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold text-foreground">Próximos Eventos</CardTitle>
             </CardHeader>
