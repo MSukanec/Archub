@@ -9,7 +9,7 @@ import PrimarySidebar from './PrimarySidebar';
 import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
-import MobileDrawer from './MobileDrawer';
+import MobileDrawer from './MobileDrawerFixed';
 import Dashboard from '@/views/dashboard/Dashboard';
 import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
 import CalendarView from '@/views/dashboard/Calendar';

@@ -180,8 +180,10 @@ export default function Contacts() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <>
+      <div className="p-6 space-y-6">
+        {/* Desktop Header */}
+      <div className="hidden md:flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
             <Users className="w-5 h-5 text-primary" />
@@ -194,6 +196,26 @@ export default function Contacts() {
         <Button 
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Nuevo Contacto
+        </Button>
+      </div>
+
+      {/* Mobile Header */}
+      <div className="md:hidden space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Users className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Gestión de Contactos</h1>
+            <p className="text-sm text-muted-foreground">Administra todos los contactos del sistema</p>
+          </div>
+        </div>
+        <Button 
+          onClick={() => setIsCreateModalOpen(true)}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Contacto
@@ -301,7 +323,8 @@ export default function Contacts() {
         </div>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
+      {/* Desktop Table */}
+      <div className="hidden md:block rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -378,8 +401,87 @@ export default function Contacts() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {paginatedContacts.length === 0 ? (
+          <div className="text-center text-muted-foreground py-8">
+            {searchTerm 
+              ? 'No se encontraron contactos que coincidan con los filtros.'
+              : 'No hay contactos registrados.'
+            }
+          </div>
+        ) : (
+          paginatedContacts.map((contact: any) => (
+            <div key={contact.id} className="bg-surface-secondary rounded-2xl p-4 shadow-md border-0">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground text-lg">
+                      {`${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Sin nombre'}
+                    </h3>
+                    {contact.company_name && (
+                      <p className="text-sm text-muted-foreground mt-1">{contact.company_name}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {(contact.phone || contact.email) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleContactActions(contact)}
+                        className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 rounded-lg"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(contact)}
+                      className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 rounded-lg"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(contact)}
+                      className="text-destructive hover:text-destructive/90 h-8 w-8 p-0 rounded-lg"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Tipo:</span>
+                    <ContactTypeDisplay contactId={contact.id} />
+                  </div>
+                  
+                  {contact.email && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Email:</span>
+                      <span className="text-sm text-foreground">{contact.email}</span>
+                    </div>
+                  )}
+                  
+                  {contact.phone && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Teléfono:</span>
+                      <span className="text-sm text-foreground">{contact.phone}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
         
-        {/* Paginación */}
+      {/* Paginación */}
         {filteredAndSortedContacts.length > 0 && (
           <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
