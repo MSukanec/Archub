@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, Settings, FileText } from 'lucide-react';
+import { Download, Settings, FileText, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
-import ModernModal from '@/components/ui/ModernModal';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -42,7 +42,6 @@ interface PDFTemplate {
   footer_text?: string;
   footer_show_page_numbers: boolean;
   footer_show_date: boolean;
-  // Nuevos campos para el diseño Change Order
   company_address?: string;
   company_email?: string;
   company_phone?: string;
@@ -58,23 +57,42 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const { organizationId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
   const [isExporting, setIsExporting] = useState(false);
+  
+  // Estados para acordeones y secciones
+  const [activeAccordion, setActiveAccordion] = useState<string | null>('header');
+  const [sectionStates, setSectionStates] = useState({
+    header: true,
+    client: true,
+    project: true,
+    details: true,
+    table: true,
+    totals: true,
+    footer: true,
+    signatures: true
+  });
+
+  const toggleAccordion = (accordionId: string) => {
+    setActiveAccordion(activeAccordion === accordionId ? null : accordionId);
+  };
+
+  const toggleSection = (sectionId: keyof typeof sectionStates) => {
+    setSectionStates(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   // Fetch PDF template
   const { data: template, isLoading } = useQuery({
     queryKey: ['pdf-template', organizationId],
     queryFn: async () => {
-      if (!organizationId) return null;
-      
       const { data, error } = await supabase
         .from('pdf_templates')
         .select('*')
         .eq('organization_id', organizationId)
         .single();
       
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-      
+      if (error) throw error;
       return data;
     },
     enabled: !!organizationId && isOpen,
@@ -84,14 +102,13 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const { data: organization } = useQuery({
     queryKey: ['organization', organizationId],
     queryFn: async () => {
-      if (!organizationId) return null;
-      
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('organizations')
         .select('*')
         .eq('id', organizationId)
         .single();
       
+      if (error) throw error;
       return data;
     },
     enabled: !!organizationId && isOpen,
@@ -100,13 +117,11 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Get the PDF preview element
       const element = document.getElementById('pdf-preview-content');
       if (!element) {
         throw new Error('PDF preview content not found');
       }
 
-      // Convert the element to canvas
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -114,20 +129,17 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         backgroundColor: '#ffffff'
       });
 
-      // Create PDF with A4 dimensions
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
+      const imgWidth = 210;
+      const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
 
       let position = 0;
 
-      // Add the first page
       pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      // Add additional pages if content is too long
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -135,7 +147,6 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         heightLeft -= pageHeight;
       }
 
-      // Download the PDF
       pdf.save(`${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
       onClose();
     } catch (error) {
@@ -145,116 +156,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     }
   };
 
-  const generatePDFContent = () => {
-    // Generate HTML content for PDF conversion
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>${title}</title>
-          <style>
-            body {
-              font-family: ${template?.font_family || 'Arial'};
-              margin: 0;
-              padding: 40px;
-              background: white;
-              color: black;
-            }
-            .header {
-              border-bottom: 1px solid #ccc;
-              padding-bottom: 20px;
-              margin-bottom: 30px;
-            }
-            .company-name {
-              font-size: ${template?.company_name_size || 24}px;
-              font-weight: bold;
-              margin-bottom: 10px;
-            }
-            .title {
-              font-size: ${template?.title_size || 18}px;
-              font-weight: bold;
-              margin-bottom: 10px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 20px;
-            }
-            th, td {
-              border: 1px solid #666;
-              padding: 8px;
-              text-align: left;
-            }
-            th {
-              background-color: #f0f0f0;
-              font-weight: bold;
-            }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .total-row {
-              background-color: #f8f8f8;
-              font-weight: bold;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            ${template?.company_name_show && organization?.name ? `<div class="company-name">${organization.name}</div>` : ''}
-            <div class="title">${title}</div>
-            <div>Fecha: ${new Date().toLocaleDateString()}</div>
-          </div>
-          
-          <table>
-            <thead>
-              <tr>
-                <th>Descripción</th>
-                <th class="text-center">Cantidad</th>
-                <th class="text-center">Precio Unit.</th>
-                <th class="text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${data.map(item => `
-                <tr>
-                  <td>
-                    <div><strong>${item.name}</strong></div>
-                    ${item.description ? `<div style="font-size: 12px; color: #666;">${item.description}</div>` : ''}
-                  </td>
-                  <td class="text-center">${item.amount} ${item.unit_name || ''}</td>
-                  <td class="text-center">$${(item.unit_price || 0).toFixed(2)}</td>
-                  <td class="text-right">$${(item.total_price || 0).toFixed(2)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-            <tfoot>
-              <tr class="total-row">
-                <td colspan="3" class="text-right">Total General:</td>
-                <td class="text-right">$${calculateTotal().toFixed(2)}</td>
-              </tr>
-            </tfoot>
-          </table>
-          
-          ${template?.footer_text ? `
-            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #666;">
-              ${template.footer_text}
-            </div>
-          ` : ''}
-        </body>
-      </html>
-    `;
-    
-    // Convert HTML to PDF-like content (simplified version)
-    // In a real implementation, you'd use a library like jsPDF or html2pdf
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    return blob;
-  };
-
   const handleGoToSettings = () => {
     onClose();
     setSection('organization');
     setView('organization-overview');
-    // Navigate to PDF configuration tab
     setTimeout(() => {
       const pdfTab = document.querySelector('[data-tab="pdf"]');
       if (pdfTab) {
@@ -267,35 +172,608 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     return data.reduce((total, item) => total + (item.total_price || 0), 0);
   };
 
+  if (!isOpen) return null;
+
   if (isLoading) {
     return (
-      <ModernModal
-        isOpen={isOpen}
-        onClose={onClose}
-        title="Vista Previa PDF"
-      >
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+        <div className="bg-background p-6 rounded-lg">
+          <p>Cargando plantilla PDF...</p>
         </div>
-      </ModernModal>
+      </div>
     );
   }
 
   return (
-    <ModernModal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Vista Previa de Exportación PDF"
-      subtitle="Revisa el documento antes de exportar"
-      icon={FileText}
-      footer={
-        <div className="flex gap-3 w-full">
+    <div className="fixed inset-0 z-50">
+      <div className="fixed inset-0 bg-black/80" onClick={onClose} />
+      
+      <div className="fixed inset-4 bg-background border border-border rounded-lg shadow-xl overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <div className="flex items-center space-x-3">
+            <FileText className="w-5 h-5 text-primary" />
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Vista Previa de Exportación PDF</h2>
+              <p className="text-sm text-muted-foreground">Revisa el documento antes de exportar</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            ×
+          </Button>
+        </div>
+
+        {/* Content - Two columns */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Column - Options */}
+          <div className="w-1/3 border-r border-border p-6 overflow-y-auto bg-surface">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-foreground mb-4">SECTIONS</h3>
+              
+              {/* Acordeones */}
+              {[
+                { id: 'header' as keyof typeof sectionStates, label: 'Header & Company Info', enabled: sectionStates.header },
+                { id: 'client' as keyof typeof sectionStates, label: 'Client Information', enabled: sectionStates.client },
+                { id: 'project' as keyof typeof sectionStates, label: 'Project Details', enabled: sectionStates.project },
+                { id: 'details' as keyof typeof sectionStates, label: 'Description & Details', enabled: sectionStates.details },
+                { id: 'table' as keyof typeof sectionStates, label: 'Items Table', enabled: sectionStates.table },
+                { id: 'totals' as keyof typeof sectionStates, label: 'Totals & Calculations', enabled: sectionStates.totals },
+                { id: 'footer' as keyof typeof sectionStates, label: 'Footer Information', enabled: sectionStates.footer },
+                { id: 'signatures' as keyof typeof sectionStates, label: 'Signature Section', enabled: sectionStates.signatures }
+              ].map((section) => (
+                <div key={section.id} className="border border-border rounded-lg overflow-hidden">
+                  <div 
+                    className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover"
+                    onClick={() => toggleAccordion(section.id)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      {activeAccordion === section.id ? 
+                        <ChevronDown className="w-4 h-4" /> : 
+                        <ChevronRight className="w-4 h-4" />
+                      }
+                      <span className="text-sm font-medium">{section.label}</span>
+                    </div>
+                    <Switch
+                      checked={section.enabled}
+                      onCheckedChange={() => toggleSection(section.id)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  
+                  {activeAccordion === section.id && section.enabled && (
+                    <div className="p-4 bg-background border-t border-border">
+                      <p className="text-xs text-muted-foreground">
+                        Configure options for {section.label.toLowerCase()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column - PDF Preview */}
+          <div className="flex-1 overflow-auto bg-gray-100 p-6">
+            <div className="flex justify-center">
+              <div 
+                id="pdf-preview-content"
+                className="bg-white shadow-lg border border-gray-300"
+                style={{ 
+                  width: '595px',
+                  minHeight: '842px',
+                  fontFamily: template?.font_family || 'Arial',
+                  color: template?.text_color || '#000000',
+                  backgroundColor: template?.background_color || '#ffffff'
+                }}
+              >
+                <div 
+                  className="text-black"
+                  style={{ 
+                    padding: `${template?.margin_top || 48}px ${template?.margin_right || 48}px ${template?.margin_bottom || 48}px ${template?.margin_left || 48}px`
+                  }}
+                >
+                  {/* Header estilo Change Order */}
+                  {sectionStates.header && (
+                    <div className="mb-6">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="flex items-center space-x-4">
+                          {template?.logo_url && (
+                            <img 
+                              src={template.logo_url} 
+                              alt="Logo" 
+                              className="object-contain"
+                              style={{
+                                width: `${template.logo_width}px`,
+                                height: `${template.logo_height}px`
+                              }}
+                            />
+                          )}
+                          {template?.company_name_show && organization?.name && (
+                            <div>
+                              <h1 
+                                className="font-bold leading-tight"
+                                style={{
+                                  fontSize: `${template.company_name_size}px`,
+                                  color: template.company_name_color || '#000000'
+                                }}
+                              >
+                                {organization.name}
+                              </h1>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="text-right" style={{ fontSize: `${template?.body_size || 10}px`, color: template?.text_color || '#000000' }}>
+                          {template?.company_address && (
+                            <div className="mb-1">{template.company_address}</div>
+                          )}
+                          <div className="mb-1">
+                            {template?.company_email && <div>Email: {template.company_email}</div>}
+                            {template?.company_phone && <div>Ph: {template.company_phone}</div>}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center mb-6" style={{ borderBottom: `2px solid ${template?.secondary_color || '#000000'}`, paddingBottom: '8px' }}>
+                        <h2 
+                          className="font-bold"
+                          style={{
+                            fontSize: `${template?.title_size || 24}px`,
+                            color: template?.primary_color || '#000000'
+                          }}
+                        >
+                          CHANGE ORDER
+                        </h2>
+                        
+                        <div className="text-right" style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                          <div className="mb-1">Change Order #: {template?.document_number || '1'}</div>
+                          <div className="mb-1">{new Date().toLocaleDateString()}</div>
+                          <div>Page: 1/1</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Secciones To: y Job: */}
+                  {(sectionStates.client || sectionStates.project) && (
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                      {sectionStates.client && (
+                        <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+                          <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                            To:
+                          </div>
+                          <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                            <div>Dr Samuel Johnstone</div>
+                            <div>28 Westview Drive</div>
+                            <div>North Vancouver, BC</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {sectionStates.project && (
+                        <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+                          <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                            Job:
+                          </div>
+                          <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                            <div>J1278 - Johnstone Family Custom Home</div>
+                            <div className="mt-2">
+                              <div>Start Date: ___________</div>
+                              <div>Delay Days: ___0___</div>
+                              <div className="text-xs italic">(Delay days are a reasonable estimate only)</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Sección Details */}
+                  {sectionStates.details && (
+                    <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px', marginBottom: '16px' }}>
+                      <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                        Details:
+                      </div>
+                      <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                        New Change Order
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Título de la tabla */}
+                  {sectionStates.table && (
+                    <div className="font-semibold mb-3" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                      Tasks and costs involved:
+                    </div>
+                  )}
+
+                  {/* Contenido del presupuesto */}
+                  <div className="space-y-4">
+                    {data.length === 0 ? (
+                      <p className="text-gray-500 text-center py-8">
+                        No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
+                      </p>
+                    ) : (
+                      <>
+                        {sectionStates.table && (
+                          <div className="overflow-x-auto">
+                            <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#000000'}` }}>
+                              <thead>
+                                <tr style={{ backgroundColor: '#f8f8f8' }}>
+                                  <th 
+                                    className="px-3 py-2 text-left font-normal"
+                                    style={{ 
+                                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                      color: template?.text_color || '#000000',
+                                      fontSize: `${template?.body_size || 11}px`,
+                                      width: '50%'
+                                    }}
+                                  >
+                                    Item Description
+                                  </th>
+                                  <th 
+                                    className="px-3 py-2 text-center font-normal"
+                                    style={{ 
+                                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                      color: template?.text_color || '#000000',
+                                      fontSize: `${template?.body_size || 11}px`,
+                                      width: '15%'
+                                    }}
+                                  >
+                                    Qty Unit
+                                  </th>
+                                  <th 
+                                    className="px-3 py-2 text-center font-normal"
+                                    style={{ 
+                                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                      color: template?.text_color || '#000000',
+                                      fontSize: `${template?.body_size || 11}px`,
+                                      width: '15%'
+                                    }}
+                                  >
+                                    Unit Price
+                                  </th>
+                                  <th 
+                                    className="px-3 py-2 text-right font-normal"
+                                    style={{ 
+                                      border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                      color: template?.text_color || '#000000',
+                                      fontSize: `${template?.body_size || 11}px`,
+                                      width: '20%'
+                                    }}
+                                  >
+                                    Sub Total (Ex)
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data.map((item, index) => (
+                                  <tr key={index} style={{ backgroundColor: '#ffffff' }}>
+                                    <td 
+                                      className="px-3 py-2"
+                                      style={{ 
+                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                        color: template?.text_color || '#000000',
+                                        fontSize: `${template?.body_size || 11}px`
+                                      }}
+                                    >
+                                      {item.name}
+                                    </td>
+                                    <td 
+                                      className="px-3 py-2 text-center"
+                                      style={{ 
+                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                        color: template?.text_color || '#000000',
+                                        fontSize: `${template?.body_size || 11}px`
+                                      }}
+                                    >
+                                      {item.amount} {item.unit_name}
+                                    </td>
+                                    <td 
+                                      className="px-3 py-2 text-center"
+                                      style={{ 
+                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                        color: template?.text_color || '#000000',
+                                        fontSize: `${template?.body_size || 11}px`
+                                      }}
+                                    >
+                                      ${item.unit_price?.toFixed(2) || '0.00'}
+                                    </td>
+                                    <td 
+                                      className="px-3 py-2 text-right"
+                                      style={{ 
+                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                        color: template?.text_color || '#000000',
+                                        fontSize: `${template?.body_size || 11}px`
+                                      }}
+                                    >
+                                      (${item.total_price?.toFixed(2) || '0.00'})
+                                    </td>
+                                  </tr>
+                                ))}
+                                
+                                {sectionStates.totals && (
+                                  <>
+                                    <tr>
+                                      <td colSpan={3} 
+                                        className="px-3 py-2 text-right font-semibold"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        Change Order Total (Ex):
+                                      </td>
+                                      <td 
+                                        className="px-3 py-2 text-right"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        (${calculateTotal().toFixed(2)})
+                                      </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                      <td colSpan={3} 
+                                        className="px-3 py-2 text-right font-semibold"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        Tax:
+                                      </td>
+                                      <td 
+                                        className="px-3 py-2 text-right"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        (${(calculateTotal() * 0.1).toFixed(2)})
+                                      </td>
+                                    </tr>
+                                    
+                                    <tr style={{ backgroundColor: '#f0f0f0' }}>
+                                      <td colSpan={3} 
+                                        className="px-3 py-2 text-right font-bold"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`
+                                        }}
+                                      >
+                                        Change Order Total (Incl. Tax):
+                                      </td>
+                                      <td 
+                                        className="px-3 py-2 text-right font-bold"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`
+                                        }}
+                                      >
+                                        (${(calculateTotal() * 1.1).toFixed(2)})
+                                      </td>
+                                    </tr>
+
+                                    <tr>
+                                      <td colSpan={4} style={{ padding: '10px', border: 'none' }}></td>
+                                    </tr>
+
+                                    <tr>
+                                      <td colSpan={3} 
+                                        className="px-3 py-2 text-right font-semibold"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        Current Contract Total (Incl. Tax):
+                                      </td>
+                                      <td 
+                                        className="px-3 py-2 text-right"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        $444,458.26
+                                      </td>
+                                    </tr>
+
+                                    <tr>
+                                      <td colSpan={3} 
+                                        className="px-3 py-2 text-right font-semibold"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        Proposed Contract Total (Incl. Tax):
+                                      </td>
+                                      <td 
+                                        className="px-3 py-2 text-right"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`,
+                                          backgroundColor: '#ffffff'
+                                        }}
+                                      >
+                                        $443,140.43
+                                      </td>
+                                    </tr>
+                                  </>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {sectionStates.signatures && (
+                          <div className="mt-8 space-y-4">
+                            <div 
+                              className="text-justify leading-relaxed"
+                              style={{ 
+                                fontSize: `${template?.body_size || 10}px`,
+                                color: template?.text_color || '#000000'
+                              }}
+                            >
+                              <p className="mb-3">
+                                I accept this change order and authorize works described above to be undertaken. I accept that this change order will form part of the contract 
+                                and agree to the adjusted contract total and any delay to the completion date as stated above.
+                              </p>
+                              
+                              <p>
+                                I also understand and accept that any increase or decrease in the price due to this change order will be due and included in either the next 
+                                payment or a future payment as set out in the contract payment schedule.
+                              </p>
+                            </div>
+
+                            <div 
+                              className="mt-6"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                padding: '12px',
+                                backgroundColor: '#f8f8f8'
+                              }}
+                            >
+                              <div 
+                                className="font-semibold mb-3"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 11}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Signed on behalf of client:
+                              </div>
+                              
+                              <div className="grid grid-cols-3 gap-6">
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    SIGNED: ________________________
+                                  </div>
+                                </div>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Name: ________________________
+                                  </div>
+                                </div>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Date: _____ / _____ / _____
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div 
+                              className="mt-4"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                padding: '12px',
+                                backgroundColor: '#f8f8f8'
+                              }}
+                            >
+                              <div 
+                                className="font-semibold mb-3"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 11}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Signed on behalf of {organization?.name || 'Buildact Builders'}
+                              </div>
+                              
+                              <div className="grid grid-cols-3 gap-6">
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    SIGNED: ________________________
+                                  </div>
+                                </div>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Name: ________________________
+                                  </div>
+                                </div>
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Date: _____ / _____ / _____
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer with buttons */}
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
           <Button
             type="button"
             variant="outline"
             onClick={handleGoToSettings}
             disabled={isExporting}
-            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary"
           >
             Configurar
           </Button>
@@ -304,7 +782,6 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
             variant="outline"
             onClick={onClose}
             disabled={isExporting}
-            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary"
           >
             Cancelar
           </Button>
@@ -312,520 +789,12 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
             type="button"
             onClick={handleExport}
             disabled={isExporting}
-            className="w-2/4 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Download className="w-4 h-4 mr-2" />
             {isExporting ? 'Exportando...' : 'Exportar PDF'}
           </Button>
         </div>
-      }
-    >
-      {/* Vista previa del PDF con proporción A4 exacta */}
-      <div className="w-full h-full overflow-auto bg-gray-100 p-6 flex justify-center">
-        {/* Hoja A4 con proporciones exactas (210mm x 297mm ratio = 0.707) */}
-        <div 
-          id="pdf-preview-content"
-          className="bg-white shadow-lg border border-gray-300"
-          style={{ 
-            width: '595px', // 210mm en pixels a 72 DPI
-            minHeight: '842px', // 297mm en pixels a 72 DPI
-            fontFamily: template?.font_family || 'Arial',
-            color: template?.text_color || '#000000',
-            backgroundColor: template?.background_color || '#ffffff'
-          }}
-        >
-          {/* Contenido del PDF simulando exactamente una hoja A4 */}
-          <div 
-            className="text-black"
-            style={{ 
-              padding: `${template?.margin_top || 48}px ${template?.margin_right || 48}px ${template?.margin_bottom || 48}px ${template?.margin_left || 48}px`
-            }}
-          >
-            {/* Header estilo Change Order */}
-            <div className="mb-6">
-              {/* Header superior con logo y datos de empresa */}
-              <div className="flex justify-between items-start mb-6">
-                {/* Logo y nombre de la empresa */}
-                <div className="flex items-center space-x-4">
-                  {template?.logo_url && (
-                    <img 
-                      src={template.logo_url} 
-                      alt="Logo" 
-                      className="object-contain"
-                      style={{
-                        width: `${template.logo_width}px`,
-                        height: `${template.logo_height}px`
-                      }}
-                    />
-                  )}
-                  {template?.company_name_show && organization?.name && (
-                    <div>
-                      <h1 
-                        className="font-bold leading-tight"
-                        style={{
-                          fontSize: `${template.company_name_size}px`,
-                          color: template.company_name_color || '#000000'
-                        }}
-                      >
-                        {organization.name}
-                      </h1>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Datos de la empresa (derecha) */}
-                <div className="text-right" style={{ fontSize: `${template?.body_size || 10}px`, color: template?.text_color || '#000000' }}>
-                  {template?.company_address && (
-                    <div className="mb-1">{template.company_address}</div>
-                  )}
-                  <div className="mb-1">
-                    {template?.company_email && <div>Email: {template.company_email}</div>}
-                    {template?.company_phone && <div>Ph: {template.company_phone}</div>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Título del documento y metadatos */}
-              <div className="flex justify-between items-center mb-6" style={{ borderBottom: `2px solid ${template?.secondary_color || '#000000'}`, paddingBottom: '8px' }}>
-                <h2 
-                  className="font-bold"
-                  style={{
-                    fontSize: `${template?.title_size || 24}px`,
-                    color: template?.primary_color || '#000000'
-                  }}
-                >
-                  CHANGE ORDER
-                </h2>
-                
-                <div className="text-right" style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                  <div className="mb-1">Change Order #: {template?.document_number || '1'}</div>
-                  <div className="mb-1">{new Date().toLocaleDateString()}</div>
-                  <div>Page: 1/1</div>
-                </div>
-              </div>
-
-              {/* Secciones To: y Job: */}
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                {/* Sección To: (Cliente) */}
-                <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
-                  <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-                    To:
-                  </div>
-                  <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                    <div>Dr Samuel Johnstone</div>
-                    <div>28 Westview Drive</div>
-                    <div>North Vancouver, BC</div>
-                  </div>
-                </div>
-
-                {/* Sección Job: (Proyecto) */}
-                <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
-                  <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-                    Job:
-                  </div>
-                  <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                    <div>J1278 - Johnstone Family Custom Home</div>
-                    <div className="mt-2">
-                      <div>Start Date: ___________</div>
-                      <div>Delay Days: ___0___</div>
-                      <div className="text-xs italic">(Delay days are a reasonable estimate only)</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sección Details */}
-              <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px', marginBottom: '16px' }}>
-                <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-                  Details:
-                </div>
-                <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                  New Change Order
-                </div>
-              </div>
-
-              {/* Título de la tabla */}
-              <div className="font-semibold mb-3" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-                Tasks and costs involved:
-              </div>
-            </div>
-
-            {/* Contenido del presupuesto */}
-            <div className="space-y-4">
-              {data.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
-                  No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
-                </p>
-              ) : (
-                <>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#000000'}` }}>
-                      <thead>
-                        <tr style={{ backgroundColor: '#f8f8f8' }}>
-                          <th 
-                            className="px-3 py-2 text-left font-normal"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              width: '50%'
-                            }}
-                          >
-                            Item Description
-                          </th>
-                          <th 
-                            className="px-3 py-2 text-center font-normal"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              width: '15%'
-                            }}
-                          >
-                            Qty Unit
-                          </th>
-                          <th 
-                            className="px-3 py-2 text-center font-normal"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              width: '15%'
-                            }}
-                          >
-                            Unit Price
-                          </th>
-                          <th 
-                            className="px-3 py-2 text-right font-normal"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              width: '20%'
-                            }}
-                          >
-                            Sub Total (Ex)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {data.map((item, index) => (
-                          <tr key={index} style={{ backgroundColor: '#ffffff' }}>
-                            <td 
-                              className="px-3 py-2"
-                              style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 11}px`
-                              }}
-                            >
-                              {item.name}
-                            </td>
-                            <td 
-                              className="px-3 py-2 text-center"
-                              style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 11}px`
-                              }}
-                            >
-                              {item.amount} {item.unit_name}
-                            </td>
-                            <td 
-                              className="px-3 py-2 text-center"
-                              style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 11}px`
-                              }}
-                            >
-                              ${item.unit_price?.toFixed(2) || '0.00'}
-                            </td>
-                            <td 
-                              className="px-3 py-2 text-right"
-                              style={{ 
-                                border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                color: template?.text_color || '#000000',
-                                fontSize: `${template?.body_size || 11}px`
-                              }}
-                            >
-                              (${item.total_price?.toFixed(2) || '0.00'})
-                            </td>
-                          </tr>
-                        ))}
-                        
-                        {/* Filas de totales como en la imagen */}
-                        <tr>
-                          <td colSpan={3} 
-                            className="px-3 py-2 text-right font-semibold"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            Change Order Total (Ex):
-                          </td>
-                          <td 
-                            className="px-3 py-2 text-right"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            (${calculateTotal().toFixed(2)})
-                          </td>
-                        </tr>
-                        
-                        <tr>
-                          <td colSpan={3} 
-                            className="px-3 py-2 text-right font-semibold"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            Tax:
-                          </td>
-                          <td 
-                            className="px-3 py-2 text-right"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            (${(calculateTotal() * 0.1).toFixed(2)})
-                          </td>
-                        </tr>
-                        
-                        <tr style={{ backgroundColor: '#f0f0f0' }}>
-                          <td colSpan={3} 
-                            className="px-3 py-2 text-right font-bold"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`
-                            }}
-                          >
-                            Change Order Total (Incl. Tax):
-                          </td>
-                          <td 
-                            className="px-3 py-2 text-right font-bold"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`
-                            }}
-                          >
-                            (${(calculateTotal() * 1.1).toFixed(2)})
-                          </td>
-                        </tr>
-
-                        {/* Espaciador */}
-                        <tr>
-                          <td colSpan={4} style={{ padding: '10px', border: 'none' }}></td>
-                        </tr>
-
-                        {/* Totales del contrato */}
-                        <tr>
-                          <td colSpan={3} 
-                            className="px-3 py-2 text-right font-semibold"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            Current Contract Total (Incl. Tax):
-                          </td>
-                          <td 
-                            className="px-3 py-2 text-right"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            $444,458.26
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td colSpan={3} 
-                            className="px-3 py-2 text-right font-semibold"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            Proposed Contract Total (Incl. Tax):
-                          </td>
-                          <td 
-                            className="px-3 py-2 text-right"
-                            style={{ 
-                              border: `1px solid ${template?.secondary_color || '#000000'}`,
-                              color: template?.text_color || '#000000',
-                              fontSize: `${template?.body_size || 11}px`,
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            $443,140.43
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Texto legal y sección de firmas */}
-                  <div className="mt-8 space-y-4">
-                    {/* Texto de aceptación */}
-                    <div 
-                      className="text-justify leading-relaxed"
-                      style={{ 
-                        fontSize: `${template?.body_size || 10}px`,
-                        color: template?.text_color || '#000000'
-                      }}
-                    >
-                      <p className="mb-3">
-                        I accept this change order and authorize works described above to be undertaken. I accept that this change order will form part of the contract 
-                        and agree to the adjusted contract total and any delay to the completion date as stated above.
-                      </p>
-                      
-                      <p>
-                        I also understand and accept that any increase or decrease in the price due to this change order will be due and included in either the next 
-                        payment or a future payment as set out in the contract payment schedule.
-                      </p>
-                    </div>
-
-                    {/* Sección de firmas del cliente */}
-                    <div 
-                      className="mt-6"
-                      style={{ 
-                        border: `1px solid ${template?.secondary_color || '#000000'}`,
-                        padding: '12px',
-                        backgroundColor: '#f8f8f8'
-                      }}
-                    >
-                      <div 
-                        className="font-semibold mb-3"
-                        style={{ 
-                          fontSize: `${template?.body_size || 11}px`,
-                          color: template?.text_color || '#000000'
-                        }}
-                      >
-                        Signed on behalf of client:
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-6">
-                        <div>
-                          <div 
-                            className="mb-1"
-                            style={{ 
-                              fontSize: `${template?.body_size || 10}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            SIGNED: ________________________
-                          </div>
-                        </div>
-                        <div>
-                          <div 
-                            className="mb-1"
-                            style={{ 
-                              fontSize: `${template?.body_size || 10}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            Name: ________________________
-                          </div>
-                        </div>
-                        <div>
-                          <div 
-                            className="mb-1"
-                            style={{ 
-                              fontSize: `${template?.body_size || 10}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            Date: _____ / _____ / _____
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Sección de firmas de la empresa */}
-                    <div 
-                      className="mt-4"
-                      style={{ 
-                        border: `1px solid ${template?.secondary_color || '#000000'}`,
-                        padding: '12px',
-                        backgroundColor: '#f8f8f8'
-                      }}
-                    >
-                      <div 
-                        className="font-semibold mb-3"
-                        style={{ 
-                          fontSize: `${template?.body_size || 11}px`,
-                          color: template?.text_color || '#000000'
-                        }}
-                      >
-                        Signed on behalf of {organization?.name || 'Buildact Builders'}
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-6">
-                        <div>
-                          <div 
-                            className="mb-1"
-                            style={{ 
-                              fontSize: `${template?.body_size || 10}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            SIGNED: ________________________
-                          </div>
-                        </div>
-                        <div>
-                          <div 
-                            className="mb-1"
-                            style={{ 
-                              fontSize: `${template?.body_size || 10}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            Name: ________________________
-                          </div>
-                        </div>
-                        <div>
-                          <div 
-                            className="mb-1"
-                            style={{ 
-                              fontSize: `${template?.body_size || 10}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            Date: _____ / _____ / _____
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
-    </ModernModal>
+    </div>
   );
 }
