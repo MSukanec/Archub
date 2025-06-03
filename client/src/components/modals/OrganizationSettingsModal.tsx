@@ -471,10 +471,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">
-                      <Mail className="w-4 h-4 inline mr-1" />
-                      Email
-                    </FormLabel>
+                    <FormLabel className="text-xs font-medium text-foreground">Email</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -492,10 +489,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                 name="website"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">
-                      <Globe className="w-4 h-4 inline mr-1" />
-                      Sitio Web
-                    </FormLabel>
+                    <FormLabel className="text-xs font-medium text-foreground">Sitio Web</FormLabel>
                     <FormControl>
                       <Input
                         {...field}

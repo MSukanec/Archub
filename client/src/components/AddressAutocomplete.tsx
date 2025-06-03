@@ -142,6 +142,12 @@ export default function AddressAutocomplete({
           setLng(lng);
           onCoordinatesChange(lat, lng);
 
+          // Limpiar campos anteriores antes de llenar nuevos datos
+          if (onCityChange) onCityChange('');
+          if (onZipCodeChange) onZipCodeChange('');
+          if (onStateChange) onStateChange('');
+          if (onCountryChange) onCountryChange('');
+
           // Extraer información de address_components
           extractAddressComponents(place.address_components || []);
         });
