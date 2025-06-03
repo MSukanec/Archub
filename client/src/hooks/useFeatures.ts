@@ -42,20 +42,56 @@ export function useUserPlan() {
     queryFn: async () => {
       if (!user?.id) return null;
       
-      const { data, error } = await supabase
-        .from('users')
-        .select(`
-          *,
-          plan:plans(*)
-        `)
-        .eq('auth_id', user.id)
-        .single();
+      try {
+        // Try using the new is_admin RPC function to avoid recursion
+        const { data: isAdminResult, error: adminError } = await supabase
+          .rpc('is_admin');
+        
+        if (!adminError && isAdminResult) {
+          // User is admin, use RPC to get user data
+          const { data: userData, error: userError } = await supabase
+            .rpc('get_users_for_admin');
+          
+          if (!userError && userData && Array.isArray(userData)) {
+            const currentUser = userData.find(u => u.auth_id === user.id);
+            if (currentUser) {
+              // Get plan data
+              const { data: planData } = await supabase
+                .from('plans')
+                .select('*')
+                .eq('id', currentUser.plan_id)
+                .single();
+              
+              return {
+                ...currentUser,
+                plan: planData
+              };
+            }
+          }
+        }
+        
+        // For regular users or fallback
+        const { data, error } = await supabase
+          .from('users')
+          .select(`
+            *,
+            plan:plans(*)
+          `)
+          .eq('auth_id', user.id)
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          console.error('Error fetching user plan:', error);
+          return null;
+        }
+        return data;
+      } catch (err) {
+        console.error('Error in useUserPlan:', err);
+        return null;
+      }
     },
     enabled: !!user?.id,
-    staleTime: 0, // Sin cache para detectar cambios de plan inmediatamente
+    staleTime: 0,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     retry: 1,
