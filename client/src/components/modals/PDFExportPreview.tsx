@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import ModernModal from '@/components/ui/ModernModal';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;
@@ -88,19 +90,43 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Generate HTML content for PDF
-      const htmlBlob = generatePDFContent();
-      const url = URL.createObjectURL(htmlBlob);
-      
-      // Create download link for HTML file (which can be printed as PDF)
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.html`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      URL.revokeObjectURL(url);
+      // Get the PDF preview element
+      const element = document.getElementById('pdf-preview-content');
+      if (!element) {
+        throw new Error('PDF preview content not found');
+      }
+
+      // Convert the element to canvas
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      });
+
+      // Create PDF with A4 dimensions
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      // Add the first page
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Add additional pages if content is too long
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Download the PDF
+      pdf.save(`${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
       onClose();
     } catch (error) {
       console.error('Error exporting PDF:', error);
@@ -288,18 +314,25 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
       <div className="w-full h-full overflow-auto bg-gray-100 p-6 flex justify-center">
         {/* Hoja A4 con proporciones exactas (210mm x 297mm ratio = 0.707) */}
         <div 
+          id="pdf-preview-content"
           className="bg-white shadow-lg border border-gray-300"
           style={{ 
             width: '595px', // 210mm en pixels a 72 DPI
             minHeight: '842px', // 297mm en pixels a 72 DPI
             fontFamily: template?.font_family || 'Arial',
-            color: '#000000'
+            color: template?.text_color || '#000000',
+            backgroundColor: template?.background_color || '#ffffff'
           }}
         >
           {/* Contenido del PDF simulando exactamente una hoja A4 */}
-          <div className="p-12 text-black">
+          <div 
+            className="text-black"
+            style={{ 
+              padding: `${template?.margin_top || 48}px ${template?.margin_right || 48}px ${template?.margin_bottom || 48}px ${template?.margin_left || 48}px`
+            }}
+          >
             {/* Header del PDF */}
-            <div className="mb-8 pb-4 border-b border-gray-300">
+            <div className="mb-8 pb-4" style={{ borderBottom: `1px solid ${template?.secondary_color || '#cccccc'}` }}>
               <div className="flex items-center justify-between mb-4">
                 {template?.logo_url && (
                   <img 
@@ -314,10 +347,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 )}
                 {template?.company_name_show && organization?.name && (
                   <h1 
-                    className="font-bold text-black"
+                    className="font-bold"
                     style={{
                       fontSize: `${template.company_name_size}px`,
-                      color: '#000000'
+                      color: template.company_name_color || '#000000'
                     }}
                   >
                     {organization.name}
@@ -325,14 +358,20 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 )}
               </div>
               <h2 
-                className="font-semibold text-black mb-2"
+                className="font-semibold mb-2"
                 style={{
-                  fontSize: `${template?.title_size || 18}px`
+                  fontSize: `${template?.title_size || 18}px`,
+                  color: template?.primary_color || '#000000'
                 }}
               >
                 {title}
               </h2>
-              <p className="text-gray-600 text-sm">
+              <p 
+                style={{
+                  color: template?.text_color || '#666666',
+                  fontSize: `${template?.body_size || 12}px`
+                }}
+              >
                 Fecha: {new Date().toLocaleDateString()}
               </p>
             </div>
@@ -346,44 +385,132 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               ) : (
                 <>
                   <div className="overflow-x-auto">
-                    <table className="w-full border-collapse border border-gray-400">
+                    <table className="w-full border-collapse" style={{ border: `1px solid ${template?.secondary_color || '#666666'}` }}>
                       <thead>
-                        <tr className="bg-gray-100">
-                          <th className="border border-gray-400 px-3 py-2 text-left text-black font-semibold">Descripción</th>
-                          <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Cantidad</th>
-                          <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Precio Unit.</th>
-                          <th className="border border-gray-400 px-3 py-2 text-right text-black font-semibold">Total</th>
+                        <tr style={{ backgroundColor: template?.secondary_color || '#f0f0f0' }}>
+                          <th 
+                            className="px-3 py-2 text-left font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.subtitle_size || 14}px`
+                            }}
+                          >
+                            Descripción
+                          </th>
+                          <th 
+                            className="px-3 py-2 text-center font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.subtitle_size || 14}px`
+                            }}
+                          >
+                            Cantidad
+                          </th>
+                          <th 
+                            className="px-3 py-2 text-center font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.subtitle_size || 14}px`
+                            }}
+                          >
+                            Precio Unit.
+                          </th>
+                          <th 
+                            className="px-3 py-2 text-right font-semibold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.subtitle_size || 14}px`
+                            }}
+                          >
+                            Total
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {data.map((item, index) => (
-                          <tr key={index} className="bg-white">
-                            <td className="border border-gray-400 px-3 py-2 text-black">
+                          <tr key={index} style={{ backgroundColor: template?.background_color || '#ffffff' }}>
+                            <td 
+                              className="px-3 py-2"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                color: template?.text_color || '#000000'
+                              }}
+                            >
                               <div>
-                                <div className="font-medium">{item.name}</div>
+                                <div className="font-medium" style={{ fontSize: `${template?.body_size || 12}px` }}>
+                                  {item.name}
+                                </div>
                                 {item.description && (
-                                  <div className="text-sm text-gray-600">{item.description}</div>
+                                  <div 
+                                    className="text-sm"
+                                    style={{ 
+                                      color: template?.text_color || '#666666',
+                                      fontSize: `${(template?.body_size || 12) - 2}px`
+                                    }}
+                                  >
+                                    {item.description}
+                                  </div>
                                 )}
                               </div>
                             </td>
-                            <td className="border border-gray-400 px-3 py-2 text-center text-black">
+                            <td 
+                              className="px-3 py-2 text-center"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 12}px`
+                              }}
+                            >
                               {item.amount} {item.unit_name}
                             </td>
-                            <td className="border border-gray-400 px-3 py-2 text-center text-black">
+                            <td 
+                              className="px-3 py-2 text-center"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 12}px`
+                              }}
+                            >
                               ${item.unit_price?.toFixed(2) || '0.00'}
                             </td>
-                            <td className="border border-gray-400 px-3 py-2 text-right text-black font-medium">
+                            <td 
+                              className="px-3 py-2 text-right font-medium"
+                              style={{ 
+                                border: `1px solid ${template?.secondary_color || '#666666'}`,
+                                color: template?.text_color || '#000000',
+                                fontSize: `${template?.body_size || 12}px`
+                              }}
+                            >
                               ${item.total_price?.toFixed(2) || '0.00'}
                             </td>
                           </tr>
                         ))}
                       </tbody>
                       <tfoot>
-                        <tr className="bg-gray-50">
-                          <td colSpan={3} className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
+                        <tr style={{ backgroundColor: template?.primary_color || '#f8f8f8' }}>
+                          <td 
+                            colSpan={3} 
+                            className="px-3 py-2 text-right font-bold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.subtitle_size || 14}px`
+                            }}
+                          >
                             Total General:
                           </td>
-                          <td className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
+                          <td 
+                            className="px-3 py-2 text-right font-bold"
+                            style={{ 
+                              border: `1px solid ${template?.secondary_color || '#666666'}`,
+                              color: template?.text_color || '#000000',
+                              fontSize: `${template?.subtitle_size || 14}px`
+                            }}
+                          >
                             ${calculateTotal().toFixed(2)}
                           </td>
                         </tr>
@@ -393,8 +520,25 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
                   {/* Footer */}
                   {template?.footer_text && (
-                    <div className="mt-8 pt-4 border-t border-gray-300 text-sm text-gray-600">
+                    <div 
+                      className="mt-8 pt-4"
+                      style={{ 
+                        borderTop: `1px solid ${template?.secondary_color || '#cccccc'}`,
+                        color: template?.text_color || '#666666',
+                        fontSize: `${template?.body_size || 12}px`
+                      }}
+                    >
                       {template.footer_text}
+                      {template?.footer_show_date && (
+                        <div className="mt-2">
+                          Generado el: {new Date().toLocaleDateString()}
+                        </div>
+                      )}
+                      {template?.footer_show_page_numbers && (
+                        <div className="mt-2 text-center">
+                          Página 1 de 1
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
