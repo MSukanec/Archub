@@ -522,7 +522,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         {sectionStates.details && (
           <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px', marginBottom: '16px' }}>
             <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-              Details:
+              Detalles:
             </div>
             <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
               {pdfParams.description}
@@ -533,7 +533,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         {/* Título de la tabla */}
         {sectionStates.table && (
           <div className="font-semibold mb-3" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-            Tasks and costs involved:
+            Tareas y costos involucrados:
           </div>
         )}
 
@@ -559,7 +559,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             width: pdfParams.showUnitColumn && pdfParams.showPriceColumn ? '50%' : '70%'
                           }}
                         >
-                          Item Description
+                          Descripción del Artículo
                         </th>
                         {pdfParams.showUnitColumn && (
                           <th 
@@ -571,7 +571,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               width: '15%'
                             }}
                           >
-                            Qty Unit
+                            Cant. Unidad
                           </th>
                         )}
                         {pdfParams.showPriceColumn && (
@@ -584,7 +584,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               width: '15%'
                             }}
                           >
-                            Unit Price
+                            Precio Unitario
                           </th>
                         )}
                         <th 
@@ -596,7 +596,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             width: '20%'
                           }}
                         >
-                          Sub Total (Ex)
+                          Subtotal (Sin IVA)
                         </th>
                       </tr>
                     </thead>
@@ -1051,7 +1051,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <div>
                               <label className="text-xs font-medium">Descripción</label>
                               <textarea 
-                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded bg-background text-foreground" 
                                 rows={3}
                                 value={pdfParams.description}
                                 onChange={(e) => setPdfParams(prev => ({ ...prev, description: e.target.value }))}
@@ -1105,7 +1105,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <div>
                               <label className="text-xs font-medium">Texto del Pie</label>
                               <textarea 
-                                className="w-full mt-1 px-2 py-1 text-xs border rounded" 
+                                className="w-full mt-1 px-2 py-1 text-xs border rounded bg-background text-foreground" 
                                 rows={2}
                                 defaultValue={template?.footer_text || ''}
                               />
