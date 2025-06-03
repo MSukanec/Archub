@@ -18,7 +18,8 @@ export default function DefaultTemplate({
   data,
   type,
   getGridCols,
-  calculateTotal
+  calculateTotal,
+  zoomLevel
 }: DefaultTemplateProps) {
   return (
     <div 
@@ -30,7 +31,7 @@ export default function DefaultTemplate({
         fontFamily: 'Arial',
         color: '#000000',
         backgroundColor: '#ffffff',
-        transform: 'scale(0.7)',
+        transform: `scale(${zoomLevel})`,
         transformOrigin: 'top center',
         overflow: 'hidden'
       }}

@@ -9,6 +9,7 @@ interface ModernTemplateProps {
   type: 'budget' | 'materials';
   getGridCols: () => string;
   calculateTotal: () => number;
+  zoomLevel: number;
 }
 
 export default function ModernTemplate({
@@ -19,22 +20,24 @@ export default function ModernTemplate({
   data,
   type,
   getGridCols,
-  calculateTotal
+  calculateTotal,
+  zoomLevel
 }: ModernTemplateProps) {
   return (
     <div 
       id="pdf-preview-content"
-      className="bg-white p-8 min-h-[1123px] w-[794px] mx-auto"
+      className="bg-white shadow-lg border border-gray-300"
       style={{ 
+        width: '210mm',
+        height: '297mm',
         fontFamily: template?.font_family || 'Arial',
         fontSize: `${template?.body_size || 12}px`,
         lineHeight: '1.5',
         color: template?.text_color || '#000000',
         backgroundColor: template?.background_color || '#ffffff',
-        marginTop: `${template?.margin_top || 20}px`,
-        marginBottom: `${template?.margin_bottom || 20}px`,
-        marginLeft: `${template?.margin_left || 20}px`,
-        marginRight: `${template?.margin_right || 20}px`
+        transform: `scale(${zoomLevel})`,
+        transformOrigin: 'top center',
+        overflow: 'hidden'
       }}
     >
       {/* Header Section */}

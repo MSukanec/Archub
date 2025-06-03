@@ -455,6 +455,147 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         }
                       </div>
                     </div>
+                    
+                    {/* Accordion Content */}
+                    {activeAccordion === section.id && (
+                      <div className="p-4 bg-surface border-t border-border space-y-3">
+                        {section.id === 'project' && (
+                          <>
+                            <div>
+                              <label className="text-xs font-medium mb-1 block">Código del Proyecto</label>
+                              <input
+                                type="text"
+                                value={pdfParams.projectCode}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, projectCode: e.target.value }))}
+                                className="w-full p-2 text-xs border border-border rounded bg-background"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium mb-1 block">Nombre del Proyecto</label>
+                              <input
+                                type="text"
+                                value={pdfParams.projectName}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, projectName: e.target.value }))}
+                                className="w-full p-2 text-xs border border-border rounded bg-background"
+                              />
+                            </div>
+                          </>
+                        )}
+                        
+                        {section.id === 'details' && (
+                          <div>
+                            <label className="text-xs font-medium mb-1 block">Descripción</label>
+                            <textarea
+                              value={pdfParams.description}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, description: e.target.value }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background h-20 resize-none"
+                              placeholder="Descripción del proyecto o cambios realizados"
+                            />
+                          </div>
+                        )}
+                        
+                        {section.id === 'table' && (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium">Mostrar Columna de Unidades</label>
+                              <Switch
+                                checked={pdfParams.showUnitColumn}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showUnitColumn: checked }))}
+                                className="data-[state=checked]:bg-primary"
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium">Mostrar Columna de Precios</label>
+                              <Switch
+                                checked={pdfParams.showPriceColumn}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPriceColumn: checked }))}
+                                className="data-[state=checked]:bg-primary"
+                              />
+                            </div>
+                          </>
+                        )}
+                        
+                        {section.id === 'totals' && (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium">Mostrar Cálculo de Impuestos</label>
+                              <Switch
+                                checked={pdfParams.showTaxCalculation}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showTaxCalculation: checked }))}
+                                className="data-[state=checked]:bg-primary"
+                              />
+                            </div>
+                            {pdfParams.showTaxCalculation && (
+                              <div>
+                                <label className="text-xs font-medium mb-1 block">Tasa de Impuesto (%)</label>
+                                <input
+                                  type="number"
+                                  value={pdfParams.taxRate}
+                                  onChange={(e) => setPdfParams(prev => ({ ...prev, taxRate: Number(e.target.value) }))}
+                                  className="w-full p-2 text-xs border border-border rounded bg-background"
+                                  min="0"
+                                  max="100"
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
+                        
+                        {section.id === 'signatures' && (
+                          <>
+                            <div>
+                              <label className="text-xs font-medium mb-1 block">Texto de Firma</label>
+                              <input
+                                type="text"
+                                value={pdfParams.signatureText}
+                                onChange={(e) => setPdfParams(prev => ({ ...prev, signatureText: e.target.value }))}
+                                className="w-full p-2 text-xs border border-border rounded bg-background"
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium">Campo de Aclaración</label>
+                              <Switch
+                                checked={pdfParams.showClarificationField}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showClarificationField: checked }))}
+                                className="data-[state=checked]:bg-primary"
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium">Campo de Fecha</label>
+                              <Switch
+                                checked={pdfParams.showDateField}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showDateField: checked }))}
+                                className="data-[state=checked]:bg-primary"
+                              />
+                            </div>
+                          </>
+                        )}
+                        
+                        {section.id === 'footer' && (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium">Mostrar Información del Pie</label>
+                              <Switch
+                                checked={pdfParams.showFooterInfo}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showFooterInfo: checked }))}
+                                className="data-[state=checked]:bg-primary"
+                              />
+                            </div>
+                            {pdfParams.showFooterInfo && (
+                              <div>
+                                <label className="text-xs font-medium mb-1 block">Texto del Pie</label>
+                                <input
+                                  type="text"
+                                  value={pdfParams.footerInfo}
+                                  onChange={(e) => setPdfParams(prev => ({ ...prev, footerInfo: e.target.value }))}
+                                  className="w-full p-2 text-xs border border-border rounded bg-background"
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
