@@ -536,8 +536,8 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                     <FormLabel className="text-xs font-medium text-foreground">Logo de la Organización</FormLabel>
                     <FormControl>
                       <FileUpload
-                        bucket="organization-logo"
-                        folder="logos"
+                        bucket="project-logo"
+                        folder="organization-logos"
                         value={field.value}
                         onChange={field.onChange}
                         accept="image/*"
