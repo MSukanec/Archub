@@ -54,12 +54,20 @@ interface PDFTemplate {
   signature_text?: string;
   company_info_size?: number;
   show_signature_fields?: boolean;
+  show_clarification_field?: boolean;
+  show_date_field?: boolean;
   signature_layout?: 'vertical' | 'horizontal';
 }
 
 export default function PDFExportPreview({ isOpen, onClose, title, data, type }: PDFExportPreviewProps) {
   const { organizationId } = useUserContextStore();
   const { setSection, setView } = useNavigationStore();
+
+  // Función auxiliar para obtener el número de columnas según los campos habilitados
+  const getGridCols = () => {
+    const enabledFields = [true, pdfParams.showClarificationField, pdfParams.showDateField].filter(Boolean).length;
+    return enabledFields === 1 ? 'grid-cols-1' : enabledFields === 2 ? 'grid-cols-2' : 'grid-cols-3';
+  };
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isExporting, setIsExporting] = useState(false);
@@ -93,6 +101,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     companyInfoSize: 10,
     signatureText: 'Acepto esta orden de cambio y autorizo los trabajos descritos anteriormente. Acepto que esta orden de cambio formará parte del contrato y acepto el total del contrato ajustado y cualquier retraso en la fecha de finalización como se indica anteriormente.',
     showSignatureFields: true,
+    showClarificationField: true,
+    showDateField: true,
     signatureLayout: 'vertical' as 'vertical' | 'horizontal'
   });
 
@@ -182,6 +192,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         signature_text: pdfParams.signatureText,
         company_info_size: pdfParams.companyInfoSize,
         show_signature_fields: pdfParams.showSignatureFields,
+        show_clarification_field: pdfParams.showClarificationField,
+        show_date_field: pdfParams.showDateField,
         signature_layout: pdfParams.signatureLayout
       };
 
@@ -786,27 +798,27 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               >
                                 Firma: ________________________
                               </div>
-                              {pdfParams.showSignatureFields && (
-                                <>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Aclaración: ________________________
-                                  </div>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Fecha: _____ / _____ / _____
-                                  </div>
-                                </>
+                              {pdfParams.showClarificationField && (
+                                <div 
+                                  className="mb-1"
+                                  style={{ 
+                                    fontSize: `${template?.body_size || 10}px`,
+                                    color: template?.text_color || '#000000'
+                                  }}
+                                >
+                                  Aclaración: ________________________
+                                </div>
+                              )}
+                              {pdfParams.showDateField && (
+                                <div 
+                                  className="mb-1"
+                                  style={{ 
+                                    fontSize: `${template?.body_size || 10}px`,
+                                    color: template?.text_color || '#000000'
+                                  }}
+                                >
+                                  Fecha: _____ / _____ / _____
+                                </div>
                               )}
                             </div>
                           </div>
@@ -830,33 +842,33 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               >
                                 Firma: ________________________
                               </div>
-                              {pdfParams.showSignatureFields && (
-                                <>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Aclaración: ________________________
-                                  </div>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Fecha: _____ / _____ / _____
-                                  </div>
-                                </>
+                              {pdfParams.showClarificationField && (
+                                <div 
+                                  className="mb-1"
+                                  style={{ 
+                                    fontSize: `${template?.body_size || 10}px`,
+                                    color: template?.text_color || '#000000'
+                                  }}
+                                >
+                                  Aclaración: ________________________
+                                </div>
+                              )}
+                              {pdfParams.showDateField && (
+                                <div 
+                                  className="mb-1"
+                                  style={{ 
+                                    fontSize: `${template?.body_size || 10}px`,
+                                    color: template?.text_color || '#000000'
+                                  }}
+                                >
+                                  Fecha: _____ / _____ / _____
+                                </div>
                               )}
                             </div>
                           </div>
                         </div>
                       ) : (
-                        // Layout vertical - firmas una debajo de otra
+                        // Layout vertical - firmas una debajo de otra, campos horizontales
                         <>
                           {pdfParams.showClientSignature && (
                             <div className="mb-6">
@@ -869,18 +881,20 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               >
                                 Firma del cliente:
                               </div>
-                              <div className="space-y-2">
-                                <div 
-                                  className="mb-1"
-                                  style={{ 
-                                    fontSize: `${template?.body_size || 10}px`,
-                                    color: template?.text_color || '#000000'
-                                  }}
-                                >
-                                  Firma: ________________________
+                              <div className="grid grid-cols-3 gap-6">
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Firma: ________________________
+                                  </div>
                                 </div>
-                                {pdfParams.showSignatureFields && (
-                                  <>
+                                {pdfParams.showClarificationField && (
+                                  <div>
                                     <div 
                                       className="mb-1"
                                       style={{ 
@@ -890,6 +904,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                     >
                                       Aclaración: ________________________
                                     </div>
+                                  </div>
+                                )}
+                                {pdfParams.showDateField && (
+                                  <div>
                                     <div 
                                       className="mb-1"
                                       style={{ 
@@ -899,7 +917,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                     >
                                       Fecha: _____ / _____ / _____
                                     </div>
-                                  </>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -916,18 +934,20 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               >
                                 Firma de {organization?.name || 'Empresa'}:
                               </div>
-                              <div className="space-y-2">
-                                <div 
-                                  className="mb-1"
-                                  style={{ 
-                                    fontSize: `${template?.body_size || 10}px`,
-                                    color: template?.text_color || '#000000'
-                                  }}
-                                >
-                                  Firma: ________________________
+                              <div className="grid grid-cols-3 gap-6">
+                                <div>
+                                  <div 
+                                    className="mb-1"
+                                    style={{ 
+                                      fontSize: `${template?.body_size || 10}px`,
+                                      color: template?.text_color || '#000000'
+                                    }}
+                                  >
+                                    Firma: ________________________
+                                  </div>
                                 </div>
-                                {pdfParams.showSignatureFields && (
-                                  <>
+                                {pdfParams.showClarificationField && (
+                                  <div>
                                     <div 
                                       className="mb-1"
                                       style={{ 
@@ -937,6 +957,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                     >
                                       Aclaración: ________________________
                                     </div>
+                                  </div>
+                                )}
+                                {pdfParams.showDateField && (
+                                  <div>
                                     <div 
                                       className="mb-1"
                                       style={{ 
@@ -946,7 +970,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                     >
                                       Fecha: _____ / _____ / _____
                                     </div>
-                                  </>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -1220,10 +1244,18 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                               />
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-medium">Mostrar Campos de Nombre y Fecha</span>
+                              <span className="text-xs font-medium">Mostrar Campo Aclaración</span>
                               <Switch 
-                                checked={pdfParams.showSignatureFields}
-                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showSignatureFields: checked }))}
+                                checked={pdfParams.showClarificationField}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showClarificationField: checked }))}
+                                className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Mostrar Campo Fecha</span>
+                              <Switch 
+                                checked={pdfParams.showDateField}
+                                onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showDateField: checked }))}
                                 className="data-[state=checked]:bg-primary [&>span]:data-[state=checked]:bg-white" 
                               />
                             </div>
