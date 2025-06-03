@@ -94,257 +94,175 @@ export default function TechnicalTemplate({
 
         {/* Información del proyecto y detalles en grid */}
         {sectionStates.project && (
-          <>
-            <div className="grid grid-cols-2 gap-8 mb-6">
-              {/* Columna izquierda */}
-              <div>
-                <div className="mb-4">
-                  <div className="text-xs font-semibold mb-1">Proyecto</div>
-                  <div className="text-sm">{pdfParams.projectCode}</div>
-                  <div className="text-sm">{pdfParams.projectName}</div>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="text-xs font-semibold mb-1">Monto Debido</div>
-                  <div className="text-sm font-bold">${calculateTotal().toFixed(2)}</div>
-                </div>
-              </div>
-
-              {/* Columna derecha */}
-              <div>
-                <div className="mb-4">
-                  <div className="text-xs font-semibold mb-1">Contacto</div>
-                  <div className="text-sm">{organization?.website || 'www.empresa.com'}</div>
-                  <div className="text-sm">{organization?.phone || 'Teléfono'}</div>
-                  <div className="text-sm">{organization?.email || 'Email'}</div>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="text-xs font-semibold mb-1">Fecha de Vencimiento</div>
-                  <div className="text-sm">{new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString()}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Segunda línea separadora */}
-            <div className="border-b border-gray-300 mb-6"></div>
-          </>
-        )}
-
-        {/* Información adicional en grid */}
-        {sectionStates.details && (
-          <>
-            <div className="grid grid-cols-2 gap-8 mb-6">
-              <div>
-                <div className="text-xs font-semibold mb-1">Presupuesto Para</div>
-                <div className="text-sm">Cliente</div>
-                <div className="text-sm">Dirección del Proyecto</div>
-                <div className="text-sm">Ciudad, Código Postal</div>
-              </div>
-              
-              <div>
-                <div className="text-xs font-semibold mb-1">Enviado A</div>
-                <div className="text-sm">Cliente</div>
-                <div className="text-sm">Dirección de Facturación</div>
-                <div className="text-sm">Ciudad, Código Postal</div>
-              </div>
-            </div>
-
-            {/* Línea separadora antes de la tabla */}
-            <div className="border-b border-gray-300 mb-6"></div>
-          </>
-        )}
-
-        {/* Tabla técnica de elementos */}
-        {data.length > 0 && sectionStates.table && (
-          <>
-            <table className="w-full border-collapse mb-6">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 px-2 py-2 text-left text-xs font-semibold w-8">
-                    #
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-left text-xs font-semibold">
-                    Descripción de Elementos/Servicios
-                  </th>
-                  {pdfParams.showUnitColumn && (
-                    <th className="border border-gray-300 px-2 py-2 text-center text-xs font-semibold w-16">
-                      Cant.
-                    </th>
-                  )}
-                  {pdfParams.showPriceColumn && (
-                    <th className="border border-gray-300 px-2 py-2 text-right text-xs font-semibold w-20">
-                      Precio ($)
-                    </th>
-                  )}
-                  <th className="border border-gray-300 px-2 py-2 text-center text-xs font-semibold w-16">
-                    Desc.
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right text-xs font-semibold w-20">
-                    COSTO
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right text-xs font-semibold w-20">
-                    SGST
-                  </th>
-                  <th className="border border-gray-300 px-2 py-2 text-right text-xs font-semibold w-24">
-                    Total ($)
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-2 py-2 text-center text-xs">
-                      {index + 1}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-xs">
-                      {item.name}
-                    </td>
-                    {pdfParams.showUnitColumn && (
-                      <td className="border border-gray-300 px-2 py-2 text-center text-xs">
-                        {item.amount} {item.unit_name}
-                      </td>
-                    )}
-                    {pdfParams.showPriceColumn && (
-                      <td className="border border-gray-300 px-2 py-2 text-right text-xs">
-                        {item.unit_price?.toFixed(2) || '0.00'}
-                      </td>
-                    )}
-                    <td className="border border-gray-300 px-2 py-2 text-center text-xs">
-                      0
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right text-xs">
-                      {(item.total_price * 0.9)?.toFixed(2) || '0.00'}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right text-xs">
-                      {(item.total_price * 0.1)?.toFixed(2) || '0.00'}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-right text-xs font-semibold">
-                      {item.total_price?.toFixed(2) || '0.00'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
-
-        {/* Sección de totales y método de pago */}
-        {sectionStates.totals && (
-          <div className="grid grid-cols-2 gap-8 mb-8">
-            {/* Método de pago */}
-            <div>
-              <div className="mb-4">
-                <div className="text-xs font-semibold mb-2">Método de Pago</div>
-                <div className="text-sm">Efectivo</div>
-              </div>
-              
-              <div>
-                <div className="text-xs font-semibold mb-2">En Palabras</div>
-                <div className="text-sm italic">
-                  {calculateTotal() >= 1000 ? 'Mil' : 'Cientos'} Pesos Únicamente
-                </div>
-              </div>
-            </div>
-
-            {/* Totales */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-semibold">Sub Total</span>
-                <span className="text-sm">{(calculateTotal() * 0.9).toFixed(2)}</span>
-              </div>
-              {pdfParams.showTaxCalculation && (
-                <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold">CGST</span>
-                    <span className="text-sm">{(calculateTotal() * 0.05).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold">SGST</span>
-                    <span className="text-sm">{(calculateTotal() * 0.05).toFixed(2)}</span>
-                  </div>
-                </>
-              )}
-              <div className="border-t border-gray-300 pt-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold">Total</span>
-                  <span className="text-sm font-bold">{calculateTotal().toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mensaje de descripción */}
-        {sectionStates.details && pdfParams.description && (
-          <div className="mb-6">
-            <div className="text-xs font-semibold mb-2">Observaciones</div>
-            <div className="text-sm bg-gray-50 p-3 border border-gray-300">
-              {pdfParams.description}
-            </div>
-          </div>
-        )}
-
-        {/* Línea separadora antes de firmas */}
-        {sectionStates.signatures && <div className="border-b border-gray-300 mb-6"></div>}
-
-        {/* Sección de firmas técnica */}
-        {sectionStates.signatures && (
           <div className="grid grid-cols-2 gap-8 mb-8">
             <div>
-              <div className="text-xs font-semibold mb-4">Aceptado Por</div>
-              <div className="text-sm">{organization?.name || 'Empresa'}</div>
-              <div className="mt-8 border-t border-gray-400 pt-1">
-                <div className="text-xs text-gray-600">Firma</div>
-                {pdfParams.showClarificationField && (
-                  <div className="text-xs text-gray-600 mt-2">Aclaración: ____________________</div>
-                )}
-                {pdfParams.showDateField && (
-                  <div className="text-xs text-gray-600 mt-2">Fecha: _____ / _____ / _____</div>
-                )}
+              <h3 className="text-sm font-bold mb-3 bg-gray-100 p-2">DATOS DEL PROYECTO</h3>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Código:</span> {pdfParams.projectCode}</div>
+                <div><span className="font-medium">Nombre:</span> {pdfParams.projectName}</div>
+                <div><span className="font-medium">Fecha:</span> {new Date().toLocaleDateString('es-ES')}</div>
               </div>
             </div>
             
             <div>
-              <div className="text-xs font-semibold mb-4">Firma del Cliente</div>
-              <div className="text-sm">Cliente</div>
-              <div className="mt-8 border-t border-gray-400 pt-1">
-                <div className="text-xs text-gray-600">Firma y Sello</div>
-                {pdfParams.showClarificationField && (
-                  <div className="text-xs text-gray-600 mt-2">Aclaración: ____________________</div>
-                )}
-                {pdfParams.showDateField && (
-                  <div className="text-xs text-gray-600 mt-2">Fecha: _____ / _____ / _____</div>
-                )}
+              <h3 className="text-sm font-bold mb-3 bg-gray-100 p-2">INFORMACIÓN TÉCNICA</h3>
+              <div className="space-y-2 text-sm">
+                <div><span className="font-medium">Documento N°:</span> DOC-{Date.now().toString().slice(-6)}</div>
+                <div><span className="font-medium">Estado:</span> En revisión</div>
+                <div><span className="font-medium">Versión:</span> 1.0</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Información de pago técnica */}
-        {sectionStates.footer && (
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <div className="text-xs font-semibold mb-2">Información de Pago</div>
-              <div className="text-xs space-y-1">
-                <div><span className="font-semibold">Cuenta #:</span> 1234567890</div>
-                <div><span className="font-semibold">Nombre de Cuenta:</span> {organization?.name || 'Empresa'}</div>
-                <div><span className="font-semibold">Código IFSC:</span> BANK0001234</div>
-                <div><span className="font-semibold">Banco:</span> Banco Principal</div>
-                <div><span className="font-semibold">Sucursal:</span> Sucursal Principal</div>
-              </div>
+        {/* Descripción del proyecto */}
+        {sectionStates.details && pdfParams.description && (
+          <div className="mb-8">
+            <h3 className="text-sm font-bold mb-3 bg-gray-100 p-2">DESCRIPCIÓN DEL PROYECTO</h3>
+            <div className="p-4 border border-gray-300 bg-gray-50">
+              <p className="text-sm leading-relaxed">{pdfParams.description}</p>
             </div>
+          </div>
+        )}
 
-            {/* QR Code placeholder */}
-            <div className="flex flex-col items-end">
-              <div className="w-16 h-16 bg-black mb-2 flex items-center justify-center">
-                <div className="text-white text-xs text-center">QR<br/>CODE</div>
-              </div>
-              <div className="text-xs text-right">
-                <div className="font-semibold">Nombre: {organization?.name || 'Empresa'}</div>
-                <div>UPI: empresa@upi</div>
+        {/* Tabla técnica */}
+        {sectionStates.table && (
+          <div className="mb-8">
+            <h3 className="text-sm font-bold mb-3 bg-gray-100 p-2">
+              {type === 'budget' ? 'DESGLOSE DE PRESUPUESTO' : 'DETALLE DE MATERIALES'}
+            </h3>
+            <table className="w-full border-collapse border border-gray-400 text-xs">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-400 p-2 font-bold text-left">ITEM</th>
+                  <th className="border border-gray-400 p-2 font-bold text-left">DESCRIPCIÓN</th>
+                  {pdfParams.showUnitColumn && (
+                    <th className="border border-gray-400 p-2 font-bold text-center">UNIDAD</th>
+                  )}
+                  <th className="border border-gray-400 p-2 font-bold text-center">CANTIDAD</th>
+                  {pdfParams.showPriceColumn && (
+                    <>
+                      <th className="border border-gray-400 p-2 font-bold text-right">PRECIO UNIT.</th>
+                      <th className="border border-gray-400 p-2 font-bold text-right">TOTAL</th>
+                    </>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item, index) => (
+                  <tr key={item.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="border border-gray-400 p-2 font-mono">{String(index + 1).padStart(3, '0')}</td>
+                    <td className="border border-gray-400 p-2">{item.name || item.description}</td>
+                    {pdfParams.showUnitColumn && (
+                      <td className="border border-gray-400 p-2 text-center">{item.unit || 'UN'}</td>
+                    )}
+                    <td className="border border-gray-400 p-2 text-center">{item.quantity || 1}</td>
+                    {pdfParams.showPriceColumn && (
+                      <>
+                        <td className="border border-gray-400 p-2 text-right">
+                          ${(item.unit_price || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td className="border border-gray-400 p-2 text-right font-bold">
+                          ${(item.total_price || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Totales técnicos */}
+        {sectionStates.totals && pdfParams.showPriceColumn && (
+          <div className="mb-8">
+            <div className="flex justify-end">
+              <div className="w-80">
+                <table className="w-full border-collapse border border-gray-400 text-sm">
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-400 p-3 font-bold bg-gray-100">SUBTOTAL:</td>
+                      <td className="border border-gray-400 p-3 text-right">
+                        ${calculateTotal().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                    {pdfParams.showTaxCalculation && (
+                      <>
+                        <tr>
+                          <td className="border border-gray-400 p-3 font-bold bg-gray-100">
+                            IVA ({pdfParams.taxRate}%):
+                          </td>
+                          <td className="border border-gray-400 p-3 text-right">
+                            ${(calculateTotal() * pdfParams.taxRate / 100).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                        <tr className="bg-red-600 text-white">
+                          <td className="border border-gray-400 p-3 font-bold">TOTAL FINAL:</td>
+                          <td className="border border-gray-400 p-3 text-right font-bold">
+                            ${(calculateTotal() * (1 + pdfParams.taxRate / 100)).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                      </>
+                    )}
+                    {!pdfParams.showTaxCalculation && (
+                      <tr className="bg-red-600 text-white">
+                        <td className="border border-gray-400 p-3 font-bold">TOTAL:</td>
+                        <td className="border border-gray-400 p-3 text-right font-bold">
+                          ${calculateTotal().toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Sección de firmas técnicas */}
+        {sectionStates.signatures && (
+          <div className="mb-8">
+            <h3 className="text-sm font-bold mb-4 bg-gray-100 p-2">APROBACIONES Y FIRMAS</h3>
+            <div className="grid grid-cols-3 gap-8 text-sm">
+              <div className="text-center">
+                <div className="border-b border-gray-400 mb-2 h-16"></div>
+                <div className="font-bold">PREPARADO POR</div>
+                <div className="text-xs text-gray-600">Nombre y firma</div>
+                {pdfParams.showDateField && (
+                  <div className="text-xs mt-1">Fecha: _____________</div>
+                )}
+              </div>
+              
+              <div className="text-center">
+                <div className="border-b border-gray-400 mb-2 h-16"></div>
+                <div className="font-bold">REVISADO POR</div>
+                <div className="text-xs text-gray-600">Supervisor técnico</div>
+                {pdfParams.showDateField && (
+                  <div className="text-xs mt-1">Fecha: _____________</div>
+                )}
+              </div>
+              
+              <div className="text-center">
+                <div className="border-b border-gray-400 mb-2 h-16"></div>
+                <div className="font-bold">APROBADO POR</div>
+                <div className="text-xs text-gray-600">Director del proyecto</div>
+                {pdfParams.showDateField && (
+                  <div className="text-xs mt-1">Fecha: _____________</div>
+                )}
+              </div>
+            </div>
+            
+            {pdfParams.showClarificationField && (
+              <div className="mt-6 p-4 border border-gray-300 bg-yellow-50">
+                <div className="font-bold text-sm mb-2">OBSERVACIONES TÉCNICAS:</div>
+                <div className="text-xs leading-relaxed">
+                  _________________________________________________________________<br/>
+                  _________________________________________________________________<br/>
+                  _________________________________________________________________
+                </div>
+              </div>
+            )}
           </div>
         )}
 
