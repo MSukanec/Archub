@@ -43,7 +43,28 @@ export function useUserPlan() {
       if (!user?.id) return null;
       
       try {
-        // Direct query for user with plan data
+        // First get all plans
+        const { data: plans } = await supabase
+          .from('plans')
+          .select('*');
+        
+        // Try using RPC function like AdminUsers does
+        const { data: rpcData, error: rpcError } = await supabase
+          .rpc('get_users_for_admin');
+        
+        if (!rpcError && rpcData && Array.isArray(rpcData)) {
+          const currentUser = rpcData.find(u => u.auth_id === user.id);
+          if (currentUser && plans) {
+            // Find the plan by plan_id
+            const userPlan = plans.find(p => p.id === currentUser.plan_id);
+            return {
+              ...currentUser,
+              plan: userPlan
+            };
+          }
+        }
+        
+        // Fallback: direct query for regular users
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select(`
@@ -53,61 +74,10 @@ export function useUserPlan() {
           .eq('auth_id', user.id)
           .single();
 
-        console.log('Direct user query result:', userData);
-        console.log('Direct user query error:', userError);
-
         if (!userError && userData) {
           return userData;
         }
 
-        // Fallback: Try using RPC function for admin
-        const { data: isAdminResult, error: adminError } = await supabase
-          .rpc('is_admin');
-        
-        if (!adminError && isAdminResult) {
-          // User is admin, get their specific data
-          const { data: rpcUserData, error: rpcError } = await supabase
-            .rpc('get_users_for_admin');
-          
-          console.log('Admin user data from RPC:', rpcUserData);
-          console.log('Admin user error:', rpcError);
-          
-          if (!rpcError && rpcUserData && Array.isArray(rpcUserData)) {
-            const currentUser = rpcUserData.find(u => u.auth_id === user.id);
-            console.log('Current admin user found:', currentUser);
-            
-            if (currentUser) {
-              // Get actual plan data from database
-              const { data: planData, error: planError } = await supabase
-                .from('plans')
-                .select('*')
-                .eq('id', currentUser.plan_id)
-                .single();
-              
-              console.log('Plan data for admin:', planData);
-              console.log('Plan error:', planError);
-              
-              if (!planError && planData) {
-                const result = {
-                  ...currentUser,
-                  plan: planData
-                };
-                console.log('Final admin user result:', result);
-                return result;
-              }
-              
-              // Fallback if plan not found
-              console.log('Plan not found, returning user without plan');
-              return {
-                ...currentUser,
-                plan: null
-              };
-            }
-          }
-        }
-        
-        // Final fallback - should not reach here normally
-        console.error('Could not fetch user plan through any method');
         return null;
       } catch (err) {
         console.error('Error in useUserPlan:', err);
