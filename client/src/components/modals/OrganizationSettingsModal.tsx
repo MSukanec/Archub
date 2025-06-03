@@ -235,7 +235,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
             variant="outline"
             onClick={handleClose}
             disabled={updateOrganizationMutation.isPending}
-            className="w-1/4 bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+            className="w-1/4 bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-input rounded-xl"
           >
             <X className="w-4 h-4 mr-2" />
             Cancelar
@@ -274,7 +274,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                     <FormControl>
                       <Input
                         {...field}
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -292,7 +292,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <Textarea
                         {...field}
                         rows={3}
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl resize-none"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl resize-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -312,7 +312,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <Input
                         {...field}
                         placeholder="CUIT, RIF, NIT, etc."
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -380,7 +380,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -399,7 +399,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -420,7 +420,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -439,7 +439,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-[#919191]/20 text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -490,7 +490,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="email"
                         placeholder="correo@organizacion.com"
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -509,7 +509,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="url"
                         placeholder="https://miorganizacion.com"
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -539,7 +539,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="url"
                         placeholder="https://ejemplo.com/logo.png"
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -569,7 +569,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                        <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
                           <SelectValue placeholder="Selecciona una moneda" />
                         </SelectTrigger>
                       </FormControl>
@@ -597,7 +597,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                        <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
                           <SelectValue placeholder="Selecciona un idioma" />
                         </SelectTrigger>
                       </FormControl>
@@ -625,7 +625,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="url"
                         placeholder="https://..."
-                        className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />

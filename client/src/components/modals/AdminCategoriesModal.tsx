@@ -189,7 +189,7 @@ export default function AdminCategoriesModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: Estructura"
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -207,7 +207,7 @@ export default function AdminCategoriesModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: EST"
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -224,11 +224,11 @@ export default function AdminCategoriesModal({
                 <FormLabel className="text-xs font-medium text-foreground">Categoría Padre (Opcional)</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                    <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar categoría padre" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                  <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                     <SelectItem value="none">Sin categoría padre</SelectItem>
                     {allCategories
                       .filter(cat => cat.id !== category?.id) // No mostrar la categoría actual

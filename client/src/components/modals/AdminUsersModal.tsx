@@ -174,7 +174,7 @@ export default function AdminUsersModal({
                   <Input 
                     placeholder="usuario@ejemplo.com"
                     type="email"
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -192,7 +192,7 @@ export default function AdminUsersModal({
                 <FormControl>
                   <Input 
                     placeholder="Nombre completo del usuario"
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -211,7 +211,7 @@ export default function AdminUsersModal({
                   <FormControl>
                     <Input 
                       placeholder="Nombre"
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                      className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                       {...field}
                     />
                   </FormControl>
@@ -229,7 +229,7 @@ export default function AdminUsersModal({
                   <FormControl>
                     <Input 
                       placeholder="Apellido"
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                      className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                       {...field}
                     />
                   </FormControl>
@@ -247,11 +247,11 @@ export default function AdminUsersModal({
                 <FormLabel className="text-sm font-medium text-foreground">Rol</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                    <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                       <SelectValue placeholder="Selecciona un rol" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                  <SelectContent className="bg-[#d2d2d2] border-input">
                     <SelectItem value="user">Usuario</SelectItem>
                     <SelectItem value="admin">Administrador</SelectItem>
                   </SelectContent>
@@ -269,11 +269,11 @@ export default function AdminUsersModal({
                 <FormLabel className="text-sm font-medium text-foreground">Plan</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                    <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                       <SelectValue placeholder="Selecciona un plan" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-[#d2d2d2] border-[#919191]/20">
+                  <SelectContent className="bg-[#d2d2d2] border-input">
                     {plans.map((plan: Plan) => (
                       <SelectItem key={plan.id} value={plan.id}>
                         {plan.name} - ${plan.price}

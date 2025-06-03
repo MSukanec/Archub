@@ -162,7 +162,7 @@ export default function AdminActionsModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: Revisar Documentos" 
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field} 
                   />
                 </FormControl>

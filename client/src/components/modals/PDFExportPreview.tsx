@@ -169,7 +169,7 @@ startxref
           <Button
             variant="outline"
             onClick={handleGoToSettings}
-            className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+            className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-input rounded-xl"
           >
             <Settings className="w-4 h-4 mr-2" />
             Configurar PDF
@@ -179,7 +179,7 @@ startxref
               variant="outline"
               onClick={onClose}
               disabled={isExporting}
-              className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+              className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-input rounded-xl"
             >
               <X className="w-4 h-4 mr-2" />
               Cancelar

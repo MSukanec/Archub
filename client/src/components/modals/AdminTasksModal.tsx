@@ -556,7 +556,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
         <form id="task-form" onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
           <Accordion type="single" defaultValue="category" className="w-full flex-1 flex flex-col">
             {/* Category Section */}
-            <AccordionItem value="category" className="border-[#919191]/20">
+            <AccordionItem value="category" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Wrench className="w-4 h-4 text-primary" />
@@ -581,11 +581,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                         value={field.value || ''}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar rubro" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                           {mainCategories.map((category) => (
                             <SelectItem key={category.id} value={String(category.id)}>
                               {category.code} - {category.name}
@@ -614,11 +614,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                         disabled={!selectedCategoryId}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar subrubro" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                           {subcategoriesFiltered.map((subcategory) => (
                             <SelectItem key={subcategory.id} value={String(subcategory.id)}>
                               {subcategory.code} - {subcategory.name}
@@ -644,11 +644,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                         disabled={!form.watch('subcategory_id')}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar elemento" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                           {elementCategoriesFiltered.map((element) => (
                             <SelectItem key={element.id} value={String(element.id)}>
                               {element.code} - {element.name}
@@ -664,7 +664,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
             </AccordionItem>
 
             {/* Task Section */}
-            <AccordionItem value="task" className="border-[#919191]/20">
+            <AccordionItem value="task" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Wrench className="w-4 h-4 text-primary" />
@@ -687,11 +687,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                         value={field.value || ''}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar acción" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                           {actions.map((action) => (
                             <SelectItem key={action.id} value={action.id}>
                               {action.name}
@@ -719,11 +719,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                         value={field.value || ''}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar elemento" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                           {taskElements.map((element) => (
                             <SelectItem key={element.id} value={element.id}>
                               {element.name}
@@ -746,7 +746,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                       <FormControl>
                         <Input 
                           placeholder="Nombre de la tarea"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                           {...field}
                           readOnly
                           disabled
@@ -767,7 +767,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                       <FormControl>
                         <Input 
                           placeholder="Descripción opcional de la tarea"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                           {...field}
                         />
                       </FormControl>
@@ -779,7 +779,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
             </AccordionItem>
 
             {/* Pricing Section */}
-            <AccordionItem value="pricing" className="border-[#919191]/20">
+            <AccordionItem value="pricing" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-primary" />
@@ -796,11 +796,11 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                       <FormLabel className="text-xs font-medium text-foreground">Unidad *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ''}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar unidad" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                           {units.map((unit) => (
                             <SelectItem key={unit.id} value={unit.id}>
                               {unit.name}
@@ -825,7 +825,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                             {...field}
                           />
                         </FormControl>
@@ -845,7 +845,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                             {...field}
                           />
                         </FormControl>
@@ -858,7 +858,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
             </AccordionItem>
 
             {/* Materials Section */}
-            <AccordionItem value="materials" className="border-[#919191]/20">
+            <AccordionItem value="materials" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Package className="w-4 h-4 text-primary" />
@@ -875,13 +875,13 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                       placeholder="Escriba al menos 3 caracteres para buscar..."
                       value={materialSearchTerm}
                       onChange={(e) => setMaterialSearchTerm(e.target.value)}
-                      className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm pl-10"
+                      className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm pl-10"
                     />
                   </div>
                   
                   {/* Search Results */}
                   {materialSearchTerm.length >= 3 && materials.length > 0 && (
-                    <div className="max-h-32 overflow-y-auto border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                    <div className="max-h-32 overflow-y-auto border border-input rounded-lg bg-[#d2d2d2]">
                       {materials.map((material) => (
                         <div
                           key={material.id}
@@ -898,7 +898,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                   )}
                   
                   {materialSearchTerm.length >= 3 && materials.length === 0 && (
-                    <div className="text-xs text-muted-foreground p-2 border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                    <div className="text-xs text-muted-foreground p-2 border border-input rounded-lg bg-[#d2d2d2]">
                       No se encontraron materiales
                     </div>
                   )}
@@ -909,7 +909,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                   <div className="space-y-2">
                     <FormLabel className="text-xs font-medium text-foreground">Materiales Seleccionados</FormLabel>
                     {selectedMaterials.map((material) => (
-                      <div key={material.material_id} className="flex items-center gap-2 p-2 border border-[#919191]/20 rounded-lg bg-[#d2d2d2]">
+                      <div key={material.material_id} className="flex items-center gap-2 p-2 border border-input rounded-lg bg-[#d2d2d2]">
                         <div className="flex-1">
                           <div className="text-xs font-medium">{material.material_name}</div>
                         </div>
@@ -920,7 +920,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                             placeholder="Cant."
                             value={material.amount}
                             onChange={(e) => updateMaterialAmount(material.material_id, e.target.value)}
-                            className="bg-white border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs h-7"
+                            className="bg-white border-input focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs h-7"
                           />
                         </div>
                         <Button

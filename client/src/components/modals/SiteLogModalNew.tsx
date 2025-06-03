@@ -299,7 +299,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
         <form id="sitelog-form" onSubmit={form.handleSubmit(onSubmit)} className="flex-1 flex flex-col">
           <Accordion type="single" defaultValue="basic" className="w-full flex-1 flex flex-col">
             {/* Basic Information Section */}
-            <AccordionItem value="basic" className="border-[#919191]/20">
+            <AccordionItem value="basic" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-primary" />
@@ -320,7 +320,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                             <Button
                               variant="outline"
                               className={cn(
-                                "bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm justify-start text-left font-normal w-full",
+                                "bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm justify-start text-left font-normal w-full",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
@@ -359,11 +359,11 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                       <FormLabel className="text-xs font-medium text-foreground">Condiciones Climáticas *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ''}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar clima" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10001]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[10001]">
                           {weatherOptions.map((option) => {
                             const IconComponent = option.icon;
                             return (
@@ -393,7 +393,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                         <Textarea
                           placeholder="Describe las actividades del día, observaciones importantes..."
                           {...field}
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm min-h-[80px] resize-none"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm min-h-[80px] resize-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -404,7 +404,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
             </AccordionItem>
 
             {/* Tasks Section */}
-            <AccordionItem value="tasks" className="border-[#919191]/20">
+            <AccordionItem value="tasks" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Wrench className="w-4 h-4 text-primary" />
@@ -421,10 +421,10 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                 <div className="space-y-2">
                   <FormLabel className="text-xs font-medium text-foreground">Agregar Tarea</FormLabel>
                   <Select value={taskSelectValue} onValueChange={addTask}>
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                    <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar tarea..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 max-h-[200px] z-[10001]">
+                    <SelectContent className="bg-[#d2d2d2] border-input max-h-[200px] z-[10001]">
                       {tasks.filter(task => !selectedTasks.find(st => st.task.id === task.id)).map((task) => (
                         <SelectItem key={task.id} value={task.id}>
                           <div className="flex flex-col">
@@ -445,7 +445,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <FormLabel className="text-xs font-medium text-foreground">Tareas Seleccionadas</FormLabel>
                     <div className="space-y-2">
                       {selectedTasks.map((selectedTask) => (
-                        <div key={selectedTask.task.id} className="bg-[#c2c2c2] border border-[#919191]/20 rounded-lg p-3">
+                        <div key={selectedTask.task.id} className="bg-[#c2c2c2] border border-input rounded-lg p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h4 className="text-sm font-medium text-foreground truncate">
@@ -476,7 +476,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                                 step="0.1"
                                 value={selectedTask.quantity}
                                 onChange={(e) => updateTaskQuantity(selectedTask.task.id, e.target.value)}
-                                className="bg-[#d2d2d2] border-[#919191]/20 text-xs h-8 mt-1"
+                                className="bg-[#d2d2d2] border-input text-xs h-8 mt-1"
                               />
                             </div>
                             <div>
@@ -485,7 +485,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                                 placeholder="Observaciones..."
                                 value={selectedTask.notes}
                                 onChange={(e) => updateTaskNotes(selectedTask.task.id, e.target.value)}
-                                className="bg-[#d2d2d2] border-[#919191]/20 text-xs h-8 mt-1"
+                                className="bg-[#d2d2d2] border-input text-xs h-8 mt-1"
                               />
                             </div>
                           </div>
@@ -498,7 +498,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
             </AccordionItem>
 
             {/* Attendees Section */}
-            <AccordionItem value="attendees" className="border-[#919191]/20">
+            <AccordionItem value="attendees" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-primary" />
@@ -515,10 +515,10 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                 <div className="space-y-2">
                   <FormLabel className="text-xs font-medium text-foreground">Agregar Personal</FormLabel>
                   <Select value={attendeeSelectValue} onValueChange={addAttendee}>
-                    <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                    <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar persona..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 max-h-[200px] z-[10001]">
+                    <SelectContent className="bg-[#d2d2d2] border-input max-h-[200px] z-[10001]">
                       {contacts.filter(contact => !selectedAttendees.find(sa => sa.contact.id === contact.id)).map((contact) => (
                         <SelectItem key={contact.id} value={contact.id}>
                           <div className="flex flex-col">
@@ -539,7 +539,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <FormLabel className="text-xs font-medium text-foreground">Personal Seleccionado</FormLabel>
                     <div className="space-y-2">
                       {selectedAttendees.map((selectedAttendee) => (
-                        <div key={selectedAttendee.contact.id} className="bg-[#c2c2c2] border border-[#919191]/20 rounded-lg p-3">
+                        <div key={selectedAttendee.contact.id} className="bg-[#c2c2c2] border border-input rounded-lg p-3">
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h4 className="text-sm font-medium text-foreground truncate">
@@ -556,10 +556,10 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                                 value={selectedAttendee.role}
                                 onValueChange={(value) => updateAttendeeRole(selectedAttendee.contact.id, value)}
                               >
-                                <SelectTrigger className="w-[120px] bg-[#d2d2d2] border-[#919191]/20 text-xs h-8">
+                                <SelectTrigger className="w-[120px] bg-[#d2d2d2] border-input text-xs h-8">
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10001]">
+                                <SelectContent className="bg-[#d2d2d2] border-input z-[10001]">
                                   <SelectItem value="Trabajador">Trabajador</SelectItem>
                                   <SelectItem value="Supervisor">Supervisor</SelectItem>
                                   <SelectItem value="Inspector">Inspector</SelectItem>
@@ -587,7 +587,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
             </AccordionItem>
 
             {/* Files Section */}
-            <AccordionItem value="files" className="border-[#919191]/20">
+            <AccordionItem value="files" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Camera className="w-4 h-4 text-primary" />
@@ -625,7 +625,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                       variant="outline"
                       size="sm"
                       onClick={() => document.getElementById('file-upload')?.click()}
-                      className="bg-[#d2d2d2] border-[#919191]/20 text-xs"
+                      className="bg-[#d2d2d2] border-input text-xs"
                     >
                       Seleccionar Archivos
                     </Button>
@@ -638,7 +638,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <FormLabel className="text-xs font-medium text-foreground">Archivos Seleccionados</FormLabel>
                     <div className="space-y-2">
                       {uploadedFiles.map((fileItem, index) => (
-                        <div key={index} className="bg-[#c2c2c2] border border-[#919191]/20 rounded-lg p-3">
+                        <div key={index} className="bg-[#c2c2c2] border border-input rounded-lg p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h4 className="text-sm font-medium text-foreground truncate">
@@ -663,7 +663,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                               placeholder="Descripción del archivo..."
                               value={fileItem.description}
                               onChange={(e) => updateFileDescription(index, e.target.value)}
-                              className="bg-[#d2d2d2] border-[#919191]/20 text-xs h-8"
+                              className="bg-[#d2d2d2] border-input text-xs h-8"
                             />
                           </div>
                         </div>

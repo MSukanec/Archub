@@ -141,7 +141,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
         <form id="event-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <Accordion type="single" defaultValue="basic" className="w-full">
             {/* Basic Information */}
-            <AccordionItem value="basic" className="border-[#919191]/20">
+            <AccordionItem value="basic" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-primary" />
@@ -158,7 +158,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                       <FormControl>
                         <Input 
                           placeholder="Ej: Reunión con cliente"
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -177,7 +177,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <Textarea
                           placeholder="Descripción del evento..."
                           rows={3}
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
                           {...field}
                         />
                       </FormControl>
@@ -189,7 +189,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
             </AccordionItem>
 
             {/* Date and Time */}
-            <AccordionItem value="datetime" className="border-[#919191]/20">
+            <AccordionItem value="datetime" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-primary" />
@@ -207,7 +207,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormControl>
                           <Input 
                             type="date"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                             {...field}
                           />
                         </FormControl>
@@ -225,7 +225,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormControl>
                           <Input 
                             type="time"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                             {...field}
                           />
                         </FormControl>
@@ -244,11 +244,11 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormLabel className="text-xs font-medium text-foreground">Duración <span className="text-primary">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                            <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                               <SelectValue placeholder="Seleccionar duración" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                             <SelectItem value="15">15 minutos</SelectItem>
                             <SelectItem value="30">30 minutos</SelectItem>
                             <SelectItem value="45">45 minutos</SelectItem>
@@ -272,11 +272,11 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormLabel className="text-xs font-medium text-foreground">Tipo <span className="text-primary">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                            <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                               <SelectValue placeholder="Seleccionar tipo" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                             <SelectItem value="meeting">Reunión</SelectItem>
                             <SelectItem value="task">Tarea</SelectItem>
                             <SelectItem value="reminder">Recordatorio</SelectItem>
@@ -292,7 +292,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
             </AccordionItem>
 
             {/* Additional Details */}
-            <AccordionItem value="details" className="border-[#919191]/20">
+            <AccordionItem value="details" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
@@ -309,11 +309,11 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormLabel className="text-xs font-medium text-foreground">Prioridad <span className="text-primary">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                            <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                               <SelectValue placeholder="Seleccionar prioridad" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[10000]">
+                          <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
                             <SelectItem value="low">Baja</SelectItem>
                             <SelectItem value="medium">Media</SelectItem>
                             <SelectItem value="high">Alta</SelectItem>
@@ -333,7 +333,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormControl>
                           <Input 
                             placeholder="Ubicación del evento"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                             {...field}
                           />
                         </FormControl>
@@ -353,7 +353,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <Textarea
                           placeholder="Lista de asistentes (separados por comas)"
                           rows={2}
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
                           {...field}
                         />
                       </FormControl>

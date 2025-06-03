@@ -217,7 +217,7 @@ export default function AdminContactsModal({
         <form id="contact-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <Accordion type="single" collapsible defaultValue="datos-basicos" className="w-full space-y-1">
             {/* Datos Básicos */}
-            <AccordionItem value="datos-basicos" className="border-[#919191]/20">
+            <AccordionItem value="datos-basicos" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
@@ -253,7 +253,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Juan" 
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -271,7 +271,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Pérez" 
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -289,7 +289,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Constructora ABC" 
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -307,7 +307,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Buenos Aires, Argentina" 
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -319,7 +319,7 @@ export default function AdminContactsModal({
             </AccordionItem>
 
             {/* Contacto */}
-            <AccordionItem value="contacto" className="border-[#919191]/20">
+            <AccordionItem value="contacto" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
@@ -337,7 +337,7 @@ export default function AdminContactsModal({
                         <Input 
                           type="email"
                           placeholder="ejemplo@email.com" 
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -369,7 +369,7 @@ export default function AdminContactsModal({
             </AccordionItem>
 
             {/* Notas */}
-            <AccordionItem value="notas" className="border-[#919191]/20">
+            <AccordionItem value="notas" className="border-input">
               <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
@@ -386,7 +386,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Textarea 
                           placeholder="Información adicional sobre el contacto..." 
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
                           {...field} 
                         />
                       </FormControl>

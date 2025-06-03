@@ -235,7 +235,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
       <div className="space-y-6">
         <Accordion type="multiple" defaultValue={["search", "selected"]} className="w-full space-y-2">
           {/* Búsqueda de Tareas */}
-          <AccordionItem value="search" className="border-[#919191]/20">
+          <AccordionItem value="search" className="border-input">
             <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
                 <Search className="w-4 h-4 text-primary" />
@@ -250,7 +250,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                   placeholder="Buscar tareas..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                  className="pl-10 bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                 />
               </div>
 
@@ -300,7 +300,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
           </AccordionItem>
 
           {/* Tareas Seleccionadas */}
-          <AccordionItem value="selected" className="border-[#919191]/20">
+          <AccordionItem value="selected" className="border-input">
             <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
                 <CheckSquare className="w-4 h-4 text-primary" />
@@ -338,7 +338,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                             onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
                             min="0.01"
                             step="0.01"
-                            className="w-16 h-7 text-center bg-[#d2d2d2] border-[#919191]/20 rounded-lg text-xs"
+                            className="w-16 h-7 text-center bg-[#d2d2d2] border-input rounded-lg text-xs"
                           />
                           <div className="text-right text-xs min-w-[60px]">
                             <div className="font-medium text-foreground">

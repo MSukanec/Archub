@@ -284,7 +284,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       <form id="movement-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
           {/* Información Básica */}
-          <AccordionItem value="basic-info" className="border-[#919191]/20">
+          <AccordionItem value="basic-info" className="border-input">
             <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-primary" />
@@ -306,11 +306,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         form.setValue('concept_id', '');
                       }} value={selectedTypeId} disabled={false}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar tipo" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[9999]">
                           {movementTypes.map((type) => (
                             <SelectItem key={type.id} value={type.id} className="[&>span:first-child]:hidden">
                               {type.name}
@@ -336,7 +336,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         disabled={!selectedTypeId || conceptsLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder={
                               conceptsLoading ? "Cargando categorías..." :
                               !selectedTypeId ? "Primero selecciona un tipo" :
@@ -345,7 +345,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             } />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[9999]">
                           {movementCategories.map((category) => (
                             <SelectItem key={category.id} value={category.id} className="[&>span:first-child]:hidden">
                               {category.name}
@@ -372,7 +372,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           type="date" 
                           value={field.value || ''}
                           onChange={(e) => field.onChange(e.target.value)}
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -389,11 +389,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Moneda <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar moneda" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[9999]">
                           <SelectItem value="ARS" className="[&>span:first-child]:hidden">ARS - Peso Argentino</SelectItem>
                           <SelectItem value="USD" className="[&>span:first-child]:hidden">USD - Dólar Estadounidense</SelectItem>
                         </SelectContent>
@@ -414,11 +414,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Billetera <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
+                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8]">
                             <SelectValue placeholder="Seleccionar billetera" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-[#919191]/20 z-[9999]">
+                        <SelectContent className="bg-[#d2d2d2] border-input z-[9999]">
                           {walletsList.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
                               {wallet.name}
@@ -445,7 +445,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           placeholder="0.00"
                           value={field.value || ''}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -464,7 +464,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     <FormControl>
                       <Textarea
                         placeholder="Describe el detalle del movimiento... (opcional)"
-                        className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
+                        className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
                         rows={3}
                         {...field}
                       />
@@ -477,7 +477,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           </AccordionItem>
 
           {/* Relaciones */}
-          <AccordionItem value="relations" className="border-[#919191]/20">
+          <AccordionItem value="relations" className="border-input">
             <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-primary" />
@@ -498,7 +498,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           <Button
                             variant="outline"
                             role="combobox"
-                            className="w-full justify-between bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8] h-10 font-normal"
+                            className="w-full justify-between bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm hover:bg-[#c8c8c8] h-10 font-normal"
                           >
                             <span className="truncate">
                               {field.value 
@@ -527,7 +527,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-[10000] bg-[#d2d2d2] border-[#919191]/20" align="start">
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-[10000] bg-[#d2d2d2] border-input" align="start">
                         <Command className="bg-[#d2d2d2]">
                           <CommandInput 
                             placeholder="Escribir para buscar..."
@@ -594,7 +594,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         variant="outline"
         onClick={handleClose}
         disabled={createMovementMutation.isPending}
-        className="w-1/4 bg-[#d2d2d2] border-[#919191]/20 text-foreground hover:bg-[#c2c2c2] rounded-lg"
+        className="w-1/4 bg-[#d2d2d2] border-input text-foreground hover:bg-[#c2c2c2] rounded-lg"
       >
         Cancelar
       </Button>

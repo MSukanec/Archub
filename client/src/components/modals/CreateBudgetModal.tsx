@@ -307,7 +307,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
                     // Aquí podrías actualizar el proyecto seleccionado si fuera necesario
                   }}
                 >
-                  <SelectTrigger className="bg-[#e1e1e1] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                  <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
                     <SelectValue placeholder="Selecciona un proyecto" />
                   </SelectTrigger>
                   <SelectContent>
@@ -337,7 +337,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
                 <FormControl>
                   <Input
                     placeholder="Ej: Presupuesto General de Obra"
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -356,7 +356,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
                   <Textarea
                     placeholder="Descripción del presupuesto..."
                     rows={3}
-                    className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
+                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
                     {...field}
                   />
                 </FormControl>
@@ -378,7 +378,7 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
                     defaultValue="draft"
                   >
                     <FormControl>
-                      <SelectTrigger className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                      <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                         <SelectValue placeholder="Selecciona el estado" />
                       </SelectTrigger>
                     </FormControl>

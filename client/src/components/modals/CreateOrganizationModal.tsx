@@ -144,7 +144,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                     <Input
                       placeholder="Ej: Constructora ABC S.A."
                       {...field}
-                      className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                      className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     />
                   </FormControl>
                   <FormMessage />
@@ -162,7 +162,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                     <Textarea
                       placeholder="Breve descripción de la organización..."
                       {...field}
-                      className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
+                      className="min-h-[80px] bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
                     />
                   </FormControl>
                   <FormMessage />
@@ -180,7 +180,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                     <Textarea
                       placeholder="Dirección completa de la organización..."
                       {...field}
-                      className="min-h-[60px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
+                      className="min-h-[60px] bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
                     />
                   </FormControl>
                   <FormMessage />
@@ -199,7 +199,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                       <Input
                         placeholder="Ej: +54 11 1234-5678"
                         {...field}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -218,7 +218,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                         type="email"
                         placeholder="contacto@empresa.com"
                         {...field}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -233,7 +233,7 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
                 variant="outline"
                 onClick={handleClose}
                 disabled={createOrganizationMutation.isPending}
-                className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+                className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-input rounded-xl"
               >
                 Cancelar
               </Button>

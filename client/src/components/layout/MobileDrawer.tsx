@@ -182,7 +182,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         style={{ backgroundColor: '#d2d2d2' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#919191]/20">
+        <div className="flex items-center justify-between p-4 border-b border-input">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
@@ -199,7 +199,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
         {/* Project Selector */}
         {currentProject && (
-          <div className="p-4 border-b border-[#919191]/20">
+          <div className="p-4 border-b border-input">
             <div className="relative">
               <button
                 onClick={() => setShowProjectMenu(!showProjectMenu)}
@@ -221,7 +221,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               </button>
               
               {showProjectMenu && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[#e1e1e1] rounded-lg border border-[#919191]/20 shadow-lg z-10">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-surface-secondary rounded-lg border border-input shadow-lg z-10">
                   {currentProjects?.map((project) => (
                     <button
                       key={project.id}
@@ -439,7 +439,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
         {/* User Info - Fixed at absolute bottom */}
         {user && (
-          <div className="p-4 border-t border-[#919191]/20 mt-auto">
+          <div className="p-4 border-t border-input mt-auto">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-sm">

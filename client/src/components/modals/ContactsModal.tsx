@@ -209,7 +209,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
           <Accordion type="multiple" defaultValue={["personal", "types"]} className="w-full space-y-4">
             
             {/* Información Personal */}
-            <AccordionItem value="personal" className="border border-[#919191]/20 rounded-lg bg-[#e1e1e1]">
+            <AccordionItem value="personal" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
@@ -236,7 +236,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. Juan"
-                              className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -254,7 +254,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. Pérez"
-                              className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -273,7 +273,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                           <Input 
                             {...field} 
                             placeholder="ej. Constructora ABC"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -285,7 +285,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             </AccordionItem>
 
             {/* Tipos de Contacto */}
-            <AccordionItem value="types" className="border border-[#919191]/20 rounded-lg bg-[#e1e1e1]">
+            <AccordionItem value="types" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
@@ -320,7 +320,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             </AccordionItem>
 
             {/* Información de Contacto */}
-            <AccordionItem value="contact" className="border border-[#919191]/20 rounded-lg bg-[#e1e1e1]">
+            <AccordionItem value="contact" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
@@ -346,7 +346,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                               {...field} 
                               type="email"
                               placeholder="ejemplo@email.com"
-                              className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -364,7 +364,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. +54 9 11 1234-5678"
-                              className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -383,7 +383,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                           <Input 
                             {...field} 
                             placeholder="ej. Buenos Aires, Argentina"
-                            className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -395,7 +395,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             </AccordionItem>
 
             {/* Notas */}
-            <AccordionItem value="notes" className="border border-[#919191]/20 rounded-lg bg-[#e1e1e1]">
+            <AccordionItem value="notes" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-[#919191]">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
@@ -418,7 +418,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                         <Textarea 
                           {...field} 
                           placeholder="Información adicional sobre el contacto..."
-                          className="bg-[#d2d2d2] border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px]"
+                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -431,7 +431,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
           </Accordion>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-[#919191]/20">
+          <div className="flex justify-end gap-3 pt-4 border-t border-input">
             <Button
               type="button"
               variant="outline"
