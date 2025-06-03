@@ -95,7 +95,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
       )}
       
       <div 
-        className={`flex items-center gap-2 py-2 px-3 bg-[#e1e1e1] border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
+        className={`flex items-center gap-2 py-2 px-3 bg-surface-secondary border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
           isOver && dropPosition === 'inside' ? 'ring-2 ring-primary ring-opacity-50 bg-primary/10' : ''
         }`}
         style={{ paddingLeft: `${paddingLeft}px` }}
@@ -540,14 +540,14 @@ const AdminCategories = () => {
               placeholder="Buscar categorías..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+              className="pl-10 bg-surface-secondary border-[#919191]/20 rounded-xl"
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[200px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="w-[200px] bg-surface-secondary border-[#919191]/20 rounded-xl">
               <SelectValue placeholder="Todas las Categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-[#e1e1e1] border-[#919191]/20">
+            <SelectContent className="bg-surface-secondary border-[#919191]/20">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="root">Solo categorías padre</SelectItem>
             </SelectContent>
@@ -557,7 +557,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={expandAll}
-              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
+              className="bg-surface-secondary border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
             >
               Expandir Todo
             </Button>
@@ -565,7 +565,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={collapseAll}
-              className="bg-[#e1e1e1] border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
+              className="bg-surface-secondary border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
             >
               Colapsar Todo
             </Button>
@@ -574,7 +574,7 @@ const AdminCategories = () => {
       </div>
 
       {/* Tree View */}
-      <div className="rounded-2xl shadow-md bg-[#e1e1e1] border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

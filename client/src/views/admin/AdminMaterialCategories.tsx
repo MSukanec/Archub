@@ -191,7 +191,7 @@ export default function AdminMaterialCategories() {
               placeholder="Buscar categorías de materiales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl"
+              className="pl-10 pr-10 bg-surface-secondary border-[#919191]/20 rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -208,13 +208,13 @@ export default function AdminMaterialCategories() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl bg-[#e1e1e1] border-[#919191]/20"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-surface-secondary border-[#919191]/20"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-[#e1e1e1]">
+            <PopoverContent className="w-[200px] p-2 bg-surface-secondary">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}

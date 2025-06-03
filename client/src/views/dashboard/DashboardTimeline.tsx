@@ -334,7 +334,7 @@ function DashboardTimeline() {
               }
             }
           }}
-          className="h-[60px] w-[60px] rounded-full bg-[#e1e1e1] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-95 flex items-center justify-center group"
+          className="h-[60px] w-[60px] rounded-full bg-surface-secondary transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-95 flex items-center justify-center group"
         >
           <span className="text-sm font-medium text-[#919191]">HOY</span>
         </button>
@@ -353,7 +353,7 @@ function DashboardTimeline() {
                   setTimelineMode(modes[currentIndex + 1]);
                 }
               }}
-              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-surface-secondary hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
             >
               <span className="text-lg font-bold text-[#919191] group-hover:text-white">-</span>
             </button>
@@ -372,7 +372,7 @@ function DashboardTimeline() {
                   setTimelineMode(modes[currentIndex - 1]);
                 }
               }}
-              className="w-8 h-8 rounded-full bg-[#e1e1e1] hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-surface-secondary hover:bg-[#8fc700] transition-colors group flex items-center justify-center"
             >
               <span className="text-lg font-bold text-[#919191] group-hover:text-white">+</span>
             </button>
@@ -407,7 +407,7 @@ function DashboardTimeline() {
           <div className="absolute bottom-4 right-4 z-[60]">
             {/* Detailed event info card */}
             {hoveredEvent && (
-              <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4 animate-in slide-in-from-right-2 fade-in duration-300">
+              <div className="bg-surface-secondary border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4 animate-in slide-in-from-right-2 fade-in duration-300">
                 <h3 className="text-sm font-semibold text-[#919191] mb-3">INFORMACIÓN DEL EVENTO</h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -450,7 +450,7 @@ function DashboardTimeline() {
               </div>
             )}
             
-            <div className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
+            <div className="bg-surface-secondary border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
               {todayEvents.length > 0 ? (
                 <>
                   <h3 className="text-sm font-semibold text-[#919191] mb-3">EVENTOS DE HOY</h3>
@@ -656,7 +656,7 @@ function DashboardTimeline() {
                         <div className="group relative" style={{ zIndex: 150 }}>
                           {/* Event indicator */}
                           <div 
-                            className="w-10 h-10 rounded-full bg-[#e1e1e1] shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative opacity-100"
+                            className="w-10 h-10 rounded-full bg-surface-secondary shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 relative opacity-100"
                             style={{ zIndex: 150, backgroundColor: '#e1e1e1' }}
                             onMouseEnter={() => setHoveredEvent(events[0])}
                             onMouseLeave={() => setHoveredEvent(null)}
@@ -684,7 +684,7 @@ function DashboardTimeline() {
                                   onClick={() => {
                                     console.log('Event card clicked:', event);
                                   }}
-                                  className="bg-[#e1e1e1] border border-[#919191]/20 rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
+                                  className="bg-surface-secondary border border-[#919191]/20 rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
                                 >
                                   <div className="flex items-center gap-2">
                                     <event.icon className="w-4 h-4 text-[#919191]" />

@@ -276,7 +276,7 @@ export default function OrganizationPDF() {
                   placeholder="https://ejemplo.com/logo.png"
                   value={template.logo_url || ''}
                   onChange={(e) => updateTemplate('logo_url', e.target.value)}
-                  className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 />
               </div>
               
@@ -287,7 +287,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.logo_width}
                     onChange={(e) => updateTemplate('logo_width', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -296,7 +296,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.logo_height}
                     onChange={(e) => updateTemplate('logo_height', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
               </div>
@@ -319,7 +319,7 @@ export default function OrganizationPDF() {
                       type="number"
                       value={template.company_name_size}
                       onChange={(e) => updateTemplate('company_name_size', parseInt(e.target.value) || 0)}
-                      className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                      className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     />
                   </div>
                   <div>
@@ -328,7 +328,7 @@ export default function OrganizationPDF() {
                       type="color"
                       value={template.company_name_color}
                       onChange={(e) => updateTemplate('company_name_color', e.target.value)}
-                      className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                      className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function OrganizationPDF() {
                     type="color"
                     value={template.primary_color}
                     onChange={(e) => updateTemplate('primary_color', e.target.value)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -361,7 +361,7 @@ export default function OrganizationPDF() {
                     type="color"
                     value={template.secondary_color}
                     onChange={(e) => updateTemplate('secondary_color', e.target.value)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -370,7 +370,7 @@ export default function OrganizationPDF() {
                     type="color"
                     value={template.text_color}
                     onChange={(e) => updateTemplate('text_color', e.target.value)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -379,7 +379,7 @@ export default function OrganizationPDF() {
                     type="color"
                     value={template.background_color}
                     onChange={(e) => updateTemplate('background_color', e.target.value)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
               </div>
@@ -398,7 +398,7 @@ export default function OrganizationPDF() {
               <div>
                 <Label>Fuente</Label>
                 <Select value={template.font_family} onValueChange={(value) => updateTemplate('font_family', value)}>
-                  <SelectTrigger className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  <SelectTrigger className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -417,7 +417,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.title_size}
                     onChange={(e) => updateTemplate('title_size', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -426,7 +426,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.subtitle_size}
                     onChange={(e) => updateTemplate('subtitle_size', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -435,7 +435,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.body_size}
                     onChange={(e) => updateTemplate('body_size', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
               </div>
@@ -458,7 +458,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.margin_top}
                     onChange={(e) => updateTemplate('margin_top', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -467,7 +467,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.margin_bottom}
                     onChange={(e) => updateTemplate('margin_bottom', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -476,7 +476,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.margin_left}
                     onChange={(e) => updateTemplate('margin_left', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -485,7 +485,7 @@ export default function OrganizationPDF() {
                     type="number"
                     value={template.margin_right}
                     onChange={(e) => updateTemplate('margin_right', parseInt(e.target.value) || 0)}
-                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="h-10 bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   />
                 </div>
               </div>
@@ -507,7 +507,7 @@ export default function OrganizationPDF() {
                   placeholder="Texto personalizado para el pie de página..."
                   value={template.footer_text || ''}
                   onChange={(e) => updateTemplate('footer_text', e.target.value)}
-                  className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
+                  className="min-h-[80px] bg-surface-secondary border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
                 />
               </div>
 
