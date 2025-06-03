@@ -41,19 +41,48 @@ export const authService = {
   },
 
   async signUp(email: string, password: string, firstName: string, lastName: string, organizationName?: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          role: 'admin', // Por defecto asignar rol de admin para pruebas
-          organization: organizationName,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            role: 'user', // Rol por defecto
+            organization: organizationName,
+          },
         },
-      },
-    });
-    return { data, error };
+      });
+
+      if (error) {
+        return { data, error };
+      }
+
+      // Si el registro fue exitoso, esperar un momento para que el trigger se ejecute
+      if (data.user) {
+        // Pequeña pausa para permitir que el trigger de base de datos se ejecute
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Verificar que el usuario se creó correctamente en la tabla users
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_id', data.user.id)
+          .single();
+
+        if (userError) {
+          console.log('Usuario creado en auth pero no en tabla users:', userError);
+        } else {
+          console.log('Usuario creado correctamente:', userData);
+        }
+      }
+
+      return { data, error };
+    } catch (err) {
+      console.error('Error en signUp:', err);
+      return { data: null, error: err as any };
+    }
   },
 
   async signOut() {
