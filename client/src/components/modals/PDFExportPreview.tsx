@@ -71,6 +71,22 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     signatures: true
   });
 
+  // Estados para parámetros editables
+  const [pdfParams, setPdfParams] = useState({
+    clientName: 'Dr Samuel Johnstone',
+    clientAddress: '28 Westview Drive\nNorth Vancouver, BC',
+    projectCode: 'J1278',
+    projectName: 'Johnstone Family Custom Home',
+    description: 'New Change Order',
+    showUnitColumn: true,
+    showPriceColumn: true,
+    showTaxCalculation: true,
+    taxRate: 10,
+    showClientSignature: true,
+    showCompanySignature: true,
+    showPageNumbers: true
+  });
+
   const toggleAccordion = (accordionId: string) => {
     setActiveAccordion(activeAccordion === accordionId ? null : accordionId);
   };
@@ -122,30 +138,31 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         throw new Error('PDF preview content not found');
       }
 
+      // Remover temporalmente el transform para captura exacta
+      const originalTransform = element.style.transform;
+      element.style.transform = 'none';
+      element.style.width = '794px'; // A4 width in pixels at 96 DPI
+      element.style.minHeight = '1123px'; // A4 height in pixels at 96 DPI
+
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 1,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        width: 794,
+        height: 1123
       });
+
+      // Restaurar el transform original
+      element.style.transform = originalTransform;
+      element.style.width = '210mm';
+      element.style.minHeight = '297mm';
 
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
+      const imgHeight = 297;
 
-      let position = 0;
-
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
 
       pdf.save(`${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
       onClose();
@@ -235,7 +252,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         checked={section.enabled}
                         onCheckedChange={() => toggleSection(section.id)}
                         onClick={(e) => e.stopPropagation()}
-                        className="data-[state=checked]:bg-primary"
+                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white"
                       />
                       {activeAccordion === section.id ? 
                         <ChevronDown className="w-4 h-4 text-muted-foreground" /> : 
@@ -252,7 +269,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <span className="text-xs font-medium">Show Company Name</span>
                             <Switch 
                               checked={template?.company_name_show || false} 
-                              className="data-[state=checked]:bg-primary" 
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
                             />
                           </div>
                           <div>
@@ -272,7 +289,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <input 
                               type="text" 
                               className="w-full mt-1 px-2 py-1 text-xs border rounded" 
-                              placeholder="Dr Samuel Johnstone"
+                              value={pdfParams.clientName}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, clientName: e.target.value }))}
                             />
                           </div>
                           <div>
@@ -280,7 +298,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <textarea 
                               className="w-full mt-1 px-2 py-1 text-xs border rounded" 
                               rows={3}
-                              placeholder="28 Westview Drive, North Vancouver, BC"
+                              value={pdfParams.clientAddress}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, clientAddress: e.target.value }))}
                             />
                           </div>
                         </div>
@@ -292,7 +311,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <input 
                               type="text" 
                               className="w-full mt-1 px-2 py-1 text-xs border rounded" 
-                              placeholder="J1278"
+                              value={pdfParams.projectCode}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, projectCode: e.target.value }))}
                             />
                           </div>
                           <div>
@@ -300,7 +320,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <input 
                               type="text" 
                               className="w-full mt-1 px-2 py-1 text-xs border rounded" 
-                              placeholder="Johnstone Family Custom Home"
+                              value={pdfParams.projectName}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, projectName: e.target.value }))}
                             />
                           </div>
                         </div>
@@ -312,7 +333,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             <textarea 
                               className="w-full mt-1 px-2 py-1 text-xs border rounded" 
                               rows={3}
-                              placeholder="New Change Order"
+                              value={pdfParams.description}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, description: e.target.value }))}
                             />
                           </div>
                         </div>
@@ -321,11 +343,19 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Show Unit Column</span>
-                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                            <Switch 
+                              checked={pdfParams.showUnitColumn}
+                              onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showUnitColumn: checked }))}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                            />
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Show Price Column</span>
-                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                            <Switch 
+                              checked={pdfParams.showPriceColumn}
+                              onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPriceColumn: checked }))}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                            />
                           </div>
                         </div>
                       )}
@@ -333,14 +363,19 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Show Tax Calculation</span>
-                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                            <Switch 
+                              checked={pdfParams.showTaxCalculation}
+                              onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showTaxCalculation: checked }))}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                            />
                           </div>
                           <div>
                             <label className="text-xs font-medium">Tax Rate (%)</label>
                             <input 
                               type="number" 
                               className="w-full mt-1 px-2 py-1 text-xs border rounded" 
-                              defaultValue="10"
+                              value={pdfParams.taxRate}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
                             />
                           </div>
                         </div>
@@ -358,8 +393,9 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Show Page Numbers</span>
                             <Switch 
-                              className="data-[state=checked]:bg-primary" 
-                              defaultChecked={template?.footer_show_page_numbers}
+                              checked={pdfParams.showPageNumbers}
+                              onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showPageNumbers: checked }))}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
                             />
                           </div>
                         </div>
@@ -368,11 +404,19 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Show Client Signature</span>
-                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                            <Switch 
+                              checked={pdfParams.showClientSignature}
+                              onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showClientSignature: checked }))}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                            />
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium">Show Company Signature</span>
-                            <Switch className="data-[state=checked]:bg-primary" defaultChecked />
+                            <Switch 
+                              checked={pdfParams.showCompanySignature}
+                              onCheckedChange={(checked) => setPdfParams(prev => ({ ...prev, showCompanySignature: checked }))}
+                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary [&>span]:data-[state=checked]:bg-white" 
+                            />
                           </div>
                         </div>
                       )}
@@ -477,9 +521,9 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             To:
                           </div>
                           <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                            <div>Dr Samuel Johnstone</div>
-                            <div>28 Westview Drive</div>
-                            <div>North Vancouver, BC</div>
+                            {pdfParams.clientAddress.split('\n').map((line, index) => (
+                              <div key={index}>{line || pdfParams.clientName}</div>
+                            ))}
                           </div>
                         </div>
                       )}
@@ -490,7 +534,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             Job:
                           </div>
                           <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                            <div>J1278 - Johnstone Family Custom Home</div>
+                            <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
                             <div className="mt-2">
                               <div>Start Date: ___________</div>
                               <div>Delay Days: ___0___</div>
@@ -509,7 +553,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         Details:
                       </div>
                       <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                        New Change Order
+                        {pdfParams.description}
                       </div>
                     </div>
                   )}
@@ -540,33 +584,37 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                       border: `1px solid ${template?.secondary_color || '#000000'}`,
                                       color: template?.text_color || '#000000',
                                       fontSize: `${template?.body_size || 11}px`,
-                                      width: '50%'
+                                      width: pdfParams.showUnitColumn && pdfParams.showPriceColumn ? '50%' : '70%'
                                     }}
                                   >
                                     Item Description
                                   </th>
-                                  <th 
-                                    className="px-3 py-2 text-center font-normal"
-                                    style={{ 
-                                      border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                      color: template?.text_color || '#000000',
-                                      fontSize: `${template?.body_size || 11}px`,
-                                      width: '15%'
-                                    }}
-                                  >
-                                    Qty Unit
-                                  </th>
-                                  <th 
-                                    className="px-3 py-2 text-center font-normal"
-                                    style={{ 
-                                      border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                      color: template?.text_color || '#000000',
-                                      fontSize: `${template?.body_size || 11}px`,
-                                      width: '15%'
-                                    }}
-                                  >
-                                    Unit Price
-                                  </th>
+                                  {pdfParams.showUnitColumn && (
+                                    <th 
+                                      className="px-3 py-2 text-center font-normal"
+                                      style={{ 
+                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                        color: template?.text_color || '#000000',
+                                        fontSize: `${template?.body_size || 11}px`,
+                                        width: '15%'
+                                      }}
+                                    >
+                                      Qty Unit
+                                    </th>
+                                  )}
+                                  {pdfParams.showPriceColumn && (
+                                    <th 
+                                      className="px-3 py-2 text-center font-normal"
+                                      style={{ 
+                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                        color: template?.text_color || '#000000',
+                                        fontSize: `${template?.body_size || 11}px`,
+                                        width: '15%'
+                                      }}
+                                    >
+                                      Unit Price
+                                    </th>
+                                  )}
                                   <th 
                                     className="px-3 py-2 text-right font-normal"
                                     style={{ 
@@ -593,26 +641,30 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                     >
                                       {item.name}
                                     </td>
-                                    <td 
-                                      className="px-3 py-2 text-center"
-                                      style={{ 
-                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                        color: template?.text_color || '#000000',
-                                        fontSize: `${template?.body_size || 11}px`
-                                      }}
-                                    >
-                                      {item.amount} {item.unit_name}
-                                    </td>
-                                    <td 
-                                      className="px-3 py-2 text-center"
-                                      style={{ 
-                                        border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                        color: template?.text_color || '#000000',
-                                        fontSize: `${template?.body_size || 11}px`
-                                      }}
-                                    >
-                                      ${item.unit_price?.toFixed(2) || '0.00'}
-                                    </td>
+                                    {pdfParams.showUnitColumn && (
+                                      <td 
+                                        className="px-3 py-2 text-center"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`
+                                        }}
+                                      >
+                                        {item.amount} {item.unit_name}
+                                      </td>
+                                    )}
+                                    {pdfParams.showPriceColumn && (
+                                      <td 
+                                        className="px-3 py-2 text-center"
+                                        style={{ 
+                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                          color: template?.text_color || '#000000',
+                                          fontSize: `${template?.body_size || 11}px`
+                                        }}
+                                      >
+                                        ${item.unit_price?.toFixed(2) || '0.00'}
+                                      </td>
+                                    )}
                                     <td 
                                       className="px-3 py-2 text-right"
                                       style={{ 
