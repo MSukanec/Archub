@@ -236,7 +236,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. Juan"
-                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -254,7 +254,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. Pérez"
-                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -273,7 +273,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                           <Input 
                             {...field} 
                             placeholder="ej. Constructora ABC"
-                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -346,7 +346,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                               {...field} 
                               type="email"
                               placeholder="ejemplo@email.com"
-                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -364,7 +364,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. +54 9 11 1234-5678"
-                              className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -383,7 +383,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                           <Input 
                             {...field} 
                             placeholder="ej. Buenos Aires, Argentina"
-                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -418,7 +418,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                         <Textarea 
                           {...field} 
                           placeholder="Información adicional sobre el contacto..."
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px]"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px]"
                         />
                       </FormControl>
                       <FormMessage />

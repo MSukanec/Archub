@@ -139,7 +139,7 @@ export default function AdminMaterialCategoriesModal({ isOpen, onClose, category
                 <FormControl>
                   <Input 
                     placeholder="Ej: Estructurales, Acabados, etc." 
-                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field} 
                   />
                 </FormControl>

@@ -189,7 +189,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
 
         <div className="p-2 flex-1 overflow-hidden">
           <Tabs defaultValue="available" className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-2 bg-[#d2d2d2]">
+            <TabsList className="grid w-full grid-cols-2 bg-surface-primary">
               <TabsTrigger 
                 value="available"
                 className="data-[state=active]:bg-surface-secondary data-[state=active]:text-foreground"
@@ -221,13 +221,13 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                     placeholder="Filtrar por nombre de tarea..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-[#d2d2d2] border-gray-300 focus:ring-primary focus:border-primary"
+                    className="pl-10 bg-surface-primary border-gray-300 focus:ring-primary focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Tabla de tareas disponibles */}
-              <div className="border border-gray-300 rounded-lg bg-[#d2d2d2] flex-1 overflow-hidden flex flex-col">
+              <div className="border border-gray-300 rounded-lg bg-surface-primary flex-1 overflow-hidden flex flex-col">
                 <div className="grid grid-cols-12 gap-2 p-3 border-b border-gray-300 bg-gray-100 font-medium text-sm">
                   <div className="col-span-1">Seleccionar</div>
                   <div className="col-span-6">Nombre de la tarea</div>
@@ -294,7 +294,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                   </h3>
                   <div className="space-y-2">
                     {selectedTasks.map((task) => (
-                      <div key={task.id} className="bg-[#d2d2d2] border border-gray-300 rounded-lg p-4">
+                      <div key={task.id} className="bg-surface-primary border border-gray-300 rounded-lg p-4">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <h4 className="font-medium text-foreground">

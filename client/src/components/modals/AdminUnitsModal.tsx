@@ -154,7 +154,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
                 <FormControl>
                   <Input
                     placeholder="Ej: m, kg, etc."
-                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -172,7 +172,7 @@ export default function AdminUnitsModal({ isOpen, onClose, unit }: AdminUnitsMod
                 <FormControl>
                   <Input
                     placeholder="Ej: Metro, Kilogramo, etc."
-                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>

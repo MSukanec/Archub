@@ -253,7 +253,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Juan" 
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -271,7 +271,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Pérez" 
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -289,7 +289,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Constructora ABC" 
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -307,7 +307,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Input 
                           placeholder="Ej: Buenos Aires, Argentina" 
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -337,7 +337,7 @@ export default function AdminContactsModal({
                         <Input 
                           type="email"
                           placeholder="ejemplo@email.com" 
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -386,7 +386,7 @@ export default function AdminContactsModal({
                       <FormControl>
                         <Textarea 
                           placeholder="Información adicional sobre el contacto..." 
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg min-h-[80px]"
                           {...field} 
                         />
                       </FormControl>

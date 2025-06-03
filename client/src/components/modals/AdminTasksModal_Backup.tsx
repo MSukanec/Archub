@@ -560,11 +560,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         value={selectedCategoryId}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar rubro" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
+                        <SelectContent className="bg-surface-primary border-input z-[10000]">
                           {mainCategories.map((category: any) => (
                             <SelectItem key={category.id} value={category.id.toString()}>
                               {category.code} - {category.name}
@@ -595,11 +595,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         disabled={!selectedCategoryId}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar subrubro" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
+                        <SelectContent className="bg-surface-primary border-input z-[10000]">
                           {subcategoriesFiltered.map((subcategory) => (
                             <SelectItem key={subcategory.id} value={String(subcategory.id)}>
                               {subcategory.code} - {subcategory.name}
@@ -628,11 +628,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         disabled={!selectedSubcategoryId}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar elemento" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
+                        <SelectContent className="bg-surface-primary border-input z-[10000]">
                           {elementCategoriesFiltered.map((element) => (
                             <SelectItem key={element.id} value={String(element.id)}>
                               {element.code} - {element.name}
@@ -663,10 +663,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                     onValueChange={setSelectedActionId}
                     value={selectedActionId}
                   >
-                    <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                    <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar acción" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
+                    <SelectContent className="bg-surface-primary border-input z-[10000]">
                       {actions.map((action) => (
                         <SelectItem key={action.id} value={action.id}>
                           {action.name}
@@ -691,11 +691,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                         value={field.value || ''}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar elemento" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
+                        <SelectContent className="bg-surface-primary border-input z-[10000]">
                           {taskElements.map((element) => (
                             <SelectItem key={element.id} value={element.id}>
                               {element.name}
@@ -718,7 +718,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <FormControl>
                         <Input 
                           placeholder="Se genera automáticamente al seleccionar acción y elemento"
-                          className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm cursor-not-allowed"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm cursor-not-allowed"
                           readOnly
                           {...field}
                         />
@@ -747,11 +747,11 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       <FormLabel className="text-xs font-medium text-foreground">Unidad</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                             <SelectValue placeholder="Seleccionar unidad" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#d2d2d2] border-input z-[10000]">
+                        <SelectContent className="bg-surface-primary border-input z-[10000]">
                           {units.map((unit) => (
                             <SelectItem key={unit.id} value={unit.id}>
                               {unit.name}
@@ -776,7 +776,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                             {...field}
                           />
                         </FormControl>
@@ -796,7 +796,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                             {...field}
                           />
                         </FormControl>
@@ -819,10 +819,10 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
-                      <SelectTrigger className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                      <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                         <SelectValue placeholder="Material" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#d2d2d2] border-input">
+                      <SelectContent className="bg-surface-primary border-input">
                         {materials.map((material) => (
                           <SelectItem key={material.id} value={material.id}>
                             {material.name}
@@ -837,7 +837,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                       placeholder="Cantidad"
                       value={materialQuantity}
                       onChange={(e) => setMaterialQuantity(e.target.value)}
-                      className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                      className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     />
                   </div>
 

@@ -164,7 +164,7 @@ export default function AdminElementsModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: Columna, Viga, etc."
-                    className="bg-[#d2d2d2] border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     {...field}
                   />
                 </FormControl>

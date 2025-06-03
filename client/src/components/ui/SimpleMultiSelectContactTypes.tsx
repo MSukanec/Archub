@@ -55,7 +55,7 @@ export function SimpleMultiSelectContactTypes({
         variant="outline"
         disabled
         className={cn(
-          "w-full justify-between bg-[#d2d2d2] border-input rounded-lg h-10",
+          "w-full justify-between bg-surface-primary border-input rounded-lg h-10",
           "text-left font-normal"
         )}
       >
@@ -72,7 +72,7 @@ export function SimpleMultiSelectContactTypes({
         variant="outline"
         disabled={disabled}
         className={cn(
-          "w-full justify-between bg-[#d2d2d2] border-input rounded-lg h-10",
+          "w-full justify-between bg-surface-primary border-input rounded-lg h-10",
           "text-left font-normal hover:bg-[#c8c8c8]",
           error && "border-destructive",
           value.length === 0 && "text-muted-foreground"
@@ -85,7 +85,7 @@ export function SimpleMultiSelectContactTypes({
       </Button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[#d2d2d2] border border-input rounded-lg shadow-lg z-50 max-h-[300px] overflow-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface-primary border border-input rounded-lg shadow-lg z-50 max-h-[300px] overflow-auto">
           {contactTypes.map((type) => (
             <div
               key={type.id}
