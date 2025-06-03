@@ -330,7 +330,7 @@ export default function OrganizationTeam() {
             const isExpanded = expandedMember === member.id;
 
             return (
-              <div key={member.id} className="p-6 hover:bg-muted/30 transition-colors">
+              <div key={member.id} className="p-6 bg-surface-primary hover:bg-surface-secondary transition-colors rounded-xl border border-input shadow-lg hover:shadow-xl mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">

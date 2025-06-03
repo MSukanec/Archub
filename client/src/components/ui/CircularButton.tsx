@@ -83,7 +83,7 @@ export default function CircularButton({
           cursor-pointer
           ${isActive 
             ? 'bg-black' 
-            : 'bg-surface-secondary'
+            : 'bg-surface-primary'
           }
           ${className}
           ${isHovered ? 'pressed' : ''}
