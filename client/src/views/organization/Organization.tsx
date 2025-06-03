@@ -8,6 +8,7 @@ import CreateOrganizationModal from '@/components/modals/CreateOrganizationModal
 
 export default function Organization() {
   const { organizationId } = useUserContextStore();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Fetch current organization details
   const { data: organization } = useQuery({
@@ -110,7 +111,7 @@ export default function Organization() {
           </div>
         </div>
         <Button
-          onClick={() => window.dispatchEvent(new CustomEvent('openCreateOrganizationModal'))}
+          onClick={() => setIsCreateModalOpen(true)}
           className="bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8bef] rounded-xl"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -219,6 +220,12 @@ export default function Organization() {
           </div>
         </div>
       </div>
+
+      {/* Create Organization Modal */}
+      <CreateOrganizationModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </div>
   );
 }

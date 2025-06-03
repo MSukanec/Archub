@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Building2, X } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -12,7 +11,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { useUserContextStore } from '@/stores/userContextStore';
 
 const createOrganizationSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -20,8 +18,6 @@ const createOrganizationSchema = z.object({
   address: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
-  website: z.string().url('URL inválida').optional().or(z.literal('')),
-  taxId: z.string().optional(),
 });
 
 type CreateOrganizationFormData = z.infer<typeof createOrganizationSchema>;
@@ -35,7 +31,6 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { organizationId } = useUserContextStore();
 
   const form = useForm<CreateOrganizationFormData>({
     resolver: zodResolver(createOrganizationSchema),
@@ -45,8 +40,6 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
       address: '',
       phone: '',
       email: '',
-      website: '',
-      taxId: '',
     },
   });
 
@@ -74,8 +67,6 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
           address: data.address || null,
           phone: data.phone || null,
           email: data.email || null,
-          website: data.website || null,
-          tax_id: data.taxId || null,
           owner_id: internalUser.id,
         })
         .select()
@@ -101,9 +92,6 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
         description: `${organization.name} ha sido creada exitosamente.`,
       });
       
-      // Actualizar el contexto del usuario con la nueva organización
-      switchOrganization(organization.id);
-      
       // Invalidar las queries relacionadas
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
       queryClient.invalidateQueries({ queryKey: ['organization'] });
@@ -111,6 +99,9 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
       
       form.reset();
       onClose();
+      
+      // Recargar la página para actualizar el contexto
+      window.location.reload();
     },
     onError: (error) => {
       console.error('Error creating organization:', error);
@@ -128,188 +119,135 @@ export default function CreateOrganizationModal({ isOpen, onClose }: CreateOrgan
 
   const handleClose = () => {
     form.reset();
-    setActiveAccordion('basic');
     onClose();
   };
 
   return (
-    <ModernModal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="Nueva Organización"
-      subtitle="Crea una nueva organización para gestionar tus proyectos"
-      icon={Building2}
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <ModalAccordion
-              title="Información Básica"
-              icon={Building2}
-              isOpen={activeAccordion === 'basic'}
-              onToggle={() => setActiveAccordion(activeAccordion === 'basic' ? null : 'basic')}
-            >
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre de la Organización *</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Ej: Constructora ABC S.A."
-                          {...field}
-                          className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[500px] bg-white">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-primary" />
+            Nueva Organización
+          </DialogTitle>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre de la Organización *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ej: Constructora ABC S.A."
+                      {...field}
+                      className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Descripción</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Breve descripción de la organización..."
-                          {...field}
-                          className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descripción</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Breve descripción de la organización..."
+                      {...field}
+                      className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <FormField
-                  control={form.control}
-                  name="taxId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>RUT/CUIT/NIT</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Ej: 12.345.678-9"
-                          {...field}
-                          className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </ModalAccordion>
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Dirección</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Dirección completa de la organización..."
+                      {...field}
+                      className="min-h-[60px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <ModalAccordion
-              title="Información de Contacto"
-              icon={Users}
-              isOpen={activeAccordion === 'contact'}
-              onToggle={() => setActiveAccordion(activeAccordion === 'contact' ? null : 'contact')}
-            >
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        Dirección
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Dirección completa de la organización..."
-                          {...field}
-                          className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teléfono</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: +54 11 1234-5678"
+                        {...field}
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
-                          Teléfono
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Ej: +54 11 1234-5678"
-                            {...field}
-                            className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="contacto@empresa.com"
+                        {...field}
+                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Mail className="w-4 h-4" />
-                          Email
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="contacto@empresa.com"
-                            {...field}
-                            className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
-                        Sitio Web
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://www.empresa.com"
-                          {...field}
-                          className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </ModalAccordion>
-          </div>
-
-          <ModalFooter
-            confirmText="Crear Organización"
-            onConfirm={() => form.handleSubmit(handleSubmit)()}
-            isLoading={createOrganizationMutation.isPending}
-          />
-        </form>
-      </Form>
-    </ModernModal>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={createOrganizationMutation.isPending}
+                className="bg-[#e0e0e0] hover:bg-[#d0d0d0] text-[#919191] border-[#919191]/20 rounded-xl"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={createOrganizationMutation.isPending}
+                className="bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
+              >
+                {createOrganizationMutation.isPending ? 'Creando...' : 'Crear Organización'}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }
