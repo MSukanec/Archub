@@ -193,7 +193,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         show_signature_fields: pdfParams.showSignatureFields,
         show_clarification_field: pdfParams.showClarificationField,
         show_date_field: pdfParams.showDateField,
-        signature_layout: 'vertical'
+        signature_layout: 'horizontal'
       };
 
       // Verificar si ya existe una plantilla para esta organización
@@ -772,19 +772,20 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                       padding: '12px'
                     }}
                   >
-                    {/* Firma del cliente */}
-                    <div className="mb-6">
-                      <div 
-                        className="font-semibold mb-3"
-                        style={{ 
-                          fontSize: `${template?.body_size || 11}px`,
-                          color: template?.text_color || '#000000'
-                        }}
-                      >
-                        Firma del cliente:
-                      </div>
-                      <div className={`grid gap-6 ${getGridCols()}`}>
-                        <div className="flex items-center">
+                    {/* Layout horizontal - firmas lado a lado */}
+                    <div className="grid grid-cols-2 gap-8">
+                      {/* Firma del cliente */}
+                      <div>
+                        <div 
+                          className="font-semibold mb-3"
+                          style={{ 
+                            fontSize: `${template?.body_size || 11}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          Firma del cliente:
+                        </div>
+                        <div className="space-y-2">
                           <div 
                             style={{ 
                               fontSize: `${template?.body_size || 10}px`,
@@ -793,9 +794,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           >
                             Firma: ________________________
                           </div>
-                        </div>
-                        {pdfParams.showClarificationField && (
-                          <div className="flex items-center">
+                          {pdfParams.showClarificationField && (
                             <div 
                               style={{ 
                                 fontSize: `${template?.body_size || 10}px`,
@@ -804,10 +803,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             >
                               Aclaración: ________________________
                             </div>
-                          </div>
-                        )}
-                        {pdfParams.showDateField && (
-                          <div className="flex items-center">
+                          )}
+                          {pdfParams.showDateField && (
                             <div 
                               style={{ 
                                 fontSize: `${template?.body_size || 10}px`,
@@ -816,24 +813,22 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             >
                               Fecha: _____ / _____ / _____
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Firma de la empresa */}
-                    <div className="mt-4">
-                      <div 
-                        className="font-semibold mb-3"
-                        style={{ 
-                          fontSize: `${template?.body_size || 11}px`,
-                          color: template?.text_color || '#000000'
-                        }}
-                      >
-                        Firma de {organization?.name || 'Empresa'}:
-                      </div>
-                      <div className={`grid gap-6 ${getGridCols()}`}>
-                        <div className="flex items-center">
+                      {/* Firma de la empresa */}
+                      <div>
+                        <div 
+                          className="font-semibold mb-3"
+                          style={{ 
+                            fontSize: `${template?.body_size || 11}px`,
+                            color: template?.text_color || '#000000'
+                          }}
+                        >
+                          Firma de {organization?.name || 'Empresa'}:
+                        </div>
+                        <div className="space-y-2">
                           <div 
                             style={{ 
                               fontSize: `${template?.body_size || 10}px`,
@@ -842,9 +837,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                           >
                             Firma: ________________________
                           </div>
-                        </div>
-                        {pdfParams.showClarificationField && (
-                          <div className="flex items-center">
+                          {pdfParams.showClarificationField && (
                             <div 
                               style={{ 
                                 fontSize: `${template?.body_size || 10}px`,
@@ -853,10 +846,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             >
                               Aclaración: ________________________
                             </div>
-                          </div>
-                        )}
-                        {pdfParams.showDateField && (
-                          <div className="flex items-center">
+                          )}
+                          {pdfParams.showDateField && (
                             <div 
                               style={{ 
                                 fontSize: `${template?.body_size || 10}px`,
@@ -865,8 +856,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                             >
                               Fecha: _____ / _____ / _____
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
