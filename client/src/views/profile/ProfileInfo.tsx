@@ -25,7 +25,9 @@ export default function ProfileInfo() {
 
   const handleThemeChange = async (isDark: boolean) => {
     const newTheme = isDark ? 'dark' : 'light';
+    console.log('Cambiando tema a:', newTheme);
     await setTheme(newTheme);
+    console.log('Tema cambiado exitosamente');
   };
 
   // Set navigation state when component mounts
