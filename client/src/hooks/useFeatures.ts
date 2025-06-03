@@ -43,20 +43,37 @@ export function useUserPlan() {
       if (!user?.id) return null;
       
       try {
-        // Try using the new is_admin RPC function to avoid recursion
+        // Direct query for user with plan data
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select(`
+            *,
+            plan:plans(*)
+          `)
+          .eq('auth_id', user.id)
+          .single();
+
+        console.log('Direct user query result:', userData);
+        console.log('Direct user query error:', userError);
+
+        if (!userError && userData) {
+          return userData;
+        }
+
+        // Fallback: Try using RPC function for admin
         const { data: isAdminResult, error: adminError } = await supabase
           .rpc('is_admin');
         
         if (!adminError && isAdminResult) {
           // User is admin, get their specific data
-          const { data: userData, error: userError } = await supabase
+          const { data: rpcUserData, error: rpcError } = await supabase
             .rpc('get_users_for_admin');
           
-          console.log('Admin user data from RPC:', userData);
-          console.log('Admin user error:', userError);
+          console.log('Admin user data from RPC:', rpcUserData);
+          console.log('Admin user error:', rpcError);
           
-          if (!userError && userData && Array.isArray(userData)) {
-            const currentUser = userData.find(u => u.auth_id === user.id);
+          if (!rpcError && rpcUserData && Array.isArray(rpcUserData)) {
+            const currentUser = rpcUserData.find(u => u.auth_id === user.id);
             console.log('Current admin user found:', currentUser);
             
             if (currentUser) {
@@ -89,21 +106,9 @@ export function useUserPlan() {
           }
         }
         
-        // For regular users or fallback
-        const { data, error } = await supabase
-          .from('users')
-          .select(`
-            *,
-            plan:plans(*)
-          `)
-          .eq('auth_id', user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching user plan:', error);
-          return null;
-        }
-        return data;
+        // Final fallback - should not reach here normally
+        console.error('Could not fetch user plan through any method');
+        return null;
       } catch (err) {
         console.error('Error in useUserPlan:', err);
         return null;
