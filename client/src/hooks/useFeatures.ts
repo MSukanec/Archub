@@ -54,12 +54,19 @@ export function useUserPlan() {
         
         if (users && Array.isArray(users) && plans) {
           const currentUser = users.find(u => u.auth_id === user.id);
+          console.log('Current user found:', currentUser);
+          console.log('Available plans:', plans);
+          
           if (currentUser) {
             const userPlan = plans.find(p => p.id === currentUser.plan_id);
-            return {
+            console.log('User plan found:', userPlan);
+            
+            const result = {
               ...currentUser,
               plan: userPlan || null
             };
+            console.log('Final useUserPlan result:', result);
+            return result;
           }
         }
 
