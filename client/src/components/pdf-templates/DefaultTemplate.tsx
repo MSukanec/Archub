@@ -27,13 +27,13 @@ export default function DefaultTemplate({
       className="bg-white shadow-lg border border-gray-300"
       style={{ 
         width: '210mm',
-        height: '297mm',
+        minHeight: '297mm',
         fontFamily: 'Arial',
         color: '#000000',
         backgroundColor: '#ffffff',
         transform: `scale(${zoomLevel})`,
         transformOrigin: 'top center',
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
     >
       <div className="p-12 text-black">

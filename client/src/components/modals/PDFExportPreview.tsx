@@ -219,29 +219,44 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         throw new Error('PDF preview content not found');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Crear un elemento temporal sin zoom para exportación
+      const exportElement = element.cloneNode(true) as HTMLElement;
+      exportElement.id = 'pdf-export-temp';
+      exportElement.style.transform = 'scale(1)';
+      exportElement.style.transformOrigin = 'top left';
+      exportElement.style.position = 'absolute';
+      exportElement.style.left = '-9999px';
+      exportElement.style.top = '0';
+      document.body.appendChild(exportElement);
 
-      const canvas = await html2canvas(element, {
-        scale: 3,
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      const canvas = await html2canvas(exportElement, {
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
-        width: element.scrollWidth,
-        height: element.scrollHeight
+        width: exportElement.scrollWidth,
+        height: exportElement.scrollHeight
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      // Limpiar elemento temporal
+      document.body.removeChild(exportElement);
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgWidth = 210;
-      const pageHeight = 295;
+      const pageHeight = 297;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
       let position = 0;
 
+      // Primera página
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
+      // Páginas adicionales si es necesario
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -603,8 +618,42 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
           {/* Right Column - PDF Preview */}
           <div className="flex-1 overflow-auto bg-gray-100 p-6">
-            <div className="flex justify-center">
-              {renderSelectedTemplate()}
+            <div className="flex flex-col items-center space-y-6">
+              {/* Página principal */}
+              <div className="relative">
+                {renderSelectedTemplate()}
+                
+                {/* Indicador de página */}
+                <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-3 py-1 rounded-full text-xs">
+                  Página 1
+                </div>
+              </div>
+              
+              {/* Páginas adicionales si el contenido es muy largo */}
+              <div className="w-full flex justify-center">
+                <div 
+                  className="bg-white shadow-lg border border-gray-300 relative"
+                  style={{ 
+                    width: '210mm',
+                    minHeight: '100px',
+                    transform: `scale(${zoomLevel})`,
+                    transformOrigin: 'top center',
+                    opacity: 0.3
+                  }}
+                >
+                  <div className="p-8 flex items-center justify-center h-full">
+                    <div className="text-gray-500 text-center">
+                      <div className="text-sm">Página adicional</div>
+                      <div className="text-xs mt-1">(Se creará automáticamente si es necesario)</div>
+                    </div>
+                  </div>
+                  
+                  {/* Indicador de página */}
+                  <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-500 text-white px-3 py-1 rounded-full text-xs">
+                    Página 2
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

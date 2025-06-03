@@ -29,7 +29,7 @@ export default function ModernTemplate({
       className="bg-white shadow-lg border border-gray-300"
       style={{ 
         width: '210mm',
-        height: '297mm',
+        minHeight: '297mm',
         fontFamily: template?.font_family || 'Arial',
         fontSize: `${template?.body_size || 12}px`,
         lineHeight: '1.5',
@@ -37,7 +37,7 @@ export default function ModernTemplate({
         backgroundColor: template?.background_color || '#ffffff',
         transform: `scale(${zoomLevel})`,
         transformOrigin: 'top center',
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
     >
       {/* Header Section */}
