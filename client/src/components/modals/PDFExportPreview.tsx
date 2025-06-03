@@ -98,7 +98,15 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     showClarificationField: true,
     showDateField: true,
     footerInfo: 'Documento generado por Archub. www.archub.com',
-    showFooterInfo: true
+    showFooterInfo: true,
+    pageSize: 'A4',
+    pageOrientation: 'portrait',
+    customWidth: null as number | null,
+    customHeight: null as number | null,
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginRight: 20
   });
 
   // Cargar plantilla PDF
@@ -294,6 +302,29 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     return data.reduce((total, item) => total + (item.total_price || 0), 0);
   };
 
+  // Función para obtener dimensiones de página
+  const getPageDimensions = () => {
+    const sizes: Record<string, { width: number; height: number }> = {
+      'A4': { width: 210, height: 297 },
+      'A3': { width: 297, height: 420 },
+      'A5': { width: 148, height: 210 },
+      'Letter': { width: 216, height: 279 },
+      'Legal': { width: 216, height: 356 },
+      'Custom': { 
+        width: pdfParams.customWidth || 210, 
+        height: pdfParams.customHeight || 297 
+      }
+    };
+    
+    const dimensions = sizes[pdfParams.pageSize] || sizes['A4'];
+    
+    if (pdfParams.pageOrientation === 'landscape') {
+      return { width: dimensions.height, height: dimensions.width };
+    }
+    
+    return dimensions;
+  };
+
   // Funciones de zoom
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
@@ -436,9 +467,158 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
           {/* Left Column - Options - Mostrar siempre */}
           <div className="w-1/3 border-r border-border p-6 overflow-y-auto bg-surface">
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-foreground mb-4">SECCIONES</h3>
+              <h3 className="text-sm font-medium text-foreground mb-4">CONFIGURACIÓN</h3>
                 
-                {/* Acordeones */}
+                {/* Acordeón de Configuración de Página */}
+                <div className="border-2 border-border rounded-lg overflow-hidden mb-4">
+                  <div 
+                    className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover transition-colors"
+                    onClick={() => toggleAccordion('page-config')}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <FileText className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Tamaño de Página y Márgenes</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {activeAccordion === 'page-config' ? 
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" /> : 
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      }
+                    </div>
+                  </div>
+                  
+                  {/* Contenido del acordeón de página */}
+                  {activeAccordion === 'page-config' && (
+                    <div className="p-4 bg-surface border-t border-border space-y-4">
+                      {/* Tamaño de página */}
+                      <div>
+                        <label className="text-xs font-medium mb-2 block">Tamaño de Página</label>
+                        <select
+                          value={pdfParams.pageSize}
+                          onChange={(e) => setPdfParams(prev => ({ ...prev, pageSize: e.target.value }))}
+                          className="w-full p-2 text-xs border border-border rounded bg-background"
+                        >
+                          <option value="A4">A4 (210 × 297 mm)</option>
+                          <option value="A3">A3 (297 × 420 mm)</option>
+                          <option value="A5">A5 (148 × 210 mm)</option>
+                          <option value="Letter">Letter (216 × 279 mm)</option>
+                          <option value="Legal">Legal (216 × 356 mm)</option>
+                          <option value="Custom">Personalizado</option>
+                        </select>
+                      </div>
+
+                      {/* Orientación */}
+                      <div>
+                        <label className="text-xs font-medium mb-2 block">Orientación</label>
+                        <div className="flex space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => setPdfParams(prev => ({ ...prev, pageOrientation: 'portrait' }))}
+                            className={`flex-1 p-2 text-xs border rounded ${
+                              pdfParams.pageOrientation === 'portrait' 
+                                ? 'bg-primary text-primary-foreground border-primary' 
+                                : 'bg-background border-border'
+                            }`}
+                          >
+                            Vertical
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPdfParams(prev => ({ ...prev, pageOrientation: 'landscape' }))}
+                            className={`flex-1 p-2 text-xs border rounded ${
+                              pdfParams.pageOrientation === 'landscape' 
+                                ? 'bg-primary text-primary-foreground border-primary' 
+                                : 'bg-background border-border'
+                            }`}
+                          >
+                            Horizontal
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Dimensiones personalizadas */}
+                      {pdfParams.pageSize === 'Custom' && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs font-medium mb-1 block">Ancho (mm)</label>
+                            <input
+                              type="number"
+                              value={pdfParams.customWidth || ''}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, customWidth: e.target.value ? Number(e.target.value) : null }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              placeholder="210"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium mb-1 block">Alto (mm)</label>
+                            <input
+                              type="number"
+                              value={pdfParams.customHeight || ''}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, customHeight: e.target.value ? Number(e.target.value) : null }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              placeholder="297"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Márgenes */}
+                      <div>
+                        <label className="text-xs font-medium mb-2 block">Márgenes (mm)</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Superior</label>
+                            <input
+                              type="number"
+                              value={pdfParams.marginTop}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, marginTop: Number(e.target.value) }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              min="0"
+                              max="50"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Inferior</label>
+                            <input
+                              type="number"
+                              value={pdfParams.marginBottom}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, marginBottom: Number(e.target.value) }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              min="0"
+                              max="50"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Izquierdo</label>
+                            <input
+                              type="number"
+                              value={pdfParams.marginLeft}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, marginLeft: Number(e.target.value) }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              min="0"
+                              max="50"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground mb-1 block">Derecho</label>
+                            <input
+                              type="number"
+                              value={pdfParams.marginRight}
+                              onChange={(e) => setPdfParams(prev => ({ ...prev, marginRight: Number(e.target.value) }))}
+                              className="w-full p-2 text-xs border border-border rounded bg-background"
+                              min="0"
+                              max="50"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="text-sm font-medium text-foreground mb-4">SECCIONES</h3>
+                
+                {/* Acordeones de secciones */}
                 {[
                   { id: 'header' as keyof typeof sectionStates, label: 'Encabezado e Información de Empresa', enabled: sectionStates.header, icon: Building2 },
                   { id: 'project' as keyof typeof sectionStates, label: 'Detalles del Proyecto', enabled: sectionStates.project, icon: Briefcase },
