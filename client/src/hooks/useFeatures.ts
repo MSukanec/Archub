@@ -47,6 +47,9 @@ export function useUserPlan() {
         const { data: userData, error } = await supabase
           .rpc('get_current_user_with_plan');
         
+        console.log('RPC get_current_user_with_plan result:', userData);
+        console.log('RPC get_current_user_with_plan error:', error);
+        
         if (error) {
           console.error('Error fetching user plan:', error);
           return null;
@@ -54,6 +57,7 @@ export function useUserPlan() {
 
         if (userData && userData.length > 0) {
           const userRecord = userData[0];
+          console.log('User record from RPC:', userRecord);
           
           // Transform the flat structure to match expected format
           const result = {
