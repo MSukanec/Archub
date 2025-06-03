@@ -1,5 +1,6 @@
 export { default as DefaultTemplate } from './DefaultTemplate';
 export { default as ModernTemplate } from './ModernTemplate';
+export { default as TechnicalTemplate } from './TechnicalTemplate';
 
 // Exportar tipos de plantillas disponibles
 export const TEMPLATE_TYPES = {

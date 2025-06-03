@@ -9,7 +9,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { DefaultTemplate, ModernTemplate, TEMPLATE_OPTIONS, TemplateType } from '@/components/pdf-templates';
+import { DefaultTemplate, ModernTemplate, TechnicalTemplate, TEMPLATE_OPTIONS, TemplateType } from '@/components/pdf-templates';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;
@@ -294,11 +294,12 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     switch (selectedTemplate) {
       case 'modern':
         return <ModernTemplate {...templateProps} />;
+      case 'technical':
+        return <TechnicalTemplate {...templateProps} />;
       case 'default':
         return <DefaultTemplate {...templateProps} />;
-      case 'technical':
       case 'compact':
-        // Por ahora renderizar la plantilla por defecto hasta que se implementen
+        // Por ahora renderizar la plantilla por defecto hasta que se implemente
         return <DefaultTemplate {...templateProps} />;
       default:
         return <DefaultTemplate {...templateProps} />;
