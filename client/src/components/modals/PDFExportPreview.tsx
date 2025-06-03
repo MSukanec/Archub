@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FileText, Download, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -69,19 +68,18 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     enabled: !!organizationId && isOpen,
   });
 
-  // Fetch organization data
+  // Fetch organization
   const { data: organization } = useQuery({
     queryKey: ['organization', organizationId],
     queryFn: async () => {
       if (!organizationId) return null;
       
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('organizations')
         .select('*')
         .eq('id', organizationId)
         .single();
       
-      if (error) throw error;
       return data;
     },
     enabled: !!organizationId && isOpen,
@@ -90,15 +88,14 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Simular exportación
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Crear un blob con el contenido PDF simulado
+      // Generate PDF content
       const pdfContent = generatePDFContent();
+      
+      // Create blob and download
       const blob = new Blob([pdfContent], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       
-      // Crear enlace de descarga
+      // Create download link
       const link = document.createElement('a');
       link.href = url;
       link.download = `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
@@ -196,159 +193,119 @@ startxref
         </div>
       }
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-hidden">
-        {/* Vista previa */}
-        <div className="lg:col-span-2 overflow-auto">
-          <Card className="rounded-2xl shadow-md border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <FileText className="w-4 h-4" />
-                Vista Previa del {type === 'budget' ? 'Presupuesto' : 'Reporte de Materiales'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Header del PDF */}
-              <div className="mb-6 p-4 border rounded-lg bg-surface-secondary">
-                <div className="flex items-center justify-between mb-4">
-                  {template?.logo_url && (
-                    <img 
-                      src={template.logo_url} 
-                      alt="Logo" 
-                      className="h-12 object-contain"
-                      style={{
-                        width: `${template.logo_width}px`,
-                        height: `${template.logo_height}px`
-                      }}
-                    />
-                  )}
-                  {template?.company_name_show && organization?.name && (
-                    <h1 
-                      className="font-bold"
-                      style={{
-                        fontSize: `${template.company_name_size}px`,
-                        color: template.company_name_color
-                      }}
-                    >
-                      {organization.name}
-                    </h1>
-                  )}
-                </div>
-                <h2 
-                  className="font-semibold"
+      {/* Vista previa del PDF que ocupa todo el modal con fondo blanco */}
+      <div 
+        className="w-full h-full overflow-auto"
+        style={{ 
+          fontFamily: template?.font_family || 'Arial',
+          backgroundColor: '#ffffff',
+          color: '#000000'
+        }}
+      >
+        {/* Contenido del PDF simulando una hoja de impresión */}
+        <div className="bg-white text-black p-8 min-h-full shadow-sm border border-gray-200">
+          {/* Header del PDF */}
+          <div className="mb-8 pb-4 border-b border-gray-300">
+            <div className="flex items-center justify-between mb-4">
+              {template?.logo_url && (
+                <img 
+                  src={template.logo_url} 
+                  alt="Logo" 
+                  className="object-contain"
                   style={{
-                    fontSize: `${template?.title_size || 18}px`,
-                    color: template?.text_color || '#1f2937'
+                    width: `${template.logo_width}px`,
+                    height: `${template.logo_height}px`
+                  }}
+                />
+              )}
+              {template?.company_name_show && organization?.name && (
+                <h1 
+                  className="font-bold text-black"
+                  style={{
+                    fontSize: `${template.company_name_size}px`,
+                    color: '#000000'
                   }}
                 >
-                  {title}
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  Fecha: {new Date().toLocaleDateString()}
-                </p>
-              </div>
-
-              {/* Contenido del presupuesto */}
-              <div className="space-y-4">
-                {data.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">
-                    No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
-                  </p>
-                ) : (
-                  <>
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse border border-gray-300">
-                        <thead>
-                          <tr style={{ backgroundColor: template?.secondary_color || '#e5e7eb' }}>
-                            <th className="border border-gray-300 px-3 py-2 text-left">Descripción</th>
-                            <th className="border border-gray-300 px-3 py-2 text-center">Cantidad</th>
-                            <th className="border border-gray-300 px-3 py-2 text-center">Precio Unit.</th>
-                            <th className="border border-gray-300 px-3 py-2 text-right">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {data.map((item, index) => (
-                            <tr key={index}>
-                              <td className="border border-gray-300 px-3 py-2">
-                                <div>
-                                  <div className="font-medium">{item.name}</div>
-                                  {item.description && (
-                                    <div className="text-sm text-gray-600">{item.description}</div>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="border border-gray-300 px-3 py-2 text-center">
-                                {item.amount} {item.unit_name}
-                              </td>
-                              <td className="border border-gray-300 px-3 py-2 text-center">
-                                ${item.unit_price?.toFixed(2) || '0.00'}
-                              </td>
-                              <td className="border border-gray-300 px-3 py-2 text-right font-medium">
-                                ${item.total_price?.toFixed(2) || '0.00'}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                        <tfoot>
-                          <tr style={{ backgroundColor: template?.primary_color || '#4f9eff', color: 'white' }}>
-                            <td colSpan={3} className="border border-gray-300 px-3 py-2 text-right font-bold">
-                              Total General:
-                            </td>
-                            <td className="border border-gray-300 px-3 py-2 text-right font-bold">
-                              ${calculateTotal().toFixed(2)}
-                            </td>
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>
-
-                    {/* Footer */}
-                    {template?.footer_text && (
-                      <div className="mt-6 pt-4 border-t text-sm text-gray-600">
-                        {template.footer_text}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Panel de configuración */}
-        <div className="overflow-auto">
-          <Card className="rounded-2xl shadow-md border-0">
-            <CardHeader>
-              <CardTitle className="text-sm">Información del Documento</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-xs font-medium text-gray-600">Título</label>
-                <p className="text-sm">{title}</p>
-              </div>
-              
-              <div>
-                <label className="text-xs font-medium text-gray-600">Tipo</label>
-                <p className="text-sm capitalize">{type === 'budget' ? 'Presupuesto' : 'Materiales'}</p>
-              </div>
-              
-              <div>
-                <label className="text-xs font-medium text-gray-600">Total de elementos</label>
-                <p className="text-sm">{data.length}</p>
-              </div>
-              
-              <div>
-                <label className="text-xs font-medium text-gray-600">Valor total</label>
-                <p className="text-sm font-semibold">${calculateTotal().toFixed(2)}</p>
-              </div>
-
-              {template && (
-                <div>
-                  <label className="text-xs font-medium text-gray-600">Plantilla</label>
-                  <p className="text-sm">{template.name}</p>
-                </div>
+                  {organization.name}
+                </h1>
               )}
-            </CardContent>
-          </Card>
+            </div>
+            <h2 
+              className="font-semibold text-black mb-2"
+              style={{
+                fontSize: `${template?.title_size || 18}px`
+              }}
+            >
+              {title}
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Fecha: {new Date().toLocaleDateString()}
+            </p>
+          </div>
+
+          {/* Contenido del presupuesto */}
+          <div className="space-y-4">
+            {data.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No hay datos para mostrar en el {type === 'budget' ? 'presupuesto' : 'reporte'}
+              </p>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-400">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-400 px-3 py-2 text-left text-black font-semibold">Descripción</th>
+                        <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Cantidad</th>
+                        <th className="border border-gray-400 px-3 py-2 text-center text-black font-semibold">Precio Unit.</th>
+                        <th className="border border-gray-400 px-3 py-2 text-right text-black font-semibold">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((item, index) => (
+                        <tr key={index} className="bg-white">
+                          <td className="border border-gray-400 px-3 py-2 text-black">
+                            <div>
+                              <div className="font-medium">{item.name}</div>
+                              {item.description && (
+                                <div className="text-sm text-gray-600">{item.description}</div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-center text-black">
+                            {item.amount} {item.unit_name}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-center text-black">
+                            ${item.unit_price?.toFixed(2) || '0.00'}
+                          </td>
+                          <td className="border border-gray-400 px-3 py-2 text-right text-black font-medium">
+                            ${item.total_price?.toFixed(2) || '0.00'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="bg-gray-50">
+                        <td colSpan={3} className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
+                          Total General:
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2 text-right font-bold text-black">
+                          ${calculateTotal().toFixed(2)}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                {/* Footer */}
+                {template?.footer_text && (
+                  <div className="mt-8 pt-4 border-t border-gray-300 text-sm text-gray-600">
+                    {template.footer_text}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </ModernModal>
