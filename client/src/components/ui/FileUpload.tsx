@@ -70,6 +70,29 @@ export const FileUpload = ({
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = folder ? `${folder}/${fileName}` : fileName;
 
+      // First, check if bucket exists, if not create it
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      
+      if (bucketsError) {
+        throw bucketsError;
+      }
+
+      const bucketExists = buckets.some(b => b.name === bucket);
+      
+      if (!bucketExists) {
+        console.log(`Creating bucket: ${bucket}`);
+        const { error: createBucketError } = await supabase.storage.createBucket(bucket, {
+          public: true,
+          allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
+          fileSizeLimit: maxSizeBytes
+        });
+        
+        if (createBucketError) {
+          console.error('Error creating bucket:', createBucketError);
+          // Continue anyway, maybe bucket exists but wasn't listed
+        }
+      }
+
       // Upload file to Supabase Storage
       const { data, error } = await supabase.storage
         .from(bucket)
