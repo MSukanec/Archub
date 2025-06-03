@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PhoneInputField } from '@/components/ui/PhoneInput';
 import { SimpleMultiSelectContactTypes } from '@/components/ui/SimpleMultiSelectContactTypes';
 import { useToast } from '@/hooks/use-toast';
@@ -59,36 +58,34 @@ export default function AdminContactsModal({
     },
   });
 
-  // Reset form when contact changes or modal opens
+  // Reset form when modal opens/closes or contact changes
   useEffect(() => {
-    const loadContactTypes = async () => {
-      if (isOpen) {
-        let contactTypeIds: string[] = [];
-        
-        if (contact) {
-          try {
-            const types = await contactTypesService.getContactTypesByContactId(contact.id);
-            contactTypeIds = types.map(t => t.id);
-          } catch (error) {
-            console.error('Error loading contact types:', error);
-          }
-        }
-
+    if (isOpen) {
+      if (contact) {
         form.reset({
-          first_name: contact?.first_name || '',
-          last_name: contact?.last_name || '',
-          company_name: contact?.company_name || '',
-          email: contact?.email || '',
-          phone: contact?.phone || '',
-          location: contact?.location || '',
-          notes: contact?.notes || '',
-          contact_type_ids: contactTypeIds,
+          first_name: contact.first_name || '',
+          last_name: contact.last_name || '',
+          company_name: contact.company_name || '',
+          email: contact.email || '',
+          phone: contact.phone || '',
+          location: contact.location || '',
+          notes: contact.notes || '',
+          contact_type_ids: contact.contact_types?.map((type: any) => type.id) || [],
+        });
+      } else {
+        form.reset({
+          first_name: '',
+          last_name: '',
+          company_name: '',
+          email: '',
+          phone: '',
+          location: '',
+          notes: '',
+          contact_type_ids: [],
         });
       }
-    };
-
-    loadContactTypes();
-  }, [contact, isOpen, form]);
+    }
+  }, [isOpen, contact, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ContactFormData) => {
@@ -182,28 +179,6 @@ export default function AdminContactsModal({
     onClose();
     form.reset();
   };
-
-  const footer = (
-    <div className="flex gap-3 w-full">
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleClose}
-        disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
-      >
-        Cancelar
-      </Button>
-      <Button
-        type="submit"
-        form="contact-form"
-        disabled={isSubmitting}
-        className="w-3/4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
-      >
-        {isSubmitting ? 'Guardando...' : (contact ? 'Actualizar' : 'Crear')}
-      </Button>
-    </div>
-  );
 
   return (
     <ModernModal
