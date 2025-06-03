@@ -127,7 +127,7 @@ export default function ModernModal({
       
       {/* Modal */}
       <div 
-        className="modern-modal absolute bg-surface-views shadow-2xl flex flex-col border-l border-border/20"
+        className="modern-modal absolute bg-surface-views shadow-2xl border-l border-border/20"
         style={{ 
           top: 0, 
           right: 0, 
@@ -136,7 +136,9 @@ export default function ModernModal({
           minWidth: '420px',
           height: '100vh',
           margin: 0,
-          padding: 0
+          padding: 0,
+          display: 'flex',
+          flexDirection: 'column'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -148,8 +150,15 @@ export default function ModernModal({
           onClose={onClose}
         />
         
-        {/* Body - Full Height Accordions */}
-        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {/* Body - Constrained between header and footer */}
+        <div 
+          className="flex flex-col overflow-hidden"
+          style={{ 
+            flex: '1 1 auto',
+            minHeight: 0,
+            maxHeight: 'calc(100vh - 120px)' // Ajustado para header y footer
+          }}
+        >
           {children}
         </div>
         
