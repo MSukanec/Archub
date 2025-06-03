@@ -84,6 +84,12 @@
   z-index: 99999 !important;
 }
 
+/* Force input backgrounds to be transparent */
+input[type="text"], input[type="email"], input[type="password"], input[type="search"] {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
 .pac-item {
   background-color: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;

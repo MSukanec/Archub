@@ -199,7 +199,7 @@ export default function AppLayout() {
           
           <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '55px', marginRight: '55px' }}>
             <main className="flex-1 overflow-auto relative bg-surface-views">
-              <div className="w-full" style={{ paddingTop: '64px', paddingBottom: '37px' }}>
+              <div className="w-full" style={{ paddingTop: '55px', paddingBottom: '37px' }}>
                 <ViewComponent />
               </div>
             </main>

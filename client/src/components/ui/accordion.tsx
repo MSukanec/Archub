@@ -51,9 +51,9 @@ const AccordionTrigger = React.forwardRef<
           )}
         </div>
       </div>
-      <div className="relative">
-        <Plus className="plus-icon w-4 h-4 text-muted-foreground" />
-        <Minus className="minus-icon w-4 h-4 text-muted-foreground absolute top-0 left-0" />
+      <div className="w-4 h-4 relative flex items-center justify-center">
+        <Plus className="plus-icon w-4 h-4 text-muted-foreground absolute" />
+        <Minus className="minus-icon w-4 h-4 text-muted-foreground absolute" />
       </div>
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
