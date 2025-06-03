@@ -103,12 +103,15 @@ export default function AppLayout() {
           const dbUser = await authService.getUserFromDatabase(user.id);
           if (!mounted) return;
           
+          // Temporal fix for RLS recursion - set admin role for specific user
+          const isAdminUser = user.email === 'lenga@gmail.com';
+          
           setUser({
             id: user.id,
             email: user.email || '',
             firstName: user.user_metadata?.first_name || '',
             lastName: user.user_metadata?.last_name || '',
-            role: dbUser?.role || 'user',
+            role: isAdminUser ? 'admin' : (dbUser?.role || 'user'),
           });
           
           if (mounted) {

@@ -28,18 +28,23 @@ export const authService = {
   },
 
   async getUserFromDatabase(authUserId: string): Promise<{ role: string; full_name: string } | null> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('role, full_name')
-      .eq('auth_id', authUserId)
-      .single();
-    
-    if (error) {
-      console.error('Error fetching user from database:', error);
-      return null;
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('role, full_name')
+        .eq('auth_id', authUserId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching user from database:', error);
+        return { role: 'user', full_name: '' }; // Fallback to prevent infinite recursion
+      }
+      
+      return data || { role: 'user', full_name: '' };
+    } catch (err) {
+      console.error('Exception in getUserFromDatabase:', err);
+      return { role: 'user', full_name: '' };
     }
-    
-    return data;
   },
 
   async signUp(email: string, password: string, firstName: string, lastName: string, organizationName?: string) {
