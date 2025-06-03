@@ -178,7 +178,7 @@ export default function AdminOrganizations() {
               placeholder="Buscar organizaciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 bg-surface-primary border-input shadow-lg hover:shadow-xl rounded-xl"
             />
           </div>
           <Popover>
@@ -322,7 +322,7 @@ export default function AdminOrganizations() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
-              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
+              className="bg-surface-primary border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl"
             >
               Cancelar
             </AlertDialogCancel>

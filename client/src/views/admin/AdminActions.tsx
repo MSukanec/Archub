@@ -320,7 +320,7 @@ export default function AdminActions() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-background border-border text-foreground hover:bg-muted rounded-xl">
+            <AlertDialogCancel className="bg-surface-primary border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction

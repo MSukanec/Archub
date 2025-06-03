@@ -376,7 +376,7 @@ export default function AdminMaterials() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
-              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
+              className="bg-surface-primary border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl"
             >
               Cancelar
             </AlertDialogCancel>

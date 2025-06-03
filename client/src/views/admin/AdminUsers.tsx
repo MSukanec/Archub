@@ -165,7 +165,7 @@ export default function AdminUsers() {
               placeholder="Buscar usuarios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background border-border rounded-xl"
+              className="pl-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl"
             />
           </div>
           <Popover>
@@ -317,7 +317,7 @@ export default function AdminUsers() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
-              className="bg-background border-border text-foreground hover:bg-muted rounded-xl"
+              className="bg-surface-primary border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl"
             >
               Cancelar
             </AlertDialogCancel>
