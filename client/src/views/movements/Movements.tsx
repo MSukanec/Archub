@@ -1025,7 +1025,7 @@ export default function Movements() {
           setModalKey(prev => prev + 1);
           setIsMovementModalOpen(true);
         }}
-        className="fixed bottom-6 right-6 z-50 md:hidden w-21 h-21 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
+        className="fixed bottom-6 right-6 z-50 md:hidden w-20 h-20 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
       >
         <Plus className="h-8 w-8" />
       </Button>
