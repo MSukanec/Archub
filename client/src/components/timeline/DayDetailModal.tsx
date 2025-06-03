@@ -144,7 +144,7 @@ export default function DayDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg bg-card border-border">
+      <DialogContent className="max-w-lg bg-surface-secondary border-border">
         <DialogHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">

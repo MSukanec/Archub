@@ -208,7 +208,7 @@ startxref
             </CardHeader>
             <CardContent>
               {/* Header del PDF */}
-              <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+              <div className="mb-6 p-4 border rounded-lg bg-surface-secondary">
                 <div className="flex items-center justify-between mb-4">
                   {template?.logo_url && (
                     <img 

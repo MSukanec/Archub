@@ -268,9 +268,9 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
   const totalAmount = filteredMaterials.reduce((sum: number, material: MaterialData) => sum + material.total_value, 0);
 
   return (
-    <div className="bg-card rounded-2xl shadow-md border-0 overflow-hidden">
+    <div className="bg-surface-secondary rounded-2xl shadow-md border-0 overflow-hidden">
       {/* Header del Acordeón */}
-      <div className="flex items-center justify-between p-6 bg-card">
+      <div className="flex items-center justify-between p-6 bg-surface-secondary">
         <div className="flex items-center gap-4 flex-1">
           <button
             onClick={onToggle}
@@ -392,7 +392,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-card divide-y divide-border">
+                <tbody className="bg-surface-secondary divide-y divide-border">
                   {isLoadingMaterials ? (
                     // Loading skeleton
                     Array.from({ length: 5 }).map((_, index) => (
@@ -557,7 +557,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
               </div>
             ) : (
               filteredMaterials.map((material: MaterialData) => (
-                <div key={material.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div key={material.id} className="bg-surface-secondary border border-border rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -652,7 +652,7 @@ function MaterialsSkeleton() {
         <Skeleton className="h-10 w-48" />
       </div>
 
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <div className="p-6">
           <Skeleton className="h-12 w-full" />
         </div>

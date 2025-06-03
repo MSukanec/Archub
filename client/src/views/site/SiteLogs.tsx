@@ -210,7 +210,7 @@ export default function SiteLogs() {
 
       {/* Cards de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total de Registros</p>
@@ -222,7 +222,7 @@ export default function SiteLogs() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Registros Este Mes</p>
@@ -250,7 +250,7 @@ export default function SiteLogs() {
           </div>
           <input
             placeholder="Buscar registros..."
-            className="pl-10 h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
+            className="pl-10 h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
           />
         </div>
         <Button size="sm" className="w-48">
@@ -270,7 +270,7 @@ export default function SiteLogs() {
                   {i < 2 && <div className="w-0.5 h-20 bg-border mt-4" />}
                 </div>
                 <div className="flex-1">
-                  <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+                  <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
                     <Skeleton className="h-6 w-32 mb-2" />
                     <Skeleton className="h-4 w-48 mb-4" />
                     <Skeleton className="h-20 w-full" />
@@ -307,7 +307,7 @@ export default function SiteLogs() {
                     <div className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-lg transition-all group-hover:scale-110 ${
                       isToday 
                         ? 'bg-primary border-primary text-white shadow-primary/25' 
-                        : 'bg-card border-border text-muted-foreground hover:border-primary/50'
+                        : 'bg-surface-secondary border-border text-muted-foreground hover:border-primary/50'
                     }`}>
                       <FileText className="h-5 w-5" />
                     </div>
@@ -320,7 +320,7 @@ export default function SiteLogs() {
                   
                   {/* Content Card */}
                   <div className="flex-1 pb-12">
-                    <div className={`rounded-2xl shadow-md bg-card p-6 border-0 transition-all hover:shadow-lg group-hover:shadow-xl ${
+                    <div className={`rounded-2xl shadow-md bg-surface-secondary p-6 border-0 transition-all hover:shadow-lg group-hover:shadow-xl ${
                       isToday ? 'ring-2 ring-primary/20' : ''
                     }`}>
                       {/* Header */}

@@ -192,13 +192,13 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
             <TabsList className="grid w-full grid-cols-2 bg-[#d2d2d2]">
               <TabsTrigger 
                 value="available"
-                className="data-[state=active]:bg-white data-[state=active]:text-foreground"
+                className="data-[state=active]:bg-surface-secondary data-[state=active]:text-foreground"
               >
                 Tareas Disponibles ({filteredTasks.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="selected" 
-                className="relative data-[state=active]:bg-white data-[state=active]:text-foreground"
+                className="relative data-[state=active]:bg-surface-secondary data-[state=active]:text-foreground"
               >
                 Seleccionadas ({selectedTasks.length})
                 {selectedTasks.length > 0 && (
@@ -242,7 +242,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                     </div>
                   ) : (
                     filteredTasks.map((task) => (
-                      <div key={task.id} className="grid grid-cols-12 gap-2 p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                      <div key={task.id} className="grid grid-cols-12 gap-2 p-3 border-b border-gray-200 last:border-b-0 hover:bg-surface-secondary">
                         <div className="col-span-1 flex items-center">
                           <Checkbox
                             checked={isTaskSelected(task.id)}
@@ -265,7 +265,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                               min="1"
                               value={selectedTasks.find(t => t.id === task.id)?.quantity || 1}
                               onChange={(e) => handleQuantityChange(task.id, parseInt(e.target.value) || 1)}
-                              className="h-8 text-sm bg-white"
+                              className="h-8 text-sm bg-surface-secondary"
                             />
                           )}
                         </div>
@@ -320,7 +320,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                             min="1"
                             value={task.quantity}
                             onChange={(e) => handleQuantityChange(task.id, parseInt(e.target.value) || 1)}
-                            className="w-20 h-8 text-sm bg-white"
+                            className="w-20 h-8 text-sm bg-surface-secondary"
                           />
                           <span className="text-sm text-muted-foreground">
                             = ${(task.quantity * (task.unit_labor_price + task.unit_material_price)).toFixed(2)}
@@ -350,7 +350,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="bg-white hover:bg-gray-50"
+            className="bg-surface-secondary hover:bg-surface-secondary"
           >
             Cancelar
           </Button>

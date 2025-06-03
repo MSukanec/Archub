@@ -103,7 +103,7 @@ export default function ProfileInfo() {
       {/* Cards de información */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Información Personal */}
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <User className="w-4 h-4 text-primary" />
@@ -164,7 +164,7 @@ export default function ProfileInfo() {
         </div>
 
         {/* Información de Organización */}
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <Building2 className="w-4 h-4 text-primary" />
@@ -195,7 +195,7 @@ export default function ProfileInfo() {
         </div>
 
         {/* Configuración de Apariencia */}
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
               <Palette className="w-4 h-4 text-primary" />

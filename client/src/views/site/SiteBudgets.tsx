@@ -157,7 +157,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
     <Collapsible open={isExpanded} onOpenChange={onToggle}>
       <div className={cn(
         "rounded-2xl shadow-md border-0 overflow-hidden transition-all duration-200",
-        isActive ? "bg-card ring-2 ring-primary/50" : "bg-card"
+        isActive ? "bg-surface-secondary ring-2 ring-primary/50" : "bg-surface-secondary"
       )}>
         {/* Header del Acordeón */}
         <div className="p-4 border-b border-border bg-muted/50">
@@ -351,7 +351,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
             </div>
 
             {/* Tabla de tareas - Desktop */}
-            <div className="hidden xl:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+            <div className="hidden xl:block rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -581,7 +581,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                           return (
                             <div 
                               key={task.id} 
-                              className="rounded-lg shadow-md bg-card border-0 p-3 hover:bg-muted/30 transition-colors"
+                              className="rounded-lg shadow-md bg-surface-secondary border-0 p-3 hover:bg-muted/30 transition-colors"
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex-1 min-w-0">
@@ -643,7 +643,7 @@ function BudgetTasksMultipleSkeleton() {
       </div>
       
       {[1, 2, 3].map(i => (
-        <div key={i} className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div key={i} className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
           <div className="p-4 border-b border-border bg-muted/50">
             <Skeleton className="h-6 w-48" />
           </div>
@@ -895,7 +895,7 @@ export default function SiteBudgets() {
 
       {/* Cards de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-surface-secondary border border-border rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total de Presupuestos</p>
@@ -907,7 +907,7 @@ export default function SiteBudgets() {
           </div>
         </div>
         
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-surface-secondary border border-border rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Valor Total del Proyecto</p>
@@ -940,7 +940,7 @@ export default function SiteBudgets() {
       {/* Lista de presupuestos como acordeones */}
       <div className="space-y-4">
         {sortedBudgets.length === 0 ? (
-          <div className="rounded-2xl shadow-md bg-card border-0 p-8 text-center">
+          <div className="rounded-2xl shadow-md bg-surface-secondary border-0 p-8 text-center">
             <div className="text-muted-foreground">
               No hay presupuestos disponibles
             </div>

@@ -54,7 +54,7 @@ const CustomCalendar = ({ currentMonth, onMonthChange, selectedDate, onDateSelec
       case 'inspection':
         return 'bg-green-500';
       default:
-        return 'bg-gray-500';
+        return 'bg-surface-secondary0';
     }
   };
 
@@ -102,7 +102,7 @@ const CustomCalendar = ({ currentMonth, onMonthChange, selectedDate, onDateSelec
               key={index}
               className={`
                 h-24 p-1 border border-gray-200 cursor-pointer transition-colors
-                ${isCurrentMonth ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 text-gray-400'}
+                ${isCurrentMonth ? 'bg-surface-secondary hover:bg-surface-secondary' : 'bg-gray-100 text-gray-400'}
                 ${isSelected ? 'ring-2 ring-primary bg-primary/5' : ''}
                 ${isToday ? 'bg-primary/10' : ''}
               `}

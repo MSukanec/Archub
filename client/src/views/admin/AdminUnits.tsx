@@ -150,7 +150,7 @@ export default function AdminUnits() {
 
       </div>
 
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -208,7 +208,7 @@ export default function AdminUnits() {
         </div>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -316,7 +316,7 @@ export default function AdminUnits() {
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-card border-border rounded-2xl">
+        <AlertDialogContent className="bg-surface-secondary border-border rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -372,14 +372,14 @@ function AdminUnitsSkeleton() {
         <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex gap-4">
           <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
           <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
         </div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <div className="p-6">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (

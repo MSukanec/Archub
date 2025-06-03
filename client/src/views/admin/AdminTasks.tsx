@@ -209,7 +209,7 @@ export default function AdminTasks() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden xl:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="hidden xl:block rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -345,7 +345,7 @@ export default function AdminTasks() {
       {/* Mobile/Tablet Cards */}
       <div className="xl:hidden space-y-4">
         {paginatedTasks.length === 0 ? (
-          <div className="rounded-2xl shadow-md bg-card border-0 p-6 text-center text-muted-foreground">
+          <div className="rounded-2xl shadow-md bg-surface-secondary border-0 p-6 text-center text-muted-foreground">
             {searchTerm || categoryFilter 
               ? 'No se encontraron tareas que coincidan con los filtros.'
               : 'No hay tareas registradas.'
@@ -353,7 +353,7 @@ export default function AdminTasks() {
           </div>
         ) : (
           paginatedTasks.map((task: any) => (
-            <div key={task.id} className="rounded-2xl shadow-md bg-card border-0 p-6 hover:shadow-lg transition-shadow">
+            <div key={task.id} className="rounded-2xl shadow-md bg-surface-secondary border-0 p-6 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground text-lg mb-2">{task.name}</h3>
@@ -419,7 +419,7 @@ export default function AdminTasks() {
 
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-card border-border rounded-2xl">
+        <AlertDialogContent className="bg-surface-secondary border-border rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -476,14 +476,14 @@ function AdminTasksSkeleton() {
         <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex gap-4">
           <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
           <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
         </div>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <div className="space-y-2 p-6">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="h-12 bg-muted rounded animate-pulse"></div>

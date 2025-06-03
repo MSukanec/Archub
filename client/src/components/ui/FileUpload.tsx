@@ -174,7 +174,7 @@ export const FileUpload = ({
 
       {preview ? (
         <div className="relative group">
-          <div className="flex items-center gap-3 p-3 bg-card border-input rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-surface-secondary border-input rounded-xl">
             <div className="flex-shrink-0">
               {accept.includes('image') ? (
                 <img
@@ -213,7 +213,7 @@ export const FileUpload = ({
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="w-full h-20 border-2 border-dashed border-input hover:border-primary/50 bg-card hover:bg-accent rounded-xl transition-colors"
+          className="w-full h-20 border-2 border-dashed border-input hover:border-primary/50 bg-surface-secondary hover:bg-accent rounded-xl transition-colors"
         >
           <div className="flex flex-col items-center gap-2">
             {isUploading ? (

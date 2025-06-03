@@ -342,7 +342,7 @@ function DashboardTimeline() {
       
       {/* Timeline controls with mode display */}
       <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 z-[60]">
-        <div className="bg-card/80 backdrop-blur-sm rounded-full px-3 py-1 border border-border/50 shadow-lg">
+        <div className="bg-surface-secondary/80 backdrop-blur-sm rounded-full px-3 py-1 border border-border/50 shadow-lg">
           <div className="flex items-center gap-2">
             {/* Zoom out button */}
             <button
@@ -459,7 +459,7 @@ function DashboardTimeline() {
                       <button
                         key={event.id}
                         onClick={() => console.log('Today event clicked:', event)}
-                        className="w-full bg-white/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
+                        className="w-full bg-surface-secondary/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
                       >
                         <div className="flex items-center gap-2">
                           <event.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />
@@ -495,7 +495,7 @@ function DashboardTimeline() {
                         <button
                           key={event.id}
                           onClick={() => console.log('Upcoming event clicked:', event)}
-                          className="w-full bg-white/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
+                          className="w-full bg-surface-secondary/50 border border-[#919191]/10 rounded-lg p-3 hover:bg-[#8fc700]/10 transition-colors cursor-pointer text-left"
                         >
                           <div className="flex items-center gap-2">
                             <event.icon className="w-4 h-4 text-[#919191]" strokeWidth={1.5} />

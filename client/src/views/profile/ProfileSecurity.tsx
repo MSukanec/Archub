@@ -144,7 +144,7 @@ export default function ProfileSecurity() {
       </div>
 
       {/* Cambio de Contraseña */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <Lock className="w-4 h-4 text-primary" />
@@ -219,7 +219,7 @@ export default function ProfileSecurity() {
       </div>
 
       {/* Autenticación de Dos Factores */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <Smartphone className="w-4 h-4 text-primary" />
@@ -245,7 +245,7 @@ export default function ProfileSecurity() {
             <p className="text-sm text-muted-foreground mb-3">
               Escanea este código QR con tu aplicación de autenticación:
             </p>
-            <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center">
+            <div className="w-32 h-32 bg-surface-secondary rounded-lg flex items-center justify-center">
               <span className="text-xs text-muted-foreground">Código QR</span>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function ProfileSecurity() {
       </div>
 
       {/* Sesiones Activas */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <Monitor className="w-4 h-4 text-primary" />
@@ -307,7 +307,7 @@ export default function ProfileSecurity() {
       </div>
 
       {/* Configuraciones de Privacidad */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <Eye className="w-4 h-4 text-primary" />

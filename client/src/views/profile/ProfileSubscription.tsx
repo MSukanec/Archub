@@ -129,7 +129,7 @@ export default function Subscription() {
       </div>
 
       {/* Plan Actual */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <CreditCard className="w-4 h-4 text-primary" />
@@ -164,7 +164,7 @@ export default function Subscription() {
       </div>
 
       {/* Planes Disponibles */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <Crown className="w-4 h-4 text-primary" />
@@ -190,7 +190,7 @@ export default function Subscription() {
                 <div 
                   key={plan.id} 
                   className={`rounded-xl p-6 border-2 transition-colors ${
-                    isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border hover:border-border/60 bg-card'
+                    isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border hover:border-border/60 bg-surface-secondary'
                   }`}
                 >
                   <div className="text-center mb-6">
@@ -251,7 +251,7 @@ export default function Subscription() {
       </div>
 
       {/* Información de Facturación */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <CreditCard className="w-4 h-4 text-primary" />
@@ -274,7 +274,7 @@ export default function Subscription() {
       </div>
 
       {/* Estadísticas de Uso */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
             <Calendar className="w-4 h-4 text-primary" />

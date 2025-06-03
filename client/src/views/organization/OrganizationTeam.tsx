@@ -157,7 +157,7 @@ export default function OrganizationTeam() {
         {/* Stats Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-2xl shadow-md bg-card p-6 border-0">
+            <div key={i} className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
               <div className="flex items-center justify-between">
                 <div>
                   <Skeleton className="h-4 w-24 mb-2" />
@@ -170,7 +170,7 @@ export default function OrganizationTeam() {
         </div>
 
         {/* Team Members Skeleton */}
-        <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+        <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -261,7 +261,7 @@ export default function OrganizationTeam() {
 
       {/* Team Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Miembros</p>
@@ -273,7 +273,7 @@ export default function OrganizationTeam() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Activos</p>
@@ -285,7 +285,7 @@ export default function OrganizationTeam() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Administradores</p>
@@ -299,7 +299,7 @@ export default function OrganizationTeam() {
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Con Permisos</p>
@@ -313,7 +313,7 @@ export default function OrganizationTeam() {
       </div>
 
       {/* Team Members List */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">

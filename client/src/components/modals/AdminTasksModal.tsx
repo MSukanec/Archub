@@ -920,7 +920,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                             placeholder="Cant."
                             value={material.amount}
                             onChange={(e) => updateMaterialAmount(material.material_id, e.target.value)}
-                            className="bg-white border-input focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs h-7"
+                            className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded text-xs h-7"
                           />
                         </div>
                         <Button
