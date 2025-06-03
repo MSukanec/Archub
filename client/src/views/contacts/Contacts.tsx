@@ -191,6 +191,13 @@ export default function Contacts() {
             <p className="text-sm text-muted-foreground">Administra todos los contactos del sistema</p>
           </div>
         </div>
+        <Button 
+          onClick={() => setIsCreateModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Nuevo Contacto
+        </Button>
       </div>
 
       <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
