@@ -126,6 +126,11 @@ export default function MobileDrawerFixed({ isOpen, onClose }: MobileDrawerProps
       } else {
         setOpenAccordion(section);
         setSection(section as any);
+        // Auto-navigate to budget view when "budgets" section is selected
+        if (section === 'budgets') {
+          setView('site-budgets');
+          onClose();
+        }
       }
     } else {
       // For sections without subitems, navigate directly

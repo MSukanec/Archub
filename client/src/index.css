@@ -85,7 +85,14 @@
 }
 
 /* Force input backgrounds to be transparent */
-input[type="text"], input[type="email"], input[type="password"], input[type="search"] {
+input[type="text"], input[type="email"], input[type="password"], input[type="search"], input {
+  background-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Force all input elements to be transparent */
+.flex.h-10.w-full.items-center input {
   background-color: transparent !important;
   background: transparent !important;
 }

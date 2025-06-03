@@ -282,9 +282,8 @@ export default function CreateBudgetModal({ isOpen, onClose, budget, onBudgetCre
             <div className="space-y-4">
               {/* Campo del proyecto */}
               <FormItem>
-                <FormLabel className="text-white flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  Proyecto
+                <FormLabel className="text-white">
+                  Proyecto <span className="text-primary">*</span>
                 </FormLabel>
                 <FormControl>
                   {currentProject ? (

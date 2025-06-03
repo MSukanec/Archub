@@ -569,7 +569,7 @@ export default function Contacts() {
       {/* Floating Action Button for Mobile and Tablet */}
       <Button
         onClick={() => setIsCreateModalOpen(true)}
-        className="fixed bottom-6 right-6 z-50 md:hidden w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
+        className="fixed bottom-6 right-6 z-40 md:hidden w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-lg p-0 flex items-center justify-center"
       >
         <Plus className="h-6 w-6" />
       </Button>
