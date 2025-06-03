@@ -1203,14 +1203,14 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
           {/* Right Column - PDF Preview */}
           <div className="flex-1 overflow-auto bg-gray-100 p-6">
             <div className="flex justify-center">
-              {selectedTemplate === 'default' ? renderDefaultTemplate() : renderCustomTemplate()}
+              {renderSelectedTemplate()}
             </div>
           </div>
         </div>
 
         {/* Footer with buttons */}
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-background">
-          {selectedTemplate === 'custom' && (
+          {selectedTemplate === 'modern' && (
             <Button
               type="button"
               variant="outline"
@@ -1220,7 +1220,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               Configurar
             </Button>
           )}
-          {selectedTemplate === 'custom' && (
+          {selectedTemplate === 'modern' && (
             <Button
               type="button"
               variant="outline"
