@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import InviteTeamMemberModal from '@/components/modals/InviteTeamMemberModal';
+import { withFeatureLock } from '@/components/features/FeatureLock';
 
 interface TeamMember {
   id: string;
@@ -250,13 +251,16 @@ export default function OrganizationTeam() {
           </div>
         </div>
         
-        <Button 
-          onClick={() => setIsInviteModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-white rounded-xl"
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          Invitar Miembro
-        </Button>
+{withFeatureLock(
+          <Button 
+            onClick={() => setIsInviteModalOpen(true)}
+            className="bg-primary hover:bg-primary/90 text-white rounded-xl"
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            Invitar Miembro
+          </Button>,
+          'multiple_members'
+        )}
       </div>
 
       {/* Team Stats */}

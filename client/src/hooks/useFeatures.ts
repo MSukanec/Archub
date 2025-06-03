@@ -14,7 +14,8 @@ export type FeatureName =
   | 'priority_support'
   | 'dedicated_support'
   | 'custom_training'
-  | 'multiple_organizations';
+  | 'multiple_organizations'
+  | 'multiple_members';
 
 // Define plan types
 export type PlanType = 'FREE' | 'PRO' | 'ENTERPRISE';
@@ -32,6 +33,7 @@ const FEATURE_PLANS: Record<FeatureName, PlanType> = {
   dedicated_support: 'ENTERPRISE',
   custom_training: 'ENTERPRISE',
   multiple_organizations: 'ENTERPRISE',
+  multiple_members: 'ENTERPRISE',
 };
 
 export function useUserPlan() {
@@ -43,37 +45,43 @@ export function useUserPlan() {
       if (!user?.id) return null;
       
       try {
-        // Get user and plan data from existing queries
+        console.log('Starting useUserPlan query for user:', user.id);
+        
+        // Direct approach - get user data from user context which already has plan_id
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*, plan:plans(*)')
+          .eq('auth_id', user.id)
+          .single();
+        
+        console.log('Direct user query result:', userData);
+        console.log('Direct user query error:', userError);
+        
+        if (userData && userData.plan) {
+          console.log('Found user with plan:', userData);
+          return userData;
+        }
+
+        // Fallback: Get user and plan separately
         const [usersResult, plansResult] = await Promise.all([
-          supabase.rpc('get_users_for_admin'),
+          supabase.from('users').select('*').eq('auth_id', user.id).single(),
           supabase.from('plans').select('*')
         ]);
         
-        console.log('Users result:', usersResult);
-        console.log('Plans result:', plansResult);
+        console.log('Fallback users result:', usersResult);
+        console.log('Fallback plans result:', plansResult);
         
         if (usersResult.data && plansResult.data) {
-          const currentUser = usersResult.data.find(u => u.auth_id === user.id);
-          console.log('Current user found:', currentUser);
+          const userPlan = plansResult.data.find((p: any) => p.id === usersResult.data.plan_id);
+          console.log('Found plan for user:', userPlan);
           
-          if (currentUser) {
-            const userPlan = plansResult.data.find(p => p.id === currentUser.plan_id);
-            console.log('User plan found:', userPlan);
-            
-            const result = {
-              ...currentUser,
-              plan: userPlan ? {
-                id: userPlan.id,
-                name: userPlan.name,
-                price: userPlan.price,
-                features: userPlan.features,
-                is_active: userPlan.is_active
-              } : null
-            };
-            
-            console.log('Final useUserPlan result:', result);
-            return result;
-          }
+          const result = {
+            ...usersResult.data,
+            plan: userPlan || null
+          };
+          
+          console.log('Final fallback result:', result);
+          return result;
         }
 
         return null;
