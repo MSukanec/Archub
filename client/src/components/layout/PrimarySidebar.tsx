@@ -197,7 +197,7 @@ export default function PrimarySidebar() {
 
       {/* Project selector */}
       <div className="flex items-center justify-center pt-2 pl-2.5 relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div className="w-11 h-11 rounded-full bg-[#e1e1e1] border-2 border-[#919191] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group hover:pressed">
+        <div className="w-11 h-11 rounded-full bg-card border-2 border-input shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group hover:pressed">
           <span className="text-sm font-bold text-[#919191]">
             {getProjectInitials(currentProject)}
           </span>
@@ -206,7 +206,7 @@ export default function PrimarySidebar() {
 
         {/* Project menu */}
         {showProjectMenu && (
-          <div className="absolute top-0 left-full ml-3 bg-[#e1e1e1] rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
+          <div className="absolute top-0 left-full ml-3 bg-card rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
             <div className="p-4">
               {/* Title in black */}
               <div className="font-semibold text-sm text-black mb-2">
@@ -271,7 +271,7 @@ export default function PrimarySidebar() {
         {/* Plan button */}
         {userPlan && (
           <div 
-            className={`w-11 h-11 rounded-full bg-[#e1e1e1] shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group border-2 ${
+            className={`w-11 h-11 rounded-full bg-card shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group border-2 ${
               userPlan.name?.toLowerCase() === 'free'
                 ? 'border-primary'
                 : userPlan.name?.toLowerCase() === 'pro'
