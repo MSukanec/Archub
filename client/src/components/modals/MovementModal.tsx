@@ -47,7 +47,8 @@ import {
   Target,
   User,
   Loader2,
-  X 
+  X,
+  Plus
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -492,11 +493,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           </AccordionItem>
 
           {/* Relaciones */}
-          <AccordionItem value="relations" className="border-input">
-            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-primary" />
-                Relaciones
+          <AccordionItem value="relations" className="border border-input rounded-none w-full">
+            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline px-4 py-3 w-full [&[data-state=open]>.accordion-icon]:rotate-45">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
+                  Relaciones
+                </div>
+                <Plus className="accordion-icon w-4 h-4 text-primary transition-transform duration-200" />
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-1">
