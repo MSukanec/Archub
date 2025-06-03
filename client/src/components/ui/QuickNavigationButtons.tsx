@@ -216,28 +216,19 @@ export default function QuickNavigationButtons() {
             )}
             
             <div className="p-2">
-              {projectLimit.isLimited ? (
-                <FeatureLock
-                  feature="unlimited_projects"
-                  showLockIcon={false}
-                >
-                  <button 
-                    disabled
-                    className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground opacity-50 cursor-not-allowed rounded"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Crear nuevo proyecto</span>
-                  </button>
-                </FeatureLock>
-              ) : (
+              <FeatureLock
+                feature="unlimited_projects"
+                showLockIcon={false}
+              >
                 <button 
-                  onClick={handleCreateProject}
-                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[#282828] rounded transition-colors"
+                  onClick={projectLimit.isLimited ? undefined : handleCreateProject}
+                  disabled={projectLimit.isLimited}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[#282828] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Crear nuevo proyecto</span>
                 </button>
-              )}
+              </FeatureLock>
             </div>
           </div>
         )}

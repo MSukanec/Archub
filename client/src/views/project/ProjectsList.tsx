@@ -197,28 +197,19 @@ export default function ProjectsOverview() {
             </p>
           </div>
         </div>
-        {projectLimit.isLimited ? (
-          <FeatureLock
-            feature="unlimited_projects"
-            showLockIcon={false}
-          >
-            <Button 
-              disabled
-              className="bg-muted text-muted-foreground rounded-xl cursor-not-allowed opacity-50"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Proyecto
-            </Button>
-          </FeatureLock>
-        ) : (
+        <FeatureLock
+          feature="unlimited_projects"
+          showLockIcon={false}
+        >
           <Button 
-            onClick={handleCreate}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+            onClick={projectLimit.isLimited ? undefined : handleCreate}
+            disabled={projectLimit.isLimited}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nuevo Proyecto
           </Button>
-        )}
+        </FeatureLock>
       </div>
 
       {/* Plan Limit Info for FREE users */}
@@ -326,46 +317,64 @@ export default function ProjectsOverview() {
               }
             </p>
             {!searchQuery && (
-              projectLimit.isLimited ? (
-                <FeatureLock
-                  feature="unlimited_projects"
-                  showLockIcon={false}
-                >
-                  <Button 
-                    disabled
-                    className="mt-4 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
-                  >
-                    <Plus size={16} className="mr-2" />
-                    Crear Proyecto
-                  </Button>
-                </FeatureLock>
-              ) : (
+              <FeatureLock
+                feature="unlimited_projects"
+                showLockIcon={false}
+              >
                 <Button 
-                  className="mt-4 bg-primary hover:bg-primary/90"
-                  onClick={() => setIsCreateModalOpen(true)}
+                  onClick={projectLimit.isLimited ? undefined : () => setIsCreateModalOpen(true)}
+                  disabled={projectLimit.isLimited}
+                  className="mt-4 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus size={16} className="mr-2" />
                   Crear Proyecto
                 </Button>
-              )
+              </FeatureLock>
             )}
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredProjects.map((project: any) => {
+          {projects
+            .sort((a: any, b: any) => {
+              // Active project first
+              if (a.id === projectId && b.id !== projectId) return -1;
+              if (b.id === projectId && a.id !== projectId) return 1;
+              // Then by date (newest first)
+              return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+            })
+            .map((project: any, sortedIndex: number) => {
             const isActiveProject = project.id === projectId;
+            const matchesSearch = project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                 project.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                 project.address?.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            // For FREE plan, only allow access to the first N projects (sorted by date)
+            const isAccessible = currentPlan !== 'FREE' || 
+                                projectLimit.limit === -1 || 
+                                sortedIndex < projectLimit.limit ||
+                                isActiveProject; // Always allow access to active project
+            
+            // Skip projects that don't match search
+            if (!matchesSearch) return null;
             
             return (
               <div
                 key={project.id}
-                className={`p-3 rounded-2xl shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg bg-surface-secondary ${
-                  isActiveProject 
-                    ? 'border-2 border-primary' 
-                    : 'border-2 border-transparent hover:border-primary'
+                className={`p-3 rounded-2xl shadow-md transition-all duration-200 bg-surface-secondary relative ${
+                  !isAccessible 
+                    ? 'opacity-60 cursor-not-allowed border-2 border-amber-500/30' 
+                    : isActiveProject 
+                      ? 'border-2 border-primary cursor-pointer hover:shadow-lg' 
+                      : 'border-2 border-transparent hover:border-primary cursor-pointer hover:shadow-lg'
                 }`}
-                onClick={() => handleProjectClick(project)}
+                onClick={isAccessible ? () => handleProjectClick(project) : undefined}
               >
+                {!isAccessible && (
+                  <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs px-2 py-1 rounded">
+                    Plan FREE
+                  </div>
+                )}
                 <Card className="border-0 shadow-none bg-transparent">
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between">
