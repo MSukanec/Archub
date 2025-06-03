@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useAuthStore } from '@/stores/authStore';
 import ModernModal, { useModalAccordion, ModalAccordion } from '@/components/ui/ModernModal';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 
@@ -62,13 +63,37 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { organizationId: currentOrgId } = useUserContextStore();
+  const { user } = useAuthStore();
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
   const [nameValidation, setNameValidation] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
   const [nameExists, setNameExists] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mapLat, setMapLat] = useState<number | null>(null);
   const [mapLng, setMapLng] = useState<number | null>(null);
+
   const { toggleAccordion, isOpen: isAccordionOpen } = useModalAccordion('informacion-general');
+
+  // Función para actualizar las preferencias del usuario
+  const updateUserPreferences = async (projectId: string) => {
+    try {
+      if (user?.id) {
+        const { data: internalUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (internalUser) {
+          await supabase
+            .from('user_preferences')
+            .update({ last_project_id: projectId })
+            .eq('user_id', internalUser.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user preferences:', error);
+    }
+  };
 
   const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
@@ -190,9 +215,20 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
         return await projectsService.create(data);
       }
     },
-    onSuccess: () => {
+    onSuccess: (createdProject) => {
+      // Invalidar todas las queries relacionadas con proyectos
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
       queryClient.invalidateQueries({ queryKey: ['/api/projects', currentOrgId] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', currentOrgId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/organization-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/organization-stats', currentOrgId] });
+      
+      // Si se creó un nuevo proyecto, actualizar las preferencias del usuario
+      if (!project && createdProject) {
+        updateUserPreferences(createdProject.id);
+      }
+      
       toast({
         title: 'Éxito',
         description: project ? 'Proyecto actualizado correctamente' : 'Proyecto creado correctamente',
