@@ -55,30 +55,34 @@ export const organizationsService = {
   },
 
   async getAll(): Promise<Organization[]> {
-    const { data, error } = await supabase
-      .from('organizations')
-      .select(`
-        *,
-        owner:users!organizations_owner_id_fkey(
-          id,
-          full_name,
-          email
-        )
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Error fetching organizations:', error);
-      throw new Error(error.message);
+    try {
+      // Try using RPC function first to avoid RLS recursion
+      const { data: rpcData, error: rpcError } = await supabase
+        .rpc('get_organizations_for_admin');
+      
+      if (!rpcError && rpcData) {
+        return rpcData.map(org => ({
+          ...org,
+          owner_name: 'Sistema'
+        }));
+      }
+      
+      // Fallback to direct query
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching organizations:', error);
+        throw new Error(error.message);
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAll organizations:', error);
+      throw error;
     }
-    
-    // Transform data to include owner_name
-    const transformedData = (data || []).map(org => ({
-      ...org,
-      owner_name: org.owner?.full_name || org.owner?.email || 'Sin asignar'
-    }));
-    
-    return transformedData;
   },
 
   async create(orgData: CreateOrganizationData): Promise<Organization> {
