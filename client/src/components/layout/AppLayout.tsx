@@ -133,6 +133,13 @@ export default function AppLayout() {
     };
   }, []);
 
+  // Initialize theme when user context is ready
+  useEffect(() => {
+    if (userId) {
+      initializeTheme(userId);
+    }
+  }, [userId, initializeTheme]);
+
   // Listen for create project modal event
   useEffect(() => {
     const handleOpenCreateProjectModal = () => {
