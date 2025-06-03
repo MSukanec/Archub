@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -89,7 +89,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     showClientSignature: true,
     showCompanySignature: true,
     showPageNumbers: true,
-    companyInfoSize: template?.company_info_size || 10
+    companyInfoSize: 10
   });
 
   // Estado para selector de plantilla
@@ -225,6 +225,16 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
       });
     }
   });
+
+  // Sincronizar companyInfoSize con la plantilla cargada
+  useEffect(() => {
+    if (template?.company_info_size) {
+      setPdfParams(prev => ({
+        ...prev,
+        companyInfoSize: template.company_info_size
+      }));
+    }
+  }, [template]);
 
   const handleExport = async () => {
     setIsExporting(true);
