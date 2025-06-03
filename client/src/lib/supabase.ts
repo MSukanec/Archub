@@ -29,6 +29,15 @@ export const authService = {
 
   async getUserFromDatabase(authUserId: string): Promise<{ role: string; full_name: string } | null> {
     try {
+      // First try using RPC function to avoid RLS issues
+      const { data: rpcData, error: rpcError } = await supabase
+        .rpc('get_user_role', { user_auth_id: authUserId });
+      
+      if (!rpcError && rpcData) {
+        return { role: rpcData.role || 'user', full_name: rpcData.full_name || '' };
+      }
+      
+      // Fallback to direct query if RPC doesn't exist
       const { data, error } = await supabase
         .from('users')
         .select('role, full_name')
@@ -37,7 +46,7 @@ export const authService = {
       
       if (error) {
         console.error('Error fetching user from database:', error);
-        return { role: 'user', full_name: '' }; // Fallback to prevent infinite recursion
+        return { role: 'user', full_name: '' };
       }
       
       return data || { role: 'user', full_name: '' };
