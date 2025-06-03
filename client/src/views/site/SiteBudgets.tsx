@@ -51,9 +51,10 @@ interface BudgetAccordionProps {
   isDeleting: boolean;
   onDeleteTask: (taskId: string) => void;
   isDeletingTask: boolean;
+  onExportPDF: (budget: Budget) => void;
 }
 
-function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask, onDeleteBudget, isDeleting, onDeleteTask, isDeletingTask }: BudgetAccordionProps) {
+function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, onAddTask, onDeleteBudget, isDeleting, onDeleteTask, isDeletingTask, onExportPDF }: BudgetAccordionProps) {
   const { projectId } = useUserContextStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -258,7 +259,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                 <>
                   <Button
                     size="sm"
-                    onClick={() => handleExportPDF(budget)}
+                    onClick={() => onExportPDF(budget)}
                   >
                     <FileDown className="h-4 w-4 mr-2" />
                     Exportar PDF
@@ -767,84 +768,64 @@ export default function SiteBudgets() {
   });
 
   // Función para manejar la exportación PDF
-  const handleExportPDF = (budget: Budget) => {
-    // Buscar las tareas en el query existente usando el budget ID
-    const budgetWithTasks = budgets.find(b => b.id === budget.id);
-    if (!budgetWithTasks) {
+  const handleExportPDF = async (budget: Budget) => {
+    try {
+      // Obtener las tareas del presupuesto directamente
+      const { data: budgetTasks, error } = await supabase
+        .from('budget_tasks')
+        .select(`
+          id,
+          budget_id,
+          task_id,
+          quantity,
+          unit_price,
+          tasks (
+            id,
+            name,
+            description,
+            categories (
+              id,
+              name,
+              code
+            ),
+            units (
+              id,
+              name
+            )
+          )
+        `)
+        .eq('budget_id', budget.id);
+
+      if (error) throw error;
+
+      // Formatear los datos para el PDF
+      const formattedTasks = (budgetTasks || []).map((budgetTask: any) => ({
+        id: budgetTask.id,
+        name: budgetTask.tasks?.name || '',
+        description: budgetTask.tasks?.description || '',
+        category_name: budgetTask.tasks?.categories?.name || '',
+        category_code: budgetTask.tasks?.categories?.code || '',
+        unit_name: budgetTask.tasks?.units?.name || '',
+        amount: parseFloat(budgetTask.quantity) || 0,
+        unit_price: parseFloat(budgetTask.unit_price) || 0,
+        total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.unit_price) || 0)
+      }));
+
+      // Configurar los datos para el modal PDF
+      setPdfExportData({
+        budgetName: budget.name,
+        tasks: formattedTasks
+      });
+      
+      setIsPDFModalOpen(true);
+    } catch (error) {
+      console.error('Error preparing PDF export:', error);
       toast({
         title: "Error al preparar exportación",
-        description: "No se encontraron datos del presupuesto.",
+        description: "No se pudieron cargar los datos del presupuesto.",
         variant: "destructive",
       });
-      return;
     }
-
-    // Obtener las tareas usando el query existente
-    const { data: tasksData } = useQuery({
-      queryKey: ['budget-tasks', budget.id, projectId],
-      queryFn: async () => {
-        if (!budget.id || !projectId) return [];
-        
-        try {
-          const { data: budgetTasks, error } = await supabase
-            .from('budget_tasks')
-            .select(`
-              id,
-              budget_id,
-              task_id,
-              quantity,
-              unit_price,
-              tasks!inner (
-                id,
-                name,
-                description,
-                category_id,
-                unit_id,
-                categories!inner (
-                  id,
-                  name,
-                  code,
-                  parent_id,
-                  parent_category:categories!budget_tasks_task_id_fkey_categories_parent_id_fkey (
-                    name
-                  )
-                ),
-                units!inner (
-                  id,
-                  name
-                )
-              )
-            `)
-            .eq('budget_id', budget.id);
-
-          if (error) throw error;
-
-          return (budgetTasks || []).map((budgetTask: any) => ({
-            id: budgetTask.id,
-            name: budgetTask.tasks?.name || '',
-            description: budgetTask.tasks?.description || '',
-            category_name: budgetTask.tasks?.categories?.name || '',
-            category_code: budgetTask.tasks?.categories?.code || '',
-            parent_category_name: budgetTask.tasks?.categories?.parent_category?.[0]?.name || '',
-            unit_name: budgetTask.tasks?.units?.name || '',
-            amount: parseFloat(budgetTask.quantity) || 0,
-            unit_price: parseFloat(budgetTask.unit_price) || 0,
-            total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.unit_price) || 0)
-          }));
-        } catch (error) {
-          console.error('Error fetching budget tasks:', error);
-          return [];
-        }
-      },
-    });
-
-    // Configurar los datos para el modal PDF
-    setPdfExportData({
-      budgetName: budget.name,
-      tasks: tasksData || []
-    });
-    
-    setIsPDFModalOpen(true);
   };
 
   // Establecer presupuesto activo por defecto y expandir
@@ -987,6 +968,7 @@ export default function SiteBudgets() {
               isDeleting={deleteBudgetMutation.isPending}
               onDeleteTask={(taskId) => deleteTaskMutation.mutate(taskId)}
               isDeletingTask={deleteTaskMutation.isPending}
+              onExportPDF={handleExportPDF}
             />
           ))
         )}
@@ -1007,6 +989,15 @@ export default function SiteBudgets() {
       <BudgetTaskModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
+      />
+
+      {/* PDF Export Modal */}
+      <PDFExportPreview
+        isOpen={isPDFModalOpen}
+        onClose={() => setIsPDFModalOpen(false)}
+        title={pdfExportData.budgetName}
+        data={pdfExportData.tasks}
+        type="budget"
       />
     </div>
   );
