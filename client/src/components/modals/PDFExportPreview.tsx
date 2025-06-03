@@ -349,7 +349,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               {organization?.email && <div>{organization.email}</div>}
               {organization?.phone && <div>+{organization.phone}</div>}
             </div>
-            <h2 className="text-2xl font-bold mb-2">CHANGE ORDER</h2>
+            <h2 className="text-2xl font-bold mb-2">ORDEN DE CAMBIO</h2>
             <div className="text-sm">
               <div>Fecha: {new Date().toLocaleDateString()}</div>
               <div>Orden #: CO-001</div>
@@ -358,17 +358,10 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
           <hr className="my-4 border-2 border-gray-300" />
         </div>
 
-        {/* Cliente y Proyecto en una sola línea */}
-        <div className="grid grid-cols-2 gap-8 mb-6">
-          <div className="border border-gray-300 p-4">
-            <div className="font-bold mb-2">Cliente:</div>
-            <div>{pdfParams.clientName}</div>
-            <div className="mt-1 text-sm whitespace-pre-line">{pdfParams.clientAddress}</div>
-          </div>
-          <div className="border border-gray-300 p-4">
-            <div className="font-bold mb-2">Proyecto:</div>
-            <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
-          </div>
+        {/* Solo información del Proyecto */}
+        <div className="border border-gray-300 p-4 mb-6">
+          <div className="font-bold mb-2">Proyecto:</div>
+          <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
         </div>
 
         {/* Descripción */}
@@ -494,49 +487,34 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                   color: template?.primary_color || '#000000'
                 }}
               >
-                CHANGE ORDER
+                ORDEN DE CAMBIO
               </h2>
               
               <div className="text-right" style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                <div className="mb-1">Change Order #: {template?.document_number || '1'}</div>
+                <div className="mb-1">Orden de Cambio #: {template?.document_number || '1'}</div>
                 <div className="mb-1">{new Date().toLocaleDateString()}</div>
-                <div>Page: 1/1</div>
+                <div>Página: 1/1</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Secciones To: y Job: */}
-        {(sectionStates.client || sectionStates.project) && (
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            {sectionStates.client && (
-              <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
-                <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-                  To:
-                </div>
-                <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                  {pdfParams.clientAddress.split('\n').map((line, index) => (
-                    <div key={index}>{line || pdfParams.clientName}</div>
-                  ))}
+        {/* Sección de Proyecto */}
+        {sectionStates.project && (
+          <div className="mb-6">
+            <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
+              <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
+                Proyecto:
+              </div>
+              <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
+                <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
+                <div className="mt-2">
+                  <div>Fecha de Inicio: ___________</div>
+                  <div>Días de Retraso: ___0___</div>
+                  <div className="text-xs italic">(Los días de retraso son solo una estimación razonable)</div>
                 </div>
               </div>
-            )}
-
-            {sectionStates.project && (
-              <div style={{ border: `1px solid ${template?.secondary_color || '#cccccc'}`, padding: '12px' }}>
-                <div className="font-semibold mb-2" style={{ fontSize: `${template?.subtitle_size || 12}px`, color: template?.text_color || '#000000' }}>
-                  Job:
-                </div>
-                <div style={{ fontSize: `${template?.body_size || 11}px`, color: template?.text_color || '#000000' }}>
-                  <div>{pdfParams.projectCode} - {pdfParams.projectName}</div>
-                  <div className="mt-2">
-                    <div>Start Date: ___________</div>
-                    <div>Delay Days: ___0___</div>
-                    <div className="text-xs italic">(Delay days are a reasonable estimate only)</div>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         )}
 
