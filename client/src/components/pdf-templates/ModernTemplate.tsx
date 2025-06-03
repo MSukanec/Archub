@@ -10,6 +10,7 @@ interface ModernTemplateProps {
   getGridCols: () => string;
   calculateTotal: () => number;
   zoomLevel: number;
+  pageDimensions: { width: number; height: number };
 }
 
 export default function ModernTemplate({
@@ -21,15 +22,16 @@ export default function ModernTemplate({
   type,
   getGridCols,
   calculateTotal,
-  zoomLevel
+  zoomLevel,
+  pageDimensions
 }: ModernTemplateProps) {
   return (
     <div 
       id="pdf-preview-content"
       className="bg-white shadow-lg border border-gray-300"
       style={{ 
-        width: '210mm',
-        minHeight: '297mm',
+        width: `${pageDimensions.width}mm`,
+        minHeight: `${pageDimensions.height}mm`,
         fontFamily: template?.font_family || 'Arial',
         fontSize: `${template?.body_size || 12}px`,
         lineHeight: '1.5',

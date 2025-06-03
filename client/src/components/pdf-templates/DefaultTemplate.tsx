@@ -8,6 +8,7 @@ interface DefaultTemplateProps {
   getGridCols: () => string;
   calculateTotal: () => number;
   zoomLevel: number;
+  pageDimensions: { width: number; height: number };
 }
 
 export default function DefaultTemplate({
@@ -19,15 +20,16 @@ export default function DefaultTemplate({
   type,
   getGridCols,
   calculateTotal,
-  zoomLevel
+  zoomLevel,
+  pageDimensions
 }: DefaultTemplateProps) {
   return (
     <div 
       id="pdf-preview-content"
       className="bg-white shadow-lg border border-gray-300"
       style={{ 
-        width: '210mm',
-        minHeight: '297mm',
+        width: `${pageDimensions.width}mm`,
+        minHeight: `${pageDimensions.height}mm`,
         fontFamily: 'Arial',
         color: '#000000',
         backgroundColor: '#ffffff',
@@ -36,7 +38,12 @@ export default function DefaultTemplate({
         overflow: 'visible'
       }}
     >
-      <div className="p-12 text-black">
+      <div 
+        className="text-black"
+        style={{ 
+          padding: `${pdfParams.marginTop}mm ${pdfParams.marginRight}mm ${pdfParams.marginBottom}mm ${pdfParams.marginLeft}mm` 
+        }}
+      >
         {/* Header básico */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">

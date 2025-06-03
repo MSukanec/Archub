@@ -340,6 +340,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
 
   // Función para renderizar la plantilla seleccionada
   const renderSelectedTemplate = () => {
+    const pageDimensions = getPageDimensions();
     const templateProps = {
       template,
       organization,
@@ -349,7 +350,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
       type,
       getGridCols,
       calculateTotal,
-      zoomLevel
+      zoomLevel,
+      pageDimensions
     };
 
     switch (selectedTemplate) {
