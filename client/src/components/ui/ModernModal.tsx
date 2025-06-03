@@ -65,7 +65,7 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
 // Componente Footer del Modal
 function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading = false }: ModalFooterProps) {
   return (
-    <div className="px-4 py-4 border-t border-border/20 bg-[#e0e0e0] flex-shrink-0">
+    <div className="px-4 py-4 border-t border-border/20 bg-surface-secondary flex-shrink-0">
       <div className="flex gap-3">
         <Button
           variant="outline"
@@ -78,7 +78,7 @@ function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading 
         {onConfirm && (
           <Button
             onClick={onConfirm}
-            className="flex-[3] bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8bef] rounded-xl"
+            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
             disabled={isLoading}
           >
             {isLoading ? 'Procesando...' : confirmText}
@@ -127,7 +127,7 @@ export default function ModernModal({
       
       {/* Modal */}
       <div 
-        className="modern-modal absolute bg-[#e0e0e0] shadow-2xl flex flex-col border-l border-border/20"
+        className="modern-modal absolute bg-surface-secondary shadow-2xl flex flex-col border-l border-border/20"
         style={{ 
           top: 0, 
           right: 0, 
