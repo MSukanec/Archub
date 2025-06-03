@@ -286,12 +286,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         <Accordion type="single" collapsible defaultValue="basic-info">
           {/* Información Básica */}
           <AccordionItem value="basic-info">
-            <AccordionTrigger>
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
-                Información Básica
-              </div>
-            </AccordionTrigger>
+            <AccordionTrigger 
+              title="Información Básica"
+              subtitle="Datos básicos del movimiento"
+              icon={FileText}
+            />
             <AccordionContent>
               {/* Fecha */}
               <FormField
@@ -404,12 +403,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
           {/* Detalle de Movimiento */}
           <AccordionItem value="movement-details">
-            <AccordionTrigger>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-primary" />
-                Detalle de Movimiento
-              </div>
-            </AccordionTrigger>
+            <AccordionTrigger 
+              title="Detalle de Movimiento"
+              subtitle="Moneda, monto y billetera"
+              icon={DollarSign}
+            />
             <AccordionContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Moneda */}
@@ -488,12 +486,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
 
           {/* Relaciones */}
           <AccordionItem value="relations">
-            <AccordionTrigger>
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-primary" />
-                Relaciones
-              </div>
-            </AccordionTrigger>
+            <AccordionTrigger 
+              title="Relaciones"
+              subtitle="Contactos y tareas relacionadas"
+              icon={User}
+            />
             <AccordionContent>
               {/* Contacto Relacionado */}
               <FormField

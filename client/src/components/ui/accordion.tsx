@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
-import { Plus } from "lucide-react"
+import { Plus, Minus, LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -12,27 +12,49 @@ const AccordionItem = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
-    className={cn("border border-white rounded-none w-full", className)}
+    className={cn("flex flex-col flex-shrink-0", className)}
     {...props}
   />
 ))
 AccordionItem.displayName = "AccordionItem"
 
+interface AccordionTriggerProps extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> {
+  title?: string;
+  subtitle?: string;
+  icon?: LucideIcon;
+}
+
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  AccordionTriggerProps
+>(({ className, children, title, subtitle, icon: Icon, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex w-full">
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-3 px-4 font-medium transition-all hover:bg-surface-secondary bg-surface-primary rounded-none w-full [&[data-state=open]>svg]:rotate-45 [&[data-state=open]>svg]:scale-x-[-1]",
+        "w-full flex items-center justify-between p-4 bg-surface-views hover:bg-surface-primary transition-colors text-white flex-shrink-0 border-t border-b border-surface-primary [&[data-state=open]_.plus-icon]:hidden [&[data-state=closed]_.minus-icon]:hidden",
         className
       )}
+      style={{ borderWidth: '2px' }}
       {...props}
     >
-      {children}
-      <Plus className="h-4 w-4 shrink-0 transition-transform duration-200 text-white" />
+      <div className="flex items-center gap-3">
+        {Icon && (
+          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <Icon className="w-3 h-3 text-white" />
+          </div>
+        )}
+        <div className="text-left">
+          <div className="font-medium text-white text-sm">{title || children}</div>
+          {subtitle && (
+            <div className="text-xs text-muted-foreground">{subtitle}</div>
+          )}
+        </div>
+      </div>
+      <div className="relative">
+        <Plus className="plus-icon w-4 h-4 text-muted-foreground" />
+        <Minus className="minus-icon w-4 h-4 text-muted-foreground absolute top-0" />
+      </div>
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ))
@@ -47,7 +69,7 @@ const AccordionContent = React.forwardRef<
     className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
     {...props}
   >
-    <div className={cn("px-4 py-3 pt-1", className)}>{children}</div>
+    <div className={cn("p-4 bg-surface-views", className)}>{children}</div>
   </AccordionPrimitive.Content>
 ))
 
