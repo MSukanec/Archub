@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ModalAccordion } from '@/components/ui/ModernModal';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -194,7 +194,13 @@ export default function OrganizationPDF() {
   };
 
   const toggleSection = (section: string) => {
-    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+    setOpenSections(prev => {
+      const newState: Record<string, boolean> = {};
+      Object.keys(prev).forEach(key => {
+        newState[key] = key === section ? !prev[section] : false;
+      });
+      return newState;
+    });
   };
 
   if (isLoading) {
@@ -256,332 +262,277 @@ export default function OrganizationPDF() {
         {/* Configuration Panel */}
         <div className="space-y-4">
           {/* Branding Section */}
-          <Card className="rounded-2xl shadow-md border-0">
-            <Collapsible open={openSections.branding} onOpenChange={() => toggleSection('branding')}>
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <ImageIcon className="w-5 h-5 text-primary" />
-                      Marca y Logo
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {openSections.branding ? '−' : '+'}
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="space-y-4">
+          <ModalAccordion
+            id="branding"
+            title="Marca y Logo"
+            icon={ImageIcon}
+            isOpen={openSections.branding}
+            onToggle={() => toggleSection('branding')}
+          >
+            <div className="space-y-4">
+              <div>
+                <Label>URL del Logo</Label>
+                <Input
+                  placeholder="https://ejemplo.com/logo.png"
+                  value={template.logo_url || ''}
+                  onChange={(e) => updateTemplate('logo_url', e.target.value)}
+                  className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Ancho del Logo (px)</Label>
+                  <Input
+                    type="number"
+                    value={template.logo_width}
+                    onChange={(e) => updateTemplate('logo_width', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Alto del Logo (px)</Label>
+                  <Input
+                    type="number"
+                    value={template.logo_height}
+                    onChange={(e) => updateTemplate('logo_height', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={template.company_name_show}
+                  onChange={(e) => updateTemplate('company_name_show', e.target.checked)}
+                  className="rounded border-[#919191]/20"
+                />
+                <Label>Mostrar nombre de la empresa</Label>
+              </div>
+
+              {template.company_name_show && (
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>URL del Logo</Label>
+                    <Label>Tamaño del nombre (px)</Label>
                     <Input
-                      placeholder="https://ejemplo.com/logo.png"
-                      value={template.logo_url || ''}
-                      onChange={(e) => updateTemplate('logo_url', e.target.value)}
+                      type="number"
+                      value={template.company_name_size}
+                      onChange={(e) => updateTemplate('company_name_size', parseInt(e.target.value) || 0)}
                       className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     />
                   </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Ancho del Logo (px)</Label>
-                      <Input
-                        type="number"
-                        value={template.logo_width}
-                        onChange={(e) => updateTemplate('logo_width', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Alto del Logo (px)</Label>
-                      <Input
-                        type="number"
-                        value={template.logo_height}
-                        onChange={(e) => updateTemplate('logo_height', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={template.company_name_show}
-                      onChange={(e) => updateTemplate('company_name_show', e.target.checked)}
-                      className="rounded border-[#919191]/20"
+                  <div>
+                    <Label>Color del nombre</Label>
+                    <Input
+                      type="color"
+                      value={template.company_name_color}
+                      onChange={(e) => updateTemplate('company_name_color', e.target.value)}
+                      className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                     />
-                    <Label>Mostrar nombre de la empresa</Label>
                   </div>
-
-                  {template.company_name_show && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label>Tamaño del nombre (px)</Label>
-                        <Input
-                          type="number"
-                          value={template.company_name_size}
-                          onChange={(e) => updateTemplate('company_name_size', parseInt(e.target.value) || 0)}
-                          className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                        />
-                      </div>
-                      <div>
-                        <Label>Color del nombre</Label>
-                        <Input
-                          type="color"
-                          value={template.company_name_color}
-                          onChange={(e) => updateTemplate('company_name_color', e.target.value)}
-                          className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+                </div>
+              )}
+            </div>
+          </ModalAccordion>
 
           {/* Colors Section */}
-          <Card className="rounded-2xl shadow-md border-0">
-            <Collapsible open={openSections.colors} onOpenChange={() => toggleSection('colors')}>
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Palette className="w-5 h-5 text-primary" />
-                      Colores
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {openSections.colors ? '−' : '+'}
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Color Primario</Label>
-                      <Input
-                        type="color"
-                        value={template.primary_color}
-                        onChange={(e) => updateTemplate('primary_color', e.target.value)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Color Secundario</Label>
-                      <Input
-                        type="color"
-                        value={template.secondary_color}
-                        onChange={(e) => updateTemplate('secondary_color', e.target.value)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Color del Texto</Label>
-                      <Input
-                        type="color"
-                        value={template.text_color}
-                        onChange={(e) => updateTemplate('text_color', e.target.value)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Color de Fondo</Label>
-                      <Input
-                        type="color"
-                        value={template.background_color}
-                        onChange={(e) => updateTemplate('background_color', e.target.value)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+          <ModalAccordion
+            id="colors"
+            title="Colores"
+            icon={Palette}
+            isOpen={openSections.colors}
+            onToggle={() => toggleSection('colors')}
+          >
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Color Primario</Label>
+                  <Input
+                    type="color"
+                    value={template.primary_color}
+                    onChange={(e) => updateTemplate('primary_color', e.target.value)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Color Secundario</Label>
+                  <Input
+                    type="color"
+                    value={template.secondary_color}
+                    onChange={(e) => updateTemplate('secondary_color', e.target.value)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Color del Texto</Label>
+                  <Input
+                    type="color"
+                    value={template.text_color}
+                    onChange={(e) => updateTemplate('text_color', e.target.value)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Color de Fondo</Label>
+                  <Input
+                    type="color"
+                    value={template.background_color}
+                    onChange={(e) => updateTemplate('background_color', e.target.value)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+          </ModalAccordion>
 
           {/* Typography Section */}
-          <Card className="rounded-2xl shadow-md border-0">
-            <Collapsible open={openSections.typography} onOpenChange={() => toggleSection('typography')}>
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Type className="w-5 h-5 text-primary" />
-                      Tipografía
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {openSections.typography ? '−' : '+'}
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Fuente</Label>
-                    <Select value={template.font_family} onValueChange={(value) => updateTemplate('font_family', value)}>
-                      <SelectTrigger className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Arial">Arial</SelectItem>
-                        <SelectItem value="Helvetica">Helvetica</SelectItem>
-                        <SelectItem value="Times">Times New Roman</SelectItem>
-                        <SelectItem value="Courier">Courier New</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+          <ModalAccordion
+            id="typography"
+            title="Tipografía"
+            icon={Type}
+            isOpen={openSections.typography}
+            onToggle={() => toggleSection('typography')}
+          >
+            <div className="space-y-4">
+              <div>
+                <Label>Fuente</Label>
+                <Select value={template.font_family} onValueChange={(value) => updateTemplate('font_family', value)}>
+                  <SelectTrigger className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Arial">Arial</SelectItem>
+                    <SelectItem value="Helvetica">Helvetica</SelectItem>
+                    <SelectItem value="Times">Times New Roman</SelectItem>
+                    <SelectItem value="Courier">Courier New</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label>Tamaño Título (px)</Label>
-                      <Input
-                        type="number"
-                        value={template.title_size}
-                        onChange={(e) => updateTemplate('title_size', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Tamaño Subtítulo (px)</Label>
-                      <Input
-                        type="number"
-                        value={template.subtitle_size}
-                        onChange={(e) => updateTemplate('subtitle_size', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Tamaño Texto (px)</Label>
-                      <Input
-                        type="number"
-                        value={template.body_size}
-                        onChange={(e) => updateTemplate('body_size', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Tamaño Título (px)</Label>
+                  <Input
+                    type="number"
+                    value={template.title_size}
+                    onChange={(e) => updateTemplate('title_size', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Tamaño Subtítulo (px)</Label>
+                  <Input
+                    type="number"
+                    value={template.subtitle_size}
+                    onChange={(e) => updateTemplate('subtitle_size', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Tamaño Texto (px)</Label>
+                  <Input
+                    type="number"
+                    value={template.body_size}
+                    onChange={(e) => updateTemplate('body_size', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+          </ModalAccordion>
 
           {/* Layout Section */}
-          <Card className="rounded-2xl shadow-md border-0">
-            <Collapsible open={openSections.layout} onOpenChange={() => toggleSection('layout')}>
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Layout className="w-5 h-5 text-primary" />
-                      Diseño y Márgenes
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {openSections.layout ? '−' : '+'}
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Margen Superior (mm)</Label>
-                      <Input
-                        type="number"
-                        value={template.margin_top}
-                        onChange={(e) => updateTemplate('margin_top', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Margen Inferior (mm)</Label>
-                      <Input
-                        type="number"
-                        value={template.margin_bottom}
-                        onChange={(e) => updateTemplate('margin_bottom', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Margen Izquierdo (mm)</Label>
-                      <Input
-                        type="number"
-                        value={template.margin_left}
-                        onChange={(e) => updateTemplate('margin_left', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <Label>Margen Derecho (mm)</Label>
-                      <Input
-                        type="number"
-                        value={template.margin_right}
-                        onChange={(e) => updateTemplate('margin_right', parseInt(e.target.value) || 0)}
-                        className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+          <ModalAccordion
+            id="layout"
+            title="Diseño y Márgenes"
+            icon={Layout}
+            isOpen={openSections.layout}
+            onToggle={() => toggleSection('layout')}
+          >
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Margen Superior (mm)</Label>
+                  <Input
+                    type="number"
+                    value={template.margin_top}
+                    onChange={(e) => updateTemplate('margin_top', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Margen Inferior (mm)</Label>
+                  <Input
+                    type="number"
+                    value={template.margin_bottom}
+                    onChange={(e) => updateTemplate('margin_bottom', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Margen Izquierdo (mm)</Label>
+                  <Input
+                    type="number"
+                    value={template.margin_left}
+                    onChange={(e) => updateTemplate('margin_left', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <Label>Margen Derecho (mm)</Label>
+                  <Input
+                    type="number"
+                    value={template.margin_right}
+                    onChange={(e) => updateTemplate('margin_right', parseInt(e.target.value) || 0)}
+                    className="h-10 bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+          </ModalAccordion>
 
           {/* Footer Section */}
-          <Card className="rounded-2xl shadow-md border-0">
-            <Collapsible open={openSections.footer} onOpenChange={() => toggleSection('footer')}>
-              <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Settings className="w-5 h-5 text-primary" />
-                      Pie de Página
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {openSections.footer ? '−' : '+'}
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Texto del Pie</Label>
-                    <Textarea
-                      placeholder="Texto personalizado para el pie de página..."
-                      value={template.footer_text || ''}
-                      onChange={(e) => updateTemplate('footer_text', e.target.value)}
-                      className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
-                    />
-                  </div>
+          <ModalAccordion
+            id="footer"
+            title="Pie de Página"
+            icon={Settings}
+            isOpen={openSections.footer}
+            onToggle={() => toggleSection('footer')}
+          >
+            <div className="space-y-4">
+              <div>
+                <Label>Texto del Pie</Label>
+                <Textarea
+                  placeholder="Texto personalizado para el pie de página..."
+                  value={template.footer_text || ''}
+                  onChange={(e) => updateTemplate('footer_text', e.target.value)}
+                  className="min-h-[80px] bg-[#e1e1e1] border-[#919191]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 resize-none"
+                />
+              </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={template.footer_show_page_numbers}
-                        onChange={(e) => updateTemplate('footer_show_page_numbers', e.target.checked)}
-                        className="rounded border-[#919191]/20"
-                      />
-                      <Label>Mostrar números de página</Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={template.footer_show_date}
-                        onChange={(e) => updateTemplate('footer_show_date', e.target.checked)}
-                        className="rounded border-[#919191]/20"
-                      />
-                      <Label>Mostrar fecha de generación</Label>
-                    </div>
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={template.footer_show_page_numbers}
+                    onChange={(e) => updateTemplate('footer_show_page_numbers', e.target.checked)}
+                    className="rounded border-[#919191]/20"
+                  />
+                  <Label>Mostrar números de página</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={template.footer_show_date}
+                    onChange={(e) => updateTemplate('footer_show_date', e.target.checked)}
+                    className="rounded border-[#919191]/20"
+                  />
+                  <Label>Mostrar fecha de generación</Label>
+                </div>
+              </div>
+            </div>
+          </ModalAccordion>
         </div>
 
         {/* Preview Panel */}
@@ -590,27 +541,39 @@ export default function OrganizationPDF() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Eye className="w-5 h-5 text-primary" />
-                Vista Previa
+                Vista Previa (A4)
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div 
-                className="w-full aspect-[210/297] border-2 border-dashed border-gray-300 rounded-lg p-4 overflow-hidden"
+                className="w-full border-2 border-dashed border-gray-300 rounded-lg p-8 overflow-hidden relative"
                 style={{ 
+                  aspectRatio: '210 / 297', // A4 ratio
                   backgroundColor: template.background_color,
                   fontFamily: template.font_family,
                   color: template.text_color,
-                  fontSize: `${template.body_size}px`
+                  fontSize: '12px',
+                  minHeight: '500px'
                 }}
               >
                 {/* Header Preview */}
-                <div className="flex items-center gap-4 mb-6 pb-4 border-b-2" style={{ borderColor: template.primary_color }}>
+                <div 
+                  className="flex items-center gap-6 mb-8 pb-4 border-b-2"
+                  style={{ 
+                    borderColor: template.primary_color,
+                    paddingTop: `${template.margin_top / 2}px`,
+                    paddingLeft: `${template.margin_left / 2}px`,
+                    paddingRight: `${template.margin_right / 2}px`
+                  }}
+                >
                   {template.logo_url && (
                     <div 
-                      className="bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500"
+                      className="bg-gray-200 rounded flex items-center justify-center text-sm font-bold text-gray-500"
                       style={{ 
-                        width: `${Math.min(template.logo_width / 4, 60)}px`, 
-                        height: `${Math.min(template.logo_height / 4, 40)}px` 
+                        width: `${template.logo_width / 2}px`, 
+                        height: `${template.logo_height / 2}px`,
+                        maxWidth: '80px',
+                        maxHeight: '60px'
                       }}
                     >
                       LOGO
@@ -620,9 +583,10 @@ export default function OrganizationPDF() {
                     <div>
                       <h1 
                         style={{ 
-                          fontSize: `${Math.min(template.company_name_size / 4, 16)}px`,
+                          fontSize: `${template.company_name_size / 1.5}px`,
                           color: template.company_name_color,
-                          fontWeight: 'bold'
+                          fontWeight: 'bold',
+                          margin: 0
                         }}
                       >
                         Nombre de la Empresa
@@ -632,12 +596,19 @@ export default function OrganizationPDF() {
                 </div>
 
                 {/* Content Preview */}
-                <div className="space-y-4">
+                <div 
+                  className="space-y-6"
+                  style={{ 
+                    paddingLeft: `${template.margin_left / 2}px`,
+                    paddingRight: `${template.margin_right / 2}px`
+                  }}
+                >
                   <h2 
                     style={{ 
-                      fontSize: `${Math.min(template.title_size / 4, 14)}px`,
+                      fontSize: `${template.title_size}px`,
                       color: template.primary_color,
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
+                      margin: 0
                     }}
                   >
                     Título del Documento
@@ -645,37 +616,51 @@ export default function OrganizationPDF() {
                   
                   <h3 
                     style={{ 
-                      fontSize: `${Math.min(template.subtitle_size / 4, 12)}px`,
-                      fontWeight: '600'
+                      fontSize: `${template.subtitle_size}px`,
+                      fontWeight: '600',
+                      margin: 0
                     }}
                   >
                     Subtítulo de Sección
                   </h3>
                   
-                  <div className="space-y-2">
-                    <div className="h-2 bg-gray-200 rounded w-full"></div>
-                    <div className="h-2 bg-gray-200 rounded w-4/5"></div>
-                    <div className="h-2 bg-gray-200 rounded w-3/4"></div>
+                  <div className="space-y-3">
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    <div className="h-3 bg-gray-200 rounded w-4/5"></div>
+                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-5/6"></div>
                   </div>
 
                   <div 
-                    className="p-3 rounded"
+                    className="p-4 rounded"
                     style={{ backgroundColor: template.secondary_color }}
                   >
-                    <div className="h-2 bg-gray-300 rounded w-2/3 mb-2"></div>
-                    <div className="h-2 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-3 bg-gray-300 rounded w-2/3 mb-3"></div>
+                    <div className="h-3 bg-gray-300 rounded w-1/2 mb-3"></div>
+                    <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    <div className="h-3 bg-gray-200 rounded w-3/5"></div>
                   </div>
                 </div>
 
                 {/* Footer Preview */}
                 <div 
-                  className="absolute bottom-4 left-4 right-4 text-xs border-t pt-2"
-                  style={{ borderColor: template.secondary_color }}
+                  className="absolute bottom-0 left-0 right-0 text-sm border-t pt-3"
+                  style={{ 
+                    borderColor: template.secondary_color,
+                    paddingBottom: `${template.margin_bottom / 2}px`,
+                    paddingLeft: `${template.margin_left / 2}px`,
+                    paddingRight: `${template.margin_right / 2}px`,
+                    fontSize: `${template.body_size}px`
+                  }}
                 >
                   <div className="flex justify-between items-center">
                     <span>{template.footer_text || 'Texto del pie de página'}</span>
-                    <div className="flex gap-2">
-                      {template.footer_show_date && <span>01/01/2024</span>}
+                    <div className="flex gap-4 text-xs">
+                      {template.footer_show_date && <span>02/06/2025</span>}
                       {template.footer_show_page_numbers && <span>Página 1</span>}
                     </div>
                   </div>
