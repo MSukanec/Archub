@@ -35,8 +35,10 @@ import {
 import { projectsService } from '@/lib/projectsService';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useToast } from '@/hooks/use-toast';
+import { useFeatures } from '@/hooks/useFeatures';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import ProjectInfoModal from '@/components/modals/ProjectInfoModal';
+import { FeatureLock } from '@/components/features/FeatureLock';
 
 type Project = any;
 
@@ -52,6 +54,7 @@ export default function ProjectsOverview() {
   const { projectId } = useUserContextStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { checkLimit, getCurrentPlan } = useFeatures();
 
   // Fetch projects with stable query
   const { data: projects = [], isLoading } = useQuery({
@@ -138,8 +141,12 @@ export default function ProjectsOverview() {
     );
   }
 
+  // Check project limits
+  const projectLimit = checkLimit('max_projects', projects.length);
+  const currentPlan = getCurrentPlan();
+  
   // Filter and sort projects with active project first
-  const filteredProjects = projects
+  let filteredProjects = projects
     .filter((project: any) =>
       project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.client?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,13 +157,24 @@ export default function ProjectsOverview() {
       if (a.id === projectId && b.id !== projectId) return -1;
       if (b.id === projectId && a.id !== projectId) return 1;
       
-      // Then by date
-      if (sortOrder === 'newest') {
-        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-      } else {
-        return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
-      }
+      // Then by date (newest first)
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     });
+
+  // For FREE plan, show only the 2 most recent projects
+  if (currentPlan === 'FREE' && projectLimit.limit > 0) {
+    // Keep active project and fill with most recent ones up to limit
+    const activeProject = filteredProjects.find(p => p.id === projectId);
+    const otherProjects = filteredProjects.filter(p => p.id !== projectId);
+    
+    if (activeProject) {
+      // If there's an active project, show it plus (limit-1) others
+      filteredProjects = [activeProject, ...otherProjects.slice(0, projectLimit.limit - 1)];
+    } else {
+      // If no active project, show the most recent ones up to limit
+      filteredProjects = otherProjects.slice(0, projectLimit.limit);
+    }
+  }
 
   // Calculate statistics
   const totalProjects = projects.length;
@@ -179,13 +197,28 @@ export default function ProjectsOverview() {
             </p>
           </div>
         </div>
-        <Button 
-          onClick={handleCreate}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Proyecto
-        </Button>
+        {projectLimit.isLimited ? (
+          <FeatureLock
+            feature="unlimited_projects"
+            showLockIcon={false}
+          >
+            <Button 
+              disabled
+              className="bg-muted text-muted-foreground rounded-xl cursor-not-allowed opacity-50"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Proyecto
+            </Button>
+          </FeatureLock>
+        ) : (
+          <Button 
+            onClick={handleCreate}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo Proyecto
+          </Button>
+        )}
       </div>
 
       {/* Cards de Estadísticas */}
