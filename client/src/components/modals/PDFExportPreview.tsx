@@ -763,20 +763,20 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                         backgroundColor: '#f8f8f8'
                       }}
                     >
-                      {pdfParams.showClientSignature && (
-                        <div className="mb-6">
-                          <div 
-                            className="font-semibold mb-3"
-                            style={{ 
-                              fontSize: `${template?.body_size || 11}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            Firma del cliente:
-                          </div>
-                          
-                          <div className={pdfParams.signatureLayout === 'horizontal' ? "grid grid-cols-3 gap-6" : "space-y-2"}>
-                            <div>
+                      {pdfParams.signatureLayout === 'horizontal' && pdfParams.showClientSignature && pdfParams.showCompanySignature ? (
+                        // Layout horizontal - firmas lado a lado
+                        <div className="grid grid-cols-2 gap-8">
+                          <div>
+                            <div 
+                              className="font-semibold mb-3"
+                              style={{ 
+                                fontSize: `${template?.body_size || 11}px`,
+                                color: template?.text_color || '#000000'
+                              }}
+                            >
+                              Firma del cliente:
+                            </div>
+                            <div className="space-y-2">
                               <div 
                                 className="mb-1"
                                 style={{ 
@@ -809,9 +809,29 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                 </>
                               )}
                             </div>
-                            {pdfParams.signatureLayout === 'horizontal' && pdfParams.showSignatureFields && (
-                              <>
-                                <div>
+                          </div>
+                          <div>
+                            <div 
+                              className="font-semibold mb-3"
+                              style={{ 
+                                fontSize: `${template?.body_size || 11}px`,
+                                color: template?.text_color || '#000000'
+                              }}
+                            >
+                              Firma de {organization?.name || 'Empresa'}:
+                            </div>
+                            <div className="space-y-2">
+                              <div 
+                                className="mb-1"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 10}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Firma: ________________________
+                              </div>
+                              {pdfParams.showSignatureFields && (
+                                <>
                                   <div 
                                     className="mb-1"
                                     style={{ 
@@ -821,8 +841,6 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                   >
                                     Aclaración: ________________________
                                   </div>
-                                </div>
-                                <div>
                                   <div 
                                     className="mb-1"
                                     style={{ 
@@ -832,87 +850,108 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                   >
                                     Fecha: _____ / _____ / _____
                                   </div>
-                                </div>
-                              </>
-                            )}
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      )}
+                      ) : (
+                        // Layout vertical - firmas una debajo de otra
+                        <>
+                          {pdfParams.showClientSignature && (
+                            <div className="mb-6">
+                              <div 
+                                className="font-semibold mb-3"
+                                style={{ 
+                                  fontSize: `${template?.body_size || 11}px`,
+                                  color: template?.text_color || '#000000'
+                                }}
+                              >
+                                Firma del cliente:
+                              </div>
+                              <div className="space-y-2">
+                                <div 
+                                  className="mb-1"
+                                  style={{ 
+                                    fontSize: `${template?.body_size || 10}px`,
+                                    color: template?.text_color || '#000000'
+                                  }}
+                                >
+                                  Firma: ________________________
+                                </div>
+                                {pdfParams.showSignatureFields && (
+                                  <>
+                                    <div 
+                                      className="mb-1"
+                                      style={{ 
+                                        fontSize: `${template?.body_size || 10}px`,
+                                        color: template?.text_color || '#000000'
+                                      }}
+                                    >
+                                      Aclaración: ________________________
+                                    </div>
+                                    <div 
+                                      className="mb-1"
+                                      style={{ 
+                                        fontSize: `${template?.body_size || 10}px`,
+                                        color: template?.text_color || '#000000'
+                                      }}
+                                    >
+                                      Fecha: _____ / _____ / _____
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          )}
 
-                      {pdfParams.showCompanySignature && (
-                        <div className="mt-4">
-                          <div 
-                            className="font-semibold mb-3"
-                            style={{ 
-                              fontSize: `${template?.body_size || 11}px`,
-                              color: template?.text_color || '#000000'
-                            }}
-                          >
-                            Firma de {organization?.name || 'Empresa'}:
-                          </div>
-                          
-                          <div className={pdfParams.signatureLayout === 'horizontal' ? "grid grid-cols-3 gap-6" : "space-y-2"}>
-                            <div>
+                          {pdfParams.showCompanySignature && (
+                            <div className="mt-4">
                               <div 
-                                className="mb-1"
+                                className="font-semibold mb-3"
                                 style={{ 
-                                  fontSize: `${template?.body_size || 10}px`,
+                                  fontSize: `${template?.body_size || 11}px`,
                                   color: template?.text_color || '#000000'
                                 }}
                               >
-                                Firma: ________________________
+                                Firma de {organization?.name || 'Empresa'}:
                               </div>
-                              {pdfParams.showSignatureFields && (
-                                <>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Aclaración: ________________________
-                                  </div>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Fecha: _____ / _____ / _____
-                                  </div>
-                                </>
-                              )}
+                              <div className="space-y-2">
+                                <div 
+                                  className="mb-1"
+                                  style={{ 
+                                    fontSize: `${template?.body_size || 10}px`,
+                                    color: template?.text_color || '#000000'
+                                  }}
+                                >
+                                  Firma: ________________________
+                                </div>
+                                {pdfParams.showSignatureFields && (
+                                  <>
+                                    <div 
+                                      className="mb-1"
+                                      style={{ 
+                                        fontSize: `${template?.body_size || 10}px`,
+                                        color: template?.text_color || '#000000'
+                                      }}
+                                    >
+                                      Aclaración: ________________________
+                                    </div>
+                                    <div 
+                                      className="mb-1"
+                                      style={{ 
+                                        fontSize: `${template?.body_size || 10}px`,
+                                        color: template?.text_color || '#000000'
+                                      }}
+                                    >
+                                      Fecha: _____ / _____ / _____
+                                    </div>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                            {pdfParams.signatureLayout === 'horizontal' && pdfParams.showSignatureFields && (
-                              <>
-                                <div>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Aclaración: ________________________
-                                  </div>
-                                </div>
-                                <div>
-                                  <div 
-                                    className="mb-1"
-                                    style={{ 
-                                      fontSize: `${template?.body_size || 10}px`,
-                                      color: template?.text_color || '#000000'
-                                    }}
-                                  >
-                                    Fecha: _____ / _____ / _____
-                                  </div>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}
