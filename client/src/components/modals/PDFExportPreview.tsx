@@ -240,6 +240,12 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
             {organization?.name || 'EMPRESA'}
           </h1>
           <div className="text-right">
+            <div className="text-sm mb-4">
+              {organization?.address && <div>{organization.address}</div>}
+              {organization?.website && <div>{organization.website}</div>}
+              {organization?.email && <div>{organization.email}</div>}
+              {organization?.phone && <div>+{organization.phone}</div>}
+            </div>
             <h2 className="text-2xl font-bold mb-2">CHANGE ORDER</h2>
             <div className="text-sm">
               <div>Fecha: {new Date().toLocaleDateString()}</div>
@@ -362,13 +368,18 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
               </div>
               
               <div className="text-right" style={{ fontSize: `${template?.body_size || 10}px`, color: template?.text_color || '#000000' }}>
-                {template?.company_address && (
-                  <div className="mb-1">{template.company_address}</div>
+                {organization?.address && (
+                  <div className="mb-1">{organization.address}</div>
                 )}
-                <div className="mb-1">
-                  {template?.company_email && <div>Email: {template.company_email}</div>}
-                  {template?.company_phone && <div>Ph: {template.company_phone}</div>}
-                </div>
+                {organization?.website && (
+                  <div className="mb-1">{organization.website}</div>
+                )}
+                {organization?.email && (
+                  <div className="mb-1">{organization.email}</div>
+                )}
+                {organization?.phone && (
+                  <div className="mb-1">+{organization.phone}</div>
+                )}
               </div>
             </div>
 
