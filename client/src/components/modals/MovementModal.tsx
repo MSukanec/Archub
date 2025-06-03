@@ -588,34 +588,36 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   );
 
   const footer = (
-    <div className="flex justify-end gap-3">
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleClose}
-        disabled={createMovementMutation.isPending}
-        className="w-1/4 bg-surface-primary border-input text-foreground hover:bg-[#c2c2c2] rounded-lg"
-      >
-        Cancelar
-      </Button>
-      <Button
-        type="submit"
-        form="movement-form"
-        disabled={createMovementMutation.isPending}
-        className="w-3/4 bg-[#8fc700] hover:bg-[#7fb600] text-white rounded-lg"
-      >
-        {createMovementMutation.isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            {isEditing ? 'Actualizando...' : 'Creando...'}
-          </>
-        ) : (
-          <>
-            <DollarSign className="h-4 w-4 mr-2" />
-            {isEditing ? 'Actualizar Movimiento' : 'Crear Movimiento'}
-          </>
-        )}
-      </Button>
+    <div className="border-t border-border/20 bg-surface-views p-4">
+      <div className="flex gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleClose}
+          disabled={createMovementMutation.isPending}
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          form="movement-form"
+          disabled={createMovementMutation.isPending}
+          className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-10"
+        >
+          {createMovementMutation.isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {isEditing ? 'Actualizando...' : 'Creando...'}
+            </>
+          ) : (
+            <>
+              <DollarSign className="h-4 w-4 mr-2" />
+              {isEditing ? 'Actualizar Movimiento' : 'Crear Movimiento'}
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 

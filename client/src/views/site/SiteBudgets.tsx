@@ -871,29 +871,30 @@ export default function SiteBudgets() {
   }
 
   return (
-    <div className="flex-1 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Calculator className="w-5 h-5 text-primary" />
+    <>
+      <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Calculator className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Cómputo y Presupuesto
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Gestión de múltiples tablas de cómputo y presupuestos
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Cómputo y Presupuesto
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Gestión de múltiples tablas de cómputo y presupuestos
-            </p>
-          </div>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo Presupuesto
+          </Button>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Presupuesto
-        </Button>
-      </div>
 
-      {/* Cards de estadísticas */}
+        {/* Cards de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-surface-secondary border border-border rounded-xl p-6">
           <div className="flex items-center justify-between">
@@ -990,6 +991,18 @@ export default function SiteBudgets() {
         data={pdfExportData.tasks}
         type="budget"
       />
-    </div>
+      </div>
+
+      {/* Floating Action Button - Mobile only */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <Button 
+          onClick={() => setIsCreateModalOpen(true)}
+          size="lg"
+          className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+        >
+          <Plus className="w-6 h-6" />
+        </Button>
+      </div>
+    </>
   );
 }
