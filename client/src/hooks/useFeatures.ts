@@ -99,10 +99,20 @@ export function useUserPlan() {
 }
 
 export function useFeatures() {
-  const { data: userWithPlan } = useUserPlan();
+  const { data: userWithPlan, isLoading, error } = useUserPlan();
+  
+  console.log('useFeatures - userWithPlan:', userWithPlan);
+  console.log('useFeatures - isLoading:', isLoading);
+  console.log('useFeatures - error:', error);
 
   const hasFeature = (featureName: FeatureName): boolean => {
-    if (!userWithPlan?.plan?.features) return false;
+    console.log('hasFeature called with:', featureName);
+    console.log('userWithPlan?.plan:', userWithPlan?.plan);
+    
+    if (!userWithPlan?.plan?.features) {
+      console.log('No plan features found, returning false');
+      return false;
+    }
     
     const planFeatures = userWithPlan.plan.features;
     
