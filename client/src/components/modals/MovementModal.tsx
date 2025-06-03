@@ -285,14 +285,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       <form id="movement-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Accordion type="single" collapsible defaultValue="basic-info" className="w-full space-y-1">
           {/* Información Básica */}
-          <AccordionItem value="basic-info" className="border border-input rounded-none w-full">
-            <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline px-4 py-3 w-full [&[data-state=open]>.accordion-icon]:rotate-45">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-primary" />
-                  Información Básica
-                </div>
-                <Plus className="accordion-icon w-4 h-4 text-primary transition-transform duration-200" />
+          <AccordionItem value="basic-info">
+            <AccordionTrigger>
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-primary" />
+                Información Básica
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-1">
