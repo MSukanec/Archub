@@ -65,12 +65,12 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
 // Componente Footer del Modal
 function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading = false }: ModalFooterProps) {
   return (
-    <div className="border-t border-border/20 bg-surface-views flex-shrink-0">
-      <div className="flex">
+    <div className="border-t border-border/20 bg-surface-views p-4">
+      <div className="flex gap-3">
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-none h-14 m-0"
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
           disabled={isLoading}
         >
           Cancelar
@@ -78,7 +78,7 @@ function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading 
         {onConfirm && (
           <Button
             onClick={onConfirm}
-            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-none h-14 m-0"
+            className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-10"
             disabled={isLoading}
           >
             {isLoading ? 'Procesando...' : confirmText}
@@ -150,13 +150,15 @@ export default function ModernModal({
           onClose={onClose}
         />
         
-        {/* Body - Constrained between header and footer */}
-        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {/* Body - Scrollable content area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4">
           {children}
         </div>
         
         {/* Footer */}
-        {footerContent}
+        <div className="flex-shrink-0">
+          {footerContent}
+        </div>
       </div>
     </div>
   );
