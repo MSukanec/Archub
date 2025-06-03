@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import CreateOrganizationModal from '@/components/modals/CreateOrganizationModal';
+import { FeatureLock } from '@/components/features';
 
 export default function Organization() {
   const { organizationId } = useUserContextStore();
@@ -111,13 +112,15 @@ export default function Organization() {
             </p>
           </div>
         </div>
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Organización
-        </Button>
+        <FeatureLock feature="multiple_organizations">
+          <Button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nueva Organización
+          </Button>
+        </FeatureLock>
       </div>
       
       {/* Organization Stats */}

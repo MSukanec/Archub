@@ -13,7 +13,8 @@ export type FeatureName =
   | 'unlimited_projects'
   | 'priority_support'
   | 'dedicated_support'
-  | 'custom_training';
+  | 'custom_training'
+  | 'multiple_organizations';
 
 // Define plan types
 export type PlanType = 'FREE' | 'PRO' | 'ENTERPRISE';
@@ -30,6 +31,7 @@ const FEATURE_PLANS: Record<FeatureName, PlanType> = {
   priority_support: 'PRO',
   dedicated_support: 'ENTERPRISE',
   custom_training: 'ENTERPRISE',
+  multiple_organizations: 'PRO',
 };
 
 export function useUserPlan() {
@@ -66,8 +68,19 @@ export function useFeatures() {
   const hasFeature = (featureName: FeatureName): boolean => {
     if (!userWithPlan?.plan?.features) return false;
     
-    const planFeatures = userWithPlan.plan.features as string[];
-    return planFeatures.includes(featureName);
+    const planFeatures = userWithPlan.plan.features;
+    
+    // Handle different feature format structures
+    if (Array.isArray(planFeatures)) {
+      return planFeatures.includes(featureName);
+    }
+    
+    // If features is an object, check if the feature exists as a property
+    if (typeof planFeatures === 'object' && planFeatures !== null) {
+      return featureName in planFeatures || planFeatures[featureName] === true;
+    }
+    
+    return false;
   };
 
   const getRequiredPlan = (featureName: FeatureName): PlanType => {
