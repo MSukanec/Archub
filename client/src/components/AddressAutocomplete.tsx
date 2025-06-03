@@ -81,39 +81,53 @@ export default function AddressAutocomplete({
           let state = '';
           let country = '';
           
+          console.log('Place selected:', place);
+          console.log('Address components:', place.address_components);
+          
           if (place.address_components) {
             place.address_components.forEach((component: any) => {
               const types = component.types;
+              console.log('Component:', component.long_name, 'Types:', types);
               
               if (types.includes('locality') || types.includes('administrative_area_level_2')) {
                 city = component.long_name;
+                console.log('City found:', city);
               }
               
               if (types.includes('postal_code')) {
                 zipCode = component.long_name;
+                console.log('Zip code found:', zipCode);
               }
               
               if (types.includes('administrative_area_level_1')) {
                 state = component.long_name;
+                console.log('State found:', state);
               }
               
               if (types.includes('country')) {
                 country = component.long_name;
+                console.log('Country found:', country);
               }
             });
           }
 
           // Llamar callbacks opcionales
+          console.log('Final extracted values:', { city, zipCode, state, country });
+          
           if (onCityChange && city) {
+            console.log('Calling onCityChange with:', city);
             onCityChange(city);
           }
           if (onZipCodeChange && zipCode) {
+            console.log('Calling onZipCodeChange with:', zipCode);
             onZipCodeChange(zipCode);
           }
           if (onStateChange && state) {
+            console.log('Calling onStateChange with:', state);
             onStateChange(state);
           }
           if (onCountryChange && country) {
+            console.log('Calling onCountryChange with:', country);
             onCountryChange(country);
           }
         });
