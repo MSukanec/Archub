@@ -186,29 +186,47 @@ export default function SiteLogs() {
   }
 
   return (
-    <div className="flex-1 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <ClipboardList className="w-5 h-5 text-primary" />
+    <>
+      <div className="flex-1 p-6 space-y-6">
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <ClipboardList className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Bitácora de Obra
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Registro diario de actividades y progreso de obra
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Bitácora de Obra
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Registro diario de actividades y progreso de obra
-            </p>
+          <Button onClick={handleCreateNew}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo Registro
+          </Button>
+        </div>
+
+        {/* Mobile Header */}
+        <div className="md:hidden">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <ClipboardList className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Bitácora de Obra
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Registro diario de actividades y progreso de obra
+              </p>
+            </div>
           </div>
         </div>
-        <Button onClick={handleCreateNew}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Registro
-        </Button>
-      </div>
 
-      {/* Cards de estadísticas */}
+        {/* Cards de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
@@ -399,26 +417,35 @@ export default function SiteLogs() {
         )}
       </div>
 
-      {/* Modals */}
-      <SiteLogModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        siteLog={selectedSiteLog}
-        projectId={projectId}
-      />
-      
-      <ConfirmDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={cancelDelete}
-        onConfirm={confirmDelete}
-        title="¿Eliminar registro de bitácora?"
-        description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.log_date + 'T00:00:00').toLocaleDateString('es-ES', { 
-          day: 'numeric', 
-          month: 'long', 
-          year: 'numeric' 
-        }) : ''}? Esta acción no se puede deshacer.`}
-        isLoading={deleteMutation.isPending}
-      />
-    </div>
+        {/* Modals */}
+        <SiteLogModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          siteLog={selectedSiteLog}
+          projectId={projectId}
+        />
+        
+        <ConfirmDeleteModal
+          isOpen={isDeleteModalOpen}
+          onClose={cancelDelete}
+          onConfirm={confirmDelete}
+          title="¿Eliminar registro de bitácora?"
+          description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.log_date + 'T00:00:00').toLocaleDateString('es-ES', { 
+            day: 'numeric', 
+            month: 'long', 
+            year: 'numeric' 
+          }) : ''}? Esta acción no se puede deshacer.`}
+          isLoading={deleteMutation.isPending}
+        />
+      </div>
+
+      {/* Floating Action Button for Mobile and Tablet */}
+      <Button
+        onClick={handleCreateNew}
+        className="fixed bottom-6 right-6 z-50 md:hidden w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
+    </>
   );
 }
