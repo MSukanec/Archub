@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Activity, BarChart3, Calendar, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import CreateOrganizationModal from '@/components/modals/CreateOrganizationModal';
 
 export default function Organization() {
   const { organizationId } = useUserContextStore();
