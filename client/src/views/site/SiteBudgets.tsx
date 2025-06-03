@@ -776,7 +776,7 @@ export default function SiteBudgets() {
         .select(`
           id,
           quantity,
-          unit_price,
+          price,
           tasks (
             id,
             name,
@@ -796,8 +796,8 @@ export default function SiteBudgets() {
         category_code: 'GEN',
         unit_name: 'Unidad',
         amount: parseFloat(budgetTask.quantity) || 0,
-        unit_price: parseFloat(budgetTask.unit_price) || 0,
-        total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.unit_price) || 0)
+        unit_price: parseFloat(budgetTask.price) || 0,
+        total_price: (parseFloat(budgetTask.quantity) || 0) * (parseFloat(budgetTask.price) || 0)
       }));
 
       // Configurar los datos para el modal PDF

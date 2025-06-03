@@ -148,8 +148,8 @@ export default function ModernModal({
           onClose={onClose}
         />
         
-        {/* Body - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#e0e0e0]">
+        {/* Body - Full Height Accordions */}
+        <div className="flex-1 flex flex-col bg-[#e0e0e0] overflow-hidden">
           {children}
         </div>
         

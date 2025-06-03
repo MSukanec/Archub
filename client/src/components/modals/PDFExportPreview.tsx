@@ -135,7 +135,7 @@ startxref
   const handleGoToSettings = () => {
     onClose();
     setSection('organization');
-    setView('pdf');
+    setView('organization-overview');
   };
 
   const calculateTotal = () => {
@@ -148,7 +148,6 @@ startxref
         isOpen={isOpen}
         onClose={onClose}
         title="Vista Previa PDF"
-        size="xl"
       >
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -162,7 +161,6 @@ startxref
       isOpen={isOpen}
       onClose={onClose}
       title="Vista Previa de Exportación PDF"
-      size="xl"
       headerActions={
         <Button
           variant="outline"
