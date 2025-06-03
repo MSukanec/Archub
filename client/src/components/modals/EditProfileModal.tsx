@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore } from '@/stores/themeStore';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import ModernModal from '@/components/ui/ModernModal';
@@ -40,6 +42,7 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
   const { user, setUser } = useAuthStore();
+  const { theme, setTheme, isLoading: themeLoading } = useThemeStore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
