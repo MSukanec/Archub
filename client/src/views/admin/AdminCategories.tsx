@@ -540,14 +540,14 @@ const AdminCategories = () => {
               placeholder="Buscar categorías..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-surface-secondary border-[#919191]/20 rounded-xl"
+              className="pl-10 bg-surface-secondary border-input rounded-xl"
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[200px] bg-surface-secondary border-[#919191]/20 rounded-xl">
+            <SelectTrigger className="w-[200px] bg-surface-secondary border-input rounded-xl">
               <SelectValue placeholder="Todas las Categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-surface-secondary border-[#919191]/20">
+            <SelectContent className="bg-surface-secondary border-input">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="root">Solo categorías padre</SelectItem>
             </SelectContent>
@@ -557,7 +557,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={expandAll}
-              className="bg-surface-secondary border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
+              className="bg-surface-secondary border-input rounded-xl hover:bg-gray-300 font-normal"
             >
               Expandir Todo
             </Button>
@@ -565,7 +565,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={collapseAll}
-              className="bg-surface-secondary border-[#919191]/20 rounded-xl hover:bg-gray-300 font-normal"
+              className="bg-surface-secondary border-input rounded-xl hover:bg-gray-300 font-normal"
             >
               Colapsar Todo
             </Button>

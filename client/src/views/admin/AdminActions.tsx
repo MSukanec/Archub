@@ -163,7 +163,7 @@ export default function AdminActions() {
               placeholder="Buscar acciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-secondary border-[#919191]/20 rounded-xl"
+              className="pl-10 pr-10 bg-surface-secondary border-input rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -180,7 +180,7 @@ export default function AdminActions() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl bg-surface-secondary border-[#919191]/20"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-surface-secondary border-input"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}

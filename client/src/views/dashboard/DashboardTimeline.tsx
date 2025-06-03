@@ -407,7 +407,7 @@ function DashboardTimeline() {
           <div className="absolute bottom-4 right-4 z-[60]">
             {/* Detailed event info card */}
             {hoveredEvent && (
-              <div className="bg-surface-secondary border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4 animate-in slide-in-from-right-2 fade-in duration-300">
+              <div className="bg-surface-secondary border border-input rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px] mb-4 animate-in slide-in-from-right-2 fade-in duration-300">
                 <h3 className="text-sm font-semibold text-[#919191] mb-3">INFORMACIÓN DEL EVENTO</h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -450,7 +450,7 @@ function DashboardTimeline() {
               </div>
             )}
             
-            <div className="bg-surface-secondary border border-[#919191]/20 rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
+            <div className="bg-surface-secondary border border-input rounded-lg shadow-lg p-4 min-w-[280px] max-w-[320px]">
               {todayEvents.length > 0 ? (
                 <>
                   <h3 className="text-sm font-semibold text-[#919191] mb-3">EVENTOS DE HOY</h3>
@@ -684,7 +684,7 @@ function DashboardTimeline() {
                                   onClick={() => {
                                     console.log('Event card clicked:', event);
                                   }}
-                                  className="bg-surface-secondary border border-[#919191]/20 rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
+                                  className="bg-surface-secondary border border-input rounded-lg shadow-lg p-2 min-w-[180px] hover:bg-[#8fc700]/10 transition-colors cursor-pointer"
                                 >
                                   <div className="flex items-center gap-2">
                                     <event.icon className="w-4 h-4 text-[#919191]" />

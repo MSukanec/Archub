@@ -161,7 +161,7 @@ export default function ProfileSecurity() {
               <Input
                 type={showCurrentPassword ? "text" : "password"}
                 placeholder="Ingresa tu contraseña actual"
-                className="h-10 bg-surface-secondary border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow pr-10"
+                className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow pr-10"
               />
               <Button
                 type="button"
@@ -183,7 +183,7 @@ export default function ProfileSecurity() {
               <Input
                 type={showNewPassword ? "text" : "password"}
                 placeholder="Ingresa tu nueva contraseña"
-                className="h-10 bg-surface-secondary border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow pr-10"
+                className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow pr-10"
               />
               <Button
                 type="button"
@@ -204,7 +204,7 @@ export default function ProfileSecurity() {
             <Input
               type="password"
               placeholder="Confirma tu nueva contraseña"
-              className="h-10 bg-surface-secondary border-[#919191]/20 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+              className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
             />
           </div>
           
