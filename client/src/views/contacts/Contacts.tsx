@@ -203,7 +203,7 @@ export default function Contacts() {
         </div>
 
         {/* Mobile Header */}
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
               <Users className="w-5 h-5 text-primary" />
@@ -213,13 +213,6 @@ export default function Contacts() {
               <p className="text-sm text-muted-foreground">Administra todos los contactos del sistema</p>
             </div>
           </div>
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Contacto
-          </Button>
         </div>
 
       <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
@@ -583,6 +576,14 @@ export default function Contacts() {
         }}
         contact={selectedContact}
       />
+
+      {/* Floating Action Button for Mobile and Tablet */}
+      <Button
+        onClick={() => setIsCreateModalOpen(true)}
+        className="fixed bottom-6 right-6 z-50 md:hidden w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
     </>
   );
 }

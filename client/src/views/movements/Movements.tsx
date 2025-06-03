@@ -416,36 +416,54 @@ export default function Movements() {
   }
 
   return (
-    <div className="flex-1 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <DollarSign className="w-5 h-5 text-primary" />
+    <>
+      <div className="flex-1 p-6 space-y-6">
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Movimientos Financieros
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Registro de ingresos, egresos y ajustes del proyecto
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Movimientos Financieros
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Registro de ingresos, egresos y ajustes del proyecto
-            </p>
+          <Button 
+            onClick={() => {
+              setEditingMovement(null);
+              setModalKey(prev => prev + 1);
+              setIsMovementModalOpen(true);
+            }}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo Movimiento
+          </Button>
+        </div>
+
+        {/* Mobile Header */}
+        <div className="md:hidden">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Movimientos Financieros
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Registro de ingresos, egresos y ajustes del proyecto
+              </p>
+            </div>
           </div>
         </div>
-        <Button 
-          onClick={() => {
-            setEditingMovement(null);
-            setModalKey(prev => prev + 1);
-            setIsMovementModalOpen(true);
-          }}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Movimiento
-        </Button>
-      </div>
 
-      {/* Summary Cards - Modern Professional Style */}
+        {/* Summary Cards - Modern Professional Style */}
       <div className="grid grid-cols-2 gap-3 md:gap-6">
         {/* Pesos Argentinos */}
         <Card className="rounded-2xl shadow-md bg-surface-secondary p-4 border-0">
@@ -1025,12 +1043,25 @@ export default function Movements() {
       )}
 
       {/* Delete Movement Modal */}
-      <DeleteMovementModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        movement={movementToDelete}
-        onConfirm={confirmDelete}
-      />
-    </div>
+        <DeleteMovementModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          movement={movementToDelete}
+          onConfirm={confirmDelete}
+        />
+      </div>
+
+      {/* Floating Action Button for Mobile and Tablet */}
+      <Button
+        onClick={() => {
+          setEditingMovement(null);
+          setModalKey(prev => prev + 1);
+          setIsMovementModalOpen(true);
+        }}
+        className="fixed bottom-6 right-6 z-50 md:hidden w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 p-0"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
+    </>
   );
 }
