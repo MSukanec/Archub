@@ -681,7 +681,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                 {sectionStates.totals && (
                                   <>
                                     <tr>
-                                      <td colSpan={3} 
+                                      <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
                                         className="px-3 py-2 text-right font-semibold"
                                         style={{ 
                                           border: `1px solid ${template?.secondary_color || '#000000'}`,
@@ -705,33 +705,35 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                       </td>
                                     </tr>
                                     
-                                    <tr>
-                                      <td colSpan={3} 
-                                        className="px-3 py-2 text-right font-semibold"
-                                        style={{ 
-                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                          color: template?.text_color || '#000000',
-                                          fontSize: `${template?.body_size || 11}px`,
-                                          backgroundColor: '#ffffff'
-                                        }}
-                                      >
-                                        Tax:
-                                      </td>
-                                      <td 
-                                        className="px-3 py-2 text-right"
-                                        style={{ 
-                                          border: `1px solid ${template?.secondary_color || '#000000'}`,
-                                          color: template?.text_color || '#000000',
-                                          fontSize: `${template?.body_size || 11}px`,
-                                          backgroundColor: '#ffffff'
-                                        }}
-                                      >
-                                        (${(calculateTotal() * 0.1).toFixed(2)})
-                                      </td>
-                                    </tr>
+                                    {pdfParams.showTaxCalculation && (
+                                      <tr>
+                                        <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
+                                          className="px-3 py-2 text-right font-semibold"
+                                          style={{ 
+                                            border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                            color: template?.text_color || '#000000',
+                                            fontSize: `${template?.body_size || 11}px`,
+                                            backgroundColor: '#ffffff'
+                                          }}
+                                        >
+                                          Tax ({pdfParams.taxRate}%):
+                                        </td>
+                                        <td 
+                                          className="px-3 py-2 text-right"
+                                          style={{ 
+                                            border: `1px solid ${template?.secondary_color || '#000000'}`,
+                                            color: template?.text_color || '#000000',
+                                            fontSize: `${template?.body_size || 11}px`,
+                                            backgroundColor: '#ffffff'
+                                          }}
+                                        >
+                                          (${(calculateTotal() * pdfParams.taxRate / 100).toFixed(2)})
+                                        </td>
+                                      </tr>
+                                    )}
                                     
                                     <tr style={{ backgroundColor: '#f0f0f0' }}>
-                                      <td colSpan={3} 
+                                      <td colSpan={pdfParams.showUnitColumn && pdfParams.showPriceColumn ? 3 : pdfParams.showUnitColumn || pdfParams.showPriceColumn ? 2 : 1} 
                                         className="px-3 py-2 text-right font-bold"
                                         style={{ 
                                           border: `1px solid ${template?.secondary_color || '#000000'}`,
@@ -739,7 +741,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                           fontSize: `${template?.body_size || 11}px`
                                         }}
                                       >
-                                        Change Order Total (Incl. Tax):
+                                        Change Order Total {pdfParams.showTaxCalculation ? '(Incl. Tax)' : '(Ex)'}:
                                       </td>
                                       <td 
                                         className="px-3 py-2 text-right font-bold"
@@ -749,7 +751,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                                           fontSize: `${template?.body_size || 11}px`
                                         }}
                                       >
-                                        (${(calculateTotal() * 1.1).toFixed(2)})
+                                        (${(calculateTotal() * (1 + (pdfParams.showTaxCalculation ? pdfParams.taxRate / 100 : 0))).toFixed(2)})
                                       </td>
                                     </tr>
 
