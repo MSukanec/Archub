@@ -16,6 +16,7 @@ import CalendarView from '@/views/dashboard/Calendar';
 import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
 import OrganizationPDF from '@/views/organization/OrganizationPDF';
+import OrganizationSettings from '@/views/organization/OrganizationSettings';
 import ProjectsList from '@/views/project/ProjectsList';
 
 import SiteBudgets from '@/views/site/SiteBudgets';
@@ -51,6 +52,7 @@ const viewComponents = {
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
   'organization-pdf': OrganizationPDF,
+  'organization-settings': OrganizationSettings,
   'organization-activity': Organization,
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,

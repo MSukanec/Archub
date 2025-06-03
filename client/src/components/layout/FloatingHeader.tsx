@@ -11,7 +11,8 @@ const sectionViews: Record<string, Array<{ id: string; label: string }>> = {
   organization: [
     { id: 'organization-overview', label: 'Organización' },
     { id: 'organization-team', label: 'Equipo' },
-    { id: 'organization-pdf', label: 'PDF' }
+    { id: 'organization-pdf', label: 'PDF' },
+    { id: 'organization-settings', label: 'Configuración' }
   ],
   projects: [
     { id: 'projects-list', label: 'Proyectos' }
