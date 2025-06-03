@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool, Save } from 'lucide-react';
+import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool, Save, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabase';
@@ -71,6 +71,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('default');
   const [isExporting, setIsExporting] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(0.7);
 
   // Estados de secciones
   const [sectionStates, setSectionStates] = useState({
@@ -278,6 +279,19 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
     return data.reduce((total, item) => total + (item.total_price || 0), 0);
   };
 
+  // Funciones de zoom
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.3));
+  };
+
+  const handleZoomReset = () => {
+    setZoomLevel(0.7);
+  };
+
   // Función para renderizar la plantilla seleccionada
   const renderSelectedTemplate = () => {
     const templateProps = {
@@ -288,7 +302,8 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
       data,
       type,
       getGridCols,
-      calculateTotal
+      calculateTotal,
+      zoomLevel
     };
 
     switch (selectedTemplate) {
@@ -363,6 +378,37 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Controles de zoom */}
+            <div className="flex items-center space-x-2 border-l border-border pl-6">
+              <span className="text-sm font-medium text-muted-foreground">Zoom:</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleZoomOut}
+                disabled={zoomLevel <= 0.3}
+              >
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-mono min-w-[45px] text-center">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleZoomIn}
+                disabled={zoomLevel >= 1.5}
+              >
+                <ZoomIn className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleZoomReset}
+              >
+                <RotateCcw className="w-4 h-4" />
+              </Button>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>

@@ -7,6 +7,7 @@ interface DefaultTemplateProps {
   type: 'budget' | 'materials';
   getGridCols: () => string;
   calculateTotal: () => number;
+  zoomLevel: number;
 }
 
 export default function DefaultTemplate({

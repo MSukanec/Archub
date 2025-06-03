@@ -7,6 +7,7 @@ interface TechnicalTemplateProps {
   type: 'budget' | 'materials';
   getGridCols: () => string;
   calculateTotal: () => number;
+  zoomLevel: number;
 }
 
 export default function TechnicalTemplate({
@@ -17,7 +18,8 @@ export default function TechnicalTemplate({
   data,
   type,
   getGridCols,
-  calculateTotal
+  calculateTotal,
+  zoomLevel
 }: TechnicalTemplateProps) {
   return (
     <div 
@@ -29,7 +31,7 @@ export default function TechnicalTemplate({
         fontFamily: 'Arial',
         color: '#000000',
         backgroundColor: '#ffffff',
-        transform: 'scale(0.7)',
+        transform: `scale(${zoomLevel})`,
         transformOrigin: 'top center',
         overflow: 'hidden'
       }}
