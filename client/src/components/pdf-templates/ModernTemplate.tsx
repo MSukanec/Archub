@@ -42,10 +42,15 @@ export default function ModernTemplate({
         overflow: 'visible'
       }}
     >
-      {/* Header Section */}
-      {sectionStates.header && (
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex-1">
+      <div 
+        style={{ 
+          padding: `${pdfParams.marginTop}mm ${pdfParams.marginRight}mm ${pdfParams.marginBottom}mm ${pdfParams.marginLeft}mm` 
+        }}
+      >
+        {/* Header Section */}
+        {sectionStates.header && (
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex-1">
             {template?.logo_url && (
               <img 
                 src={template.logo_url} 
@@ -473,6 +478,7 @@ export default function ModernTemplate({
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

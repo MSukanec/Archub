@@ -8,6 +8,7 @@ interface TechnicalTemplateProps {
   getGridCols: () => string;
   calculateTotal: () => number;
   zoomLevel: number;
+  pageDimensions: { width: number; height: number };
 }
 
 export default function TechnicalTemplate({
@@ -19,15 +20,16 @@ export default function TechnicalTemplate({
   type,
   getGridCols,
   calculateTotal,
-  zoomLevel
+  zoomLevel,
+  pageDimensions
 }: TechnicalTemplateProps) {
   return (
     <div 
       id="pdf-preview-content"
       className="bg-white shadow-lg border border-gray-300"
       style={{ 
-        width: '210mm',
-        minHeight: '297mm',
+        width: `${pageDimensions.width}mm`,
+        minHeight: `${pageDimensions.height}mm`,
         fontFamily: 'Arial',
         color: '#000000',
         backgroundColor: '#ffffff',
@@ -36,7 +38,12 @@ export default function TechnicalTemplate({
         overflow: 'visible'
       }}
     >
-      <div className="text-black" style={{ padding: '20px' }}>
+      <div 
+        className="text-black" 
+        style={{ 
+          padding: `${pdfParams.marginTop}mm ${pdfParams.marginRight}mm ${pdfParams.marginBottom}mm ${pdfParams.marginLeft}mm` 
+        }}
+      >
         {/* Header con estilo técnico */}
         {sectionStates.header && (
           <>
