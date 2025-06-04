@@ -61,7 +61,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { userId } = useUserContextStore();
+  const { userId, organizationId } = useUserContextStore();
   const isEditing = !!siteLog;
   
   // Define task type
