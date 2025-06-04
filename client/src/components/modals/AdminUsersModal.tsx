@@ -138,7 +138,7 @@ export default function AdminUsersModal({
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
+        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cancelar
       </Button>
@@ -174,7 +174,7 @@ export default function AdminUsersModal({
                   <Input 
                     placeholder="usuario@ejemplo.com"
                     type="email"
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -192,7 +192,7 @@ export default function AdminUsersModal({
                 <FormControl>
                   <Input 
                     placeholder="Nombre completo del usuario"
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field}
                   />
                 </FormControl>
@@ -211,7 +211,7 @@ export default function AdminUsersModal({
                   <FormControl>
                     <Input 
                       placeholder="Nombre"
-                      className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                      className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                       {...field}
                     />
                   </FormControl>
@@ -229,7 +229,7 @@ export default function AdminUsersModal({
                   <FormControl>
                     <Input 
                       placeholder="Apellido"
-                      className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                      className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                       {...field}
                     />
                   </FormControl>
@@ -247,11 +247,11 @@ export default function AdminUsersModal({
                 <FormLabel className="text-sm font-medium text-foreground">Rol</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                    <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                       <SelectValue placeholder="Selecciona un rol" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-muted border-input">
+                  <SelectContent className="bg-surface-primary border-input">
                     <SelectItem value="user">Usuario</SelectItem>
                     <SelectItem value="admin">Administrador</SelectItem>
                   </SelectContent>
@@ -269,11 +269,11 @@ export default function AdminUsersModal({
                 <FormLabel className="text-sm font-medium text-foreground">Plan</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                    <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                       <SelectValue placeholder="Selecciona un plan" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-muted border-input">
+                  <SelectContent className="bg-surface-primary border-input">
                     {plans.map((plan: Plan) => (
                       <SelectItem key={plan.id} value={plan.id}>
                         {plan.name} - ${plan.price}

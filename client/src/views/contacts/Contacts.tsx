@@ -204,7 +204,7 @@ export default function Contacts() {
 
 
 
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -231,13 +231,13 @@ export default function Contacts() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[180px] justify-start text-left font-normal rounded-xl bg-card border-input"
+                className="w-[180px] justify-start text-left font-normal rounded-xl bg-surface-secondary border-input"
               >
                 <Tags className="mr-2 h-4 w-4" />
                 {contactTypeFilter === 'all' ? "Todos los tipos" : contactTypeFilter}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[180px] p-2 bg-card">
+            <PopoverContent className="w-[180px] p-2 bg-surface-secondary">
               <div className="space-y-1">
                 <Button
                   variant={contactTypeFilter === 'all' ? 'default' : 'ghost'}
@@ -267,13 +267,13 @@ export default function Contacts() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl bg-card border-input"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-surface-secondary border-input"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 {sortOrder === 'newest' ? "Más reciente primero" : sortOrder === 'oldest' ? "Más antiguo primero" : "Orden alfabético"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-card">
+            <PopoverContent className="w-[200px] p-2 bg-surface-secondary">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}
@@ -306,7 +306,7 @@ export default function Contacts() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="hidden md:block rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -330,7 +330,7 @@ export default function Contacts() {
               </TableRow>
             ) : (
               paginatedContacts.map((contact: any) => (
-                <TableRow key={contact.id} className="border-border hover:bg-muted transition-colors">
+                <TableRow key={contact.id} className="border-border hover:bg-muted/30 transition-colors">
                   <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">
                       {`${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Sin nombre'}
@@ -396,7 +396,7 @@ export default function Contacts() {
           </div>
         ) : (
           paginatedContacts.map((contact: any) => (
-            <div key={contact.id} className="bg-card rounded-2xl p-4 shadow-md border-0">
+            <div key={contact.id} className="bg-surface-secondary rounded-2xl p-4 shadow-md border-0">
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -512,7 +512,7 @@ export default function Contacts() {
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-card border-border rounded-2xl">
+        <AlertDialogContent className="bg-surface-secondary border-border rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -591,14 +591,14 @@ function AdminContactsSkeleton() {
         <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex gap-4">
           <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
           <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
         </div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <div className="p-6">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (

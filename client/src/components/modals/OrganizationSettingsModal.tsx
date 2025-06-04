@@ -531,7 +531,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                     <FormControl>
                       <Input
                         {...field}
-                        className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -549,7 +549,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <Textarea
                         {...field}
                         rows={3}
-                        className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl resize-none"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl resize-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -569,7 +569,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <Input
                         {...field}
                         placeholder="CUIT, RIF, NIT, etc."
-                        className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -588,7 +588,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="url"
                         placeholder="https://ejemplo.com/logo.png"
-                        className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -656,7 +656,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -675,7 +675,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -696,7 +696,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -715,7 +715,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -766,7 +766,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="email"
                         placeholder="correo@organizacion.com"
-                        className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -785,7 +785,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         {...field}
                         type="url"
                         placeholder="https://miorganizacion.com"
-                        className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
+                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -824,7 +824,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                        <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
                           <SelectValue placeholder="Selecciona una moneda" />
                         </SelectTrigger>
                       </FormControl>
@@ -859,7 +859,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       
                       {/* Selected currencies chips */}
                       {field.value && field.value.length > 0 && (
-                        <div className="flex flex-wrap gap-2 p-3 bg-muted rounded-xl border">
+                        <div className="flex flex-wrap gap-2 p-3 bg-surface-primary rounded-xl border">
                           {field.value.map((currencyCode) => {
                             const currency = availableCurrencies.find(c => c.code === currencyCode);
                             if (!currency) return null;
@@ -889,7 +889,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       
                       {/* Available currencies to select */}
                       <div className="space-y-2">
-                        <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-card">
+                        <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
                           {availableSecondary.map((currency) => {
                             const isSelected = Array.isArray(field.value) && field.value.includes(currency.code);
                             
@@ -957,7 +957,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                          <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
                             <SelectValue placeholder="Selecciona una billetera" />
                           </SelectTrigger>
                         </FormControl>
@@ -992,7 +992,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         
                         {/* Selected wallets chips */}
                         {field.value && field.value.length > 0 && (
-                          <div className="flex flex-wrap gap-2 p-3 bg-muted rounded-xl border">
+                          <div className="flex flex-wrap gap-2 p-3 bg-surface-primary rounded-xl border">
                             {field.value.map((walletId) => {
                               const wallet = wallets?.find(w => w.id === walletId);
                               if (!wallet) return null;
@@ -1021,7 +1021,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         
                         {/* Available wallets to select */}
                         <div className="space-y-2">
-                          <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-card">
+                          <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
                             {availableSecondary.map((wallet) => {
                               const isSelected = Array.isArray(field.value) && field.value.includes(wallet.id);
                               

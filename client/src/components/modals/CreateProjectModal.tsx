@@ -326,7 +326,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                 <Input 
                   value={currentOrganization?.name || "Cargando..."}
                   disabled
-                  className="h-10 bg-card border-input rounded-xl shadow-lg"
+                  className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg"
                 />
               </div>
 
@@ -353,7 +353,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                         {...field}
                         value={field.value || ''}
                         placeholder="Ej: Torre Norte – Etapa 2"
-                        className="h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl"
+                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl"
                         onChange={(e) => {
                           field.onChange(e.target.value);
                           validateProjectName(e.target.value);
@@ -380,7 +380,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                     <FormLabel>Estado del Proyecto</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl">
+                        <SelectTrigger className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl">
                           <SelectValue placeholder="Selecciona el estado" />
                         </SelectTrigger>
                       </FormControl>
@@ -408,7 +408,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                       <Textarea
                         {...field}
                         placeholder="Describe brevemente el alcance y características del proyecto..."
-                        className="min-h-[100px] bg-card border-input rounded-xl shadow-lg hover:shadow-xl resize-none"
+                        className="min-h-[100px] bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl resize-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -439,7 +439,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                       <Input
                         {...field}
                         placeholder="Ej: Constructora ABC S.A."
-                        className="h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl"
+                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -459,7 +459,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                         {...field}
                         type="email"
                         placeholder="cliente@empresa.com"
-                        className="h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl"
+                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -545,7 +545,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           {...field}
                           placeholder="Se completa automáticamente"
                           disabled
-                          className="h-10 bg-background border-input text-muted-foreground rounded-xl cursor-not-allowed"
+                          className="h-10 bg-[#f0f0f0] border-input text-muted-foreground rounded-xl cursor-not-allowed"
                         />
                       </FormControl>
                       <FormMessage />
@@ -565,7 +565,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           {...field}
                           placeholder="Se completa automáticamente"
                           disabled
-                          className="h-10 bg-background border-input text-muted-foreground rounded-xl cursor-not-allowed"
+                          className="h-10 bg-[#f0f0f0] border-input text-muted-foreground rounded-xl cursor-not-allowed"
                         />
                       </FormControl>
                       <FormMessage />

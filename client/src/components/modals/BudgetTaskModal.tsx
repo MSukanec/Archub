@@ -206,14 +206,14 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-[0_0_25%] rounded-xl bg-background border-[#919191] text-muted-foreground hover:bg-card"
+          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-muted-foreground hover:bg-surface-secondary"
         >
           Cancelar
         </Button>
         <Button
           onClick={handleSubmit}
           disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
-          className="flex-[0_0_75%] rounded-xl bg-background border-[#4f9eff] text-white hover:bg-background"
+          className="flex-[0_0_75%] rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
         >
           <Calculator className="w-4 h-4 mr-2" />
           {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
@@ -250,7 +250,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                   placeholder="Buscar tareas..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                  className="pl-10 bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                 />
               </div>
 
@@ -268,7 +268,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                   filteredTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-center justify-between p-2 border border-border rounded-lg hover:bg-muted transition-colors"
+                      className="flex items-center justify-between p-2 border border-border rounded-lg hover:bg-muted/30 transition-colors"
                     >
                       <div className="flex items-center space-x-2 flex-1">
                         <Checkbox
@@ -338,7 +338,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                             onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
                             min="0.01"
                             step="0.01"
-                            className="w-16 h-7 text-center bg-muted border-input rounded-lg text-xs"
+                            className="w-16 h-7 text-center bg-surface-primary border-input rounded-lg text-xs"
                           />
                           <div className="text-right text-xs min-w-[60px]">
                             <div className="font-medium text-foreground">

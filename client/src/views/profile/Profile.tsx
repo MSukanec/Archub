@@ -186,7 +186,7 @@ export default function Profile() {
   const fullName = `${profileForm.firstName} ${profileForm.lastName}`.trim();
 
   return (
-    <div className="min-h-screen bg-views p-6">
+    <div className="min-h-screen bg-surface-views p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">

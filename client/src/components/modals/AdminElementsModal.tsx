@@ -129,7 +129,7 @@ export default function AdminElementsModal({
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
+        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cancelar
       </Button>
@@ -164,7 +164,7 @@ export default function AdminElementsModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: Columna, Viga, etc."
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     {...field}
                   />
                 </FormControl>

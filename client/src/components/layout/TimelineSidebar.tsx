@@ -66,7 +66,7 @@ export default function TimelineSidebar({ className }: TimelineSidebarProps) {
     <>
       {/* Sidebar with circular buttons */}
       <div className={cn(
-        "fixed left-0 top-0 w-16 h-screen bg-muted flex flex-col items-center z-50",
+        "fixed left-0 top-0 w-16 h-screen bg-[#1a1a1a] flex flex-col items-center z-50",
         className
       )}>
         {/* Logo/Brand area */}
@@ -93,7 +93,7 @@ export default function TimelineSidebar({ className }: TimelineSidebarProps) {
                   <Icon className="w-5 h-5 text-white" />
                   
                   {/* Tooltip */}
-                  <div className="absolute left-full ml-3 px-2 py-1 bg-card border border-border rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                  <div className="absolute left-full ml-3 px-2 py-1 bg-surface-secondary border border-border rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                     <span className="text-xs font-medium text-foreground">{item.label}</span>
                   </div>
 

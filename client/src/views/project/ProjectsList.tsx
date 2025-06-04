@@ -240,7 +240,7 @@ export default function ProjectsOverview() {
 
       {/* Cards de Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Proyectos</p>
@@ -256,7 +256,7 @@ export default function ProjectsOverview() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Proyectos Activos</p>
@@ -270,7 +270,7 @@ export default function ProjectsOverview() {
       </div>
 
       {/* Search and Filters con Projects List incluida */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -278,7 +278,7 @@ export default function ProjectsOverview() {
               placeholder="Buscar proyectos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10 bg-muted border-input rounded-xl"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl"
             />
             {searchQuery && (
               <Button
@@ -292,10 +292,10 @@ export default function ProjectsOverview() {
             )}
           </div>
           <Select value={sortOrder} onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}>
-            <SelectTrigger className="w-[200px] bg-muted border-input rounded-xl">
+            <SelectTrigger className="w-[200px] bg-surface-primary border-input rounded-xl">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="newest">Más reciente primero</SelectItem>
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>
@@ -305,7 +305,7 @@ export default function ProjectsOverview() {
 
       {/* Projects List - Moved outside the card */}
       {filteredProjects.length === 0 ? (
-        <Card className="rounded-2xl shadow-md bg-card p-12 border-0">
+        <Card className="rounded-2xl shadow-md bg-surface-secondary p-12 border-0">
           <CardContent className="text-center p-0">
             <Building className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-medium text-foreground">
@@ -363,7 +363,7 @@ export default function ProjectsOverview() {
               return (
                 <div
                   key={project.id}
-                  className={`p-3 rounded-2xl shadow-md transition-all duration-200 bg-card relative ${
+                  className={`p-3 rounded-2xl shadow-md transition-all duration-200 bg-surface-secondary relative ${
                     !isAccessible 
                       ? 'opacity-60 cursor-not-allowed border-2 border-amber-500/30' 
                       : isActiveProject 
@@ -419,7 +419,7 @@ export default function ProjectsOverview() {
                             e.stopPropagation();
                             handleViewProject(project);
                           }}
-                          className="text-muted-foreground hover:text-foreground hover:bg-card bg-muted h-8 w-8 p-0 rounded-lg"
+                          className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                           title="Ver información del proyecto"
                         >
                           <Eye className="h-4 w-4" />
@@ -431,7 +431,7 @@ export default function ProjectsOverview() {
                             e.stopPropagation();
                             handleEdit(project);
                           }}
-                          className="text-muted-foreground hover:text-foreground hover:bg-card bg-muted h-8 w-8 p-0 rounded-lg"
+                          className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>

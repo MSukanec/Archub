@@ -115,7 +115,7 @@ export default function InviteTeamMemberModal({ isOpen, onClose }: InviteTeamMem
                       <Input
                         type="email"
                         placeholder="email@ejemplo.com"
-                        className="h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl"
+                        className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl"
                         {...field}
                       />
                     </FormControl>
@@ -132,7 +132,7 @@ export default function InviteTeamMemberModal({ isOpen, onClose }: InviteTeamMem
                     <FormLabel>Rol en el equipo</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-10 bg-card border-input rounded-xl shadow-lg hover:shadow-xl">
+                        <SelectTrigger className="h-10 bg-surface-secondary border-input rounded-xl shadow-lg hover:shadow-xl">
                           <SelectValue placeholder="Seleccionar rol" />
                         </SelectTrigger>
                       </FormControl>

@@ -156,7 +156,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full pl-3 text-left font-normal bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10",
+                              "w-full pl-3 text-left font-normal bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -169,7 +169,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-muted border-input z-[9999]" align="start">
+                      <PopoverContent className="w-auto p-0 bg-surface-primary border-input z-[9999]" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -195,11 +195,11 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                     <FormLabel className="text-xs font-medium text-foreground">Clima</FormLabel>
                     <Select value={field.value || ''} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10">
+                        <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10">
                           <SelectValue placeholder="Seleccionar clima" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-muted border-input z-[9999]">
+                      <SelectContent className="bg-surface-primary border-input z-[9999]">
                         {weatherOptions.map((option) => {
                           const Icon = option.icon;
                           return (
@@ -228,7 +228,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                     <FormControl>
                       <Textarea
                         placeholder="Describe las actividades del día, observaciones, incidentes, etc."
-                        className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
                         rows={4}
                         {...field}
                       />
@@ -245,14 +245,14 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   );
 
   const footer = (
-    <div className="border-t border-border/20 bg-views p-4">
+    <div className="border-t border-border/20 bg-surface-views p-4">
       <div className="flex gap-3">
         <Button
           type="button"
           variant="outline"
           onClick={handleClose}
           disabled={createSiteLogMutation.isPending}
-          className="flex-1 bg-card border-input text-muted-foreground hover:bg-muted rounded-lg h-10"
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
         >
           Cancelar
         </Button>

@@ -888,7 +888,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
         {/* Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Column - Options - Mostrar siempre */}
-          <div className="w-1/3 border-r border-border p-6 overflow-y-auto bg-card">
+          <div className="w-1/3 border-r border-border p-6 overflow-y-auto bg-surface">
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-foreground mb-4">SECCIONES</h3>
                 
@@ -904,7 +904,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 ].map((section) => (
                   <div key={section.id} className="border-2 border-border rounded-lg overflow-hidden">
                     <div 
-                      className="flex items-center justify-between p-3 bg-card cursor-pointer hover:bg-hover transition-colors"
+                      className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover transition-colors"
                       onClick={() => toggleAccordion(section.id)}
                     >
                       <div className="flex items-center space-x-3">

@@ -98,7 +98,7 @@ export default function ProfileSubscription() {
   const currentPlanName = getCurrentPlan() || 'FREE';
 
   return (
-    <div className="min-h-screen bg-views p-6">
+    <div className="min-h-screen bg-surface-views p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
@@ -122,7 +122,7 @@ export default function ProfileSubscription() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
               <div className="flex items-center gap-3">
                 {(() => {
                   const PlanIcon = getPlanIcon(currentPlanName);

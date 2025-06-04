@@ -170,7 +170,7 @@ export default function AdminOrganizations() {
       </div>
 
       {/* Search and Filters */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -178,7 +178,7 @@ export default function AdminOrganizations() {
               placeholder="Buscar organizaciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-muted border-input shadow-lg hover:shadow-xl rounded-xl"
+              className="pl-10 bg-surface-primary border-input shadow-lg hover:shadow-xl rounded-xl"
             />
           </div>
           <Popover>
@@ -219,10 +219,10 @@ export default function AdminOrganizations() {
       </div>
 
       {/* Organizations Table */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-muted">
+            <TableRow className="border-border bg-surface-primary">
               <TableHead className="text-foreground font-semibold h-12 text-center">Organización</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Propietario</TableHead>
               <TableHead className="text-foreground font-semibold h-12 text-center">Fecha de creación</TableHead>
@@ -242,7 +242,7 @@ export default function AdminOrganizations() {
               </TableRow>
             ) : (
               filteredOrganizations.map((organization: any) => (
-                <TableRow key={organization.id} className="border-border bg-card hover:bg-muted transition-colors">
+                <TableRow key={organization.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{organization.name || 'Sin nombre'}</div>
                   </TableCell>
@@ -272,7 +272,7 @@ export default function AdminOrganizations() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(organization)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-card bg-muted h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -311,7 +311,7 @@ export default function AdminOrganizations() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-card border-border rounded-2xl">
+        <AlertDialogContent className="bg-surface-secondary border-border rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -322,7 +322,7 @@ export default function AdminOrganizations() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel 
-              className="bg-muted border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl"
+              className="bg-surface-primary border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl"
             >
               Cancelar
             </AlertDialogCancel>
@@ -356,7 +356,7 @@ function AdminOrganizationsSkeleton() {
       </div>
       
       {/* Search skeleton */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex gap-4">
           <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
           <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
@@ -364,7 +364,7 @@ function AdminOrganizationsSkeleton() {
       </div>
       
       {/* Table skeleton */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <div className="p-6">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (

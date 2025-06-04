@@ -84,7 +84,7 @@ export default function SubscriptionTables() {
   const currentPlanName = getCurrentPlan() || 'FREE';
 
   return (
-    <div className="min-h-screen bg-views p-6">
+    <div className="min-h-screen bg-surface-views p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -107,7 +107,7 @@ export default function SubscriptionTables() {
           </CardHeader>
           <CardContent>
             {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-muted rounded-lg">
+            <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
               <span className={`text-sm ${!isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
                 Mensual
               </span>

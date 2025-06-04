@@ -10,7 +10,7 @@
   --muted-foreground: 0 0% 35%; /* #595959 */
   --popover: 0 0% 98%; /* #fafafa */
   --popover-foreground: 0 0% 0%; /* #000000 */
-  --card: 0 0% 87%; /* #dedede */
+  --card: 0 0% 98%; /* #fafafa */
   --card-foreground: 0 0% 0%; /* #000000 */
   --border: 0 0% 70%; /* #b3b3b3 */
   --input: 0 0% 98%; /* #fafafa */
@@ -28,7 +28,17 @@
   /* Financial colors */
   --expense: 8 58% 52%; /* #c25b4a */
   
-
+  /* Surface variations for better hierarchy */
+  --surface: 0 0% 98%; /* #fafafa */
+  --surface-light: 0 0% 95%; /* #f2f2f2 */
+  
+  /* Background hierarchy - Views, Primary Components, Secondary Cards */
+  --background-views: 0 0% 82%; /* #d1d1d1 - Background for main views/pages */
+  --background-primary: 0 0% 95%; /* #f2f2f2 - Primary components (buttons, inputs, search) */
+  --background-secondary: 0 0% 98%; /* #fafafa - Secondary elements (cards, containers) */
+  
+  /* Override specific backgrounds for light theme */
+  --surface-views: 0 0% 82%; /* #d1d1d1 */
 }
 
 .dark {
@@ -39,7 +49,7 @@
   --muted-foreground: 0 0% 64%; /* #a3a3a3 */
   --popover: 0 0% 9%; /* #171717 */
   --popover-foreground: 0 0% 98%; /* #fafafa */
-  --card: 0 0% 16%; /* #292929 */
+  --card: 0 0% 9%; /* #171717 */
   --card-foreground: 0 0% 98%; /* #fafafa */
   --border: 0 0% 15%; /* #262626 */
   --input: 0 0% 15%; /* #262626 */
@@ -56,7 +66,19 @@
   /* Financial colors */
   --expense: 8 58% 52%; /* #c25b4a */
   
-
+  /* Surface variations for better hierarchy */
+  --surface: 0 0% 9%; /* #171717 */
+  --surface-light: 0 0% 15%; /* #262626 */
+  
+  /* Background hierarchy - Views, Primary Components, Secondary Cards */
+  --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
+  --background-primary: 0 0% 15%; /* #262626 - Primary components (buttons, inputs, search) */
+  --background-secondary: 0 0% 9%; /* #171717 - Secondary elements (cards, containers) */
+  
+  /* Surface variations for better hierarchy */
+  --surface-views: 0 0% 12%; /* #1e1e1e */
+  --surface-primary: 0 0% 15%; /* #262626 */
+  --surface-secondary: 0 0% 9%; /* #171717 */
 }
 
 /* Custom pressed effect - stays pressed on hover */
@@ -371,7 +393,7 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
   --muted-foreground: 0 0% 75%; /* #bfbfbf */
   --popover: 0 0% 16%; /* #282828 */
   --popover-foreground: 0 0% 100%; /* #ffffff */
-  --card: 0 0% 16%; /* #292929 */
+  --card: 0 0% 18%; /* #2d2d2d */
   --card-foreground: 0 0% 100%; /* #ffffff */
   --border: 0 0% 25%; /* #404040 */
   --input: 0 0% 18%; /* #2d2d2d */
@@ -424,7 +446,10 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
     color: #ffffff !important;
   }
 
-
+  .dark .bg-card,
+  .dark [class*="bg-card"] {
+    background-color: #8bc34a !important;
+  }
 
   .dark .bg-muted,
   .dark [class*="bg-muted"] {

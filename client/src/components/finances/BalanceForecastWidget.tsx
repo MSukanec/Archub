@@ -171,7 +171,7 @@ export default function BalanceForecastWidget({ projectId }: BalanceForecastWidg
       
       <div className="space-y-4">
         {/* Current Balance */}
-        <div className="text-center p-4 bg-card rounded-lg">
+        <div className="text-center p-4 bg-surface-primary rounded-lg">
           <p className="text-sm text-muted-foreground">Balance Actual</p>
           <p className="text-2xl font-bold text-foreground">
             ARS ${forecast.currentBalance.toLocaleString('es-AR')}
@@ -179,7 +179,7 @@ export default function BalanceForecastWidget({ projectId }: BalanceForecastWidg
         </div>
 
         {/* Monthly Trend */}
-        <div className="flex items-center justify-between p-4 bg-card rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-surface-primary rounded-lg">
           <div>
             <p className="text-sm text-muted-foreground">Tendencia Mensual</p>
             <p className={`text-lg font-semibold ${isPositiveTrend ? 'text-green-600' : 'text-red-600'}`}>

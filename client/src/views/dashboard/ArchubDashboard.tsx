@@ -192,7 +192,7 @@ export default function ArchubDashboard() {
   }
 
   return (
-      <div className="flex flex-col h-full bg-background">
+      <div className="flex flex-col h-full bg-surface-views">
       {/* Main Dashboard Content */}
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards with integrated action buttons */}
@@ -212,7 +212,7 @@ export default function ArchubDashboard() {
               </div>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
-                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
               >
                 <Plus className="w-3 h-3" />
                 Nuevo Proyecto
@@ -235,7 +235,7 @@ export default function ArchubDashboard() {
               </div>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
-                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
               >
                 <Plus className="w-3 h-3" />
                 Nueva Bitácora
@@ -303,7 +303,7 @@ export default function ArchubDashboard() {
               {timelineEvents.slice(0, 5).map((event) => {
                 const Icon = event.icon;
                 return (
-                  <div key={event.id} className="flex items-center gap-4 p-3 rounded-xl bg-card/50">
+                  <div key={event.id} className="flex items-center gap-4 p-3 rounded-xl bg-surface-secondary/50">
                     <div 
                       className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${event.color}20` }}

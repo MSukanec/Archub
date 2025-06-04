@@ -25,8 +25,8 @@ export default function DayCard({ dayEvent, isToday, onClick }: DayCardProps) {
     <div
       onClick={onClick}
       className={cn(
-        "h-32 bg-background border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:bg-background hover:border-primary/50",
-        isToday ? "border-primary/60 bg-background" : "border-border",
+        "h-32 bg-[#141414] border rounded-lg p-3 cursor-pointer transition-all duration-200 hover:bg-[#1a1a1a] hover:border-primary/50",
+        isToday ? "border-primary/60 bg-[#1a1a1a]" : "border-border",
         hasEvents ? "hover:shadow-lg" : ""
       )}
     >

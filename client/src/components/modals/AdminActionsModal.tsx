@@ -127,7 +127,7 @@ export default function AdminActionsModal({
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
+        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cancelar
       </Button>
@@ -162,7 +162,7 @@ export default function AdminActionsModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: Revisar Documentos" 
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field} 
                   />
                 </FormControl>

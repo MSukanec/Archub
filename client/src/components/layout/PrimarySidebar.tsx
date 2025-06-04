@@ -307,7 +307,7 @@ export default function PrimarySidebar() {
 
   const renderDashboardSidebar = () => (
     <div className="h-full flex flex-col">
-      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
         <h3 className="font-medium text-sm text-foreground">Dashboard</h3>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -347,7 +347,7 @@ export default function PrimarySidebar() {
 
   const renderProfileSidebar = () => (
     <div className="h-full flex flex-col">
-      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
         <h3 className="font-medium text-sm text-foreground">Perfil</h3>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -409,7 +409,7 @@ export default function PrimarySidebar() {
             Cerrar Sesión
           </button>
         </AlertDialogTrigger>
-        <AlertDialogContent className="bg-background border-border">
+        <AlertDialogContent className="bg-[#141414] border-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">¿Cerrar sesión?</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-400">
@@ -417,7 +417,7 @@ export default function PrimarySidebar() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-muted text-muted-foreground hover:bg-accent">
+            <AlertDialogCancel className="bg-muted text-muted-foreground hover:bg-muted/80">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white">
@@ -431,7 +431,7 @@ export default function PrimarySidebar() {
 
   const renderRegularSidebar = (item: any) => (
     <div className="h-full flex flex-col">
-      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
         <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
       </div>
       <div className="flex-1">

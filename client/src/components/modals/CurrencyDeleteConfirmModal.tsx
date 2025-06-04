@@ -225,7 +225,7 @@ export default function CurrencyDeleteConfirmModal({
                               value={replacementCurrency} 
                               onValueChange={setReplacementCurrency}
                             >
-                              <SelectTrigger className="bg-card border-input">
+                              <SelectTrigger className="bg-surface-secondary border-input">
                                 <SelectValue placeholder="Seleccionar moneda de reemplazo" />
                               </SelectTrigger>
                               <SelectContent>
@@ -251,13 +251,13 @@ export default function CurrencyDeleteConfirmModal({
   );
 
   const footer = (
-    <div className="border-t border-border/20 bg-views p-4">
+    <div className="border-t border-border/20 bg-surface-views p-4">
       <div className="flex gap-3">
         <Button
           type="button"
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-card border-input text-muted-foreground hover:bg-muted rounded-lg h-10"
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
         >
           Cancelar
         </Button>

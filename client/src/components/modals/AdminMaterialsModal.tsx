@@ -141,7 +141,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
+        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cancelar
       </Button>
@@ -176,7 +176,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                 <FormControl>
                   <Input 
                     placeholder="Ej: Ladrillo Visto" 
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field} 
                   />
                 </FormControl>
@@ -196,11 +196,11 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                   onValueChange={field.onChange}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                    <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                       <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-muted border-input z-[10000]">
+                  <SelectContent className="bg-surface-primary border-input z-[10000]">
                     {categories
                       .slice()
                       .sort((a, b) => a.name.localeCompare(b.name))
@@ -228,11 +228,11 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                   onValueChange={field.onChange}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                    <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                       <SelectValue placeholder="Selecciona una unidad" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-muted border-input z-[10000]">
+                  <SelectContent className="bg-surface-primary border-input z-[10000]">
                     {units
                       .slice()
                       .sort((a, b) => a.name.localeCompare(b.name))
@@ -261,7 +261,7 @@ export default function AdminMaterialsModal({ isOpen, onClose, material }: Admin
                     step="0.01"
                     min="0"
                     placeholder="0.00" 
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                     {...field} 
                   />
                 </FormControl>

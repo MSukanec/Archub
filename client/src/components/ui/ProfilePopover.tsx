@@ -65,21 +65,21 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
 
       {isOpen && (
         <div 
-          className="fixed bottom-4 left-16 w-44 bg-card border border-border rounded-lg shadow-xl z-50"
+          className="fixed bottom-4 left-16 w-44 bg-surface-secondary border border-border rounded-lg shadow-xl z-50"
         >
           {/* Menu Items - Compact */}
           <div className="py-1">
             {/* Profile Button */}
             <button
               onClick={handleProfileClick}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+              className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-muted/30 transition-colors"
             >
               <User className="w-3 h-3 text-muted-foreground" />
               <span className="text-xs text-foreground">Mi Perfil</span>
             </button>
 
             {/* Theme Toggle */}
-            <div className="flex items-center justify-between px-3 py-2 hover:bg-muted transition-colors">
+            <div className="flex items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors">
               <div className="flex items-center space-x-2">
                 {theme === 'dark' ? (
                   <Moon className="w-3 h-3 text-muted-foreground" />

@@ -83,7 +83,7 @@ export default function CircularButton({
           cursor-pointer
           ${isActive 
             ? 'bg-black' 
-            : 'bg-muted'
+            : 'bg-surface-primary'
           }
           ${className}
           ${isHovered ? 'pressed' : ''}
@@ -99,7 +99,7 @@ export default function CircularButton({
         <div className={`
           absolute top-1/2 transform -translate-y-1/2
           ${tooltipDirection === 'right' ? 'left-full ml-3' : 'right-full mr-3'}
-          bg-card rounded-2xl shadow-lg z-50 pointer-events-none
+          bg-surface-secondary rounded-2xl shadow-lg z-50 pointer-events-none
           max-w-[280px] ${description ? 'min-w-[200px]' : 'whitespace-nowrap'}
         `}>
           <div className={description ? "p-4" : "px-4 py-2"}>

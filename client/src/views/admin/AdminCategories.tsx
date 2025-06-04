@@ -95,7 +95,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
       )}
       
       <div 
-        className={`flex items-center gap-2 py-2 px-3 bg-card border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
+        className={`flex items-center gap-2 py-2 px-3 bg-surface-secondary border-b border-gray-200 hover:bg-gray-300 group transition-colors ${
           isOver && dropPosition === 'inside' ? 'ring-2 ring-primary ring-opacity-50 bg-primary/10' : ''
         }`}
         style={{ paddingLeft: `${paddingLeft}px` }}
@@ -142,7 +142,7 @@ const TreeNode = ({ category, level, onEdit, onDelete, expandedNodes, onToggleEx
             variant="ghost"
             size="sm"
             onClick={() => onEdit(category)}
-            className="text-muted-foreground hover:text-foreground hover:bg-card bg-muted h-8 w-8 p-0 rounded-lg"
+            className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -532,7 +532,7 @@ const AdminCategories = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -540,14 +540,14 @@ const AdminCategories = () => {
               placeholder="Buscar categorías..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-muted border-input rounded-xl"
+              className="pl-10 bg-surface-primary border-input rounded-xl"
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[200px] bg-muted border-input rounded-xl">
+            <SelectTrigger className="w-[200px] bg-surface-primary border-input rounded-xl">
               <SelectValue placeholder="Todas las Categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-card border-input">
+            <SelectContent className="bg-surface-secondary border-input">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="root">Solo categorías padre</SelectItem>
             </SelectContent>
@@ -557,7 +557,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={expandAll}
-              className="bg-muted border-input rounded-xl hover:bg-gray-300 font-normal"
+              className="bg-surface-primary border-input rounded-xl hover:bg-gray-300 font-normal"
             >
               Expandir Todo
             </Button>
@@ -565,7 +565,7 @@ const AdminCategories = () => {
               variant="outline" 
               size="sm" 
               onClick={collapseAll}
-              className="bg-muted border-input rounded-xl hover:bg-gray-300 font-normal"
+              className="bg-surface-primary border-input rounded-xl hover:bg-gray-300 font-normal"
             >
               Colapsar Todo
             </Button>
@@ -574,7 +574,7 @@ const AdminCategories = () => {
       </div>
 
       {/* Tree View */}
-      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

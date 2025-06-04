@@ -472,10 +472,10 @@ export default function Movements() {
         {/* Desktop: Filters first row - Distributed width */}
         <div className="hidden lg:grid grid-cols-5 gap-3 w-full">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las monedas</SelectItem>
               <SelectItem value="ARS">ARS</SelectItem>
               <SelectItem value="USD">USD</SelectItem>
@@ -483,10 +483,10 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todos los tipos</SelectItem>
               <SelectItem value="ingresos">Ingresos</SelectItem>
               <SelectItem value="egresos">Egresos</SelectItem>
@@ -495,10 +495,10 @@ export default function Movements() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="movimientos">Movimientos</SelectItem>
               <SelectItem value="cuotas">Cuotas</SelectItem>
@@ -507,10 +507,10 @@ export default function Movements() {
           </Select>
 
           <Select value={filterType} onValueChange={(value) => setFilterType(value as any)}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Filtro por fecha" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las fechas</SelectItem>
               <SelectItem value="year">Por año</SelectItem>
               <SelectItem value="date">Fecha específica</SelectItem>
@@ -518,10 +518,10 @@ export default function Movements() {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="newest">Más reciente primero</SelectItem>
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>
@@ -586,7 +586,7 @@ export default function Movements() {
               placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-muted border-input rounded-xl shadow-lg h-9"
+              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl shadow-lg h-9"
             />
             {searchTerm && (
               <Button
@@ -605,7 +605,7 @@ export default function Movements() {
           <Button
             variant="outline"
             size="sm"
-            className="w-9 h-9 bg-card border-0 rounded-full hover:bg-muted shadow-lg p-0"
+            className="w-9 h-9 bg-surface-secondary border-0 rounded-full hover:bg-muted shadow-lg p-0"
           >
             <Download className="h-4 w-4 text-foreground" />
           </Button>
@@ -614,10 +614,10 @@ export default function Movements() {
         {/* Legacy filters - hidden now */}
         <div className="hidden">
           <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las monedas" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las monedas</SelectItem>
               <SelectItem value="ARS">ARS</SelectItem>
               <SelectItem value="USD">USD</SelectItem>
@@ -625,10 +625,10 @@ export default function Movements() {
           </Select>
 
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todos los tipos" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todos los tipos</SelectItem>
               <SelectItem value="ingresos">Ingresos</SelectItem>
               <SelectItem value="egresos">Egresos</SelectItem>
@@ -637,10 +637,10 @@ export default function Movements() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="all">Todas las categorías</SelectItem>
               <SelectItem value="movimientos">Movimientos</SelectItem>
               <SelectItem value="cuotas">Cuotas</SelectItem>
@@ -648,10 +648,10 @@ export default function Movements() {
           </Select>
 
           <Select value={sortOrder} onValueChange={setSortOrder as any}>
-            <SelectTrigger className="bg-muted border-input rounded-xl shadow-lg">
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-muted border-input">
+            <SelectContent className="bg-surface-primary border-input">
               <SelectItem value="newest">Más reciente primero</SelectItem>
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>
@@ -659,7 +659,7 @@ export default function Movements() {
 
           <Button
             variant="outline"
-            className="bg-card border-input rounded-xl hover:bg-muted shadow-lg"
+            className="bg-surface-secondary border-input rounded-xl hover:bg-muted shadow-lg"
           >
             <Download className="h-4 w-4 mr-2" />
             Exportar
@@ -668,7 +668,7 @@ export default function Movements() {
       </div>
 
       {/* History Table - Desktop Only */}
-      <div className="hidden xl:block rounded-2xl shadow-md bg-card border-0 overflow-hidden">
+      <div className="hidden xl:block rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-border bg-muted/50">
@@ -694,7 +694,7 @@ export default function Movements() {
               </TableRow>
             ) : (
               paginatedMovements.map((movement) => (
-                <TableRow key={movement.id} className="border-border hover:bg-muted transition-colors h-12">
+                <TableRow key={movement.id} className="border-border hover:bg-muted/30 transition-colors h-12">
                   <TableCell className="text-center py-1">
                     {(() => {
                       const dateStr = movement.created_at_local || movement.created_at;
@@ -838,7 +838,7 @@ export default function Movements() {
           paginatedMovements.map((movement) => (
             <Card 
               key={movement.id} 
-              className="rounded-2xl shadow-md bg-card border-0 p-3 cursor-pointer hover:bg-muted transition-colors"
+              className="rounded-2xl shadow-md bg-surface-secondary border-0 p-3 cursor-pointer hover:bg-muted/30 transition-colors"
               onClick={() => handleEdit(movement)}
             >
               <div className="flex justify-between items-start mb-2">

@@ -154,7 +154,7 @@ export default function AdminCategoriesModal({
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
+        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cancelar
       </Button>
@@ -189,7 +189,7 @@ export default function AdminCategoriesModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: Estructura"
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -207,7 +207,7 @@ export default function AdminCategoriesModal({
                 <FormControl>
                   <Input 
                     placeholder="Ej: EST"
-                    className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                    className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -224,11 +224,11 @@ export default function AdminCategoriesModal({
                 <FormLabel className="text-xs font-medium text-foreground">Categoría Padre (Opcional)</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
+                    <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm">
                       <SelectValue placeholder="Seleccionar categoría padre" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-muted border-input z-[10000]">
+                  <SelectContent className="bg-surface-primary border-input z-[10000]">
                     <SelectItem value="none">Sin categoría padre</SelectItem>
                     {allCategories
                       .filter(cat => cat.id !== category?.id) // No mostrar la categoría actual

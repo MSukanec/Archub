@@ -91,7 +91,7 @@ export default function TimelineWorkspace({
   
   if (isLoading) {
     return (
-      <div className="bg-background border border-border rounded-lg p-6">
+      <div className="bg-[#1e1e1e] border border-border rounded-lg p-6">
         <div className="grid grid-cols-7 gap-4">
           {Array.from({ length: 7 }).map((_, index) => (
             <div key={index} className="space-y-3">
@@ -111,7 +111,7 @@ export default function TimelineWorkspace({
   }, {} as Record<string, DayEvent>);
 
   return (
-    <div className="bg-background border border-border rounded-lg overflow-hidden">
+    <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
       {/* Horizontal Scrollable Timeline */}
       <div className="relative">
         {/* Left Navigation Button */}

@@ -180,7 +180,7 @@ export default function FinancialHealthIndicators({ projectId }: FinancialHealth
         {indicators.map((indicator, index) => {
           const Icon = indicator.icon;
           return (
-            <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-card">
+            <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-surface-primary">
               <div className={`p-2 rounded-full ${getStatusColor(indicator.status)}`}>
                 <Icon className="w-4 h-4" />
               </div>

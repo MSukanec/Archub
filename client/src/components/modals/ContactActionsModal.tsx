@@ -51,7 +51,7 @@ export default function ContactActionsModal({ isOpen, onClose, contact }: Contac
       <Button
         variant="outline"
         onClick={onClose}
-        className="bg-transparent border-input text-foreground hover:bg-card rounded-lg"
+        className="bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
       >
         Cerrar
       </Button>
@@ -96,7 +96,7 @@ export default function ContactActionsModal({ isOpen, onClose, contact }: Contac
                   <Button
                     onClick={handlePhoneClick}
                     variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2 bg-muted border-input hover:bg-background rounded-lg"
+                    className="h-auto p-4 flex flex-col items-center gap-2 bg-surface-primary border-input hover:bg-[#c5c5c5] rounded-lg"
                   >
                     <Phone className="h-6 w-6" />
                     <div className="text-center">
@@ -114,7 +114,7 @@ export default function ContactActionsModal({ isOpen, onClose, contact }: Contac
                 <Button
                   onClick={handleEmailClick}
                   variant="outline"
-                  className="w-full h-auto p-4 flex items-center gap-3 bg-muted border-input hover:bg-background rounded-lg"
+                  className="w-full h-auto p-4 flex items-center gap-3 bg-surface-primary border-input hover:bg-[#c5c5c5] rounded-lg"
                 >
                   <Mail className="h-6 w-6" />
                   <div className="text-left flex-1">

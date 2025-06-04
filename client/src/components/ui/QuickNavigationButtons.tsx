@@ -93,7 +93,7 @@ export default function QuickNavigationButtons() {
           onClick={() => setIsOrgMenuOpen(!isOrgMenuOpen)}
           onMouseEnter={() => setIsOrgMenuOpen(true)}
           onMouseLeave={() => setTimeout(() => setIsOrgMenuOpen(false), 200)}
-          className="group flex items-center space-x-2 h-9 px-3 bg-background hover:bg-background border border-[#333] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+          className="group flex items-center space-x-2 h-9 px-3 bg-[#1e1e1e] hover:bg-[#282828] border border-[#333] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
         >
           {currentOrganization?.logo_url ? (
             <img 
@@ -112,7 +112,7 @@ export default function QuickNavigationButtons() {
         {/* Organization Menu */}
         {isOrgMenuOpen && (
           <div 
-            className="absolute top-full right-0 mt-2 w-64 bg-background border border-[#333] rounded-lg shadow-xl z-50"
+            className="absolute top-full right-0 mt-2 w-64 bg-[#1e1e1e] border border-[#333] rounded-lg shadow-xl z-50"
             onMouseEnter={() => setIsOrgMenuOpen(true)}
             onMouseLeave={() => setIsOrgMenuOpen(false)}
           >
@@ -139,7 +139,7 @@ export default function QuickNavigationButtons() {
               )}
             </div>
             <div className="p-2">
-              <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-background rounded transition-colors">
+              <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[#282828] rounded transition-colors">
                 <Plus className="w-4 h-4" />
                 <span>Crear nueva organización</span>
               </button>
@@ -154,7 +154,7 @@ export default function QuickNavigationButtons() {
           onClick={() => setIsProjectMenuOpen(!isProjectMenuOpen)}
           onMouseEnter={() => setIsProjectMenuOpen(true)}
           onMouseLeave={() => setTimeout(() => setIsProjectMenuOpen(false), 200)}
-          className="group flex items-center space-x-2 h-9 px-3 bg-background hover:bg-background border border-[#333] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+          className="group flex items-center space-x-2 h-9 px-3 bg-[#1e1e1e] hover:bg-[#282828] border border-[#333] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center text-xs font-bold text-white">
             {currentProject ? getProjectInitials(currentProject.name) : 'PR'}
@@ -165,7 +165,7 @@ export default function QuickNavigationButtons() {
         {/* Project Menu */}
         {isProjectMenuOpen && (
           <div 
-            className="absolute top-full right-0 mt-2 w-72 bg-background border border-[#333] rounded-lg shadow-xl z-50"
+            className="absolute top-full right-0 mt-2 w-72 bg-[#1e1e1e] border border-[#333] rounded-lg shadow-xl z-50"
             onMouseEnter={() => setIsProjectMenuOpen(true)}
             onMouseLeave={() => setIsProjectMenuOpen(false)}
           >
@@ -197,7 +197,7 @@ export default function QuickNavigationButtons() {
                       className={`w-full flex items-center space-x-3 px-3 py-2 text-sm rounded transition-colors ${
                         project.id === projectId 
                           ? 'bg-primary/10 text-primary' 
-                          : 'text-foreground hover:bg-background'
+                          : 'text-foreground hover:bg-[#282828]'
                       }`}
                     >
                       <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-xs font-bold text-white">
@@ -223,7 +223,7 @@ export default function QuickNavigationButtons() {
                 <button 
                   onClick={projectLimit.isLimited ? undefined : handleCreateProject}
                   disabled={projectLimit.isLimited}
-                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-background rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[#282828] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Crear nuevo proyecto</span>

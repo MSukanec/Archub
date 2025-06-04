@@ -209,10 +209,10 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
           <Accordion type="multiple" defaultValue={["personal", "types"]} className="w-full space-y-4">
             
             {/* Información Personal */}
-            <AccordionItem value="personal" className="border border-input rounded-lg bg-card">
+            <AccordionItem value="personal" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-background/10 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
                     <User className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
@@ -236,7 +236,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. Juan"
-                              className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -254,7 +254,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. Pérez"
-                              className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -273,7 +273,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                           <Input 
                             {...field} 
                             placeholder="ej. Constructora ABC"
-                            className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -285,10 +285,10 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             </AccordionItem>
 
             {/* Tipos de Contacto */}
-            <AccordionItem value="types" className="border border-input rounded-lg bg-card">
+            <AccordionItem value="types" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-background/10 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
                     <Tags className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
@@ -320,10 +320,10 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             </AccordionItem>
 
             {/* Información de Contacto */}
-            <AccordionItem value="contact" className="border border-input rounded-lg bg-card">
+            <AccordionItem value="contact" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-background/10 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
@@ -346,7 +346,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                               {...field} 
                               type="email"
                               placeholder="ejemplo@email.com"
-                              className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -364,7 +364,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                             <Input 
                               {...field} 
                               placeholder="ej. +54 9 11 1234-5678"
-                              className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                              className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -383,7 +383,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                           <Input 
                             {...field} 
                             placeholder="ej. Buenos Aires, Argentina"
-                            className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -395,10 +395,10 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
             </AccordionItem>
 
             {/* Notas */}
-            <AccordionItem value="notes" className="border border-input rounded-lg bg-card">
+            <AccordionItem value="notes" className="border border-input rounded-lg bg-surface-secondary">
               <AccordionTrigger className="px-4 hover:no-underline text-muted-foreground">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-background/10 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-[#919191]/10 flex items-center justify-center">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="text-left">
@@ -418,7 +418,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
                         <Textarea 
                           {...field} 
                           placeholder="Información adicional sobre el contacto..."
-                          className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px]"
+                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -437,7 +437,7 @@ export default function ContactsModal({ isOpen, onClose, contact }: ContactsModa
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
-              className="border-input text-muted-foreground hover:bg-card"
+              className="border-input text-muted-foreground hover:bg-surface-secondary"
             >
               Cancelar
             </Button>

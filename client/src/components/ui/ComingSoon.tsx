@@ -19,7 +19,7 @@ export default function ComingSoon({ children, feature = "función", isField = f
         <PopoverTrigger asChild>
           <div className="relative cursor-not-allowed">
             {children}
-            <div className="absolute inset-0 bg-muted rounded-md flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 bg-muted/30 rounded-md flex items-center justify-center pointer-events-none">
               <div className="bg-muted text-muted-foreground p-1.5 rounded-full">
                 <Lock className="w-3 h-3" />
               </div>
@@ -27,7 +27,7 @@ export default function ComingSoon({ children, feature = "función", isField = f
           </div>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-64 bg-background border-border"
+          className="w-64 bg-[#141414] border-border"
           side="top"
           align="center"
         >
@@ -55,7 +55,7 @@ export default function ComingSoon({ children, feature = "función", isField = f
         </div>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-64 bg-background border-border"
+        className="w-64 bg-[#141414] border-border"
         side="top"
         align="center"
       >

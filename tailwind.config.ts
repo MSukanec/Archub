@@ -62,7 +62,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-
+        surface: {
+          views: "hsl(var(--background-views))",
+          primary: "hsl(var(--background-primary))",
+          secondary: "hsl(var(--background-secondary))",
+        },
       },
       keyframes: {
         "accordion-down": {
