@@ -66,7 +66,7 @@ export default function TimelineSidebar({ className }: TimelineSidebarProps) {
     <>
       {/* Sidebar with circular buttons */}
       <div className={cn(
-        "fixed left-0 top-0 w-16 h-screen bg-[#1a1a1a] flex flex-col items-center z-50",
+        "fixed left-0 top-0 w-16 h-screen bg-muted flex flex-col items-center z-50",
         className
       )}>
         {/* Logo/Brand area */}
