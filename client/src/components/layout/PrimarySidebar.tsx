@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { queryClient } from '@/lib/queryClient';
 import { cn } from '@/lib/utils';
 
 interface SubMenuItem {
@@ -168,7 +169,7 @@ export default function PrimarySidebar() {
   const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
 
   // Fetch projects for dashboard secondary sidebar
-  const { organizationId } = useUserContextStore();
+  const { organizationId, projectId: activeProjectId } = useUserContextStore();
   const { data: projects = [] } = useQuery({
     queryKey: ['/api/projects', organizationId],
     queryFn: async () => {
@@ -190,6 +191,18 @@ export default function PrimarySidebar() {
       }
       
       console.log('Projects fetched directly from Supabase:', data);
+      
+      // Sort projects to put the active project first
+      const { projectId: activeProjectId } = useUserContextStore.getState();
+      if (activeProjectId && data) {
+        const sorted = [...data].sort((a, b) => {
+          if (a.id === activeProjectId) return -1;
+          if (b.id === activeProjectId) return 1;
+          return 0;
+        });
+        return sorted;
+      }
+      
       return data || [];
     },
     enabled: !!organizationId && (hoveredItem === 'dashboard' || (isDocked && hoveredItem === 'dashboard'))
