@@ -27,17 +27,38 @@ export const authService = {
     return { data, error };
   },
 
-  async getUserFromDatabase(authUserId: string): Promise<{ role: string; full_name: string } | null> {
-    // Direct role assignment based on auth_id to avoid RLS recursion
-    // This is a temporary solution until RLS policies are properly configured
-    const adminUsers = ['0f77f1c8-ecdf-4484-89a7-022c53f24d5a']; // lenga@gmail.com
-    
-    if (adminUsers.includes(authUserId)) {
-      return { role: 'admin', full_name: 'Lenga' };
+  async getUserFromDatabase(authUserId: string): Promise<{ role: string; full_name: string; user_id?: string } | null> {
+    try {
+      // First try to get user through the linking system
+      const { authLinkingService } = await import('./authLinkingService');
+      const linkedUser = await authLinkingService.getUserFromDatabase(authUserId);
+      
+      if (linkedUser) {
+        return linkedUser;
+      }
+      
+      // Fallback to existing hardcoded logic for admin users
+      const adminUsers = ['0f77f1c8-ecdf-4484-89a7-022c53f24d5a']; // lenga@gmail.com
+      
+      if (adminUsers.includes(authUserId)) {
+        return { role: 'admin', full_name: 'Lenga', user_id: 'admin-fallback' };
+      }
+      
+      // For regular users, return default user role
+      return { role: 'user', full_name: '', user_id: 'user-fallback' };
+      
+    } catch (error) {
+      console.error('Error in getUserFromDatabase:', error);
+      
+      // Final fallback
+      const adminUsers = ['0f77f1c8-ecdf-4484-89a7-022c53f24d5a'];
+      
+      if (adminUsers.includes(authUserId)) {
+        return { role: 'admin', full_name: 'Lenga', user_id: 'admin-fallback' };
+      }
+      
+      return { role: 'user', full_name: '', user_id: 'user-fallback' };
     }
-    
-    // For regular users, return default user role
-    return { role: 'user', full_name: '' };
   },
 
   async signUp(email: string, password: string, firstName: string, lastName: string, organizationName?: string) {
@@ -98,17 +119,35 @@ export const authService = {
   onAuthStateChange(callback: (user: AuthUser | null) => void) {
     return supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        // Get user data from database table
-        const dbUser = await this.getUserFromDatabase(session.user.id);
-        
-        const authUser: AuthUser = {
-          id: session.user.id,
-          email: session.user.email || '',
-          firstName: session.user.user_metadata?.first_name || '',
-          lastName: session.user.user_metadata?.last_name || '',
-          role: dbUser?.role || 'user', // Use role from database table
-        };
-        callback(authUser);
+        try {
+          // First, handle auth linking to ensure user exists in internal system
+          const { handleAuthLinking } = await import('./authLinkingService');
+          const internalUserId = await handleAuthLinking(session.user as any);
+          
+          // Get user data from database table
+          const dbUser = await this.getUserFromDatabase(session.user.id);
+          
+          const authUser: AuthUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: session.user.user_metadata?.first_name || '',
+            lastName: session.user.user_metadata?.last_name || '',
+            role: dbUser?.role || 'user', // Use role from database table
+          };
+          callback(authUser);
+        } catch (error) {
+          console.error('Error during auth state change:', error);
+          
+          // Fallback to basic auth user creation
+          const authUser: AuthUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: session.user.user_metadata?.first_name || '',
+            lastName: session.user.user_metadata?.last_name || '',
+            role: 'user',
+          };
+          callback(authUser);
+        }
       } else {
         callback(null);
       }
