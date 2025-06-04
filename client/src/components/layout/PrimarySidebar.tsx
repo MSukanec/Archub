@@ -226,10 +226,10 @@ export default function PrimarySidebar() {
             .filter(item => item.section === hoveredItem)
             .map((item) => (
               <div key={item.section} className="h-full flex flex-col">
-                <div className="px-4 py-3 border-b border-border bg-muted/30">
+                <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
                   <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
                 </div>
-                <div className="flex-1 py-2">
+                <div className="flex-1">
                   {item.subItems.map((subItem) => {
                     const SubIcon = subItem.icon;
                     const isSubActive = currentView === subItem.view;
@@ -240,8 +240,8 @@ export default function PrimarySidebar() {
                         className={cn(
                           "w-full px-4 py-3 text-left text-sm flex items-center gap-3 transition-colors",
                           isSubActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
                         )}
                         onClick={() => handleNavigation(item.section, subItem.view)}
                       >
