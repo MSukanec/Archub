@@ -251,13 +251,13 @@ export default function PrimarySidebar() {
     window.location.href = '/login';
   };
 
-  // Simple theme toggle without hook for now
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
+  // Force dark theme
+  const [theme, setTheme] = useState<'dark'>('dark');
+  
+  // Ensure dark theme is applied on component mount
+  useState(() => {
+    document.documentElement.classList.add('dark');
+  });
 
 
 
