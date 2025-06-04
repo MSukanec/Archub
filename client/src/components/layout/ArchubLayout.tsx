@@ -124,13 +124,13 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
   };
 
   const handleDashboardClick = () => {
-    setSection('dashboard');
-    setView('dashboard-main');
+    setSection('dashboard' as any);
+    setView('dashboard-main' as any);
   };
 
   const handleProfileClick = (viewKey: string) => {
-    setSection('profile');
-    setView(viewKey);
+    setSection('profile' as any);
+    setView(viewKey as any);
     setShowProfilePopover(false);
   };
 
@@ -157,7 +157,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
             {showDashboardPopover && (
               <div className="absolute top-12 left-0 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-3 min-w-[250px] z-60">
                 <div className="text-sm font-medium text-gray-300 mb-2">Proyectos</div>
-                {projects?.slice(0, 3).map((project) => (
+                {projects?.slice(0, 3).map((project: any) => (
                   <button
                     key={project.id}
                     onClick={() => {
