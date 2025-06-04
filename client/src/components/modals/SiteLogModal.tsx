@@ -147,18 +147,80 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     },
   });
 
+  // Fetch existing tasks for this site log when editing
+  const { data: existingTasks = [] } = useQuery({
+    queryKey: ['site-log-tasks', siteLog?.id],
+    queryFn: async () => {
+      if (!siteLog?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('site_log_tasks')
+        .select('task_id, progress_percentage, notes')
+        .eq('site_log_id', siteLog.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!siteLog?.id && isOpen,
+  });
+
+  // Fetch latest progress for each task across all site logs in this project
+  const { data: latestTaskProgress = {} } = useQuery({
+    queryKey: ['latest-task-progress', projectId],
+    queryFn: async () => {
+      if (!projectId) return {};
+      
+      const { data, error } = await supabase
+        .from('site_log_tasks')
+        .select(`
+          task_id,
+          progress_percentage,
+          site_logs!inner(log_date, project_id)
+        `)
+        .eq('site_logs.project_id', projectId)
+        .order('site_logs(log_date)', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Get the latest progress for each task
+      const progressMap: Record<string, number> = {};
+      data?.forEach((item: any) => {
+        if (!progressMap[item.task_id]) {
+          progressMap[item.task_id] = item.progress_percentage;
+        }
+      });
+      
+      return progressMap;
+    },
+    enabled: !!projectId && isOpen && !siteLog, // Only fetch for new entries
+  });
+
   // Reset form when modal opens/closes or siteLog changes
   useEffect(() => {
     if (isOpen) {
+      // Build tasks object from existing data when editing
+      const tasksData: Record<string, any> = {};
+      
+      if (siteLog && existingTasks.length > 0) {
+        // When editing, populate with existing task data
+        existingTasks.forEach(task => {
+          tasksData[task.task_id] = {
+            selected: true,
+            progress_percentage: task.progress_percentage,
+            notes: task.notes || '',
+          };
+        });
+      }
+      
       form.reset({
         author_id: siteLog?.author_id || userId || '',
         date: siteLog ? new Date(siteLog.log_date) : new Date(),
         comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
-        tasks: {},
+        tasks: tasksData,
       });
     }
-  }, [isOpen, siteLog, form, userId]);
+  }, [isOpen, siteLog, form, userId, existingTasks]);
 
   // Create/Update mutation
   const createSiteLogMutation = useMutation({
@@ -239,6 +301,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['site-log-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['latest-task-progress'] });
       toast({
         title: isEditing ? 'Registro actualizado' : 'Registro creado',
         description: `El registro de obra ha sido ${isEditing ? 'actualizado' : 'creado'} correctamente.`,
@@ -466,7 +530,13 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                     <FormControl>
                                       <Input
                                         type="number"
-                                        placeholder="ej: 75"
+                                        placeholder={
+                                          siteLog 
+                                            ? field.value?.toString() || '0'
+                                            : latestTaskProgress[task.id] 
+                                              ? `${latestTaskProgress[task.id]}% (anterior)`
+                                              : '0'
+                                        }
                                         className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white"
                                         min="0"
                                         max="100"
