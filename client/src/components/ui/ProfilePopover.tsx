@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User, LogOut, Moon, Sun, Settings } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useThemeStore } from '@/stores/themeStore';
@@ -15,6 +15,7 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
   const { setView } = useNavigationStore();
   const { theme, toggleTheme } = useThemeStore();
   const { user } = useAuthStore();
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const handleProfileClick = () => {
     setView('profile-info');
@@ -37,79 +38,73 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
   };
 
+  // Close popover when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={popoverRef}>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setTimeout(() => setIsOpen(false), 200)}
       >
         {children}
       </div>
 
       {isOpen && (
         <div 
-          className="absolute bottom-full mb-2 left-0 w-64 bg-surface-secondary border border-border rounded-lg shadow-xl z-50"
-          onMouseEnter={() => setIsOpen(true)}
-          onMouseLeave={() => setIsOpen(false)}
+          className="fixed bottom-4 left-16 w-44 bg-surface-secondary border border-border rounded-lg shadow-xl z-50"
         >
-          {/* User Info Section */}
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">
-                  {getUserInitials()}
-                </span>
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-foreground text-sm">
-                  {user?.firstName} {user?.lastName}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {user?.email}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Menu Items */}
-          <div className="py-2">
+          {/* Menu Items - Compact */}
+          <div className="py-1">
             {/* Profile Button */}
             <button
               onClick={handleProfileClick}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-surface-secondary/50 transition-colors"
+              className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-muted/30 transition-colors"
             >
-              <User className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-foreground">Mi Perfil</span>
+              <User className="w-3 h-3 text-muted-foreground" />
+              <span className="text-xs text-foreground">Mi Perfil</span>
             </button>
 
             {/* Theme Toggle */}
-            <div className="flex items-center justify-between px-4 py-3 hover:bg-surface-secondary/50 transition-colors">
-              <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors">
+              <div className="flex items-center space-x-2">
                 {theme === 'dark' ? (
-                  <Moon className="w-4 h-4 text-muted-foreground" />
+                  <Moon className="w-3 h-3 text-muted-foreground" />
                 ) : (
-                  <Sun className="w-4 h-4 text-muted-foreground" />
+                  <Sun className="w-3 h-3 text-muted-foreground" />
                 )}
-                <span className="text-sm text-foreground">Modo Oscuro</span>
+                <span className="text-xs text-foreground">Modo Oscuro</span>
               </div>
               <Switch
                 checked={theme === 'dark'}
                 onCheckedChange={toggleTheme}
-                className="data-[state=checked]:bg-primary"
+                className="data-[state=checked]:bg-primary scale-75"
               />
             </div>
 
             {/* Divider */}
-            <div className="border-t border-border my-2" />
+            <div className="border-t border-border my-1" />
 
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-red-600 dark:text-red-400"
+              className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-red-600 dark:text-red-400"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="text-sm">Cerrar Sesión</span>
+              <LogOut className="w-3 h-3" />
+              <span className="text-xs">Cerrar Sesión</span>
             </button>
           </div>
         </div>
