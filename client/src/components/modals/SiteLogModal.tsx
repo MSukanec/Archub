@@ -62,6 +62,20 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const { user } = useAuthStore();
   const { userId } = useUserContextStore();
   const isEditing = !!siteLog;
+  
+  // Sample tasks for the project (in a real app, these would come from the database)
+  const availableTasks = [
+    { id: '1', name: 'Excavación de cimientos' },
+    { id: '2', name: 'Hormigón para base' },
+    { id: '3', name: 'Colocación de hierros' },
+    { id: '4', name: 'Levantamiento de paredes' },
+    { id: '5', name: 'Instalación eléctrica' },
+    { id: '6', name: 'Instalación de plomería' },
+    { id: '7', name: 'Colocación de techo' },
+    { id: '8', name: 'Revoque exterior' },
+    { id: '9', name: 'Pintura' },
+    { id: '10', name: 'Colocación de pisos' },
+  ];
 
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
@@ -249,6 +263,60 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                   </FormItem>
                 )}
               />
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Tareas Diarias */}
+          <AccordionItem value="daily-tasks">
+            <AccordionTrigger 
+              title="Tareas Realizadas"
+              subtitle="Actividades completadas durante el día"
+              icon={CheckSquare}
+            />
+            <AccordionContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Selecciona las tareas que se realizaron hoy y agrega detalles si es necesario.
+                </p>
+                
+                <div className="grid gap-3">
+                  {availableTasks.map((task) => (
+                    <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-surface-secondary/50">
+                      <Checkbox
+                        id={`task-${task.id}`}
+                        className="mt-0.5"
+                      />
+                      <div className="flex-1 space-y-2">
+                        <label 
+                          htmlFor={`task-${task.id}`}
+                          className="text-sm font-medium text-foreground cursor-pointer"
+                        >
+                          {task.name}
+                        </label>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-muted-foreground">Cantidad/Avance</label>
+                            <Input
+                              type="number"
+                              placeholder="ej: 15 m²"
+                              className="h-8 text-xs bg-surface-primary border-input"
+                              step="0.01"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground">Notas</label>
+                            <Input
+                              placeholder="Observaciones..."
+                              className="h-8 text-xs bg-surface-primary border-input"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
