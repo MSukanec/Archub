@@ -480,8 +480,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             <SelectItem 
                               key={currency.currency_id || currency.code} 
                               value={currency.currency_id || currency.code}
+                              className="pl-8"
                             >
-                              {currency.code} - {currency.name}
+                              <span className="block truncate">
+                                {currency.code} - {currency.name}
+                              </span>
                             </SelectItem>
                           ))}
                         </SelectContent>

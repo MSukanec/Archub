@@ -24,7 +24,7 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
         .from('site_movements')
         .select(`
           amount,
-          currency,
+          currencies!inner(code),
           wallets!inner(name),
           movement_concepts!inner(
             parent_concept:parent_id!inner(name)

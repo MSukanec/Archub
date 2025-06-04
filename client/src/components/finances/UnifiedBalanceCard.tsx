@@ -22,7 +22,9 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
         .from('site_movements')
         .select(`
           amount,
-          currency,
+          currencies!inner(
+            code
+          ),
           movement_concepts!inner(
             parent_concept:parent_id(
               name
@@ -38,17 +40,23 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
       let totalIncomeDollars = 0;
       let totalExpenseDollars = 0;
 
-      movements?.forEach(movement => {
-        const isIncome = movement.movement_concepts?.parent_concept?.name === 'Ingresos';
+      movements?.forEach((movement: any) => {
+        const parentConcept = Array.isArray(movement.movement_concepts) 
+          ? movement.movement_concepts[0]?.parent_concept?.[0]
+          : movement.movement_concepts?.parent_concept;
+        const isIncome = parentConcept?.name === 'Ingresos';
         const amount = movement.amount || 0;
+        const currencyCode = Array.isArray(movement.currencies) 
+          ? movement.currencies[0]?.code 
+          : movement.currencies?.code;
 
-        if (movement.currency === 'ARS') {
+        if (currencyCode === 'ARS') {
           if (isIncome) {
             totalIncomePesos += amount;
           } else {
             totalExpensePesos += amount;
           }
-        } else if (movement.currency === 'USD') {
+        } else if (currencyCode === 'USD') {
           if (isIncome) {
             totalIncomeDollars += amount;
           } else {

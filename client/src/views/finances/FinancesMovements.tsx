@@ -957,7 +957,7 @@ export default function Movements() {
                     {movement.wallets?.name || 'Sin billetera'}
                   </span>
                   <span className={`text-sm font-bold ${
-                    movement.movement_concepts?.parent_concept?.name === 'Ingresos' ? 'text-emerald-500' :
+                    movement.movement_concepts?.parent_concept?.name === 'Ingresos' ? 'text-primary' :
                     movement.movement_concepts?.parent_concept?.name === 'Egresos' ? 'text-rose-500' :
                     'text-blue-500'
                   }`}>
