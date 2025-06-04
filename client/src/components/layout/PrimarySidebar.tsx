@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun } from 'lucide-react';
+import { 
+  Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -322,7 +324,7 @@ export default function PrimarySidebar() {
             setHoveredItem(null);
           }}
         >
-          <Lock className="w-4 h-4" />
+          <LockIcon className="w-4 h-4" />
           Seguridad
         </button>
         

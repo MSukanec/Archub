@@ -25,7 +25,7 @@ export default function ProfileSecurity() {
   // Set navigation state when component mounts
   useEffect(() => {
     setSection('profile');
-    setView('profile-security');
+    setView('profile-main');
   }, [setSection, setView]);
 
   // Update password mutation

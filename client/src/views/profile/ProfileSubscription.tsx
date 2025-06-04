@@ -17,7 +17,7 @@ export default function ProfileSubscription() {
   // Set navigation state when component mounts
   useEffect(() => {
     setSection('profile');
-    setView('profile-subscription');
+    setView('profile-main');
   }, [setSection, setView]);
 
   // Fetch all available plans
