@@ -164,10 +164,11 @@ export const taskMaterials = pgTable("task_materials", {
 export const siteLogs = pgTable("site_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
   project_id: uuid("project_id").notNull(),
-  author_id: uuid("author_id").notNull(),
+  author_id: uuid("author_id"), // Allow NULL to match database
   log_date: text("log_date").notNull(),
   weather: text("weather"),
   comments: text("comments"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const siteLogTasks = pgTable("site_log_tasks", {

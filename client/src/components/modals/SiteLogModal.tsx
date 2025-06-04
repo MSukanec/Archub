@@ -18,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+
 import { cn } from '@/lib/utils';
 import type { SiteLog } from '@shared/schema';
 
@@ -79,7 +80,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         log_date: data.date.toISOString().split('T')[0],
         weather: data.weather || null,
         comments: data.comments || null,
-        author_id: user?.id,
+        author_id: null, // Set to null for now to match existing data
       };
 
       if (siteLog?.id) {
