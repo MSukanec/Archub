@@ -164,10 +164,10 @@ export default function DynamicCurrencyBalanceCard({ projectId }: DynamicCurrenc
               {/* Egresos */}
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
-                  <TrendingDown className="w-4 h-4 text-rose-500" />
+                  <TrendingDown className="w-4 h-4 text-expense" />
                   <span className="text-sm text-muted-foreground">Egresos</span>
                 </div>
-                <span className="text-sm font-medium text-rose-500">
+                <span className="text-sm font-medium text-expense">
                   {currency.currencySymbol} {currency.egresos.toLocaleString()}
                 </span>
               </div>
@@ -177,7 +177,7 @@ export default function DynamicCurrencyBalanceCard({ projectId }: DynamicCurrenc
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-foreground">Balance Total</span>
                   <span className={`text-lg font-bold ${
-                    currency.balance >= 0 ? 'text-primary' : 'text-rose-500'
+                    currency.balance >= 0 ? 'text-primary' : 'text-expense'
                   }`}>
                     {currency.currencySymbol} {currency.balance.toLocaleString()}
                   </span>

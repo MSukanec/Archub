@@ -22,8 +22,11 @@
   --accent-foreground: 0 0% 98%; /* #fafafa */
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 98%; /* #fafafa */
-  --ring: 214 100% 65%; /* #4f9eff */
+  --ring: 88 50% 53%; /* #8bc34a - Primary color for focus rings */
   --radius: 0.5rem;
+  
+  /* Financial colors */
+  --expense: 8 58% 52%; /* #c25b4a */
   
   /* Surface variations for better hierarchy */
   --surface: 0 0% 9%; /* #171717 */

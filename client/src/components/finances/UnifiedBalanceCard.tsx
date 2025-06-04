@@ -123,8 +123,8 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
               </>
             ) : (
               <>
-                <TrendingDown className="w-4 h-4 text-red-500" />
-                <span className="text-red-500">Negativo</span>
+                <TrendingDown className="w-4 h-4 text-expense" />
+                <span className="text-expense">Negativo</span>
               </>
             )}
           </div>

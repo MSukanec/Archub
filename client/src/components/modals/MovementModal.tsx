@@ -537,17 +537,12 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     <FormLabel className="text-xs font-medium text-foreground">Cantidad <span className="text-primary">*</span></FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="0,00"
-                        value={field.value ? new Intl.NumberFormat('es-AR', { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
-                        }).format(field.value) : ''}
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={field.value || ''}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          // Remove all formatting and convert comma to dot for parsing
-                          const cleanValue = value.replace(/\./g, '').replace(',', '.');
-                          const numericValue = parseFloat(cleanValue);
+                          const numericValue = parseFloat(e.target.value);
                           field.onChange(isNaN(numericValue) ? 0 : numericValue);
                         }}
                         className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"

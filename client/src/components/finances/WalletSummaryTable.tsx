@@ -133,11 +133,11 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
                 <TableCell className="text-right text-primary">
                   {formatCurrency(wallet.ingresos, wallet.currency)}
                 </TableCell>
-                <TableCell className="text-right text-red-600">
+                <TableCell className="text-right text-expense">
                   {formatCurrency(wallet.egresos, wallet.currency)}
                 </TableCell>
                 <TableCell className={`text-right font-semibold ${
-                  wallet.saldo >= 0 ? 'text-primary' : 'text-red-600'
+                  wallet.saldo >= 0 ? 'text-primary' : 'text-expense'
                 }`}>
                   {formatCurrency(wallet.saldo, wallet.currency)}
                 </TableCell>
