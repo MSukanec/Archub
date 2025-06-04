@@ -313,6 +313,32 @@ export default function PrimarySidebar() {
           Mi Perfil
         </button>
         
+        {/* Security Button */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
+          onClick={() => {
+            setSection('profile');
+            setView('profile-security');
+            setHoveredItem(null);
+          }}
+        >
+          <Lock className="w-4 h-4" />
+          Seguridad
+        </button>
+        
+        {/* Subscription Button */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
+          onClick={() => {
+            setSection('profile');
+            setView('profile-subscription');
+            setHoveredItem(null);
+          }}
+        >
+          <CreditCard className="w-4 h-4" />
+          Suscripción
+        </button>
+        
         {/* Theme Toggle */}
         <button
           className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"

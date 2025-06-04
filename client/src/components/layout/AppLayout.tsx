@@ -36,6 +36,8 @@ import AdminTasks from '@/views/admin/AdminTasks';
 import Calendar from '@/views/dashboard/Calendar';
 
 import Profile from '@/views/profile/Profile';
+import ProfileSecurity from '@/views/profile/ProfileSecurity';
+import ProfileSubscription from '@/views/profile/ProfileSubscription';
 import SubscriptionTables from '@/views/others/SubscriptionTables';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -72,6 +74,8 @@ const viewComponents = {
   'admin-tasks': AdminTasks,
   'admin-permissions': AdminActions, // Temporarily using actions view
   'profile-main': Profile,
+  'profile-security': ProfileSecurity,
+  'profile-subscription': ProfileSubscription,
   'subscription-tables': SubscriptionTables,
 };
 

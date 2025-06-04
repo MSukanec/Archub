@@ -186,8 +186,8 @@ export default function Profile() {
   const fullName = `${profileForm.firstName} ${profileForm.lastName}`.trim();
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-surface-views p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -196,7 +196,7 @@ export default function Profile() {
           <div>
             <h1 className="text-3xl font-semibold text-foreground">Mi Perfil</h1>
             <p className="text-muted-foreground">
-              Gestiona tu información personal, seguridad y suscripción
+              Gestiona tu información personal y preferencias de cuenta
             </p>
           </div>
         </div>
@@ -330,157 +330,7 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Security Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5" />
-              Seguridad
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Contraseña Actual</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                value={securityForm.currentPassword}
-                onChange={(e) => setSecurityForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                placeholder="Contraseña actual"
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">Nueva Contraseña</Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={securityForm.newPassword}
-                  onChange={(e) => setSecurityForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                  placeholder="Nueva contraseña"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={securityForm.confirmPassword}
-                  onChange={(e) => setSecurityForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  placeholder="Confirmar contraseña"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" size="sm">
-                Cancelar
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={handlePasswordSave}
-                disabled={updatePasswordMutation.isPending}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Cambiar Contraseña
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Theme Preferences Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              Preferencias
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="font-medium">Modo Oscuro</div>
-                <div className="text-sm text-muted-foreground">
-                  Activar tema oscuro para una mejor experiencia visual
-                </div>
-              </div>
-              <Switch
-                checked={theme === 'dark'}
-                onCheckedChange={toggleTheme}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Subscription Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
-              Suscripción
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Current Plan */}
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-              <div className="flex items-center gap-3">
-                {(() => {
-                  const PlanIcon = getPlanIcon(currentPlanName);
-                  return <PlanIcon className="w-6 h-6 text-primary" />;
-                })()}
-                <div>
-                  <div className="font-semibold">Plan {currentPlanName}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {userPlan ? `$${userPlan.price}/mes` : 'Gratis'}
-                  </div>
-                </div>
-              </div>
-              <Button variant="outline" size="sm">
-                Cambiar Plan
-              </Button>
-            </div>
-
-            {/* Available Plans */}
-            <div className="space-y-3">
-              <Label>Planes Disponibles</Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {availablePlans.map((plan) => {
-                  const PlanIcon = getPlanIcon(plan.name);
-                  const isCurrentPlan = plan.name.toLowerCase() === currentPlanName.toLowerCase();
-                  
-                  return (
-                    <div
-                      key={plan.id}
-                      className={`p-4 border rounded-lg ${
-                        isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <PlanIcon className="w-5 h-5 text-primary" />
-                        <span className="font-medium">{plan.name}</span>
-                      </div>
-                      <div className="text-2xl font-bold mb-1">
-                        ${plan.price}
-                        <span className="text-sm font-normal text-muted-foreground">/mes</span>
-                      </div>
-                      <div className="text-sm text-muted-foreground mb-3">
-                        {plan.description}
-                      </div>
-                      {isCurrentPlan ? (
-                        <Button variant="outline" size="sm" disabled className="w-full">
-                          Plan Actual
-                        </Button>
-                      ) : (
-                        <Button size="sm" className="w-full">
-                          Seleccionar
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

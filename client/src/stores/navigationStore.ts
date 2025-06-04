@@ -29,6 +29,8 @@ export type View =
   | 'admin-tasks'
   | 'admin-permissions'
   | 'profile-main'
+  | 'profile-security'
+  | 'profile-subscription'
   | 'subscription-tables';
 
 interface NavigationState {
