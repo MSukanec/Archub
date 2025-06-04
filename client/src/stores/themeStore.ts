@@ -18,14 +18,9 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const preferredTheme = savedTheme || 'dark';
     
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(preferredTheme);
-    
-    if (preferredTheme === 'dark') {
-      document.body.style.backgroundColor = '#1e1e1e';
-    } else {
-      document.body.style.backgroundColor = '#d1d1d1';
-    }
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(preferredTheme);
     
     set({ theme: preferredTheme });
   },
@@ -37,14 +32,9 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   },
 
   setTheme: (theme: 'light' | 'dark') => {
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme);
-    
-    if (theme === 'dark') {
-      document.body.style.backgroundColor = '#1e1e1e';
-    } else {
-      document.body.style.backgroundColor = '#d1d1d1';
-    }
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
     
     localStorage.setItem('theme', theme);
     set({ theme });
