@@ -1,5 +1,6 @@
 import { useUserContextStore } from '@/stores/userContextStore';
 import { DollarSign } from 'lucide-react';
+import ArchubLayout from '@/components/layout/ArchubLayout';
 import UnifiedBalanceCard from '@/components/finances/UnifiedBalanceCard';
 import WalletBalancePieChart from '@/components/finances/WalletBalancePieChart';
 import MonthlyCashflowLineChart from '@/components/finances/MonthlyCashflowLineChart';
@@ -20,8 +21,9 @@ export default function FinancesDashboard() {
   }
 
   return (
-    <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
-      {/* Desktop Header */}
+    <ArchubLayout>
+      <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
+        {/* Desktop Header */}
       <div className="hidden md:flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -57,7 +59,8 @@ export default function FinancesDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FinancialHealthIndicators projectId={projectId} />
         <BalanceForecastWidget projectId={projectId} />
+        </div>
       </div>
-    </div>
+    </ArchubLayout>
   );
 }
