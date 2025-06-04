@@ -260,13 +260,6 @@ export default function OrganizationSettings() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">URL del Logo</label>
-              <div className="p-3 bg-muted rounded-xl text-sm">
-                {formatField(organization.logo_url)}
-              </div>
-            </div>
-
             <div className="pt-2 border-t border-border">
               <p className="text-xs text-muted-foreground">
                 Usa el botón "Configurar Finanzas" para gestionar monedas, billeteras y configuración avanzada.

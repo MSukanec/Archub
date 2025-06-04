@@ -63,7 +63,6 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     general: true,
     location: false,
     contact: false,
-    branding: false,
     regional: false,
   });
   const [currencyToDelete, setCurrencyToDelete] = useState<{
@@ -796,35 +795,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
             </div>
           </ModalAccordion>
 
-          {/* Logo y Branding */}
-          <ModalAccordion
-            id="branding"
-            title="Logo y Branding"
-            icon={ImageIcon}
-            isOpen={openSections.branding}
-            onToggle={() => toggleSection('branding')}
-          >
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="logo_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">Logo de la Organización</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="url"
-                        placeholder="https://ejemplo.com/logo.png"
-                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </ModalAccordion>
+
 
           {/* Configuración Regional */}
           <ModalAccordion
@@ -1094,52 +1065,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="default_language"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">Idioma por Defecto</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
-                          <SelectValue placeholder="Selecciona un idioma" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {languages.map((language) => (
-                          <SelectItem key={language.code} value={language.code}>
-                            {language.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="logo_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">URL del Logo</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="url"
-                        placeholder="https://..."
-                        className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
           </ModalAccordion>
         </div>
