@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, BarChart3, Calendar, TrendingUp, Building2, Plus } from 'lucide-react';
+import { Activity, BarChart3, Calendar, TrendingUp, Building2, Plus, FileText, Users, DollarSign } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -91,6 +91,81 @@ export default function Organization() {
         monthlyActivity: monthlyActivity || 0,
         activeDays
       };
+    },
+    enabled: !!organizationId,
+  });
+
+  // Fetch recent activity
+  const { data: recentActivity = [] } = useQuery({
+    queryKey: ['/api/organization-activity', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const activities = [];
+      
+      // Get recent projects
+      const { data: projects } = await supabase
+        .from('projects')
+        .select('id, name, created_at, client_name')
+        .eq('organization_id', organizationId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      
+      projects?.forEach(project => {
+        activities.push({
+          id: `project-${project.id}`,
+          type: 'project',
+          title: 'Nuevo proyecto creado',
+          description: `${project.name} - ${project.client_name || 'Sin cliente'}`,
+          date: new Date(project.created_at),
+          icon: Building2,
+          color: '#3B82F6'
+        });
+      });
+
+      // Get recent site logs
+      const { data: siteLogs } = await supabase
+        .from('site_logs')
+        .select('id, title, log_date, projects(name)')
+        .eq('organization_id', organizationId)
+        .order('log_date', { ascending: false })
+        .limit(5);
+      
+      siteLogs?.forEach(log => {
+        activities.push({
+          id: `log-${log.id}`,
+          type: 'log',
+          title: 'Nueva bitácora',
+          description: `${log.title} - ${log.projects?.name || 'Proyecto'}`,
+          date: new Date(log.log_date),
+          icon: FileText,
+          color: '#10B981'
+        });
+      });
+
+      // Get recent movements
+      const { data: movements } = await supabase
+        .from('site_movements')
+        .select('id, description, amount, created_at, projects(name)')
+        .eq('organization_id', organizationId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      
+      movements?.forEach(movement => {
+        activities.push({
+          id: `movement-${movement.id}`,
+          type: 'movement',
+          title: 'Nuevo movimiento',
+          description: `$${movement.amount} - ${movement.description || movement.projects?.name || 'Sin descripción'}`,
+          date: new Date(movement.created_at),
+          icon: DollarSign,
+          color: '#F59E0B'
+        });
+      });
+
+      return activities
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 10);
     },
     enabled: !!organizationId,
   });
@@ -218,9 +293,41 @@ export default function Organization() {
             <h3 className="text-xl font-semibold text-foreground">Actividad Reciente</h3>
           </div>
           <div className="space-y-4">
-            <p className="text-muted-foreground">
-              Aquí se mostrará la actividad reciente de la organización.
-            </p>
+            {recentActivity.length === 0 ? (
+              <p className="text-muted-foreground text-center py-8">
+                No hay actividad reciente en esta organización.
+              </p>
+            ) : (
+              recentActivity.map((activity) => {
+                const Icon = activity.icon;
+                return (
+                  <div key={activity.id} className="flex items-center gap-4 p-3 rounded-xl bg-muted/30">
+                    <div 
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${activity.color}20` }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: activity.color }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {activity.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {activity.description}
+                      </p>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {activity.date.toLocaleDateString('es-ES', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </Card>
       </div>

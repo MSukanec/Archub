@@ -74,7 +74,7 @@ const getSectionFromView = (view: View): Section => {
 
 export const useNavigationStore = create<NavigationState>((set) => ({
   currentSection: 'dashboard',
-  currentView: 'dashboard-timeline',
+  currentView: 'dashboard-main',
   hoveredSection: null,
   setSection: (section) =>
     set((state) => {

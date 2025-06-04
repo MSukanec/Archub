@@ -47,6 +47,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 
 const viewComponents = {
   'dashboard-main': ArchubDashboard,
+  'dashboard-timeline': ArchubDashboard,
 
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
