@@ -245,7 +245,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   );
 
   const footer = (
-    <div className="border-t border-border/20 bg-surface-views p-4">
+    <div className="border-t border-border/20 bg-views p-4">
       <div className="flex gap-3">
         <Button
           type="button"

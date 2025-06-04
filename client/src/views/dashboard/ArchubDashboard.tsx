@@ -192,7 +192,7 @@ export default function ArchubDashboard() {
   }
 
   return (
-      <div className="flex flex-col h-full bg-surface-views">
+      <div className="flex flex-col h-full bg-background">
       {/* Main Dashboard Content */}
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards with integrated action buttons */}

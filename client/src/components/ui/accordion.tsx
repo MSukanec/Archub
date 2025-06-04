@@ -32,7 +32,7 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "w-full flex items-center justify-between p-4 bg-surface-views hover:bg-muted transition-colors text-white flex-shrink-0 border-t border-b border-surface-primary [&[data-state=open]_.plus-icon]:hidden [&[data-state=closed]_.minus-icon]:hidden",
+        "w-full flex items-center justify-between p-4 bg-views hover:bg-muted transition-colors text-white flex-shrink-0 border-t border-b border-surface-primary [&[data-state=open]_.plus-icon]:hidden [&[data-state=closed]_.minus-icon]:hidden",
         className
       )}
       style={{ borderWidth: '2px' }}
@@ -69,7 +69,7 @@ const AccordionContent = React.forwardRef<
     className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
     {...props}
   >
-    <div className={cn("p-4 bg-surface-views", className)}>{children}</div>
+    <div className={cn("p-4 bg-views", className)}>{children}</div>
   </AccordionPrimitive.Content>
 ))
 
