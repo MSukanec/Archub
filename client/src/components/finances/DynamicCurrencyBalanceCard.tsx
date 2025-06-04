@@ -129,7 +129,7 @@ export default function DynamicCurrencyBalanceCard({ projectId }: DynamicCurrenc
         </div>
       </div>
 
-      <div className={`grid gap-6 ${
+      <div className={`grid gap-12 ${
         currencyBalances.length === 1 ? 'grid-cols-1' :
         currencyBalances.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
         currencyBalances.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
