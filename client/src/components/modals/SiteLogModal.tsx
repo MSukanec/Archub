@@ -81,7 +81,7 @@ const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationI
         
         {/* Dropdown Results */}
         {isOpen && searchTerm.length >= 3 && (
-          <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-surface-primary border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          <div className="absolute top-full left-0 right-0 z-[10001] mt-1 bg-surface-primary border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
             {filteredContacts.length === 0 ? (
               <div className="p-3 text-sm text-muted-foreground">
                 No se encontraron contactos
@@ -490,10 +490,15 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       return { id: siteLogId };
     },
     onSuccess: () => {
+      // Invalidate all related queries to trigger auto-refresh
       queryClient.invalidateQueries({ queryKey: ['site-logs'] });
       queryClient.invalidateQueries({ queryKey: ['site-log-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['site-log-attendees'] });
       queryClient.invalidateQueries({ queryKey: ['latest-task-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['project-site-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['site-logs-with-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['site-logs-with-attendees'] });
+      
       toast({
         title: isEditing ? 'Registro actualizado' : 'Registro creado',
         description: `El registro de obra ha sido ${isEditing ? 'actualizado' : 'creado'} correctamente.`,
@@ -772,25 +777,21 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
           </AccordionItem>
 
           {/* Asistentes Accordion */}
-          <AccordionItem value="attendees" className="border border-border rounded-lg">
-            <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]>div]:text-primary">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Users className="h-4 w-4" />
-                <span>Asistentes de Obra</span>
-                {(form.watch('attendees')?.length || 0) > 0 && (
-                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
-                    {form.watch('attendees')?.length || 0} seleccionados
-                  </span>
-                )}
+          <AccordionItem value="attendees">
+            <AccordionTrigger 
+              title="Asistentes de Obra"
+              subtitle="Busca y selecciona las personas que estuvieron presentes en la obra este día."
+              icon={Users}
+            />
+            <AccordionContent>
+              <div style={{ zIndex: 9999 }} className="relative">
+                <AttendeesSelector
+                  selectedAttendees={form.watch('attendees') || []}
+                  onAttendeesChange={(attendees) => form.setValue('attendees', attendees)}
+                  organizationId={organizationId}
+                  organizationContacts={organizationContacts}
+                />
               </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
-              <AttendeesSelector
-                selectedAttendees={form.watch('attendees') || []}
-                onAttendeesChange={(attendees) => form.setValue('attendees', attendees)}
-                organizationId={organizationId}
-                organizationContacts={organizationContacts}
-              />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
