@@ -136,7 +136,7 @@ export default function SubscriptionTables() {
                 return (
                   <div
                     key={plan.id}
-                    className={`p-6 border rounded-lg ${
+                    className={`p-6 border rounded-lg flex flex-col ${
                       isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border'
                     }`}
                   >
@@ -159,10 +159,10 @@ export default function SubscriptionTables() {
                       )}
                     </div>
 
-                    <div className="space-y-2 mb-6">
+                    <div className="space-y-2 mb-6 flex-grow">
                       {features.map((feature, index) => (
                         <div key={index} className="flex items-start gap-2 text-sm">
-                          <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span className={feature.startsWith('Todo lo') ? 'font-medium' : ''}>
                             {feature}
                           </span>
@@ -170,15 +170,17 @@ export default function SubscriptionTables() {
                       ))}
                     </div>
 
-                    {isCurrentPlan ? (
-                      <Button variant="outline" size="sm" disabled className="w-full">
-                        Plan Actual
-                      </Button>
-                    ) : (
-                      <Button size="sm" className="w-full">
-                        Seleccionar
-                      </Button>
-                    )}
+                    <div className="mt-auto">
+                      {isCurrentPlan ? (
+                        <Button variant="outline" size="sm" disabled className="w-full">
+                          Plan Actual
+                        </Button>
+                      ) : (
+                        <Button size="sm" className="w-full">
+                          Seleccionar
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 );
               })}

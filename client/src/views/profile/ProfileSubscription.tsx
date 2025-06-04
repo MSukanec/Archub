@@ -142,7 +142,6 @@ export default function ProfileSubscription() {
                 </div>
               </div>
               <Button 
-                variant="outline" 
                 size="sm"
                 onClick={() => {
                   setSection('profile');
@@ -170,8 +169,8 @@ export default function ProfileSubscription() {
               {paymentHistory.map((payment) => (
                 <div key={payment.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <Receipt className="w-5 h-5 text-green-600" />
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Receipt className="w-5 h-5 text-primary" />
                     </div>
                     <div>
                       <div className="font-medium">${payment.amount}</div>
@@ -179,7 +178,7 @@ export default function ProfileSubscription() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-medium text-green-600">{payment.status}</div>
+                    <div className="text-sm font-medium text-primary">{payment.status}</div>
                     <div className="text-xs text-muted-foreground">{payment.method}</div>
                   </div>
                 </div>
