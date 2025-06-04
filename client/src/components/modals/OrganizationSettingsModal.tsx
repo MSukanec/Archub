@@ -209,12 +209,21 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
       if (movementsError) throw movementsError;
 
+      // Get currency ID first
+      const { data: currencyData, error: currencyError } = await supabase
+        .from('currencies')
+        .select('id')
+        .eq('code', currencyCode)
+        .single();
+
+      if (currencyError) throw currencyError;
+
       // Remove currency from organization_currencies
       const { error: deleteError } = await supabase
         .from('organization_currencies')
         .delete()
         .eq('organization_id', organizationId)
-        .eq('currencies.code', currencyCode);
+        .eq('currency_id', currencyData.id);
 
       if (deleteError) throw deleteError;
 
