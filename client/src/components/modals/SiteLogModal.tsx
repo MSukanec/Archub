@@ -31,12 +31,10 @@ const siteLogSchema = z.object({
   }),
   weather: z.string().optional(),
   comments: z.string().optional(),
-  tasks: z.array(z.object({
-    id: z.string(), // UUID de la tarea
-    name: z.string(),
+  tasks: z.record(z.object({
+    selected: z.boolean().default(false),
     progress_percentage: z.number().min(0).max(100).optional(),
     notes: z.string().optional(),
-    completed: z.boolean().default(false),
   })).optional(),
 });
 
@@ -116,6 +114,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       date: siteLog ? new Date(siteLog.log_date) : new Date(),
       comments: siteLog?.comments || '',
       weather: siteLog?.weather || '',
+      tasks: {},
     },
   });
 
@@ -126,6 +125,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         date: siteLog ? new Date(siteLog.log_date) : new Date(),
         comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
+        tasks: {},
       });
     }
   }, [isOpen, siteLog, form]);
@@ -141,6 +141,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         author_id: userId, // Use internal user UUID
       };
 
+      let siteLogId: string;
+
       if (siteLog?.id) {
         // Update existing
         const { data: result, error } = await supabase
@@ -151,7 +153,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
           .single();
 
         if (error) throw error;
-        return result;
+        siteLogId = result.id;
       } else {
         // Create new
         const { data: result, error } = await supabase
@@ -161,8 +163,37 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
           .single();
 
         if (error) throw error;
-        return result;
+        siteLogId = result.id;
       }
+
+      // Save tasks
+      if (data.tasks) {
+        // First delete existing tasks for this site log
+        await supabase
+          .from('site_log_tasks')
+          .delete()
+          .eq('site_log_id', siteLogId);
+
+        // Insert selected tasks
+        const tasksToInsert = Object.entries(data.tasks)
+          .filter(([_, taskData]) => taskData.selected)
+          .map(([taskId, taskData]) => ({
+            site_log_id: siteLogId,
+            task_id: taskId,
+            progress_percentage: taskData.progress_percentage || 0,
+            notes: taskData.notes || null,
+          }));
+
+        if (tasksToInsert.length > 0) {
+          const { error: tasksError } = await supabase
+            .from('site_log_tasks')
+            .insert(tasksToInsert);
+
+          if (tasksError) throw tasksError;
+        }
+      }
+
+      return { id: siteLogId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site-logs'] });
@@ -324,9 +355,21 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                   <div className="grid gap-3">
                     {projectTasks.map((task) => (
                       <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-surface-secondary/50">
-                        <Checkbox
-                          id={`task-${task.id}`}
-                          className="mt-0.5"
+                        <FormField
+                          control={form.control}
+                          name={`tasks.${task.id}.selected`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Checkbox
+                                  id={`task-${task.id}`}
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="mt-0.5"
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
                         />
                         <div className="flex-1 space-y-2">
                           <label 
@@ -342,20 +385,43 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <div>
                               <label className="text-xs text-muted-foreground">% de avance</label>
-                              <Input
-                                type="number"
-                                placeholder="ej: 75%"
-                                className="h-8 text-xs bg-surface-primary border-input"
-                                min="0"
-                                max="100"
-                                step="5"
+                              <FormField
+                                control={form.control}
+                                name={`tasks.${task.id}.progress_percentage`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        placeholder="ej: 75"
+                                        className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white"
+                                        min="0"
+                                        max="100"
+                                        step="5"
+                                        value={field.value || ''}
+                                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
                               />
                             </div>
                             <div>
                               <label className="text-xs text-muted-foreground">Notas</label>
-                              <Input
-                                placeholder="Observaciones..."
-                                className="h-8 text-xs bg-surface-primary border-input"
+                              <FormField
+                                control={form.control}
+                                name={`tasks.${task.id}.notes`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Observaciones..."
+                                        className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white"
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
                               />
                             </div>
                           </div>

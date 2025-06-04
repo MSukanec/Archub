@@ -386,47 +386,33 @@ export default function SiteLogs() {
                           </div>
                         </div>
                         
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditSiteLog(siteLog)}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleDeleteSiteLog(siteLog)}
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {/* Simple Action Buttons */}
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleEditSiteLog(siteLog)}
+                            className="h-8 w-8 p-0 hover:bg-primary/10"
+                          >
+                            <Edit className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDeleteSiteLog(siteLog)}
+                            className="h-8 w-8 p-0 hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                          </Button>
+                        </div>
                       </div>
                       
                       {/* Content */}
                       <div className="space-y-3">
                         <div className="bg-muted/30 rounded-xl p-4">
-                          <p className="text-foreground leading-relaxed">
+                          <p className="text-white dark:text-white leading-relaxed">
                             {siteLog.comments || 'Sin comentarios registrados para este día.'}
                           </p>
-                        </div>
-                        
-                        {/* Quick Actions */}
-                        <div className="flex items-center gap-2 pt-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleEditSiteLog(siteLog)}
-                            className="text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Edit className="h-3 w-3 mr-1" />
-                            Editar registro
-                          </Button>
                         </div>
                       </div>
                     </div>
