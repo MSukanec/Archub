@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { z } from 'zod';
@@ -32,9 +32,9 @@ const siteLogSchema = z.object({
   weather: z.string().optional(),
   comments: z.string().optional(),
   tasks: z.array(z.object({
-    id: z.string(),
+    id: z.string(), // UUID de la tarea
     name: z.string(),
-    quantity: z.number().optional(),
+    progress_percentage: z.number().min(0).max(100).optional(),
     notes: z.string().optional(),
     completed: z.boolean().default(false),
   })).optional(),
@@ -63,19 +63,52 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const { userId } = useUserContextStore();
   const isEditing = !!siteLog;
   
-  // Sample tasks for the project (in a real app, these would come from the database)
-  const availableTasks = [
-    { id: '1', name: 'Excavación de cimientos' },
-    { id: '2', name: 'Hormigón para base' },
-    { id: '3', name: 'Colocación de hierros' },
-    { id: '4', name: 'Levantamiento de paredes' },
-    { id: '5', name: 'Instalación eléctrica' },
-    { id: '6', name: 'Instalación de plomería' },
-    { id: '7', name: 'Colocación de techo' },
-    { id: '8', name: 'Revoque exterior' },
-    { id: '9', name: 'Pintura' },
-    { id: '10', name: 'Colocación de pisos' },
-  ];
+  // Define task type
+  interface ProjectTask {
+    id: string;
+    name: string;
+    description?: string;
+  }
+
+  // Fetch project tasks from budget_tasks
+  const { data: projectTasks = [], isLoading: tasksLoading } = useQuery<ProjectTask[]>({
+    queryKey: ['project-tasks', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      
+      // First get the budget for this project
+      const { data: budgets, error: budgetError } = await supabase
+        .from('budgets')
+        .select('id')
+        .eq('project_id', projectId);
+      
+      if (budgetError) throw budgetError;
+      if (!budgets || budgets.length === 0) return [];
+      
+      const budgetId = budgets[0].id;
+      
+      // Then get tasks for this budget
+      const { data, error } = await supabase
+        .from('budget_tasks')
+        .select(`
+          task_id,
+          tasks (
+            id,
+            name,
+            description
+          )
+        `)
+        .eq('budget_id', budgetId);
+      
+      if (error) throw error;
+      return data?.map((item: any) => ({
+        id: item.tasks?.id,
+        name: item.tasks?.name,
+        description: item.tasks?.description
+      })).filter((task: any) => task.id) || [];
+    },
+    enabled: !!projectId,
+  });
 
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
@@ -279,43 +312,58 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                   Selecciona las tareas que se realizaron hoy y agrega detalles si es necesario.
                 </p>
                 
-                <div className="grid gap-3">
-                  {availableTasks.map((task) => (
-                    <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-surface-secondary/50">
-                      <Checkbox
-                        id={`task-${task.id}`}
-                        className="mt-0.5"
-                      />
-                      <div className="flex-1 space-y-2">
-                        <label 
-                          htmlFor={`task-${task.id}`}
-                          className="text-sm font-medium text-foreground cursor-pointer"
-                        >
-                          {task.name}
-                        </label>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-xs text-muted-foreground">Cantidad/Avance</label>
-                            <Input
-                              type="number"
-                              placeholder="ej: 15 m²"
-                              className="h-8 text-xs bg-surface-primary border-input"
-                              step="0.01"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs text-muted-foreground">Notas</label>
-                            <Input
-                              placeholder="Observaciones..."
-                              className="h-8 text-xs bg-surface-primary border-input"
-                            />
+                {tasksLoading ? (
+                  <div className="text-center py-4">
+                    <div className="text-sm text-muted-foreground">Cargando tareas del proyecto...</div>
+                  </div>
+                ) : projectTasks.length === 0 ? (
+                  <div className="text-center py-4">
+                    <div className="text-sm text-muted-foreground">No hay tareas asignadas a este proyecto.</div>
+                  </div>
+                ) : (
+                  <div className="grid gap-3">
+                    {projectTasks.map((task) => (
+                      <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-surface-secondary/50">
+                        <Checkbox
+                          id={`task-${task.id}`}
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1 space-y-2">
+                          <label 
+                            htmlFor={`task-${task.id}`}
+                            className="text-sm font-medium text-foreground cursor-pointer"
+                          >
+                            {task.name}
+                          </label>
+                          {task.description && (
+                            <p className="text-xs text-muted-foreground">{task.description}</p>
+                          )}
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-xs text-muted-foreground">% de avance</label>
+                              <Input
+                                type="number"
+                                placeholder="ej: 75%"
+                                className="h-8 text-xs bg-surface-primary border-input"
+                                min="0"
+                                max="100"
+                                step="5"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-muted-foreground">Notas</label>
+                              <Input
+                                placeholder="Observaciones..."
+                                className="h-8 text-xs bg-surface-primary border-input"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>
