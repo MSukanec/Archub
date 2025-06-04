@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { 
-  Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon
+  Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon, Crown, Zap, Rocket
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
+import { useFeatures } from '@/hooks/useFeatures';
 import { queryClient } from '@/lib/queryClient';
 
 import { cn } from '@/lib/utils';
