@@ -371,7 +371,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                 {/* Tipo */}
                 <FormField
                   control={form.control}
@@ -468,7 +468,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
               icon={DollarSign}
             />
             <AccordionContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                 {/* Moneda */}
                 <FormField
                   control={form.control}
