@@ -37,10 +37,12 @@ const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationI
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const filteredContacts = organizationContacts.filter(contact =>
-    contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (contact.company && contact.company?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredContacts = organizationContacts.filter(contact => {
+    const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim().toLowerCase();
+    const searchTermLower = searchTerm.toLowerCase();
+    return fullName.includes(searchTermLower) ||
+      (contact.company_name && contact.company_name.toLowerCase().includes(searchTermLower));
+  });
 
   const selectedContactsData = organizationContacts.filter(contact =>
     selectedAttendees.includes(contact.id)
@@ -92,11 +94,11 @@ const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationI
                   onClick={() => addAttendee(contact.id)}
                 >
                   <div className="text-sm font-medium text-foreground">
-                    {contact.name}
+                    {`${contact.first_name} ${contact.last_name || ''}`.trim()}
                   </div>
-                  {contact.company && (
+                  {contact.company_name && (
                     <div className="text-xs text-muted-foreground">
-                      {contact.company}
+                      {contact.company_name}
                     </div>
                   )}
                 </div>
@@ -117,11 +119,11 @@ const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationI
               <div key={contact.id} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">
-                    {contact.name}
+                    {`${contact.first_name} ${contact.last_name || ''}`.trim()}
                   </p>
-                  {contact.company && (
+                  {contact.company_name && (
                     <p className="text-xs text-muted-foreground">
-                      {contact.company}
+                      {contact.company_name}
                     </p>
                   )}
                 </div>

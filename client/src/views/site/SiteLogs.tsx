@@ -76,7 +76,7 @@ export default function SiteLogs() {
       if (!projectId || !siteLogs.length) return [];
       
       const siteLogIds = siteLogs.map(log => log.id);
-      console.log('Fetching tasks for site log IDs:', siteLogIds);
+
       
       const { data, error } = await supabase
         .from('site_log_tasks')
@@ -94,7 +94,7 @@ export default function SiteLogs() {
         throw error;
       }
       
-      console.log('Site log tasks fetched:', data);
+
       return data || [];
     },
     enabled: !!projectId && siteLogs.length > 0,
@@ -107,15 +107,17 @@ export default function SiteLogs() {
       if (!projectId || !siteLogs.length) return [];
       
       const siteLogIds = siteLogs.map(log => log.id);
-      console.log('Fetching attendees for site log IDs:', siteLogIds);
+
       
       const { data, error } = await supabase
         .from('site_log_attendees')
         .select(`
           *,
-          contacts (
-            name,
-            company
+          contacts!inner (
+            id,
+            first_name,
+            last_name,
+            company_name
           )
         `)
         .in('log_id', siteLogIds);
@@ -125,7 +127,7 @@ export default function SiteLogs() {
         throw error;
       }
       
-      console.log('Site log attendees fetched:', data);
+
       return data || [];
     },
     enabled: !!projectId && siteLogs.length > 0,
@@ -478,7 +480,6 @@ export default function SiteLogs() {
                         {/* Tareas Realizadas */}
                         {(() => {
                           const logTasks = siteLogTasks.filter(task => task.site_log_id === siteLog.id);
-                          console.log('Tasks for log', siteLog.id, ':', logTasks);
                           return logTasks.length > 0 && (
                             <div className="bg-muted/20 rounded-xl p-4 border-l-4 border-green-500">
                               <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
@@ -516,7 +517,6 @@ export default function SiteLogs() {
                         {/* Asistentes */}
                         {(() => {
                           const logAttendees = siteLogAttendees.filter(attendee => attendee.log_id === siteLog.id);
-                          console.log('Attendees for log', siteLog.id, ':', logAttendees);
                           return logAttendees.length > 0 && (
                             <div className="bg-muted/20 rounded-xl p-4 border-l-4 border-blue-500">
                               <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
@@ -531,11 +531,13 @@ export default function SiteLogs() {
                                     </div>
                                     <div className="flex-1">
                                       <p className="text-sm font-medium text-foreground">
-                                        {attendee.contacts?.name || 'Nombre no disponible'}
+                                        {attendee.contacts ? 
+                                          `${attendee.contacts.first_name} ${attendee.contacts.last_name || ''}`.trim() 
+                                          : 'Nombre no disponible'}
                                       </p>
-                                      {attendee.contacts?.company && (
+                                      {attendee.contacts?.company_name && (
                                         <p className="text-xs text-muted-foreground">
-                                          {attendee.contacts.company}
+                                          {attendee.contacts.company_name}
                                         </p>
                                       )}
                                     </div>
