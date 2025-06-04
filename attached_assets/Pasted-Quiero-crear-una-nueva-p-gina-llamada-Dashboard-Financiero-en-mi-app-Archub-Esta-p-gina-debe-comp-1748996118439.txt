@@ -1,0 +1,19 @@
+Quiero crear una nueva página llamada "Dashboard Financiero" en mi app Archub. Esta página debe complementar la vista actual de movimientos financieros mostrando una visión visual y estratégica de las finanzas del proyecto.
+
+La idea es mostrar los saldos actuales, distribución por billetera y moneda, comportamiento mensual de ingresos y egresos, categorías más gastadas, alertas financieras y un resumen general.
+
+Usamos React, Tailwind y Zustand. Toda la información está en Supabase y las monedas ya están normalizadas por organización. Los movimientos tienen asociadas billeteras, monedas, categorías y fechas.
+
+Por favor, creá una nueva vista dentro de mi layout SPA, con los siguientes componentes en orden:
+
+1. **UnifiedBalanceCard**: muestra el balance total del proyecto convertido a una moneda principal (ej: USD), usando tasas de cambio si están disponibles.
+2. **WalletBalancePieChart**: gráfico donut que muestra en qué billeteras está distribuido el dinero (ej: Banco, Efectivo), con agrupación por moneda.
+3. **MonthlyCashflowLineChart**: gráfico de líneas que muestre mes a mes ingresos, egresos y balance. Agrupar por moneda.
+4. **ExpenseCategoryBarChart**: gráfico de barras horizontales que muestre en qué categorías se está gastando más.
+5. **WalletSummaryTable**: tabla con filas por billetera (y moneda), columnas: ingresos, egresos, saldo actual.
+6. **FinancialHealthIndicators**: indicadores tipo semáforo que detecten si hay billeteras con saldo negativo, egresos excesivos, etc.
+7. **BalanceForecastWidget**: estimación de saldo a futuro basado en la tendencia de los últimos meses.
+
+Todos los componentes deben recibir la data con React Query desde Supabase, y deben ser reutilizables. El layout debe usar Tailwind en `grid` con buen espaciado. La vista debe integrarse con el sidebar y header existentes. Si es posible, hacé que todos los componentes sean modulares en su propia carpeta.
+
+No necesito autenticación ni lógica de permisos en esta etapa, solo el layout y los componentes funcionando con datos reales o mockeados.
