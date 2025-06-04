@@ -88,13 +88,13 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
   const { user } = useAuthStore();
   const [expandedSection, setExpandedSection] = useState<Section | null>(null);
 
-  const handleSectionClick = (section: Section, sectionIndex: number) => {
-    if (expandedSection === section) {
-      setExpandedSection(null);
-    } else {
-      setExpandedSection(section);
-      setSection(section);
-    }
+  const handleSectionHover = (section: Section, sectionIndex: number) => {
+    setExpandedSection(section);
+    setSection(section);
+  };
+
+  const handleMouseLeave = () => {
+    setExpandedSection(null);
   };
 
   const handleViewClick = (section: Section, viewKey: string) => {
@@ -117,7 +117,10 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
         <div className="w-full px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Navigation Sections with Inline Animation */}
-            <div className="flex items-center gap-2 relative">
+            <div 
+              className="flex items-center gap-2 relative"
+              onMouseLeave={handleMouseLeave}
+            >
               {navigationSections.map((section, index) => {
                 const { section: sectionKey, icon: Icon, label } = section;
                 const isExpanded = expandedSection === sectionKey;
@@ -135,7 +138,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                   >
                     {/* Circular Button */}
                     <button
-                      onClick={() => handleSectionClick(sectionKey, index)}
+                      onMouseEnter={() => handleSectionHover(sectionKey, index)}
                       className={cn(
                         "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105",
                         currentSection === sectionKey 
@@ -146,7 +149,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                       <Icon className="w-5 h-5" />
                     </button>
 
-                    {/* Inline Views - appear after the clicked button */}
+                    {/* Inline Views - appear after the hovered button */}
                     {isExpanded && (
                       <div 
                         className="flex items-center gap-2"
@@ -216,35 +219,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
             </div>
           </div>
 
-          {/* Current Section Label */}
-          {currentSection && (
-            <div className="mt-4 flex items-center gap-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {(() => {
-                  const section = navigationSections.find(s => s.section === currentSection);
-                  const Icon = section?.icon;
-                  return (
-                    <>
-                      {Icon && <Icon className="w-4 h-4" />}
-                      <span>{section?.label}</span>
-                    </>
-                  );
-                })()}
-              </div>
-              {currentView && (
-                <>
-                  <ChevronDown className="w-3 h-3 text-muted-foreground rotate-[-90deg]" />
-                  <span className="text-sm font-medium text-foreground">
-                    {(() => {
-                      const section = navigationSections.find(s => s.section === currentSection);
-                      const view = section?.views.find(v => v.key === currentView);
-                      return view?.label || currentView;
-                    })()}
-                  </span>
-                </>
-              )}
-            </div>
-          )}
+
         </div>
       </div>
 
