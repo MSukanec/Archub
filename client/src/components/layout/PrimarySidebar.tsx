@@ -289,6 +289,18 @@ export default function PrimarySidebar() {
           </div>
         )}
 
+        {/* Test Archub Layout button */}
+        <CircularButton
+          icon={Building2}
+          isActive={currentView === 'organization-dashboard'}
+          onClick={() => {
+            setSection('organization');
+            setView('organization-dashboard');
+          }}
+          section="organization"
+          label="Test Archub"
+        />
+
         {/* Profile button */}
         <CircularButton
           icon={User}

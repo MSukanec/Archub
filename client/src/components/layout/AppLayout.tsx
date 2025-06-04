@@ -17,6 +17,7 @@ import CalendarView from '@/views/dashboard/Calendar';
 import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
 import OrganizationSettings from '@/views/organization/OrganizationSettings';
+import OrganizationDashboard from '@/views/organization/OrganizationDashboard';
 import ProjectsList from '@/views/project/ProjectsList';
 
 import SiteBudgets from '@/views/site/SiteBudgets';
@@ -53,6 +54,7 @@ const viewComponents = {
   'organization-team': OrganizationTeam,
   'organization-settings': OrganizationSettings,
   'organization-activity': Organization,
+  'organization-dashboard': OrganizationDashboard,
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
   'budgets-list': SiteBudgets,
@@ -191,18 +193,25 @@ export default function AppLayout() {
 
         </>
       ) : (
-        // Desktop Layout with Unified Header
-        <div className="flex flex-col h-full">
-          {/* New Unified Header */}
-          <UnifiedHeader />
+        // Desktop Layout
+        <>
+          <PrimarySidebar />
           
-          {/* Main Content */}
-          <div className="flex-1 overflow-hidden">
-            <main className="h-full overflow-auto bg-surface-views">
-              <ViewComponent />
+          {/* Floating Header */}
+          <FloatingHeader />
+          
+          <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '55px', marginRight: '55px' }}>
+            <main className="flex-1 overflow-auto relative bg-surface-views">
+              <div className="w-full" style={{ paddingTop: '55px', paddingBottom: '37px' }}>
+                <ViewComponent />
+              </div>
             </main>
           </div>
-        </div>
+          
+          <SecondarySidebar />
+          
+
+        </>
       )}
       
       <CreateProjectModal 
