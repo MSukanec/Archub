@@ -88,35 +88,37 @@ export function FeaturePopover({ feature, children, asChild = false }: FeaturePo
         {trigger}
       </PopoverTrigger>
       <PopoverContent 
-        className={`w-80 p-0 border ${planConfig.borderColor}`} 
+        className="w-72 p-0 bg-surface-views border-border/50 shadow-xl" 
         side="top" 
         align="center"
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
-        <div className={`${planConfig.bgColor} p-4 rounded-t-lg border-b ${planConfig.borderColor}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <PlanIcon className={`h-5 w-5 ${planConfig.color}`} />
-            <span className="font-semibold text-foreground">
+        <div className="bg-surface-primary p-3 rounded-t-lg border-b border-border/20">
+          <div className="flex items-center gap-2 mb-1">
+            <div className={`p-1.5 rounded-full ${planConfig.bgColor}`}>
+              <PlanIcon className={`h-4 w-4 ${planConfig.color}`} />
+            </div>
+            <span className="font-medium text-foreground text-sm">
               Función {planConfig.name}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {featureMessage}
           </p>
         </div>
         
-        <div className="p-4">
+        <div className="p-3 bg-surface-views">
           <div className="flex items-center gap-2 mb-3">
-            <Lock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
+            <Lock className="h-3 w-3 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
               Disponible en plan {planConfig.name}
             </span>
           </div>
           
           <Button 
             onClick={handleUpgrade}
-            className={`w-full ${planConfig.buttonBgColor}`}
+            className={`w-full h-8 text-xs ${planConfig.buttonBgColor} border-0 shadow-md hover:shadow-lg transition-all duration-200`}
             size="sm"
           >
             Mejorar Plan

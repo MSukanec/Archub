@@ -123,7 +123,7 @@ export function LimitLock({
         </div>
 
         {/* Contenido */}
-        <div className="bg-background p-4 space-y-3 rounded-b-lg">
+        <div className="bg-surface-views p-3 space-y-3 rounded-b-lg">
           <div className="flex items-start gap-2">
             <div className="bg-primary/10 rounded-full p-1.5 mt-0.5">
               <Zap className="h-3 w-3 text-primary" />
@@ -145,7 +145,7 @@ export function LimitLock({
           </div>
           
           <Button 
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 text-xs h-8"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 text-xs h-8"
             onClick={() => {
               window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
             }}
