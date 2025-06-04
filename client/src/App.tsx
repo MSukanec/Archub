@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import AppLayout from '@/components/layout/AppLayout';
 import AuthPage from '@/pages/AuthPage';
 import LandingPage from '@/pages/LandingPage';
+import AuthCallback from '@/components/auth/AuthCallback';
 import NotFound from '@/pages/not-found';
 
 function Router() {
@@ -31,6 +32,7 @@ function Router() {
         <>
           <Route path="/" component={LandingPage} />
           <Route path="/auth" component={AuthPage} />
+          <Route path="/auth/callback" component={AuthCallback} />
           <Route path="*" component={LandingPage} />
         </>
       )}
