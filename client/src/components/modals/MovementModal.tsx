@@ -538,7 +538,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
-                          {walletsList.map((wallet) => (
+                          {organizationWallets.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
                               {wallet.name} {wallet.description && `- ${wallet.description}`}
                             </SelectItem>
