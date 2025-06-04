@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin, User } from 'lucide-react';
+import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin, User, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -49,7 +49,7 @@ export default function SiteLogs() {
     setView('sitelog-main');
   }, [setSection, setView]);
 
-  // Query para obtener site logs
+  // Query para obtener site logs con tareas
   const { data: siteLogs = [], isLoading, error: siteLogsError } = useQuery({
     queryKey: ['site-logs', projectId],
     queryFn: async () => {
@@ -58,7 +58,18 @@ export default function SiteLogs() {
       console.log('Fetching site logs for project:', projectId);
       const { data, error } = await supabase
         .from('site_logs')
-        .select('*')
+        .select(`
+          *,
+          site_log_tasks (
+            task_id,
+            progress_percentage,
+            notes,
+            budget_tasks (
+              name,
+              description
+            )
+          )
+        `)
         .eq('project_id', projectId)
         .order('log_date', { ascending: false });
       
@@ -336,9 +347,7 @@ export default function SiteLogs() {
                 <div key={siteLog.id} className="flex gap-6 group">
                   {/* Timeline Node with Avatar */}
                   <div className="flex flex-col items-center">
-                    <div className={`relative z-10 transition-all group-hover:scale-110 ${
-                      isToday ? 'ring-2 ring-primary/50' : ''
-                    }`}>
+                    <div className="relative z-10 transition-all group-hover:scale-110">
                       <Avatar className="h-12 w-12 shadow-lg">
                         <AvatarImage src={author?.avatar_url || undefined} />
                         <AvatarFallback className={`text-sm font-medium ${
@@ -414,6 +423,37 @@ export default function SiteLogs() {
                             {siteLog.comments || 'Sin comentarios registrados para este día.'}
                           </p>
                         </div>
+                        
+                        {/* Tareas Realizadas */}
+                        {siteLog.site_log_tasks && siteLog.site_log_tasks.length > 0 && (
+                          <div className="bg-muted/20 rounded-xl p-4">
+                            <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4" />
+                              Tareas Realizadas ({siteLog.site_log_tasks.length})
+                            </h4>
+                            <div className="space-y-2">
+                              {siteLog.site_log_tasks.map((task: any, index: number) => (
+                                <div key={index} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium text-foreground">
+                                      {task.budget_tasks?.name || 'Tarea sin nombre'}
+                                    </p>
+                                    {task.notes && (
+                                      <p className="text-xs text-muted-foreground mt-1">
+                                        {task.notes}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-primary">
+                                      {task.progress_percentage}%
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
