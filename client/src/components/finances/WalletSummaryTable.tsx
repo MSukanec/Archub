@@ -45,7 +45,15 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
         const walletKey = `${walletName}-${currencyCode}`;
         const parentConcept = movement.movement_concepts?.parent_concept;
         const isIncome = parentConcept?.name === 'Ingresos';
-        const amount = movement.amount || 0;
+        const amount = parseFloat(movement.amount) || 0;
+
+        console.log('Processing movement in WalletSummaryTable:', {
+          walletName,
+          currencyCode,
+          amount,
+          isIncome,
+          parentConcept: parentConcept?.name
+        });
 
         if (!walletMap.has(walletKey)) {
           walletMap.set(walletKey, { ingresos: 0, egresos: 0 });
@@ -59,16 +67,29 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
         }
       });
 
-      return Array.from(walletMap.entries()).map(([key, data]) => {
+      const result = Array.from(walletMap.entries()).map(([key, data]) => {
         const [walletName, currency] = key.split('-');
+        const saldo = data.ingresos - data.egresos;
+        
+        console.log('Wallet summary calculation:', {
+          walletName,
+          currency,
+          ingresos: data.ingresos,
+          egresos: data.egresos,
+          saldo
+        });
+        
         return {
           walletName,
           currency,
           ingresos: data.ingresos,
           egresos: data.egresos,
-          saldo: data.ingresos - data.egresos
+          saldo
         };
       }).sort((a, b) => Math.abs(b.saldo) - Math.abs(a.saldo));
+      
+      console.log('Final wallet summaries:', result);
+      return result;
     }
   });
 

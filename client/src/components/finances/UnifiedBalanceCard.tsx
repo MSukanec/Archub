@@ -22,20 +22,23 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
         .from('site_movements')
         .select(`
           amount,
-          currency_id,
-          concept_id,
-          currencies!inner(code),
-          movement_concepts!inner(
+          currencies(code),
+          movement_concepts(
             name,
             parent_id,
-            parent_concept:movement_concepts!parent_id!inner(name)
+            parent_concept:movement_concepts!parent_id(name)
           )
         `)
         .eq('project_id', projectId);
 
       if (error) {
         console.error('Error fetching movements for balance:', error);
-        throw error;
+        return {
+          totalIncomePesos: 0,
+          totalExpensePesos: 0,
+          totalIncomeDollars: 0,
+          totalExpenseDollars: 0
+        };
       }
 
       let totalIncomePesos = 0;
@@ -46,10 +49,17 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
       movements?.forEach((movement: any) => {
         const parentConcept = movement.movement_concepts?.parent_concept;
         const isIncome = parentConcept?.name === 'Ingresos';
-        const amount = movement.amount || 0;
+        const amount = parseFloat(movement.amount) || 0;
         const currencyCode = movement.currencies?.code;
 
-        if (currencyCode === 'ARS') {
+        console.log('Processing movement in UnifiedBalanceCard:', {
+          amount,
+          currencyCode,
+          isIncome,
+          parentConcept: parentConcept?.name
+        });
+
+        if (currencyCode === 'ARS' || currencyCode === 'COP') {
           if (isIncome) {
             totalIncomePesos += amount;
           } else {
@@ -62,6 +72,13 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
             totalExpenseDollars += amount;
           }
         }
+      });
+
+      console.log('Final balance calculation:', {
+        totalIncomePesos,
+        totalExpensePesos,
+        totalIncomeDollars,
+        totalExpenseDollars
       });
 
       return {
