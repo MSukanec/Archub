@@ -85,7 +85,7 @@ export function SimpleMultiSelectContactTypes({
       </Button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface-primary border border-input rounded-lg shadow-lg z-50 max-h-[300px] overflow-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-input rounded-lg shadow-lg z-50 max-h-[300px] overflow-auto">
           {contactTypes.map((type) => (
             <div
               key={type.id}
