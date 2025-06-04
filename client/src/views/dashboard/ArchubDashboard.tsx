@@ -197,9 +197,9 @@ export default function ArchubDashboard() {
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards with integrated action buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
-            <CardContent className="p-4 pb-0 flex-1">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40 flex flex-col">
+            <CardContent className="p-4 flex-1 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Proyectos Activos</p>
                   <p className="text-2xl font-bold text-foreground">
@@ -210,19 +210,19 @@ export default function ArchubDashboard() {
                   <Building2 className="w-5 h-5 text-primary" />
                 </div>
               </div>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+              >
+                <Plus className="w-3 h-3" />
+                Nuevo Proyecto
+              </button>
             </CardContent>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
-            >
-              <Plus className="w-3 h-3" />
-              Nuevo Proyecto
-            </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
-            <CardContent className="p-4 pb-0 flex-1">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40 flex flex-col">
+            <CardContent className="p-4 flex-1 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Bitácoras</p>
                   <p className="text-2xl font-bold text-foreground">
@@ -233,19 +233,19 @@ export default function ArchubDashboard() {
                   <FileText className="w-5 h-5 text-primary" />
                 </div>
               </div>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+              >
+                <Plus className="w-3 h-3" />
+                Nueva Bitácora
+              </button>
             </CardContent>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
-            >
-              <Plus className="w-3 h-3" />
-              Nueva Bitácora
-            </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
-            <CardContent className="p-4 pb-0 flex-1">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40 flex flex-col">
+            <CardContent className="p-4 flex-1 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Movimientos</p>
                   <p className="text-2xl font-bold text-foreground">
@@ -256,19 +256,19 @@ export default function ArchubDashboard() {
                   <TrendingUp className="w-5 h-5 text-primary" />
                 </div>
               </div>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateMovementModal'))}
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+              >
+                <Plus className="w-3 h-3" />
+                Nuevo Movimiento
+              </button>
             </CardContent>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('openCreateMovementModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
-            >
-              <Plus className="w-3 h-3" />
-              Nuevo Movimiento
-            </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
-            <CardContent className="p-4 pb-0 flex-1">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40 flex flex-col">
+            <CardContent className="p-4 flex-1 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Contactos</p>
                   <p className="text-2xl font-bold text-foreground">
@@ -279,14 +279,14 @@ export default function ArchubDashboard() {
                   <Users className="w-5 h-5 text-primary" />
                 </div>
               </div>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateContactModal'))}
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+              >
+                <Plus className="w-3 h-3" />
+                Nuevo Contacto
+              </button>
             </CardContent>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('openCreateContactModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
-            >
-              <Plus className="w-3 h-3" />
-              Nuevo Contacto
-            </button>
           </Card>
         </div>
 
