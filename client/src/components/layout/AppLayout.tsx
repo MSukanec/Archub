@@ -23,6 +23,7 @@ import SiteBudgets from '@/views/site/SiteBudgets';
 import SiteMaterials from '@/views/site/SiteMaterials';
 import SiteLogs from '@/views/site/SiteLogs';
 import Movements from '@/views/movements/Movements';
+import FinancesDashboard from '@/views/finances/FinancesDashboard';
 import Contacts from '@/views/contacts/Contacts';
 
 import AdminOrganizations from '@/views/admin/AdminOrganizations';
@@ -61,6 +62,7 @@ const viewComponents = {
   'budgets-materials': SiteMaterials,
   'sitelog-main': SiteLogs,
   'movements-main': Movements,
+  'movements-dashboard': FinancesDashboard,
   'transactions': Movements,
   'contacts': Contacts,
   'calendar': CalendarView,

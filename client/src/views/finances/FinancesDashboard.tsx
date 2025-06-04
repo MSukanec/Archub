@@ -1,4 +1,4 @@
-import { useUserContextStore } from '@/store/userContextStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 import UnifiedBalanceCard from '@/components/finances/UnifiedBalanceCard';
 import WalletBalancePieChart from '@/components/finances/WalletBalancePieChart';
 import MonthlyCashflowLineChart from '@/components/finances/MonthlyCashflowLineChart';
@@ -8,9 +8,9 @@ import FinancialHealthIndicators from '@/components/finances/FinancialHealthIndi
 import BalanceForecastWidget from '@/components/finances/BalanceForecastWidget';
 
 export default function FinancesDashboard() {
-  const { activeProjectId } = useUserContextStore();
+  const { activeProject } = useUserContextStore();
 
-  if (!activeProjectId) {
+  if (!activeProject?.id) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-muted-foreground">Selecciona un proyecto para ver el dashboard financiero</p>
