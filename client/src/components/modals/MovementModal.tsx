@@ -128,6 +128,40 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const organizationCurrencies: Currency[] = (organizationCurrenciesData?.currencies || []) as Currency[];
   const defaultCurrencyId = organizationCurrenciesData?.defaultCurrency;
 
+  // Fetch organization wallets with details
+  const { data: organizationWalletsData, isLoading: walletsLoading } = useQuery({
+    queryKey: ['organization-wallets', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return { wallets: [], defaultWallet: null };
+      
+      const { data, error } = await supabase
+        .from('organization_wallets')
+        .select(`
+          wallet_id,
+          is_default,
+          is_active,
+          wallets!inner(id, name, description, wallet_type)
+        `)
+        .eq('organization_id', organizationId)
+        .eq('is_active', true)
+        .order('is_default', { ascending: false }); // Default wallet first
+      
+      if (error) throw error;
+      
+      const wallets = data?.map(ow => ({
+        ...ow.wallets,
+        wallet_id: ow.wallet_id
+      })).filter(Boolean) || [];
+      const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
+      
+      return { wallets, defaultWallet };
+    },
+    enabled: !!organizationId && isOpen,
+  });
+
+  const organizationWallets = organizationWalletsData?.wallets || [];
+  const defaultWalletId = organizationWalletsData?.defaultWallet;
+
   // Fallback currencies if none configured for organization
   const fallbackCurrencies: Currency[] = [
     { code: 'ARS', name: 'Peso Argentino', symbol: '$', currency_id: 'fallback-ars' },
@@ -196,14 +230,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           created_at: new Date().toISOString().split('T')[0],
           description: '',
           amount: 0,
-          currency_id: '',
-          wallet_id: '',
+          currency_id: defaultCurrencyId || '',
+          wallet_id: defaultWalletId || '',
           related_contact_id: '',
           related_task_id: '',
         });
       }
     }
-  }, [isOpen, movement, isEditing, form, conceptStructures, availableCurrencies]);
+  }, [isOpen, movement, isEditing, form, conceptStructures, availableCurrencies, defaultCurrencyId, defaultWalletId]);
 
   // Get movement types (root concepts) and categories using hierarchical structure
   const movementTypes = conceptStructures?.getRootConcepts() || [];
@@ -229,20 +263,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen && !!organizationId,
   });
 
-  // Fetch wallets
-  const { data: walletsList = [] } = useQuery({
-    queryKey: ['wallets'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('wallets')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: isOpen,
-  });
+  // Use organization wallets instead of all wallets
+  const walletsList = organizationWallets;
 
   // Create movement mutation
   const createMovementMutation = useMutation({
@@ -516,8 +538,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </FormControl>
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
                           {walletsList.map((wallet) => (
-                            <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
-                              {wallet.name}
+                            <SelectItem key={wallet.wallet_id || wallet.id} value={wallet.wallet_id || wallet.id} className="[&>span:first-child]:hidden">
+                              {wallet.name} {wallet.description && `- ${wallet.description}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
