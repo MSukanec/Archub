@@ -113,7 +113,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
   const availableCurrencies = currenciesError ? fallbackCurrencies : (currencies || []);
 
-  // Fetch organization currencies
+  // Fetch organization currencies with codes
   const { data: organizationCurrencies, isLoading: orgCurrenciesLoading } = useQuery({
     queryKey: ['organization-currencies', organizationId],
     queryFn: async () => {
@@ -121,13 +121,17 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
       
       const { data, error } = await supabase
         .from('organization_currencies')
-        .select('currency_id')
+        .select(`
+          currency_id,
+          currencies!inner(code)
+        `)
         .eq('organization_id', organizationId);
       
       if (error) throw error;
-      return data?.map(oc => oc.currency_id) || [];
+      return data?.map(oc => oc.currencies?.code).filter(Boolean) || [];
     },
     enabled: !!organizationId && isOpen,
+    retry: 1,
   });
 
   const form = useForm<OrganizationSettingsForm>({
@@ -215,16 +219,26 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
       // Then, insert new organization currencies if any
       if (data.secondary_currencies && data.secondary_currencies.length > 0) {
-        const organizationCurrencies = data.secondary_currencies.map(currencyCode => ({
+        // First, get the currency IDs from the codes
+        const { data: currencyData, error: currencyError } = await supabase
+          .from('currencies')
+          .select('id, code')
+          .in('code', data.secondary_currencies);
+
+        if (currencyError) throw currencyError;
+
+        const organizationCurrencies = currencyData?.map(currency => ({
           organization_id: organizationId,
-          currency_id: currencyCode,
-        }));
+          currency_id: currency.id,
+        })) || [];
 
-        const { error: insertError } = await supabase
-          .from('organization_currencies')
-          .insert(organizationCurrencies);
+        if (organizationCurrencies.length > 0) {
+          const { error: insertError } = await supabase
+            .from('organization_currencies')
+            .insert(organizationCurrencies);
 
-        if (insertError) throw insertError;
+          if (insertError) throw insertError;
+        }
       }
 
       return updatedOrg;
