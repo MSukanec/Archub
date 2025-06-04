@@ -5,18 +5,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { z } from 'zod';
-import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow } from 'lucide-react';
+import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow, Loader2 } from 'lucide-react';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { useUserContextStore } from '@/stores/userContextStore';
 import { cn } from '@/lib/utils';
 import type { SiteLog } from '@shared/schema';
 
@@ -48,7 +49,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { userId } = useUserContextStore();
+  const isEditing = !!siteLog;
 
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
@@ -71,7 +72,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   }, [isOpen, siteLog, form]);
 
   // Create/Update mutation
-  const mutation = useMutation({
+  const createSiteLogMutation = useMutation({
     mutationFn: async (data: SiteLogForm) => {
       const siteLogData = {
         project_id: projectId,
@@ -107,10 +108,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site-logs'] });
       toast({
-        title: siteLog ? 'Registro actualizado' : 'Registro creado',
-        description: `El registro de obra ha sido ${siteLog ? 'actualizado' : 'creado'} correctamente.`,
+        title: isEditing ? 'Registro actualizado' : 'Registro creado',
+        description: `El registro de obra ha sido ${isEditing ? 'actualizado' : 'creado'} correctamente.`,
       });
-      onClose();
+      handleClose();
     },
     onError: (error: any) => {
       toast({
@@ -122,124 +123,171 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   });
 
   const onSubmit = (data: SiteLogForm) => {
-    mutation.mutate(data);
+    createSiteLogMutation.mutate(data);
   };
 
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
+
+  const content = (
+    <Form {...form}>
+      <form id="sitelog-form" onSubmit={form.handleSubmit(onSubmit)}>
+        <Accordion type="single" collapsible defaultValue="basic-info">
+          {/* Información Básica */}
+          <AccordionItem value="basic-info">
+            <AccordionTrigger 
+              title="Información Básica"
+              subtitle="Fecha, clima y comentarios del día"
+              icon={FileText}
+            />
+            <AccordionContent>
+              {/* Fecha */}
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Fecha <span className="text-primary">*</span></FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP", { locale: es })
+                            ) : (
+                              <span>Seleccionar fecha</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-surface-primary border-input z-[9999]" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Clima */}
+              <FormField
+                control={form.control}
+                name="weather"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Clima</FormLabel>
+                    <Select value={field.value || ''} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10">
+                          <SelectValue placeholder="Seleccionar clima" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-surface-primary border-input z-[9999]">
+                        {weatherOptions.map((option) => {
+                          const Icon = option.icon;
+                          return (
+                            <SelectItem key={option.value} value={option.value} className="[&>span:first-child]:hidden">
+                              <div className="flex items-center gap-2">
+                                <Icon className="h-4 w-4" />
+                                {option.label}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Comentarios */}
+              <FormField
+                control={form.control}
+                name="comments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Comentarios</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe las actividades del día, observaciones, incidentes, etc."
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
+                        rows={4}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </form>
+    </Form>
+  );
+
   const footer = (
-    <div className="flex justify-end space-x-2">
-      <Button type="button" variant="outline" onClick={onClose}>
-        Cancelar
-      </Button>
-      <Button type="submit" form="sitelog-form" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Guardando...' : (siteLog ? 'Actualizar registro' : 'Crear registro')}
-      </Button>
+    <div className="border-t border-border/20 bg-surface-views p-4">
+      <div className="flex gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleClose}
+          disabled={createSiteLogMutation.isPending}
+          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          form="sitelog-form"
+          disabled={createSiteLogMutation.isPending}
+          className="flex-[3] bg-primary border-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-10"
+        >
+          {createSiteLogMutation.isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              {isEditing ? 'Actualizando...' : 'Creando...'}
+            </>
+          ) : (
+            <>
+              <FileText className="h-4 w-4 mr-2" />
+              {isEditing ? 'Actualizar Registro' : 'Crear Registro'}
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 
   return (
     <ModernModal
       isOpen={isOpen}
-      onClose={onClose}
-      title={siteLog ? 'Editar Registro de Bitácora' : 'Nueva Bitácora'}
+      onClose={handleClose}
+      title={isEditing ? 'Editar Registro de Bitácora' : 'Nueva Bitácora'}
+      subtitle="Registro diario de actividades y progreso de obra"
       icon={FileText}
       footer={footer}
     >
-      <Form {...form}>
-        <form id="sitelog-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fecha *</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP", { locale: es })
-                          ) : (
-                            <span>Seleccionar fecha</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="weather"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Clima</FormLabel>
-                  <Select value={field.value || ''} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar clima" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {weatherOptions.map((option) => {
-                        const Icon = option.icon;
-                        return (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="h-4 w-4" />
-                              {option.label}
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="comments"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Comentarios</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Describe las actividades del día, observaciones, incidentes, etc."
-                    className="resize-none min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
+      {content}
     </ModernModal>
   );
 }
