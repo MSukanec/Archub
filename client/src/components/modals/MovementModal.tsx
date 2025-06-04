@@ -87,6 +87,36 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Use hierarchical concepts hook for optimized concept management
   const { data: conceptStructures, isLoading: conceptsLoading } = useHierarchicalConcepts('movement_concepts');
 
+  // Fetch organization currencies
+  const { data: organizationCurrencies, isLoading: currenciesLoading } = useQuery({
+    queryKey: ['organization-currencies', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const { data, error } = await supabase
+        .from('organization_currencies')
+        .select(`
+          currency_id,
+          currencies!inner(code, name, symbol)
+        `)
+        .eq('organization_id', organizationId);
+      
+      if (error) throw error;
+      return data?.map(oc => oc.currencies).filter(Boolean) || [];
+    },
+    enabled: !!organizationId && isOpen,
+  });
+
+  // Fallback currencies if none configured for organization
+  const fallbackCurrencies = [
+    { code: 'ARS', name: 'Peso Argentino', symbol: '$' },
+    { code: 'USD', name: 'Dólar Estadounidense', symbol: '$' },
+  ];
+
+  const availableCurrencies = organizationCurrencies && organizationCurrencies.length > 0 
+    ? organizationCurrencies 
+    : fallbackCurrencies;
+
   const form = useForm<MovementForm>({
     resolver: zodResolver(movementSchema),
     defaultValues: {
@@ -94,7 +124,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       concept_id: '',
       created_at: new Date().toISOString().split('T')[0],
       amount: 0,
-      currency: 'ARS',
+      currency: availableCurrencies[0]?.code || 'ARS',
       wallet_id: '',
       description: '',
       related_contact_id: '',
@@ -145,14 +175,14 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           created_at: new Date().toISOString().split('T')[0],
           description: '',
           amount: 0,
-          currency: 'ARS',
+          currency: availableCurrencies[0]?.code || 'ARS',
           wallet_id: '',
           related_contact_id: '',
           related_task_id: '',
         });
       }
     }
-  }, [isOpen, movement, isEditing, form, conceptStructures]);
+  }, [isOpen, movement, isEditing, form, conceptStructures, availableCurrencies]);
 
   // Get movement types (root concepts) and categories using hierarchical structure
   const movementTypes = conceptStructures?.getRootConcepts() || [];
@@ -425,8 +455,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
-                          <SelectItem value="ARS" className="[&>span:first-child]:hidden">ARS - Peso Argentino</SelectItem>
-                          <SelectItem value="USD" className="[&>span:first-child]:hidden">USD - Dólar Estadounidense</SelectItem>
+                          {availableCurrencies.map((currency) => (
+                            <SelectItem 
+                              key={currency.code} 
+                              value={currency.code} 
+                              className="[&>span:first-child]:hidden"
+                            >
+                              {currency.code} - {currency.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
