@@ -76,18 +76,25 @@ export default function SiteLogs() {
       if (!projectId || !siteLogs.length) return [];
       
       const siteLogIds = siteLogs.map(log => log.id);
+      console.log('Fetching tasks for site log IDs:', siteLogIds);
+      
       const { data, error } = await supabase
         .from('site_log_tasks')
         .select(`
           *,
-          budget_tasks (
+          tasks (
             name,
             description
           )
         `)
         .in('site_log_id', siteLogIds);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching site log tasks:', error);
+        throw error;
+      }
+      
+      console.log('Site log tasks fetched:', data);
       return data || [];
     },
     enabled: !!projectId && siteLogs.length > 0,
@@ -100,6 +107,8 @@ export default function SiteLogs() {
       if (!projectId || !siteLogs.length) return [];
       
       const siteLogIds = siteLogs.map(log => log.id);
+      console.log('Fetching attendees for site log IDs:', siteLogIds);
+      
       const { data, error } = await supabase
         .from('site_log_attendees')
         .select(`
@@ -111,7 +120,12 @@ export default function SiteLogs() {
         `)
         .in('log_id', siteLogIds);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching site log attendees:', error);
+        throw error;
+      }
+      
+      console.log('Site log attendees fetched:', data);
       return data || [];
     },
     enabled: !!projectId && siteLogs.length > 0,
@@ -464,27 +478,31 @@ export default function SiteLogs() {
                         {/* Tareas Realizadas */}
                         {(() => {
                           const logTasks = siteLogTasks.filter(task => task.site_log_id === siteLog.id);
+                          console.log('Tasks for log', siteLog.id, ':', logTasks);
                           return logTasks.length > 0 && (
-                            <div className="bg-muted/20 rounded-xl p-4">
+                            <div className="bg-muted/20 rounded-xl p-4 border-l-4 border-green-500">
                               <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4" />
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
                                 Tareas Realizadas ({logTasks.length})
                               </h4>
-                              <div className="space-y-2">
+                              <div className="grid gap-2">
                                 {logTasks.map((task: any, index: number) => (
-                                  <div key={index} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
+                                  <div key={index} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg border border-border">
+                                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                    </div>
                                     <div className="flex-1">
                                       <p className="text-sm font-medium text-foreground">
-                                        {task.budget_tasks?.name || 'Tarea sin nombre'}
+                                        {task.tasks?.name || 'Tarea sin nombre'}
                                       </p>
                                       {task.notes && (
-                                        <p className="text-xs text-muted-foreground mt-1">
+                                        <p className="text-xs text-muted-foreground">
                                           {task.notes}
                                         </p>
                                       )}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                      <span className="text-sm font-medium text-primary">
+                                      <span className="text-sm font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded">
                                         {task.progress_percentage}%
                                       </span>
                                     </div>
@@ -498,6 +516,7 @@ export default function SiteLogs() {
                         {/* Asistentes */}
                         {(() => {
                           const logAttendees = siteLogAttendees.filter(attendee => attendee.log_id === siteLog.id);
+                          console.log('Attendees for log', siteLog.id, ':', logAttendees);
                           return logAttendees.length > 0 && (
                             <div className="bg-muted/20 rounded-xl p-4 border-l-4 border-blue-500">
                               <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">

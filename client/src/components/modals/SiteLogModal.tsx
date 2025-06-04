@@ -38,8 +38,8 @@ const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationI
   const [isOpen, setIsOpen] = useState(false);
 
   const filteredContacts = organizationContacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (contact.company && contact.company.toLowerCase().includes(searchTerm.toLowerCase()))
+    contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (contact.company && contact.company?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const selectedContactsData = organizationContacts.filter(contact =>
@@ -768,8 +768,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
           </AccordionItem>
 
           {/* Asistentes Accordion */}
-          <AccordionItem value="attendees" className="border border-border rounded-lg">
-            <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]>div]:text-primary">
+          <AccordionItem value="attendees" className="border border-border rounded-lg overflow-hidden">
+            <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]>div]:text-primary data-[state=open]:border-b data-[state=open]:border-border">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Users className="h-4 w-4" />
                 <span>Asistentes de Obra</span>
@@ -780,7 +780,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                 )}
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
+            <AccordionContent className="px-4 pb-4 pt-2">
               <AttendeesSelector
                 selectedAttendees={form.watch('attendees') || []}
                 onAttendeesChange={(attendees) => form.setValue('attendees', attendees)}
