@@ -116,7 +116,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
       const supabase = createClient(supabaseUrl, supabaseKey);
       
-      // Filter projects by organization ID
+      // Filter projects by organization ID - let's check all data first
+      console.log('Fetching projects for organization:', organizationId);
+      
+      // First, let's see what's in the database
+      const { data: allProjects, error: allError } = await supabase
+        .from('projects')
+        .select('id, name, organization_id, is_active')
+        .limit(10);
+        
+      console.log('All projects in database:', allProjects);
+      console.log('All projects error:', allError);
+      
+      // Now try the filtered query
       const { data: projects, error } = await supabase
         .from('projects')
         .select('*')
@@ -129,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "Error fetching projects from Supabase" });
       }
       
-      console.log('Projects from Supabase for org', organizationId, ':', projects);
+      console.log('Filtered projects from Supabase for org', organizationId, ':', projects);
       res.json(projects || []);
     } catch (error) {
       console.error('Server error:', error);
