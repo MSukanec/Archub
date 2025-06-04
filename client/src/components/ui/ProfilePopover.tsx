@@ -72,14 +72,14 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
             {/* Profile Button */}
             <button
               onClick={handleProfileClick}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-muted/30 transition-colors"
+              className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-muted transition-colors"
             >
               <User className="w-3 h-3 text-muted-foreground" />
               <span className="text-xs text-foreground">Mi Perfil</span>
             </button>
 
             {/* Theme Toggle */}
-            <div className="flex items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors">
+            <div className="flex items-center justify-between px-3 py-2 hover:bg-muted transition-colors">
               <div className="flex items-center space-x-2">
                 {theme === 'dark' ? (
                   <Moon className="w-3 h-3 text-muted-foreground" />

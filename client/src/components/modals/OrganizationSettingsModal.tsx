@@ -656,7 +656,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -675,7 +675,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -696,7 +696,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />
@@ -715,7 +715,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                           {...field}
                           disabled
                           readOnly
-                          className="bg-[#f5f5f5] border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
+                          className="bg-background border-input text-muted-foreground cursor-not-allowed rounded-xl shadow-lg h-10"
                         />
                       </FormControl>
                       <FormMessage />

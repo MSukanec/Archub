@@ -431,7 +431,7 @@ export default function PrimarySidebar() {
 
   const renderRegularSidebar = (item: any) => (
     <div className="h-full flex flex-col">
-      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted">
         <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
       </div>
       <div className="flex-1">

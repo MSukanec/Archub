@@ -371,7 +371,7 @@ export default function SiteLogs() {
                       
                       {/* Content */}
                       <div className="space-y-3">
-                        <div className="bg-muted/30 rounded-xl p-4">
+                        <div className="bg-muted rounded-xl p-4">
                           <p className="text-foreground leading-relaxed">
                             {siteLog.comments || 'Sin comentarios registrados para este día.'}
                           </p>

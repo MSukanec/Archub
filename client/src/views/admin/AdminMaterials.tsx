@@ -269,7 +269,7 @@ export default function AdminMaterials() {
               </TableRow>
             ) : (
               paginatedMaterials.map((material: any) => (
-                <TableRow key={material.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
+                <TableRow key={material.id} className="border-border bg-card hover:bg-muted transition-colors">
                   <TableCell className="text-center py-2">
                     <Badge variant="secondary" className="bg-muted">
                       {material.category?.name || 'Sin categoría'}

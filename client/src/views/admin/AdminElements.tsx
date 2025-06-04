@@ -271,7 +271,7 @@ export default function AdminElements() {
               </TableRow>
             ) : (
               paginatedElements.map((element: any) => (
-                <TableRow key={element.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
+                <TableRow key={element.id} className="border-border bg-card hover:bg-muted transition-colors">
                   <TableCell className="py-1 text-center h-6">
                     <div className="font-medium text-foreground text-sm">{element.name}</div>
                   </TableCell>

@@ -73,7 +73,7 @@ export function SimpleMultiSelectContactTypes({
         disabled={disabled}
         className={cn(
           "w-full justify-between bg-background border-input rounded-lg h-10",
-          "text-left font-normal hover:bg-[#c8c8c8]",
+          "text-left font-normal hover:bg-background",
           error && "border-destructive",
           value.length === 0 && "text-muted-foreground"
         )}
@@ -89,7 +89,7 @@ export function SimpleMultiSelectContactTypes({
           {contactTypes.map((type) => (
             <div
               key={type.id}
-              className="flex items-center space-x-2 p-3 hover:bg-[#c8c8c8] cursor-pointer"
+              className="flex items-center space-x-2 p-3 hover:bg-background cursor-pointer"
               onClick={() => handleSelectionChange(type.id, !value.includes(type.id))}
             >
               <Checkbox

@@ -206,14 +206,14 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-muted-foreground hover:bg-card"
+          className="flex-[0_0_25%] rounded-xl bg-background border-[#919191] text-muted-foreground hover:bg-card"
         >
           Cancelar
         </Button>
         <Button
           onClick={handleSubmit}
           disabled={selectedTasks.length === 0 || addTasksMutation.isPending}
-          className="flex-[0_0_75%] rounded-xl bg-[#4f9eff] border-[#4f9eff] text-white hover:bg-[#3d8ce6]"
+          className="flex-[0_0_75%] rounded-xl bg-background border-[#4f9eff] text-white hover:bg-background"
         >
           <Calculator className="w-4 h-4 mr-2" />
           {addTasksMutation.isPending ? 'Agregando...' : `Agregar ${selectedTasks.length} Tarea(s)`}
@@ -268,7 +268,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                   filteredTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-center justify-between p-2 border border-border rounded-lg hover:bg-muted/30 transition-colors"
+                      className="flex items-center justify-between p-2 border border-border rounded-lg hover:bg-muted transition-colors"
                     >
                       <div className="flex items-center space-x-2 flex-1">
                         <Checkbox

@@ -437,7 +437,7 @@ function MaterialAccordion({ category, isExpanded, onToggle, onAddMaterial, onDe
                         
                         return [
                           // Category Header
-                          <tr key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
+                          <tr key={`category-${categoryName}`} className="bg-background border-border hover:bg-background">
                             <td colSpan={2} className="pl-6 py-3 font-semibold text-sm text-white">
                               {categoryName}
                             </td>

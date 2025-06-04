@@ -545,7 +545,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           {...field}
                           placeholder="Se completa automáticamente"
                           disabled
-                          className="h-10 bg-[#f0f0f0] border-input text-muted-foreground rounded-xl cursor-not-allowed"
+                          className="h-10 bg-background border-input text-muted-foreground rounded-xl cursor-not-allowed"
                         />
                       </FormControl>
                       <FormMessage />
@@ -565,7 +565,7 @@ export default function CreateProjectModal({ isOpen, onClose, project }: CreateP
                           {...field}
                           placeholder="Se completa automáticamente"
                           disabled
-                          className="h-10 bg-[#f0f0f0] border-input text-muted-foreground rounded-xl cursor-not-allowed"
+                          className="h-10 bg-background border-input text-muted-foreground rounded-xl cursor-not-allowed"
                         />
                       </FormControl>
                       <FormMessage />

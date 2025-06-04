@@ -122,7 +122,7 @@ export default function ProfileSubscription() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div className="flex items-center gap-3">
                 {(() => {
                   const PlanIcon = getPlanIcon(currentPlanName);

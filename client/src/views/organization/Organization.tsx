@@ -301,7 +301,7 @@ export default function Organization() {
               recentActivity.map((activity) => {
                 const Icon = activity.icon;
                 return (
-                  <div key={activity.id} className="flex items-center gap-4 p-3 rounded-xl bg-muted/30">
+                  <div key={activity.id} className="flex items-center gap-4 p-3 rounded-xl bg-muted">
                     <div 
                       className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${activity.color}20` }}

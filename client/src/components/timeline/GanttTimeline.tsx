@@ -389,7 +389,7 @@ export default function GanttTimeline({ items = [], startDate, endDate, timeline
 
               {/* Línea de tiempo para este tipo */}
               <div 
-                className="timeline-content-row relative h-12 bg-muted/30 rounded-lg border-2 border-dashed border-muted overflow-x-auto scrollbar-hide"
+                className="timeline-content-row relative h-12 bg-muted rounded-lg border-2 border-dashed border-muted overflow-x-auto scrollbar-hide"
                 style={{ 
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none'

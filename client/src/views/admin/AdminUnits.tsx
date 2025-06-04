@@ -229,7 +229,7 @@ export default function AdminUnits() {
               </TableRow>
             ) : (
               paginatedUnits.map((unit: any) => (
-                <TableRow key={unit.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
+                <TableRow key={unit.id} className="border-border bg-card hover:bg-muted transition-colors">
                   <TableCell className="py-2 text-center">
                     <span className="font-mono bg-muted px-2 py-1 rounded text-sm">
                       {unit.name || 'N/A'}

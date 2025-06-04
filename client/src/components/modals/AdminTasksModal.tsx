@@ -886,7 +886,7 @@ export default function AdminTasksModal({ isOpen, onClose, onOpenChange, task, t
                         <div
                           key={material.id}
                           onClick={() => addMaterial(material)}
-                          className="p-2 hover:bg-[#c2c2c2] cursor-pointer border-b border-[#919191]/10 last:border-b-0 flex items-center justify-between"
+                          className="p-2 hover:bg-background cursor-pointer border-b border-[#919191]/10 last:border-b-0 flex items-center justify-between"
                         >
                           <div className="text-sm">{material.name}</div>
                           <div className="text-xs text-muted-foreground">

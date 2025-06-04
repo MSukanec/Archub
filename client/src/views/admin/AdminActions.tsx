@@ -231,7 +231,7 @@ export default function AdminActions() {
               </TableRow>
             ) : (
               paginatedActions.map((action: any) => (
-                <TableRow key={action.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
+                <TableRow key={action.id} className="border-border bg-card hover:bg-muted transition-colors">
                   <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">{action.name}</div>
                   </TableCell>

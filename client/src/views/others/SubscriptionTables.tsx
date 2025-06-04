@@ -107,7 +107,7 @@ export default function SubscriptionTables() {
           </CardHeader>
           <CardContent>
             {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
+            <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-muted rounded-lg">
               <span className={`text-sm ${!isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
                 Mensual
               </span>

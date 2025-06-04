@@ -241,7 +241,7 @@ export default function AdminUsers() {
               </TableRow>
             ) : (
               filteredUsers.map((user: any) => (
-                <TableRow key={user.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
+                <TableRow key={user.id} className="border-border bg-card hover:bg-muted transition-colors">
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">
                       {user.first_name && user.last_name 

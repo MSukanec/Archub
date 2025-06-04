@@ -170,7 +170,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] bg-[#e0e0e0] border-gray-300 flex flex-col">
+      <DialogContent className="max-w-4xl h-[80vh] bg-background border-gray-300 flex flex-col">
         <DialogHeader className="pb-4 relative">
           <div className="flex items-center gap-3">
             <div className="bg-primary rounded-full p-2">

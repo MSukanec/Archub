@@ -234,7 +234,7 @@ export default function AdminTasks() {
               </TableRow>
             ) : (
               paginatedTasks.map((task: any) => (
-                <TableRow key={task.id} className="border-border bg-card hover:bg-muted/30 transition-colors h-12">
+                <TableRow key={task.id} className="border-border bg-card hover:bg-muted transition-colors h-12">
                   <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted">
                       {task.category?.name || 'Sin categoría'}

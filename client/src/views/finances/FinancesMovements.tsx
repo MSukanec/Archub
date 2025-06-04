@@ -694,7 +694,7 @@ export default function Movements() {
               </TableRow>
             ) : (
               paginatedMovements.map((movement) => (
-                <TableRow key={movement.id} className="border-border hover:bg-muted/30 transition-colors h-12">
+                <TableRow key={movement.id} className="border-border hover:bg-muted transition-colors h-12">
                   <TableCell className="text-center py-1">
                     {(() => {
                       const dateStr = movement.created_at_local || movement.created_at;
@@ -838,7 +838,7 @@ export default function Movements() {
           paginatedMovements.map((movement) => (
             <Card 
               key={movement.id} 
-              className="rounded-2xl shadow-md bg-card border-0 p-3 cursor-pointer hover:bg-muted/30 transition-colors"
+              className="rounded-2xl shadow-md bg-card border-0 p-3 cursor-pointer hover:bg-muted transition-colors"
               onClick={() => handleEdit(movement)}
             >
               <div className="flex justify-between items-start mb-2">

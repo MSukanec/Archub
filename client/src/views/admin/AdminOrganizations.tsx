@@ -242,7 +242,7 @@ export default function AdminOrganizations() {
               </TableRow>
             ) : (
               filteredOrganizations.map((organization: any) => (
-                <TableRow key={organization.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
+                <TableRow key={organization.id} className="border-border bg-card hover:bg-muted transition-colors">
                   <TableCell className="py-4 text-center">
                     <div className="font-medium text-foreground">{organization.name || 'Sin nombre'}</div>
                   </TableCell>

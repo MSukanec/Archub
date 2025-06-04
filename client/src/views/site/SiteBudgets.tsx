@@ -415,7 +415,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                           
                           return [
                             // Category Header
-                            <tr key={`category-${categoryName}`} className="bg-[#606060] border-border hover:bg-[#606060]">
+                            <tr key={`category-${categoryName}`} className="bg-background border-border hover:bg-background">
                               <td colSpan={2} className="pl-6 py-3 font-semibold text-sm text-white">
                                 {categoryName}
                               </td>
@@ -560,7 +560,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                     return (
                       <div key={categoryName} className="space-y-2">
                         {/* Category Header Card */}
-                        <div className="rounded-lg shadow-md bg-[#606060] p-3">
+                        <div className="rounded-lg shadow-md bg-background p-3">
                           <div className="flex justify-between items-center">
                             <span className="font-semibold text-white text-sm">{categoryName}</span>
                             <div className="text-right">
@@ -581,7 +581,7 @@ function BudgetAccordion({ budget, isActive, isExpanded, onToggle, onSetActive, 
                           return (
                             <div 
                               key={task.id} 
-                              className="rounded-lg shadow-md bg-card border-0 p-3 hover:bg-muted/30 transition-colors"
+                              className="rounded-lg shadow-md bg-card border-0 p-3 hover:bg-muted transition-colors"
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex-1 min-w-0">

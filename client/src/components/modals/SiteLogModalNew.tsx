@@ -445,7 +445,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <FormLabel className="text-xs font-medium text-foreground">Tareas Seleccionadas</FormLabel>
                     <div className="space-y-2">
                       {selectedTasks.map((selectedTask) => (
-                        <div key={selectedTask.task.id} className="bg-[#c2c2c2] border border-input rounded-lg p-3">
+                        <div key={selectedTask.task.id} className="bg-background border border-input rounded-lg p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h4 className="text-sm font-medium text-foreground truncate">
@@ -539,7 +539,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <FormLabel className="text-xs font-medium text-foreground">Personal Seleccionado</FormLabel>
                     <div className="space-y-2">
                       {selectedAttendees.map((selectedAttendee) => (
-                        <div key={selectedAttendee.contact.id} className="bg-[#c2c2c2] border border-input rounded-lg p-3">
+                        <div key={selectedAttendee.contact.id} className="bg-background border border-input rounded-lg p-3">
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h4 className="text-sm font-medium text-foreground truncate">
@@ -638,7 +638,7 @@ export default function SiteLogModal({ isOpen, onClose, onOpenChange, siteLog, p
                     <FormLabel className="text-xs font-medium text-foreground">Archivos Seleccionados</FormLabel>
                     <div className="space-y-2">
                       {uploadedFiles.map((fileItem, index) => (
-                        <div key={index} className="bg-[#c2c2c2] border border-input rounded-lg p-3">
+                        <div key={index} className="bg-background border border-input rounded-lg p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <h4 className="text-sm font-medium text-foreground truncate">

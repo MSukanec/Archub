@@ -330,7 +330,7 @@ export default function Contacts() {
               </TableRow>
             ) : (
               paginatedContacts.map((contact: any) => (
-                <TableRow key={contact.id} className="border-border hover:bg-muted/30 transition-colors">
+                <TableRow key={contact.id} className="border-border hover:bg-muted transition-colors">
                   <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">
                       {`${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Sin nombre'}

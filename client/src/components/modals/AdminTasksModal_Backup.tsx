@@ -855,7 +855,7 @@ function AdminTasksModal({ isOpen, onClose, task }: AdminTasksModalProps) {
                   <div className="space-y-2">
                     <h4 className="text-xs font-medium text-foreground">Materiales Agregados:</h4>
                     {taskMaterials.map((material, index) => (
-                      <div key={index} className="flex items-center justify-between bg-[#e8e8e8] p-2 rounded-lg">
+                      <div key={index} className="flex items-center justify-between bg-background p-2 rounded-lg">
                         <div className="flex-1">
                           <p className="text-xs font-medium">{material.material_name}</p>
                           <p className="text-xs text-muted-foreground">
