@@ -31,7 +31,7 @@ function Router() {
         <>
           <Route path="/" component={LandingPage} />
           <Route path="/auth" component={AuthPage} />
-          <Route path="*" component={NotFound} />
+          <Route path="*" component={LandingPage} />
         </>
       )}
     </Switch>

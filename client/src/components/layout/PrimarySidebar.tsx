@@ -10,6 +10,17 @@ import { useFeatures } from '@/hooks/useFeatures';
 import { queryClient } from '@/lib/queryClient';
 
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SubMenuItem {
   view: View;
@@ -245,10 +256,10 @@ export default function PrimarySidebar() {
   };
 
   const handleLogout = () => {
-    // Clear auth state and redirect to login
+    // Clear auth state and redirect to landing page
     const { setUser } = useAuthStore.getState();
     setUser(null);
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   // Force dark theme
@@ -346,13 +357,30 @@ export default function PrimarySidebar() {
       </div>
       
       {/* Logout Button at bottom */}
-      <button
-        className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-red-500 hover:text-red-400 border-t border-dashed border-border/50"
-        onClick={handleLogout}
-      >
-        <LogOut className="w-4 h-4" />
-        Cerrar Sesión
-      </button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-red-500 hover:text-red-400 border-t border-dashed border-border/50">
+            <LogOut className="w-4 h-4" />
+            Cerrar Sesión
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent className="bg-[#141414] border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">¿Cerrar sesión?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              ¿Estás seguro de que quieres cerrar tu sesión? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-muted text-muted-foreground hover:bg-muted/80">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white">
+              Cerrar Sesión
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 
