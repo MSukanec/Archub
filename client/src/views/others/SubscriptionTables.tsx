@@ -114,13 +114,12 @@ export default function SubscriptionTables() {
               <Switch
                 checked={isAnnual}
                 onCheckedChange={setIsAnnual}
-                className="data-[state=checked]:bg-primary"
               />
               <span className={`text-sm ${isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
                 Anual
               </span>
               {isAnnual && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
                   20% descuento
                 </span>
               )}
