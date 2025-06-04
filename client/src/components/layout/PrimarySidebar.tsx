@@ -40,8 +40,7 @@ const navigationItems: NavigationItem[] = [
     label: 'Organización',
     subItems: [
       { view: 'organization-overview', label: 'Resumen', icon: Building2 },
-      { view: 'organization-team', label: 'Equipo', icon: Users },
-      { view: 'organization-activity', label: 'Actividad', icon: BarChart3 }
+      { view: 'organization-team', label: 'Equipo', icon: Users }
     ]
   },
   { 
@@ -121,6 +120,7 @@ const adminItems: NavigationItem[] = [
 export default function PrimarySidebar() {
   const { currentSection, currentView, setSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
+  const { userPlan } = useFeatures();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isDocked, setIsDocked] = useState(false);
 
@@ -342,14 +342,7 @@ export default function PrimarySidebar() {
           Suscripción
         </button>
         
-        {/* Theme Toggle */}
-        <button
-          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
-          onClick={toggleTheme}
-        >
-          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          {theme === 'dark' ? 'Modo Claro' : 'Modo Oscuro'}
-        </button>
+
       </div>
       
       {/* Logout Button at bottom */}
@@ -468,6 +461,28 @@ export default function PrimarySidebar() {
             ) : (
               <PanelLeftOpen className="w-[20px] h-[20px]" />
             )}
+          </button>
+
+          {/* Plan Button */}
+          <button
+            className={cn(
+              "w-[40px] h-[39px] flex items-center justify-center transition-colors",
+              currentSection === 'profile' && (currentView === 'subscription-tables' || currentView === 'profile-subscription')
+                ? "text-primary" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => {
+              setSection('profile');
+              setView('subscription-tables');
+            }}
+            title="Plan de suscripción"
+          >
+            {(() => {
+              const currentPlan = userPlan?.name?.toLowerCase() || 'free';
+              if (currentPlan === 'pro') return <Crown className="w-[20px] h-[20px]" />;
+              if (currentPlan === 'enterprise') return <Rocket className="w-[20px] h-[20px]" />;
+              return <Zap className="w-[20px] h-[20px]" />;
+            })()}
           </button>
 
           {/* Profile Button */}
