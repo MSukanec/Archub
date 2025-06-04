@@ -37,19 +37,30 @@ export function LimitLock({
 
   // Si hay children, envolver con badge
   if (children) {
+    const [isChildrenOpen, setIsChildrenOpen] = useState(false);
+    
     return (
       <div className={`relative ${className}`}>
         {children}
-        <Popover>
+        <Popover open={isChildrenOpen} onOpenChange={setIsChildrenOpen}>
           <PopoverTrigger asChild>
-            <div className="absolute top-2 right-2 bg-background border border-border rounded-full p-1 shadow-lg cursor-help hover:bg-muted transition-colors">
+            <div 
+              className="absolute top-2 right-2 bg-background border border-border rounded-full p-1 shadow-lg cursor-help hover:bg-muted transition-colors"
+              onMouseEnter={() => setIsChildrenOpen(true)}
+              onMouseLeave={() => setIsChildrenOpen(false)}
+            >
               <Lock className="h-3 w-3 text-muted-foreground" />
             </div>
           </PopoverTrigger>
-          <PopoverContent className="w-80 p-0" side="top">
-            <div className="p-4 border-b border-border bg-yellow-500/10 border-yellow-500/20">
+          <PopoverContent 
+            className="w-80 p-0" 
+            side="top"
+            onMouseEnter={() => setIsChildrenOpen(true)}
+            onMouseLeave={() => setIsChildrenOpen(false)}
+          >
+            <div className="p-4 border-b border-border bg-blue-500/10 border-blue-500/20">
               <div className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-yellow-400" />
+                <Crown className="h-5 w-5 text-blue-400" />
                 <h3 className="font-semibold text-sm">Actualización Requerida</h3>
               </div>
             </div>
@@ -58,7 +69,7 @@ export function LimitLock({
                 {upgradeMessage}
               </p>
               <Button 
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-foreground"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
                 }}

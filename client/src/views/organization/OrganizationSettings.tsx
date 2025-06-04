@@ -30,6 +30,33 @@ export default function OrganizationSettings() {
     enabled: !!organizationId,
   });
 
+  // Fetch default wallet
+  const { data: defaultWallet } = useQuery({
+    queryKey: ['default-wallet', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return null;
+      
+      const { data: orgWallets, error: orgError } = await supabase
+        .from('organization_wallets')
+        .select('wallet_id')
+        .eq('organization_id', organizationId)
+        .eq('is_default', true)
+        .single();
+      
+      if (orgError || !orgWallets) return null;
+      
+      const { data: wallet, error: walletError } = await supabase
+        .from('wallets')
+        .select('name')
+        .eq('id', orgWallets.wallet_id)
+        .single();
+      
+      if (walletError) return null;
+      return wallet;
+    },
+    enabled: !!organizationId,
+  });
+
   if (isLoading) {
     return (
       <div className="p-6 space-y-6">
@@ -252,12 +279,6 @@ export default function OrganizationSettings() {
       <OrganizationSettingsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-      />
-
-      {/* Modal de configuración financiera */}
-      <FinancialSettingsModal
-        isOpen={isFinancialModalOpen}
-        onClose={() => setIsFinancialModalOpen(false)}
       />
     </div>
   );
