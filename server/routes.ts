@@ -106,6 +106,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Projects routes - now using Supabase directly with organization filtering
+  app.get("/api/projects/:organizationId", async (req, res) => {
+    try {
+      const organizationId = req.params.organizationId;
+      
+      // Import Supabase client dynamically
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      // Filter projects by organization ID
+      const { data: projects, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(500).json({ message: "Error fetching projects from Supabase" });
+      }
+      
+      console.log('Projects from Supabase for org', organizationId, ':', projects);
+      res.json(projects || []);
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: "Error fetching projects" });
+    }
+  });
+
+  // Fallback route for projects without organization filter
   app.get("/api/projects", async (req, res) => {
     try {
       // Import Supabase client dynamically
@@ -114,8 +146,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
       const supabase = createClient(supabaseUrl, supabaseKey);
       
-      // For server routes, we'll return all projects since we don't have user context
-      // The client-side service will handle the organization filtering
       const { data: projects, error } = await supabase
         .from('projects')
         .select('*')
@@ -127,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "Error fetching projects from Supabase" });
       }
       
-      console.log('Projects from Supabase:', projects);
+      console.log('All projects from Supabase:', projects);
       res.json(projects || []);
     } catch (error) {
       console.error('Server error:', error);

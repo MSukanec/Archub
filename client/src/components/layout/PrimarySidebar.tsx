@@ -207,7 +207,7 @@ export default function PrimarySidebar() {
         <h3 className="font-medium text-sm text-foreground">Proyectos</h3>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {projects.map((project: any) => (
+        {(projects as any[]).map((project: any) => (
           <button
             key={project.id}
             className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
