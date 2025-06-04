@@ -170,21 +170,28 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     queryFn: async () => {
       if (!projectId) return {};
       
-      const { data, error } = await supabase
-        .from('site_log_tasks')
-        .select(`
-          task_id,
-          progress_percentage,
-          site_logs!inner(log_date, project_id)
-        `)
-        .eq('site_logs.project_id', projectId)
-        .order('site_logs(log_date)', { ascending: false });
+      // First get all site logs for this project
+      const { data: siteLogs, error: siteLogsError } = await supabase
+        .from('site_logs')
+        .select('id, log_date')
+        .eq('project_id', projectId)
+        .order('log_date', { ascending: false });
       
-      if (error) throw error;
+      if (siteLogsError) throw siteLogsError;
+      if (!siteLogs || siteLogs.length === 0) return {};
+      
+      // Then get task progress from these site logs
+      const siteLogIds = siteLogs.map(log => log.id);
+      const { data: taskData, error: taskError } = await supabase
+        .from('site_log_tasks')
+        .select('task_id, progress_percentage, site_log_id')
+        .in('site_log_id', siteLogIds);
+      
+      if (taskError) throw taskError;
       
       // Get the latest progress for each task
       const progressMap: Record<string, number> = {};
-      data?.forEach((item: any) => {
+      taskData?.forEach((item: any) => {
         if (!progressMap[item.task_id]) {
           progressMap[item.task_id] = item.progress_percentage;
         }
