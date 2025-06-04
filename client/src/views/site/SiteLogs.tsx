@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin, User, CheckCircle2 } from 'lucide-react';
+import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin, User, CheckCircle2, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -86,6 +86,30 @@ export default function SiteLogs() {
           )
         `)
         .in('site_log_id', siteLogIds);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!projectId && siteLogs.length > 0,
+  });
+
+  // Query para obtener asistentes de cada site log
+  const { data: siteLogAttendees = [] } = useQuery({
+    queryKey: ['site-log-attendees-all', projectId],
+    queryFn: async () => {
+      if (!projectId || !siteLogs.length) return [];
+      
+      const siteLogIds = siteLogs.map(log => log.id);
+      const { data, error } = await supabase
+        .from('site_log_attendees')
+        .select(`
+          *,
+          contacts (
+            name,
+            company
+          )
+        `)
+        .in('log_id', siteLogIds);
       
       if (error) throw error;
       return data || [];
@@ -463,6 +487,35 @@ export default function SiteLogs() {
                                       <span className="text-sm font-medium text-primary">
                                         {task.progress_percentage}%
                                       </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Asistentes */}
+                        {(() => {
+                          const logAttendees = siteLogAttendees.filter(attendee => attendee.log_id === siteLog.id);
+                          return logAttendees.length > 0 && (
+                            <div className="bg-muted/20 rounded-xl p-4">
+                              <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                                <Users className="h-4 w-4" />
+                                Asistentes de Obra ({logAttendees.length})
+                              </h4>
+                              <div className="space-y-2">
+                                {logAttendees.map((attendee: any, index: number) => (
+                                  <div key={index} className="flex items-center p-2 bg-surface-secondary rounded-lg">
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium text-foreground">
+                                        {attendee.contacts?.name || 'Nombre no disponible'}
+                                      </p>
+                                      {attendee.contacts?.company && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {attendee.contacts.company}
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
                                 ))}

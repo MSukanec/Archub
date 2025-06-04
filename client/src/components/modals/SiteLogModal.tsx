@@ -5,7 +5,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { z } from 'zod';
-import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow, Loader2, Plus, X, CheckSquare } from 'lucide-react';
+import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow, Loader2, Plus, X, CheckSquare, Users } from 'lucide-react';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -640,6 +640,74 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                               />
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Asistentes Accordion */}
+          <AccordionItem value="attendees" className="border border-border rounded-lg">
+            <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]>div]:text-primary">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Users className="h-4 w-4" />
+                <span>Asistentes de Obra</span>
+                {(form.watch('attendees')?.length || 0) > 0 && (
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                    {form.watch('attendees')?.length || 0} seleccionados
+                  </span>
+                )}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Selecciona las personas que estuvieron presentes en la obra este día.
+                </p>
+                
+                {organizationContacts.length === 0 ? (
+                  <div className="text-center py-4">
+                    <div className="text-sm text-muted-foreground">No hay contactos registrados en la organización.</div>
+                  </div>
+                ) : (
+                  <div className="grid gap-2">
+                    {organizationContacts.map((contact) => (
+                      <div key={contact.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-surface-secondary/50">
+                        <FormField
+                          control={form.control}
+                          name="attendees"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Checkbox
+                                  id={`contact-${contact.id}`}
+                                  checked={field.value?.includes(contact.id) || false}
+                                  onCheckedChange={(checked) => {
+                                    const currentAttendees = field.value || [];
+                                    if (checked) {
+                                      field.onChange([...currentAttendees, contact.id]);
+                                    } else {
+                                      field.onChange(currentAttendees.filter(id => id !== contact.id));
+                                    }
+                                  }}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <div className="flex-1">
+                          <label 
+                            htmlFor={`contact-${contact.id}`}
+                            className="text-sm font-medium text-foreground cursor-pointer"
+                          >
+                            {contact.name}
+                          </label>
+                          {contact.company && (
+                            <p className="text-xs text-muted-foreground">{contact.company}</p>
+                          )}
                         </div>
                       </div>
                     ))}
