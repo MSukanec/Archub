@@ -166,14 +166,14 @@ export default function AppLayout() {
   const ViewComponent = viewComponents[currentView] || ArchubDashboard;
 
   // Views that use ArchubLayout should render without traditional layout
-  const archubViews = ['organization-dashboard', 'movements-dashboard', 'movements-main'];
+  const archubViews = ['finances-dashboard', 'finances-movements'];
   
   if (archubViews.includes(currentView)) {
     return <ViewComponent />;
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-views">
+    <div className="flex h-screen overflow-hidden bg-[#1e1e1e]">
       {isMobile ? (
         // Mobile Layout
         <>

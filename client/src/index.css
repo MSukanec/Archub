@@ -33,7 +33,7 @@
   --surface-light: 0 0% 15%; /* #262626 */
   
   /* Background hierarchy - Views, Primary Components, Secondary Cards */
-  --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
+  --surface-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
   --background-primary: 0 0% 15%; /* #262626 - Primary components (buttons, inputs, search) */
   --background-secondary: 0 0% 9%; /* #171717 - Secondary elements (cards, containers) */
 }
