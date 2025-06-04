@@ -19,7 +19,7 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
     queryKey: ['unified-balance', projectId],
     queryFn: async (): Promise<BalanceData> => {
       try {
-        // Consulta simple para obtener movimientos con joins básicos
+        // Consulta simple para obtener movimientos
         const { data: movements, error } = await supabase
           .from('site_movements')
           .select(`
@@ -27,8 +27,7 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
             currencies(code),
             movement_concepts(
               name,
-              parent_id,
-              parent_concept:movement_concepts!parent_id(name)
+              parent_id
             )
           `)
           .eq('project_id', projectId);
@@ -43,6 +42,22 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
           };
         }
 
+        // Obtener conceptos padre únicos
+        const parentIds = Array.from(new Set(
+          movements?.map((m: any) => m.movement_concepts?.parent_id).filter(Boolean)
+        )) || [];
+
+        const { data: parentConcepts } = parentIds.length > 0 ? await supabase
+          .from('movement_concepts')
+          .select('id, name')
+          .in('id', parentIds) : { data: [] };
+
+        // Crear un mapa de conceptos padre
+        const parentConceptMap = new Map();
+        parentConcepts?.forEach((parent: any) => {
+          parentConceptMap.set(parent.id, parent);
+        });
+
         let totalIncomePesos = 0;
         let totalExpensePesos = 0;
         let totalIncomeDollars = 0;
@@ -50,7 +65,7 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
 
         movements?.forEach((movement: any) => {
           const concept = movement.movement_concepts;
-          const parentConcept = concept?.parent_concept;
+          const parentConcept = concept?.parent_id ? parentConceptMap.get(concept.parent_id) : null;
           
           // Verificar si es ingreso
           const isIncome = parentConcept?.name === 'Ingresos' || concept?.name === 'Ingresos';

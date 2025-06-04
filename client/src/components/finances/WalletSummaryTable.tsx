@@ -29,13 +29,28 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
           movement_concepts(
             id,
             name,
-            parent_id,
-            parent_concept:movement_concepts!parent_id(name)
+            parent_id
           )
         `)
         .eq('project_id', projectId);
 
       if (error) throw error;
+
+      // Obtener conceptos padre únicos
+      const parentIds = Array.from(new Set(
+        movements?.map((m: any) => m.movement_concepts?.parent_id).filter(Boolean)
+      )) || [];
+
+      const { data: parentConcepts } = parentIds.length > 0 ? await supabase
+        .from('movement_concepts')
+        .select('id, name')
+        .in('id', parentIds) : { data: [] };
+
+      // Crear un mapa de conceptos padre
+      const parentConceptMap = new Map();
+      parentConcepts?.forEach((parent: any) => {
+        parentConceptMap.set(parent.id, parent);
+      });
 
       const walletMap = new Map<string, { ingresos: number; egresos: number }>();
 
@@ -44,7 +59,7 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
         const walletName = movement.wallets?.name;
         const walletKey = `${walletName}-${currencyCode}`;
         const concept = movement.movement_concepts;
-        const parentConcept = concept?.parent_concept;
+        const parentConcept = concept?.parent_id ? parentConceptMap.get(concept.parent_id) : null;
         
         // Verificar si es ingreso por el concepto padre o por el concepto mismo
         const isIncome = parentConcept?.name === 'Ingresos' || concept?.name === 'Ingresos';
