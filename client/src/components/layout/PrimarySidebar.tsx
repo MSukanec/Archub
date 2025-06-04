@@ -171,6 +171,12 @@ export default function PrimarySidebar() {
   const { organizationId } = useUserContextStore();
   const { data: projects = [] } = useQuery({
     queryKey: ['/api/projects', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      const response = await fetch(`/api/projects/${organizationId}`);
+      if (!response.ok) throw new Error('Failed to fetch projects');
+      return response.json();
+    },
     enabled: !!organizationId && (hoveredItem === 'dashboard' || (isDocked && hoveredItem === 'dashboard'))
   });
 
@@ -220,7 +226,7 @@ export default function PrimarySidebar() {
         
         {/* New Project Button */}
         <button
-          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground border-t border-dashed border-border/50 mt-2"
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground border-t border-dashed border-border/50"
           onClick={handleNewProject}
         >
           <Plus className="w-4 h-4" />
