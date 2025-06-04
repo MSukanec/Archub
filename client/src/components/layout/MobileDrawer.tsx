@@ -183,7 +183,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-80 bg-surface-primary shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
+          "fixed top-0 left-0 h-full w-80 bg-background shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -197,7 +197,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-surface-secondary rounded-lg transition-colors"
+            className="p-2 hover:bg-card rounded-lg transition-colors"
           >
             <X className="w-5 h-5 text-foreground" />
           </button>
@@ -209,7 +209,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             <div className="relative">
               <button
                 onClick={() => setShowProjectMenu(!showProjectMenu)}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left bg-surface-secondary hover:bg-accent"
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-left bg-card hover:bg-accent"
               >
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-xs">

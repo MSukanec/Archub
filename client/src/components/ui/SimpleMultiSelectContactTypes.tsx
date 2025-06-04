@@ -55,7 +55,7 @@ export function SimpleMultiSelectContactTypes({
         variant="outline"
         disabled
         className={cn(
-          "w-full justify-between bg-surface-primary border-input rounded-lg h-10",
+          "w-full justify-between bg-background border-input rounded-lg h-10",
           "text-left font-normal"
         )}
       >
@@ -72,7 +72,7 @@ export function SimpleMultiSelectContactTypes({
         variant="outline"
         disabled={disabled}
         className={cn(
-          "w-full justify-between bg-surface-primary border-input rounded-lg h-10",
+          "w-full justify-between bg-background border-input rounded-lg h-10",
           "text-left font-normal hover:bg-[#c8c8c8]",
           error && "border-destructive",
           value.length === 0 && "text-muted-foreground"
