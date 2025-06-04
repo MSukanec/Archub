@@ -481,16 +481,16 @@ export default function SiteLogs() {
                         {(() => {
                           const logTasks = siteLogTasks.filter(task => task.site_log_id === siteLog.id);
                           return logTasks.length > 0 && (
-                            <div className="bg-muted/20 rounded-xl p-4 border-l-4 border-green-500">
+                            <div className="bg-muted/20 rounded-xl p-4 border-l-4 border-primary">
                               <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                <CheckCircle2 className="h-4 w-4 text-primary" />
                                 Tareas Realizadas ({logTasks.length})
                               </h4>
                               <div className="grid gap-2">
                                 {logTasks.map((task: any, index: number) => (
                                   <div key={index} className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg border border-border">
-                                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                      <CheckCircle2 className="h-4 w-4 text-primary" />
                                     </div>
                                     <div className="flex-1">
                                       <p className="text-sm font-medium text-foreground">
@@ -503,7 +503,7 @@ export default function SiteLogs() {
                                       )}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                      <span className="text-sm font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded">
+                                      <span className="text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
                                         {task.progress_percentage}%
                                       </span>
                                     </div>

@@ -728,12 +728,13 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                               ? `${latestTaskProgress[task.id]}% (anterior)`
                                               : '0'
                                         }
-                                        className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white"
+                                        className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         min="0"
                                         max="100"
                                         step="5"
                                         value={field.value?.toString() || ''}
                                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                                        disabled={!form.watch(`tasks.${task.id}.selected`)}
                                       />
                                     </FormControl>
                                   </FormItem>
@@ -750,9 +751,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                     <FormControl>
                                       <Input
                                         placeholder="Observaciones..."
-                                        className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white"
+                                        className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         value={field.value || ''}
                                         onChange={field.onChange}
+                                        disabled={!form.watch(`tasks.${task.id}.selected`)}
                                       />
                                     </FormControl>
                                   </FormItem>
@@ -770,8 +772,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
           </AccordionItem>
 
           {/* Asistentes Accordion */}
-          <AccordionItem value="attendees" className="border border-border rounded-lg overflow-hidden">
-            <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]>div]:text-primary data-[state=open]:border-b data-[state=open]:border-border">
+          <AccordionItem value="attendees" className="border border-border rounded-lg">
+            <AccordionTrigger className="px-4 py-3 hover:no-underline [&[data-state=open]>div]:text-primary">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Users className="h-4 w-4" />
                 <span>Asistentes de Obra</span>
@@ -782,7 +784,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                 )}
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4 pt-2">
+            <AccordionContent className="px-4 pb-4">
               <AttendeesSelector
                 selectedAttendees={form.watch('attendees') || []}
                 onAttendeesChange={(attendees) => form.setValue('attendees', attendees)}
