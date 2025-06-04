@@ -59,7 +59,7 @@ const movementSchema = z.object({
   concept_id: z.string().min(1, 'La categoría es requerida'),
   created_at: z.string().min(1, 'La fecha es requerida'),
   amount: z.number().positive('El monto debe ser mayor a 0'),
-  currency: z.string().min(1, 'La moneda es requerida'),
+  currency_id: z.string().min(1, 'La moneda es requerida'),
   wallet_id: z.string().min(1, 'La billetera es requerida'),
   description: z.string().optional(),
   related_contact_id: z.string().optional(),
@@ -87,11 +87,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   // Use hierarchical concepts hook for optimized concept management
   const { data: conceptStructures, isLoading: conceptsLoading } = useHierarchicalConcepts('movement_concepts');
 
-  // Fetch organization currencies
-  const { data: organizationCurrencies, isLoading: currenciesLoading } = useQuery({
+  // Fetch organization currencies with default info
+  const { data: organizationCurrenciesData, isLoading: currenciesLoading } = useQuery({
     queryKey: ['organization-currencies', organizationId],
     queryFn: async () => {
-      if (!organizationId) return [];
+      if (!organizationId) return { currencies: [], defaultCurrency: null };
       
       const { data, error } = await supabase
         .from('organization_currencies')
@@ -106,10 +106,17 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .order('is_default', { ascending: false }); // Default currency first
       
       if (error) throw error;
-      return data?.map(oc => oc.currencies).filter(Boolean) || [];
+      
+      const currencies = data?.map(oc => oc.currencies).filter(Boolean) || [];
+      const defaultCurrency = data?.find(oc => oc.is_default)?.currencies?.code || null;
+      
+      return { currencies, defaultCurrency };
     },
     enabled: !!organizationId && isOpen,
   });
+
+  const organizationCurrencies = organizationCurrenciesData?.currencies || [];
+  const defaultCurrencyCode = organizationCurrenciesData?.defaultCurrency;
 
   // Fallback currencies if none configured for organization
   const fallbackCurrencies = [
@@ -128,7 +135,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       concept_id: '',
       created_at: new Date().toISOString().split('T')[0],
       amount: 0,
-      currency: availableCurrencies[0]?.code || 'ARS',
+      currency_id: '',
       wallet_id: '',
       description: '',
       related_contact_id: '',
@@ -166,7 +173,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           form.setValue('created_at', movement.created_at_local ? new Date(movement.created_at_local).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
           form.setValue('description', movement.description || '');
           form.setValue('amount', movement.amount || 0);
-          form.setValue('currency', movement.currency || 'ARS');
+          form.setValue('currency_id', movement.currency_id || '');
           form.setValue('wallet_id', movement.wallet_id || '');
           form.setValue('related_contact_id', movement.related_contact_id || '');
           form.setValue('related_task_id', movement.related_task_id || '');
@@ -179,7 +186,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           created_at: new Date().toISOString().split('T')[0],
           description: '',
           amount: 0,
-          currency: availableCurrencies[0]?.code || 'ARS',
+          currency: defaultCurrencyCode || availableCurrencies[0]?.code || 'ARS',
           wallet_id: '',
           related_contact_id: '',
           related_task_id: '',
