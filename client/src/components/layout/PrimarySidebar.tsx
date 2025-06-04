@@ -141,7 +141,13 @@ export default function PrimarySidebar() {
     if (view) {
       setView(view);
     }
-    setHoveredItem(null);
+    
+    // When sidebar is docked and we click on a navigation item, show its secondary sidebar
+    if (isDocked) {
+      setHoveredItem(section);
+    } else {
+      setHoveredItem(null);
+    }
   };
 
   // Handle profile navigation
@@ -170,9 +176,9 @@ export default function PrimarySidebar() {
 
   const toggleDock = () => {
     setIsDocked(!isDocked);
-    // When docking, keep current hovered item or default to dashboard
-    if (!isDocked && !hoveredItem) {
-      setHoveredItem('dashboard');
+    // When docking, keep current section's sidebar open
+    if (!isDocked) {
+      setHoveredItem(currentSection);
     }
     // When undocking, clear hovered item
     if (isDocked) {
@@ -262,8 +268,14 @@ export default function PrimarySidebar() {
     window.location.href = '/';
   };
 
-  // Force dark theme
-  const [theme, setTheme] = useState<'dark'>('dark');
+  // Theme management
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
   
   // Ensure dark theme is applied on component mount
   useState(() => {
