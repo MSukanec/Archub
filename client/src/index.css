@@ -39,6 +39,7 @@
   
   /* Override specific backgrounds for light theme */
   --surface-views: 0 0% 82%; /* #d1d1d1 */
+  --background-views: 0 0% 82%; /* #d1d1d1 - Main app background */
 }
 
 .dark {
@@ -71,9 +72,12 @@
   --surface-light: 0 0% 15%; /* #262626 */
   
   /* Background hierarchy - Views, Primary Components, Secondary Cards */
-  --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
+  --background-views: 0 0% 12%; /* #1e1e1e - Main app background */
   --background-primary: 0 0% 15%; /* #262626 - Primary components (buttons, inputs, search) */
   --background-secondary: 0 0% 9%; /* #171717 - Secondary elements (cards, containers) */
+  
+  /* Override specific backgrounds for dark theme */
+  --surface-views: 0 0% 12%; /* #1e1e1e */
   
   /* Surface variations for better hierarchy */
   --surface-views: 0 0% 12%; /* #1e1e1e */
