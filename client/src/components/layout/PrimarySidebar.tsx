@@ -369,6 +369,14 @@ export default function PrimarySidebar() {
           Suscripción
         </button>
         
+        {/* Theme Toggle */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {theme === 'dark' ? 'Modo Claro' : 'Modo Oscuro'}
+        </button>
 
       </div>
       
