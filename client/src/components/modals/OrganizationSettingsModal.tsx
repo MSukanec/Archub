@@ -901,7 +901,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                       <div className="space-y-2">
                         <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
                           {availableSecondary.map((currency) => {
-                            const isSelected = field.value?.includes(currency.code) || false;
+                            const isSelected = Array.isArray(field.value) && field.value.includes(currency.code);
                             
                             return (
                               <div key={currency.code} className="flex items-center space-x-2 py-1">
@@ -1033,7 +1033,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         <div className="space-y-2">
                           <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
                             {availableSecondary.map((wallet) => {
-                              const isSelected = field.value?.includes(wallet.id) || false;
+                              const isSelected = Array.isArray(field.value) && field.value.includes(wallet.id);
                               
                               return (
                                 <div key={wallet.id} className="flex items-center space-x-2 py-1">

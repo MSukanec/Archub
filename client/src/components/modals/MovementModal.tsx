@@ -149,8 +149,10 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       if (error) throw error;
       
       const wallets = data?.map(ow => ({
-        ...ow.wallets,
-        wallet_id: ow.wallet_id
+        id: ow.wallet_id,
+        name: ow.wallets.name,
+        description: ow.wallets.description,
+        wallet_type: ow.wallets.wallet_type
       })).filter(Boolean) || [];
       const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
       
@@ -263,8 +265,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: isOpen && !!organizationId,
   });
 
-  // Use organization wallets instead of all wallets
-  const walletsList = organizationWallets;
+
 
   // Create movement mutation
   const createMovementMutation = useMutation({
@@ -538,7 +539,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         </FormControl>
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
                           {walletsList.map((wallet) => (
-                            <SelectItem key={wallet.wallet_id || wallet.id} value={wallet.wallet_id || wallet.id} className="[&>span:first-child]:hidden">
+                            <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
                               {wallet.name} {wallet.description && `- ${wallet.description}`}
                             </SelectItem>
                           ))}
