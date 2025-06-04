@@ -39,6 +39,7 @@ const siteLogSchema = z.object({
     progress_percentage: z.number().min(0).max(100).optional(),
     notes: z.string().optional(),
   })).optional(),
+  attendees: z.array(z.string()).optional(),
 });
 
 type SiteLogForm = z.infer<typeof siteLogSchema>;
@@ -70,6 +71,23 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     name: string;
     description?: string;
   }
+
+  // Fetch organization contacts  
+  const { data: organizationContacts = [] } = useQuery({
+    queryKey: ['organization-contacts', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('organization_id', organizationId);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!organizationId,
+  });
 
   // Fetch organization members
   const { data: organizationMembers = [] } = useQuery({
@@ -144,7 +162,25 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       comments: siteLog?.comments || '',
       weather: siteLog?.weather || '',
       tasks: {},
+      attendees: [],
     },
+  });
+
+  // Fetch existing attendees for this site log when editing
+  const { data: existingAttendees = [] } = useQuery({
+    queryKey: ['site-log-attendees', siteLog?.id],
+    queryFn: async () => {
+      if (!siteLog?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('site_log_attendees')
+        .select('contact_id')
+        .eq('log_id', siteLog.id);
+      
+      if (error) throw error;
+      return data?.map(item => item.contact_id) || [];
+    },
+    enabled: !!siteLog?.id && isOpen,
   });
 
   // Fetch existing tasks for this site log when editing
@@ -225,9 +261,10 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
         tasks: tasksData,
+        attendees: siteLog && existingAttendees.length > 0 ? existingAttendees : [],
       });
     }
-  }, [isOpen, siteLog, form, userId, existingTasks]);
+  }, [isOpen, siteLog, form, userId, existingTasks, existingAttendees]);
 
   // Create/Update mutation
   const createSiteLogMutation = useMutation({
@@ -304,11 +341,38 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         console.log('No tasks data in form');
       }
 
+      // Save attendees
+      if (data.attendees && data.attendees.length > 0) {
+        // First delete existing attendees for this site log
+        await supabase
+          .from('site_log_attendees')
+          .delete()
+          .eq('log_id', siteLogId);
+
+        // Insert selected attendees
+        const attendeesToInsert = data.attendees.map(contactId => ({
+          log_id: siteLogId,
+          contact_id: contactId,
+        }));
+
+        const { error: attendeesError } = await supabase
+          .from('site_log_attendees')
+          .insert(attendeesToInsert);
+
+        if (attendeesError) {
+          console.error('Error saving attendees:', attendeesError);
+          throw attendeesError;
+        } else {
+          console.log('Attendees saved successfully');
+        }
+      }
+
       return { id: siteLogId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site-logs'] });
       queryClient.invalidateQueries({ queryKey: ['site-log-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['site-log-attendees'] });
       queryClient.invalidateQueries({ queryKey: ['latest-task-progress'] });
       toast({
         title: isEditing ? 'Registro actualizado' : 'Registro creado',
