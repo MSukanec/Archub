@@ -49,7 +49,7 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
 
       {isOpen && (
         <div 
-          className="absolute bottom-full mb-2 right-0 w-64 bg-surface-secondary border border-border rounded-lg shadow-xl z-50"
+          className="absolute bottom-full mb-2 left-0 w-64 bg-surface-secondary border border-border rounded-lg shadow-xl z-50"
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}
         >

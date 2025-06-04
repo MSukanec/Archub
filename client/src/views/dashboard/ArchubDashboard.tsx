@@ -197,94 +197,94 @@ export default function ArchubDashboard() {
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards with integrated action buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
-            <CardContent className="p-9 pb-0">
-              <div className="flex items-center justify-between mb-6">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
+            <CardContent className="p-4 pb-0 flex-1">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-base text-muted-foreground">Proyectos Activos</p>
-                  <p className="text-4xl font-bold text-foreground">
+                  <p className="text-sm text-muted-foreground">Proyectos Activos</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {stats?.totalProjects || 0}
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-primary" />
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3 h-3" />
               Nuevo Proyecto
             </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
-            <CardContent className="p-9 pb-0">
-              <div className="flex items-center justify-between mb-6">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
+            <CardContent className="p-4 pb-0 flex-1">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-base text-muted-foreground">Bitácoras</p>
-                  <p className="text-4xl font-bold text-foreground">
+                  <p className="text-sm text-muted-foreground">Bitácoras</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {stats?.totalSiteLogs || 0}
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-primary" />
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3 h-3" />
               Nueva Bitácora
             </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
-            <CardContent className="p-9 pb-0">
-              <div className="flex items-center justify-between mb-6">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
+            <CardContent className="p-4 pb-0 flex-1">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-base text-muted-foreground">Total Movimientos</p>
-                  <p className="text-3xl font-bold text-foreground">
+                  <p className="text-sm text-muted-foreground">Total Movimientos</p>
+                  <p className="text-2xl font-bold text-foreground">
                     ${(stats?.totalMovements || 0).toLocaleString()}
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-8 h-8 text-primary" />
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateMovementModal'))}
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3 h-3" />
               Nuevo Movimiento
             </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
-            <CardContent className="p-9 pb-0">
-              <div className="flex items-center justify-between mb-6">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40">
+            <CardContent className="p-4 pb-0 flex-1">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-base text-muted-foreground">Contactos</p>
-                  <p className="text-4xl font-bold text-foreground">
+                  <p className="text-sm text-muted-foreground">Contactos</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {stats?.totalContacts || 0}
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <Users className="w-8 h-8 text-primary" />
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Users className="w-5 h-5 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateContactModal'))}
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3 h-3" />
               Nuevo Contacto
             </button>
           </Card>
