@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 import { cn } from '@/lib/utils';
 
 interface SubMenuItem {
@@ -162,6 +164,99 @@ export default function PrimarySidebar() {
 
   const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
 
+  // Fetch projects for dashboard secondary sidebar
+  const { activeOrganizationId } = useUserContextStore();
+  const { data: projects = [] } = useQuery({
+    queryKey: ['/api/projects', activeOrganizationId],
+    enabled: !!activeOrganizationId && (hoveredItem === 'dashboard' || isDocked)
+  });
+
+  const handleProjectSelect = async (projectId: string) => {
+    // Move selected project to top of list and set as active
+    try {
+      await fetch('/api/user-preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ last_project_id: projectId })
+      });
+      
+      // Navigate to dashboard with selected project
+      setSection('dashboard');
+      setView('dashboard-main');
+      setHoveredItem(null);
+      
+      // Refresh the page to update context
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating project:', error);
+    }
+  };
+
+  const handleNewProject = () => {
+    // This will be handled by the existing CreateProjectModal
+    setHoveredItem(null);
+    // You can trigger the modal here if needed
+  };
+
+  const renderDashboardSidebar = () => (
+    <div className="h-full flex flex-col">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
+        <h3 className="font-medium text-sm text-foreground">Proyectos</h3>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {projects.map((project: any) => (
+          <button
+            key={project.id}
+            className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
+            onClick={() => handleProjectSelect(project.id)}
+          >
+            <FolderKanban className="w-4 h-4" />
+            {project.name}
+          </button>
+        ))}
+        
+        {/* New Project Button */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground border-t border-dashed border-border/50 mt-2"
+          onClick={handleNewProject}
+        >
+          <Plus className="w-4 h-4" />
+          + Nuevo Proyecto
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderRegularSidebar = (item: any) => (
+    <div className="h-full flex flex-col">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
+        <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
+      </div>
+      <div className="flex-1">
+        {item.subItems.map((subItem: any) => {
+          const SubIcon = subItem.icon;
+          const isSubActive = currentView === subItem.view;
+          
+          return (
+            <button
+              key={subItem.view}
+              className={cn(
+                "w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors",
+                isSubActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              onClick={() => handleNavigation(item.section, subItem.view)}
+            >
+              <SubIcon className="w-4 h-4" />
+              {subItem.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div 
       className="flex h-full" 
@@ -256,38 +351,17 @@ export default function PrimarySidebar() {
 
       {/* Secondary Sidebar */}
       {(hoveredItem || isDocked) && (
-        <div className="h-full bg-background border-r border-border w-[250px] min-w-[250px] max-w-[250px] z-10">
-          {allItems
-            .filter(item => item.section === (hoveredItem || (isDocked ? navigationItems[0]?.section : null)))
-            .map((item) => (
-              <div key={item.section} className="h-full flex flex-col">
-                <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
-                  <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
-                </div>
-                <div className="flex-1">
-                  {item.subItems.map((subItem) => {
-                    const SubIcon = subItem.icon;
-                    const isSubActive = currentView === subItem.view;
-                    
-                    return (
-                      <button
-                        key={subItem.view}
-                        className={cn(
-                          "w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors",
-                          isSubActive
-                            ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        onClick={() => handleNavigation(item.section, subItem.view)}
-                      >
-                        <SubIcon className="w-4 h-4" />
-                        {subItem.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+        <div className="h-full bg-background border-r border-border w-[200px] min-w-[200px] max-w-[200px] z-10">
+          {(hoveredItem === 'dashboard' || (isDocked && navigationItems[0]?.section === 'dashboard')) 
+            ? renderDashboardSidebar()
+            : allItems
+                .filter(item => item.section === (hoveredItem || (isDocked ? navigationItems[0]?.section : null)))
+                .map((item) => (
+                  <div key={item.section}>
+                    {renderRegularSidebar(item)}
+                  </div>
+                ))
+          }
         </div>
       )}
     </div>
