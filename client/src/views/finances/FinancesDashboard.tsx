@@ -35,21 +35,21 @@ export default function FinancesDashboard() {
 
       {/* Gráficos principales */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <WalletBalancePieChart projectId={activeProject.id} />
-        <MonthlyCashflowLineChart projectId={activeProject.id} />
+        <WalletBalancePieChart projectId={projectId} />
+        <MonthlyCashflowLineChart projectId={projectId} />
       </div>
 
       {/* Análisis por categorías */}
-      <ExpenseCategoryBarChart projectId={activeProject.id} />
+      <ExpenseCategoryBarChart projectId={projectId} />
 
       {/* Indicadores y pronósticos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FinancialHealthIndicators projectId={activeProject.id} />
-        <BalanceForecastWidget projectId={activeProject.id} />
+        <FinancialHealthIndicators projectId={projectId} />
+        <BalanceForecastWidget projectId={projectId} />
       </div>
 
       {/* Tabla resumen */}
-      <WalletSummaryTable projectId={activeProject.id} />
+      <WalletSummaryTable projectId={projectId} />
     </div>
   );
 }
