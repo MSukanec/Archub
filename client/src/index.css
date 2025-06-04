@@ -409,7 +409,7 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
   --accent-foreground: 0 0% 100%; /* #ffffff */
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 100%; /* #ffffff */
-  --ring: 214 100% 65%; /* #4f9eff */
+  --ring: 88 50% 53%; /* #8bc34a - Primary color for focus rings */
   
   /* Surface variations for dark mode */
   --surface: 0 0% 18%; /* #2d2d2d */

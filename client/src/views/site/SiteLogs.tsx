@@ -18,10 +18,10 @@ import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 interface SiteLog {
   id: string;
   project_id: string;
-  author_id?: string;
+  author_id: string;
   log_date: string;
-  comments?: string;
-  weather?: string;
+  comments: string | null;
+  weather: string | null;
   created_at: string;
 }
 
