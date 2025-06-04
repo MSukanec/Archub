@@ -173,9 +173,24 @@ export default function PrimarySidebar() {
     queryKey: ['/api/projects', organizationId],
     queryFn: async () => {
       if (!organizationId) return [];
-      const response = await fetch(`/api/projects/${organizationId}`);
-      if (!response.ok) throw new Error('Failed to fetch projects');
-      return response.json();
+      
+      // Use the same Supabase client that's working elsewhere in the app
+      const { supabase } = await import('@/lib/supabase');
+      
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Direct Supabase query error:', error);
+        throw new Error('Failed to fetch projects');
+      }
+      
+      console.log('Projects fetched directly from Supabase:', data);
+      return data || [];
     },
     enabled: !!organizationId && (hoveredItem === 'dashboard' || (isDocked && hoveredItem === 'dashboard'))
   });
