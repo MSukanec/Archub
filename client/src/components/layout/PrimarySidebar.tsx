@@ -148,16 +148,19 @@ export default function PrimarySidebar() {
     }
   };
 
+  const handleMouseEnterOverride = (section: string) => {
+    // Always allow navigation between sections, even when docked
+    setHoveredItem(section);
+  };
+
   const toggleDock = () => {
     setIsDocked(!isDocked);
+    // When docking, keep current hovered item or default to dashboard
     if (!isDocked && !hoveredItem) {
-      // If docking and no item is hovered, show the first available section
-      const firstSection = navigationItems[0]?.section || (user?.role === 'admin' ? adminItems[0]?.section : null);
-      if (firstSection) {
-        setHoveredItem(firstSection);
-      }
-    } else if (isDocked) {
-      // If undocking, hide the sidebar
+      setHoveredItem('dashboard');
+    }
+    // When undocking, clear hovered item
+    if (isDocked) {
       setHoveredItem(null);
     }
   };
@@ -165,10 +168,10 @@ export default function PrimarySidebar() {
   const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
 
   // Fetch projects for dashboard secondary sidebar
-  const { activeOrganizationId } = useUserContextStore();
+  const { organizationId } = useUserContextStore();
   const { data: projects = [] } = useQuery({
-    queryKey: ['/api/projects', activeOrganizationId],
-    enabled: !!activeOrganizationId && (hoveredItem === 'dashboard' || isDocked)
+    queryKey: ['/api/projects', organizationId],
+    enabled: !!organizationId && (hoveredItem === 'dashboard' || (isDocked && hoveredItem === 'dashboard'))
   });
 
   const handleProjectSelect = async (projectId: string) => {
@@ -221,7 +224,7 @@ export default function PrimarySidebar() {
           onClick={handleNewProject}
         >
           <Plus className="w-4 h-4" />
-          + Nuevo Proyecto
+          Nuevo Proyecto
         </button>
       </div>
     </div>
@@ -352,10 +355,10 @@ export default function PrimarySidebar() {
       {/* Secondary Sidebar */}
       {(hoveredItem || isDocked) && (
         <div className="h-full bg-background border-r border-border w-[200px] min-w-[200px] max-w-[200px] z-10">
-          {(hoveredItem === 'dashboard' || (isDocked && navigationItems[0]?.section === 'dashboard')) 
+          {hoveredItem === 'dashboard'
             ? renderDashboardSidebar()
             : allItems
-                .filter(item => item.section === (hoveredItem || (isDocked ? navigationItems[0]?.section : null)))
+                .filter(item => item.section === hoveredItem)
                 .map((item) => (
                   <div key={item.section}>
                     {renderRegularSidebar(item)}
