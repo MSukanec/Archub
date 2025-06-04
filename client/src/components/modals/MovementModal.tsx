@@ -128,7 +128,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
   const organizationCurrencies: Currency[] = (organizationCurrenciesData?.currencies || []) as Currency[];
   const defaultCurrencyId = organizationCurrenciesData?.defaultCurrency;
 
-  // Fetch organization wallets with details
+  // Fetch organization wallets with details - similar to currencies
   const { data: organizationWalletsData, isLoading: walletsLoading } = useQuery({
     queryKey: ['organization-wallets', organizationId],
     queryFn: async () => {
@@ -144,7 +144,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         `)
         .eq('organization_id', organizationId)
         .eq('is_active', true)
-        .order('is_default', { ascending: false }); // Default wallet first
+        .order('is_default', { ascending: false });
       
       if (error) throw error;
       
@@ -153,7 +153,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         name: ow.wallets.name,
         description: ow.wallets.description,
         wallet_type: ow.wallets.wallet_type
-      })).filter(Boolean) || [];
+      })) || [];
+      
       const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
       
       return { wallets, defaultWallet };
@@ -538,7 +539,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
-                          {organizationWallets.map((wallet) => (
+                          {organizationWallets?.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
                               {wallet.name} {wallet.description && `- ${wallet.description}`}
                             </SelectItem>
