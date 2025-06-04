@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -24,6 +24,124 @@ import { useUserContextStore } from '@/stores/userContextStore';
 
 import { cn } from '@/lib/utils';
 import type { SiteLog } from '@shared/schema';
+
+// Componente para seleccionar asistentes con búsqueda
+interface AttendeesSelectorProps {
+  selectedAttendees: string[];
+  onAttendeesChange: (attendees: string[]) => void;
+  organizationId: string | null;
+  organizationContacts: any[];
+}
+
+const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationId, organizationContacts }: AttendeesSelectorProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const filteredContacts = organizationContacts.filter(contact =>
+    contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (contact.company && contact.company.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const selectedContactsData = organizationContacts.filter(contact =>
+    selectedAttendees.includes(contact.id)
+  );
+
+  const addAttendee = (contactId: string) => {
+    if (!selectedAttendees.includes(contactId)) {
+      onAttendeesChange([...selectedAttendees, contactId]);
+    }
+    setSearchTerm('');
+    setIsOpen(false);
+  };
+
+  const removeAttendee = (contactId: string) => {
+    onAttendeesChange(selectedAttendees.filter(id => id !== contactId));
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Busca y selecciona las personas que estuvieron presentes en la obra este día.
+      </p>
+
+      {/* Search Input */}
+      <div className="relative">
+        <Input
+          type="text"
+          placeholder="Buscar contactos (min. 3 caracteres)..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setIsOpen(e.target.value.length >= 3);
+          }}
+          className="bg-surface-primary border-input text-white dark:text-white"
+        />
+        
+        {/* Dropdown Results */}
+        {isOpen && searchTerm.length >= 3 && (
+          <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-surface-primary border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            {filteredContacts.length === 0 ? (
+              <div className="p-3 text-sm text-muted-foreground">
+                No se encontraron contactos
+              </div>
+            ) : (
+              filteredContacts.map((contact) => (
+                <div
+                  key={contact.id}
+                  className="p-3 hover:bg-surface-secondary cursor-pointer border-b border-border last:border-b-0"
+                  onClick={() => addAttendee(contact.id)}
+                >
+                  <div className="text-sm font-medium text-foreground">
+                    {contact.name}
+                  </div>
+                  {contact.company && (
+                    <div className="text-xs text-muted-foreground">
+                      {contact.company}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Selected Attendees */}
+      {selectedContactsData.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-foreground">
+            Asistentes seleccionados ({selectedContactsData.length})
+          </h4>
+          <div className="space-y-2">
+            {selectedContactsData.map((contact) => (
+              <div key={contact.id} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {contact.name}
+                  </p>
+                  {contact.company && (
+                    <p className="text-xs text-muted-foreground">
+                      {contact.company}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeAttendee(contact.id)}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const siteLogSchema = z.object({
   author_id: z.string({
@@ -663,57 +781,12 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4 pb-4">
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Selecciona las personas que estuvieron presentes en la obra este día.
-                </p>
-                
-                {organizationContacts.length === 0 ? (
-                  <div className="text-center py-4">
-                    <div className="text-sm text-muted-foreground">No hay contactos registrados en la organización.</div>
-                  </div>
-                ) : (
-                  <div className="grid gap-2">
-                    {organizationContacts.map((contact) => (
-                      <div key={contact.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-surface-secondary/50">
-                        <FormField
-                          control={form.control}
-                          name="attendees"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Checkbox
-                                  id={`contact-${contact.id}`}
-                                  checked={field.value?.includes(contact.id) || false}
-                                  onCheckedChange={(checked) => {
-                                    const currentAttendees = field.value || [];
-                                    if (checked) {
-                                      field.onChange([...currentAttendees, contact.id]);
-                                    } else {
-                                      field.onChange(currentAttendees.filter(id => id !== contact.id));
-                                    }
-                                  }}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <div className="flex-1">
-                          <label 
-                            htmlFor={`contact-${contact.id}`}
-                            className="text-sm font-medium text-foreground cursor-pointer"
-                          >
-                            {contact.name}
-                          </label>
-                          {contact.company && (
-                            <p className="text-xs text-muted-foreground">{contact.company}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <AttendeesSelector
+                selectedAttendees={form.watch('attendees') || []}
+                onAttendeesChange={(attendees) => form.setValue('attendees', attendees)}
+                organizationId={organizationId}
+                organizationContacts={organizationContacts}
+              />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
