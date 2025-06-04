@@ -240,8 +240,7 @@ export default function PrimarySidebar() {
                 </button>
               </div>
             </div>
-            {/* Arrow pointing to project selector button */}
-            <div className="absolute top-5 right-full w-0 h-0 border-t-[8px] border-b-[8px] border-transparent border-r-[8px] border-r-[#e1e1e1]" />
+
           </div>
         )}
       </div>
@@ -264,10 +263,7 @@ export default function PrimarySidebar() {
               label={label}
               description={description}
             />
-            {/* Timeline line extending to the right - only show in dashboard timeline view */}
-            {hasTimeline === true && currentSection === 'dashboard' && (
-              <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-[calc(100vw-112px)] h-0.5 bg-border/20 pointer-events-none" />
-            )}
+
           </div>
         ))}
       </div>

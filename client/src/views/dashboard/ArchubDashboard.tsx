@@ -260,101 +260,107 @@ export default function ArchubDashboard() {
   }
 
   return (
-    <div className="flex-1 space-y-6">
-      {/* Dynamic Timeline Header */}
-      <div className="relative bg-gradient-to-r from-surface-secondary to-surface-secondary/80 rounded-2xl border border-border/50 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent"></div>
+    <div className="flex flex-col h-full bg-surface-views">
+      {/* Infinite Scroll Timeline Header - aligned with dashboard button */}
+      <div className="relative bg-surface-primary border-b border-border overflow-hidden h-20">
+        {/* Timeline Line - aligned with dashboard button center */}
+        <div 
+          className="absolute h-0.5 bg-border top-10"
+          style={{ 
+            left: '56px', // Align with center of dashboard button (48px width + 8px offset)
+            right: '0',
+            zIndex: 1
+          }}
+        />
         
-        {/* Timeline Content */}
-        <div className="relative p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Activity className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Actividad Reciente</h2>
-                <p className="text-sm text-muted-foreground">Eventos en tiempo real de tu organización</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span>Actualizado hace {Math.floor(Math.random() * 5) + 1} min</span>
-            </div>
-          </div>
-
-          {/* Scrolling Timeline */}
+        {/* Infinite Scrolling Events Container */}
+        <div className="relative h-full">
           <div 
-            ref={timelineRef}
-            className="flex gap-4 overflow-x-hidden pb-2"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="flex items-center h-full animate-scroll-timeline"
+            style={{ 
+              paddingLeft: '56px', // Start from dashboard button alignment
+              minWidth: 'calc(100% + 1200px)', // Extra width for infinite scroll effect
+              animationDuration: '60s',
+              animationIterationCount: 'infinite',
+              animationTimingFunction: 'linear'
+            }}
           >
-            {timelineEvents.map((event, index) => {
+            {/* Event Nodes - repeat for infinite effect */}
+            {timelineEvents.concat(timelineEvents).concat(timelineEvents).map((event, index) => {
               const Icon = event.icon;
               return (
                 <div
-                  key={event.id}
-                  className={`flex-shrink-0 w-80 p-4 rounded-xl border transition-all duration-500 ${
-                    index === currentEventIndex 
-                      ? 'bg-surface-primary border-primary/20 scale-105' 
-                      : 'bg-surface-secondary/50 border-border/30'
-                  }`}
+                  key={`${event.id}-${index}`}
+                  className="flex-shrink-0 mx-12 group cursor-pointer"
+                  onClick={() => {
+                    // Navigate to relevant section based on event type
+                    if (event.type === 'project') {
+                      window.dispatchEvent(new CustomEvent('navigate-to-section', { 
+                        detail: { section: 'projects', view: 'projects-list' } 
+                      }));
+                    } else if (event.type === 'movement') {
+                      window.dispatchEvent(new CustomEvent('navigate-to-section', { 
+                        detail: { section: 'movements', view: 'movements-dashboard' } 
+                      }));
+                    } else if (event.type === 'calendar') {
+                      window.dispatchEvent(new CustomEvent('navigate-to-section', { 
+                        detail: { section: 'calendar', view: 'calendar-main' } 
+                      }));
+                    }
+                  }}
                 >
-                  <div className="flex items-start gap-3">
+                  {/* Circular Event Node */}
+                  <div className="relative">
                     <div 
-                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${event.color}20` }}
+                      className="w-8 h-8 rounded-full border-2 border-surface-primary transition-all duration-300 flex items-center justify-center group-hover:scale-125 group-hover:shadow-lg relative z-10"
+                      style={{ backgroundColor: event.color }}
                     >
-                      <Icon className="w-5 h-5" style={{ color: event.color }} />
+                      <Icon className="w-4 h-4 text-white" />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-medium text-foreground truncate">
-                          {event.title}
-                        </h3>
-                        <span className="text-xs text-muted-foreground flex-shrink-0">
+                    
+                    {/* Event Info Tooltip */}
+                    <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+                      <div className="bg-surface-secondary border border-border rounded-lg px-3 py-2 shadow-lg min-w-[140px] max-w-[200px]">
+                        <div className="text-xs font-medium text-foreground truncate">{event.title}</div>
+                        <div className="text-xs text-muted-foreground">
                           {format(event.date, 'HH:mm', { locale: es })}
-                        </span>
+                        </div>
+                        {event.projectName && (
+                          <div className="text-xs text-primary truncate mt-1">{event.projectName}</div>
+                        )}
+                        {event.amount && event.currency && (
+                          <div className="text-xs text-emerald-600 mt-1">
+                            {event.currency}{Math.abs(event.amount).toLocaleString()}
+                          </div>
+                        )}
                       </div>
-                      {event.projectName && (
-                        <p className="text-xs text-primary mb-1 truncate">
-                          {event.projectName}
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {event.description}
-                      </p>
-                      {event.amount && (
-                        <p className="text-xs font-medium text-green-600 mt-1">
-                          {event.currency}{event.amount.toLocaleString()}
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-
-          {/* Timeline indicators */}
-          <div className="flex justify-center gap-1 mt-4">
-            {timelineEvents.slice(0, 10).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentEventIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentEventIndex % 10 
-                    ? 'bg-primary' 
-                    : 'bg-muted-foreground/30'
-                }`}
-              />
-            ))}
+        </div>
+        
+        {/* Dashboard Title - positioned to align with timeline */}
+        <div className="absolute top-2 left-6">
+          <h1 className="text-lg font-bold text-foreground">Dashboard</h1>
+        </div>
+        
+        {/* Current Date */}
+        <div className="absolute top-2 right-6">
+          <div className="text-sm text-muted-foreground">
+            {new Date().toLocaleDateString('es-ES', { 
+              weekday: 'short', 
+              month: 'short', 
+              day: 'numeric' 
+            })}
           </div>
         </div>
       </div>
 
       {/* Main Dashboard Content */}
-      <div className="p-6 space-y-6">
+      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-blue-500/10 to-blue-600/5">
