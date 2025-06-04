@@ -192,39 +192,26 @@ export default function ArchubDashboard() {
 
   return (
     <div className="flex flex-col h-full bg-surface-views">
-      {/* Infinite Scroll Timeline Header - aligned with dashboard button */}
-      <div className="relative bg-surface-primary border-b border-border overflow-hidden h-20">
-        {/* Timeline Line - aligned with dashboard button center */}
-        <div 
-          className="absolute h-0.5 bg-border top-10"
-          style={{ 
-            left: '56px', // Align with center of dashboard button (48px width + 8px offset)
-            right: '0',
-            zIndex: 1
-          }}
-        />
-        
-        {/* Infinite Scrolling Events Container */}
-        <div className="relative h-full">
-          <div 
-            className="flex items-center h-full animate-scroll-timeline"
-            style={{ 
-              paddingLeft: '56px', // Start from dashboard button alignment
-              minWidth: 'calc(100% + 1200px)', // Extra width for infinite scroll effect
-              animationDuration: '60s',
-              animationIterationCount: 'infinite',
-              animationTimingFunction: 'linear'
-            }}
-          >
-            {/* Event Nodes - repeat for infinite effect */}
-            {timelineEvents.concat(timelineEvents).concat(timelineEvents).map((event, index) => {
+      {/* Static Timeline Header with curved edges */}
+      <div className="relative bg-surface-primary mx-6 mt-6 mb-6 rounded-2xl overflow-hidden h-16">
+        {/* Timeline with events positioned statically */}
+        <div className="relative h-full flex items-center justify-center">
+          {/* Current day vertical line in center */}
+          <div className="absolute left-1/2 transform -translate-x-0.5 h-full w-0.5 bg-primary z-20" />
+          
+          {/* Static positioned event nodes */}
+          <div className="flex items-center justify-center w-full px-8">
+            {timelineEvents.slice(0, 7).map((event, index) => {
               const Icon = event.icon;
+              // Position events relative to center
+              const position = (index - 3) * 80; // Spread events 80px apart, center is index 3
+              
               return (
                 <div
-                  key={`${event.id}-${index}`}
-                  className="flex-shrink-0 mx-12 group cursor-pointer"
+                  key={event.id}
+                  className="absolute group cursor-pointer"
+                  style={{ left: `calc(50% + ${position}px)`, transform: 'translateX(-50%)' }}
                   onClick={() => {
-                    // Navigate to relevant section based on event type
                     if (event.type === 'project') {
                       window.dispatchEvent(new CustomEvent('navigate-to-section', { 
                         detail: { section: 'projects', view: 'projects-list' } 
@@ -240,17 +227,14 @@ export default function ArchubDashboard() {
                     }
                   }}
                 >
-                  {/* Circular Event Node */}
+                  {/* Circular Event Node - all with primary color */}
                   <div className="relative">
-                    <div 
-                      className="w-8 h-8 rounded-full border-2 border-surface-primary transition-all duration-300 flex items-center justify-center group-hover:scale-125 group-hover:shadow-lg relative z-10"
-                      style={{ backgroundColor: event.color }}
-                    >
+                    <div className="w-8 h-8 rounded-full bg-primary border-2 border-surface-primary transition-all duration-300 flex items-center justify-center group-hover:scale-125 group-hover:shadow-lg relative z-10">
                       <Icon className="w-4 h-4 text-white" />
                     </div>
                     
                     {/* Event Info Tooltip */}
-                    <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+                    <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30">
                       <div className="bg-surface-secondary border border-border rounded-lg px-3 py-2 shadow-lg min-w-[140px] max-w-[200px]">
                         <div className="text-xs font-medium text-foreground truncate">{event.title}</div>
                         <div className="text-xs text-muted-foreground">
@@ -272,31 +256,15 @@ export default function ArchubDashboard() {
             })}
           </div>
         </div>
-        
-        {/* Dashboard Title - positioned to align with timeline */}
-        <div className="absolute top-2 left-6">
-          <h1 className="text-lg font-bold text-foreground">Dashboard</h1>
-        </div>
-        
-        {/* Current Date */}
-        <div className="absolute top-2 right-6">
-          <div className="text-sm text-muted-foreground">
-            {new Date().toLocaleDateString('es-ES', { 
-              weekday: 'short', 
-              month: 'short', 
-              day: 'numeric' 
-            })}
-          </div>
-        </div>
       </div>
 
       {/* Main Dashboard Content */}
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-        {/* Stats Cards */}
+        {/* Stats Cards with integrated action buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-blue-500/10 to-blue-600/5">
+          <Card className="rounded-2xl shadow-md">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Proyectos Activos</p>
                   <p className="text-3xl font-bold text-foreground">
@@ -307,12 +275,21 @@ export default function ArchubDashboard() {
                   <Building2 className="w-6 h-6 text-blue-600" />
                 </div>
               </div>
+              <Button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
+                className="w-full h-8 text-xs bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Nuevo Proyecto
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-orange-500/10 to-orange-600/5">
+          <Card className="rounded-2xl shadow-md">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Bitácoras</p>
                   <p className="text-3xl font-bold text-foreground">
@@ -323,12 +300,21 @@ export default function ArchubDashboard() {
                   <FileText className="w-6 h-6 text-orange-600" />
                 </div>
               </div>
+              <Button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
+                className="w-full h-8 text-xs bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 border-orange-500/20"
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Nueva Bitácora
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-green-500/10 to-green-600/5">
+          <Card className="rounded-2xl shadow-md">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Movimientos</p>
                   <p className="text-2xl font-bold text-foreground">
@@ -339,12 +325,21 @@ export default function ArchubDashboard() {
                   <TrendingUp className="w-6 h-6 text-green-600" />
                 </div>
               </div>
+              <Button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateMovementModal'))}
+                className="w-full h-8 text-xs bg-green-500/10 hover:bg-green-500/20 text-green-600 border-green-500/20"
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Nuevo Movimiento
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-purple-500/10 to-purple-600/5">
+          <Card className="rounded-2xl shadow-md">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Contactos</p>
                   <p className="text-3xl font-bold text-foreground">
@@ -355,53 +350,18 @@ export default function ArchubDashboard() {
                   <Users className="w-6 h-6 text-purple-600" />
                 </div>
               </div>
+              <Button
+                onClick={() => window.dispatchEvent(new CustomEvent('openCreateContactModal'))}
+                className="w-full h-8 text-xs bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 border-purple-500/20"
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Nuevo Contacto
+              </Button>
             </CardContent>
           </Card>
         </div>
-
-        {/* Quick Actions */}
-        <Card className="rounded-2xl shadow-md border-0">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Acciones Rápidas</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button
-                onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
-                className="h-24 flex-col gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
-                variant="outline"
-              >
-                <Plus className="w-6 h-6" />
-                <span>Nuevo Proyecto</span>
-              </Button>
-              
-              <Button
-                onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
-                className="h-24 flex-col gap-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 border-orange-500/20"
-                variant="outline"
-              >
-                <FileText className="w-6 h-6" />
-                <span>Nueva Bitácora</span>
-              </Button>
-              
-              <Button
-                onClick={() => window.dispatchEvent(new CustomEvent('openCreateMovementModal'))}
-                className="h-24 flex-col gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-600 border-green-500/20"
-                variant="outline"
-              >
-                <DollarSign className="w-6 h-6" />
-                <span>Nuevo Movimiento</span>
-              </Button>
-              
-              <Button
-                onClick={() => window.dispatchEvent(new CustomEvent('openCreateContactModal'))}
-                className="h-24 flex-col gap-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 border-purple-500/20"
-                variant="outline"
-              >
-                <Users className="w-6 h-6" />
-                <span>Nuevo Contacto</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Recent Activity Summary */}
         <Card className="rounded-2xl shadow-md border-0">
