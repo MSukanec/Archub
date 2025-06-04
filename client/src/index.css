@@ -3,7 +3,43 @@
 @tailwind utilities;
 
 :root {
-  /* Dark theme only - removing light mode completely */
+  /* Light theme variables */
+  --background: 0 0% 82%; /* #d1d1d1 */
+  --foreground: 0 0% 0%; /* #000000 */
+  --muted: 0 0% 75%; /* #c0c0c0 */
+  --muted-foreground: 0 0% 35%; /* #595959 */
+  --popover: 0 0% 98%; /* #fafafa */
+  --popover-foreground: 0 0% 0%; /* #000000 */
+  --card: 0 0% 98%; /* #fafafa */
+  --card-foreground: 0 0% 0%; /* #000000 */
+  --border: 0 0% 70%; /* #b3b3b3 */
+  --input: 0 0% 98%; /* #fafafa */
+  --primary: 88 50% 53%; /* #8bc34a */
+  --primary-foreground: 0 0% 100%; /* #ffffff */
+  --secondary: 0 0% 75%; /* #c0c0c0 */
+  --secondary-foreground: 0 0% 0%; /* #000000 */
+  --accent: 0 0% 75%; /* #c0c0c0 */
+  --accent-foreground: 0 0% 0%; /* #000000 */
+  --destructive: 0 84% 60%; /* #ef4444 */
+  --destructive-foreground: 0 0% 98%; /* #fafafa */
+  --ring: 88 50% 53%; /* #8bc34a - Primary color for focus rings */
+  --radius: 0.5rem;
+  
+  /* Financial colors */
+  --expense: 8 58% 52%; /* #c25b4a */
+  
+  /* Surface variations for better hierarchy */
+  --surface: 0 0% 98%; /* #fafafa */
+  --surface-light: 0 0% 95%; /* #f2f2f2 */
+  
+  /* Background hierarchy - Views, Primary Components, Secondary Cards */
+  --background-views: 0 0% 82%; /* #d1d1d1 - Background for main views/pages */
+  --background-primary: 0 0% 95%; /* #f2f2f2 - Primary components (buttons, inputs, search) */
+  --background-secondary: 0 0% 98%; /* #fafafa - Secondary elements (cards, containers) */
+}
+
+.dark {
+  /* Dark theme variables */
   --background: 0 0% 12%; /* #1e1e1e */
   --foreground: 0 0% 98%; /* #fafafa */
   --muted: 0 0% 15%; /* #262626 */
@@ -23,7 +59,6 @@
   --destructive: 0 84% 60%; /* #ef4444 */
   --destructive-foreground: 0 0% 98%; /* #fafafa */
   --ring: 88 50% 53%; /* #8bc34a - Primary color for focus rings */
-  --radius: 0.5rem;
   
   /* Financial colors */
   --expense: 8 58% 52%; /* #c25b4a */

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon, Crown, Zap, Rocket
 } from 'lucide-react';
@@ -272,19 +272,33 @@ export default function PrimarySidebar() {
     window.location.href = '/';
   };
 
-  // Theme management
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  // Theme management with persistence
+  const { preferences, updatePreferences } = useUserContextStore();
+  const [theme, setTheme] = useState<'light' | 'dark'>(preferences?.theme || 'dark');
   
-  const toggleTheme = () => {
+  const toggleTheme = async () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    
+    // Save theme preference to database
+    try {
+      await updatePreferences({ theme: newTheme });
+    } catch (error) {
+      console.error('Error saving theme preference:', error);
+    }
   };
   
-  // Ensure dark theme is applied on component mount
-  useState(() => {
-    document.documentElement.classList.add('dark');
-  });
+  // Load theme from preferences on component mount and when preferences change
+  useEffect(() => {
+    if (preferences?.theme) {
+      setTheme(preferences.theme);
+      document.documentElement.classList.toggle('dark', preferences.theme === 'dark');
+    } else {
+      // Default to dark theme
+      document.documentElement.classList.add('dark');
+    }
+  }, [preferences?.theme]);
 
 
 
