@@ -161,7 +161,10 @@ export default function AppLayout() {
 
   const ViewComponent = viewComponents[currentView] || ArchubDashboard;
 
-  // Removemos la renderización sin layout para dashboard-timeline
+  // Render ArchubDashboard without layout wrapper
+  if (currentView === 'dashboard-main') {
+    return <ArchubDashboard />;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface-views">
