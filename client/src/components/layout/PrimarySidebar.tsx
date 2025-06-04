@@ -51,7 +51,8 @@ const navigationItems: NavigationItem[] = [
     label: 'Organización',
     subItems: [
       { view: 'organization-overview', label: 'Resumen', icon: Building2 },
-      { view: 'organization-team', label: 'Equipo', icon: Users }
+      { view: 'organization-team', label: 'Equipo', icon: Users },
+      { view: 'organization-settings', label: 'Administración', icon: Settings }
     ]
   },
   { 
