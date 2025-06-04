@@ -10,6 +10,7 @@ import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawerFixed';
+import UnifiedHeader from './UnifiedHeader';
 import ArchubDashboard from '@/views/dashboard/ArchubDashboard';
 import CalendarView from '@/views/dashboard/Calendar';
 
@@ -190,25 +191,18 @@ export default function AppLayout() {
 
         </>
       ) : (
-        // Desktop Layout
-        <>
-          <PrimarySidebar />
+        // Desktop Layout with Unified Header
+        <div className="flex flex-col h-full">
+          {/* New Unified Header */}
+          <UnifiedHeader />
           
-          {/* Floating Header */}
-          <FloatingHeader />
-          
-          <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '55px', marginRight: '55px' }}>
-            <main className="flex-1 overflow-auto relative bg-surface-views">
-              <div className="w-full" style={{ paddingTop: '55px', paddingBottom: '37px' }}>
-                <ViewComponent />
-              </div>
+          {/* Main Content */}
+          <div className="flex-1 overflow-hidden">
+            <main className="h-full overflow-auto bg-surface-views">
+              <ViewComponent />
             </main>
           </div>
-          
-          <SecondarySidebar />
-          
-
-        </>
+        </div>
       )}
       
       <CreateProjectModal 
