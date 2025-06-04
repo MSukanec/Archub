@@ -35,9 +35,9 @@ interface AttendeesSelectorProps {
 
 const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationId, organizationContacts }: AttendeesSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
 
   const filteredContacts = organizationContacts.filter(contact => {
+    if (!searchTerm) return true;
     const fullName = `${contact.first_name} ${contact.last_name || ''}`.trim().toLowerCase();
     const searchTermLower = searchTerm.toLowerCase();
     return fullName.includes(searchTermLower) ||
@@ -48,99 +48,87 @@ const AttendeesSelector = ({ selectedAttendees, onAttendeesChange, organizationI
     selectedAttendees.includes(contact.id)
   );
 
-  const addAttendee = (contactId: string) => {
-    if (!selectedAttendees.includes(contactId)) {
-      onAttendeesChange([...selectedAttendees, contactId]);
-    }
-    setSearchTerm('');
-    setIsOpen(false);
-  };
-
   const removeAttendee = (contactId: string) => {
     onAttendeesChange(selectedAttendees.filter(id => id !== contactId));
   };
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Busca y selecciona las personas que estuvieron presentes en la obra este día.
-      </p>
-
+      {/* Selected Attendees Chips */}
+      {selectedContactsData.length > 0 && (
+        <div className="flex flex-wrap gap-2 p-3 bg-surface-primary rounded-xl border">
+          {selectedContactsData.map((contact) => (
+            <div
+              key={contact.id}
+              className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm border border-primary/20"
+            >
+              <span>{`${contact.first_name} ${contact.last_name || ''}`.trim()}</span>
+              <button
+                type="button"
+                onClick={() => removeAttendee(contact.id)}
+                className="hover:bg-primary/20 rounded-full p-1 transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      
       {/* Search Input */}
-      <div className="relative">
+      <div className="space-y-2">
         <Input
           type="text"
-          placeholder="Buscar contactos (min. 3 caracteres)..."
+          placeholder="Buscar contactos..."
           value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setIsOpen(e.target.value.length >= 3);
-          }}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="bg-surface-primary border-input text-white dark:text-white"
         />
         
-        {/* Dropdown Results */}
-        {isOpen && searchTerm.length >= 3 && (
-          <div className="absolute top-full left-0 right-0 z-[10001] mt-1 bg-surface-primary border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
-            {filteredContacts.length === 0 ? (
-              <div className="p-3 text-sm text-muted-foreground">
-                No se encontraron contactos
-              </div>
-            ) : (
-              filteredContacts.map((contact) => (
-                <div
-                  key={contact.id}
-                  className="p-3 hover:bg-surface-secondary cursor-pointer border-b border-border last:border-b-0"
-                  onClick={() => addAttendee(contact.id)}
-                >
-                  <div className="text-sm font-medium text-foreground">
-                    {`${contact.first_name} ${contact.last_name || ''}`.trim()}
-                  </div>
-                  {contact.company_name && (
-                    <div className="text-xs text-muted-foreground">
-                      {contact.company_name}
+        {/* Contacts List with Checkboxes */}
+        <div className="max-h-48 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
+          {filteredContacts.length === 0 ? (
+            <div className="text-center py-4 text-muted-foreground text-sm">
+              No se encontraron contactos
+            </div>
+          ) : (
+            filteredContacts.map((contact) => {
+              const isSelected = selectedAttendees.includes(contact.id);
+              
+              return (
+                <div key={contact.id} className="flex items-center space-x-2 py-2">
+                  <input
+                    type="checkbox"
+                    id={`attendee-${contact.id}`}
+                    checked={isSelected}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        onAttendeesChange([...selectedAttendees, contact.id]);
+                      } else {
+                        onAttendeesChange(selectedAttendees.filter(id => id !== contact.id));
+                      }
+                    }}
+                    className="rounded border-input accent-primary text-primary focus:ring-primary focus:ring-2 focus:ring-offset-0"
+                  />
+                  <label
+                    htmlFor={`attendee-${contact.id}`}
+                    className="text-sm cursor-pointer flex-1"
+                  >
+                    <div className="font-medium text-foreground">
+                      {`${contact.first_name} ${contact.last_name || ''}`.trim()}
                     </div>
-                  )}
+                    {contact.company_name && (
+                      <div className="text-xs text-muted-foreground">
+                        {contact.company_name}
+                      </div>
+                    )}
+                  </label>
                 </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Selected Attendees */}
-      {selectedContactsData.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-foreground">
-            Asistentes seleccionados ({selectedContactsData.length})
-          </h4>
-          <div className="space-y-2">
-            {selectedContactsData.map((contact) => (
-              <div key={contact.id} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {`${contact.first_name} ${contact.last_name || ''}`.trim()}
-                  </p>
-                  {contact.company_name && (
-                    <p className="text-xs text-muted-foreground">
-                      {contact.company_name}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeAttendee(contact.id)}
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+              );
+            })
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
