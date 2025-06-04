@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ArchubLayout from '@/components/layout/ArchubLayout';
+
 
 interface TimelineEvent {
   id: string;
@@ -192,7 +192,6 @@ export default function ArchubDashboard() {
   }
 
   return (
-    <ArchubLayout>
       <div className="flex flex-col h-full bg-surface-views">
       {/* Static Timeline Header with curved edges - aligned with sidebar top */}
       <div className="relative bg-surface-primary mx-6 mt-0 mb-6 rounded-2xl overflow-hidden h-16">
@@ -402,6 +401,5 @@ export default function ArchubDashboard() {
         </Card>
       </div>
       </div>
-    </ArchubLayout>
   );
 }
