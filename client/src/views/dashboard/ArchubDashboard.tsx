@@ -1,29 +1,32 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
+import { format, subDays } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { 
+  Building2, 
+  FileText, 
+  TrendingUp, 
+  Users, 
+  Plus, 
+  DollarSign, 
+  ArrowRight,
+  Calendar,
+  Activity,
+  Clock,
+  Edit,
+  CheckCircle,
+  AlertTriangle
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Calendar, 
-  FileText, 
-  DollarSign, 
-  Users, 
-  Building2, 
-  TrendingUp,
-  Clock,
-  Activity,
-  ArrowRight,
-  Plus
-} from 'lucide-react';
-import { format, subDays, addDays } from 'date-fns';
-import { es } from 'date-fns/locale';
 
 interface TimelineEvent {
   id: string;
-  type: 'sitelog' | 'movement' | 'calendar' | 'project' | 'contact';
+  type: 'project' | 'movement' | 'calendar' | 'log';
   title: string;
-  description?: string;
+  description: string;
   date: Date;
   time?: string;
   icon: any;
@@ -34,48 +37,21 @@ interface TimelineEvent {
 }
 
 export default function ArchubDashboard() {
-  const { projectId, organizationId } = useUserContextStore();
+  const { organizationId } = useUserContextStore();
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  // Fetch timeline events for header
-  const { data: timelineEvents = [] } = useQuery({
-    queryKey: ['archub-timeline-events', organizationId],
+  // Fetch timeline events from last 30 days
+  const { data: timelineEvents = [] } = useQuery<TimelineEvent[]>({
+    queryKey: ['/api/timeline-events', organizationId],
     queryFn: async () => {
       if (!organizationId) return [];
-      
+
       const events: TimelineEvent[] = [];
-      const now = new Date();
-      const startDate = subDays(now, 30);
-      const endDate = addDays(now, 30);
+      const endDate = new Date();
+      const startDate = subDays(endDate, 30);
 
-      // Get site logs
-      const { data: siteLogs } = await supabase
-        .from('site_logs')
-        .select(`
-          *,
-          projects(name)
-        `)
-        .eq('organization_id', organizationId)
-        .gte('log_date', format(startDate, 'yyyy-MM-dd'))
-        .lte('log_date', format(endDate, 'yyyy-MM-dd'))
-        .order('log_date', { ascending: false })
-        .limit(20);
-
-      siteLogs?.forEach(log => {
-        events.push({
-          id: `sitelog-${log.id}`,
-          type: 'sitelog',
-          title: 'Nueva bitácora de obra',
-          description: log.description || log.comments,
-          date: new Date(log.log_date),
-          icon: FileText,
-          color: '#FF6B35',
-          projectName: log.projects?.name
-        });
-      });
-
-      // Get movements
+      // Get site movements
       const { data: movements } = await supabase
         .from('site_movements')
         .select(`
@@ -140,43 +116,22 @@ export default function ArchubDashboard() {
           id: `project-${project.id}`,
           type: 'project',
           title: 'Nuevo proyecto creado',
-          description: project.description,
+          description: project.description || project.name,
           date: new Date(project.created_at),
           icon: Building2,
-          color: '#8B5CF6',
+          color: '#3B82F6',
           projectName: project.name
-        });
-      });
-
-      // Get recent contacts
-      const { data: contacts } = await supabase
-        .from('contacts')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      contacts?.forEach(contact => {
-        events.push({
-          id: `contact-${contact.id}`,
-          type: 'contact',
-          title: 'Nuevo contacto agregado',
-          description: `${contact.first_name} ${contact.last_name}`,
-          date: new Date(contact.created_at),
-          icon: Users,
-          color: '#F59E0B',
         });
       });
 
       return events.sort((a, b) => b.date.getTime() - a.date.getTime());
     },
-    enabled: !!organizationId,
-    refetchInterval: 30000 // Refresh every 30 seconds for live updates
+    enabled: !!organizationId
   });
 
   // Fetch dashboard stats
   const { data: stats } = useQuery({
-    queryKey: ['dashboard-stats', organizationId],
+    queryKey: ['/api/dashboard-stats', organizationId],
     queryFn: async () => {
       if (!organizationId) return null;
 
@@ -211,30 +166,6 @@ export default function ArchubDashboard() {
     enabled: !!organizationId
   });
 
-  // Auto-scroll timeline header
-  useEffect(() => {
-    if (timelineEvents.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentEventIndex(prev => (prev + 1) % timelineEvents.length);
-    }, 4000); // Change every 4 seconds
-
-    return () => clearInterval(interval);
-  }, [timelineEvents.length]);
-
-  // Smooth scroll timeline
-  useEffect(() => {
-    if (timelineRef.current && timelineEvents.length > 0) {
-      const eventWidth = 320; // Width of each event card
-      const scrollPosition = currentEventIndex * eventWidth;
-      
-      timelineRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      });
-    }
-  }, [currentEventIndex]);
-
   if (!organizationId) {
     return (
       <div className="flex-1 p-6">
@@ -250,7 +181,7 @@ export default function ArchubDashboard() {
                 Bienvenido a Archub
               </h3>
               <p className="text-muted-foreground mb-6">
-                Configura tu organización para comenzar a gestionar tus proyectos de construcción.
+                Para comenzar, selecciona una organización desde el menú lateral.
               </p>
             </div>
           </div>

@@ -44,6 +44,20 @@
   transition: transform 0.2s ease-in-out;
 }
 
+/* Timeline infinite scroll animation */
+@keyframes scroll-timeline {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-timeline {
+  animation: scroll-timeline 60s linear infinite;
+}
+
 /* Hide scrollbar for all elements */
 * {
   scrollbar-width: none; /* Firefox */
