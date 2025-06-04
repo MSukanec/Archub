@@ -68,7 +68,7 @@ const navigationItems: NavigationItem[] = [
     icon: HardHat,
     label: 'Obra',
     subItems: [
-      { view: 'budgets-list', label: 'Cómputo', icon: ClipboardList },
+      { view: 'budgets-list', label: 'Tareas', icon: ClipboardList },
       { view: 'budgets-materials', label: 'Materiales', icon: Library },
       { view: 'sitelog-main', label: 'Bitácora', icon: Contact }
     ]
