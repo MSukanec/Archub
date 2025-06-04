@@ -147,9 +147,9 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
             </div>
 
             {/* Center Section - Organization to Contacts (80%) */}
-            <div className="w-[80%] flex items-center justify-center">
+            <div className="w-[80%] flex items-center justify-center overflow-hidden">
               <div 
-                className="flex items-center gap-2 relative"
+                className="flex items-center gap-2 relative max-w-full"
                 onMouseLeave={handleMouseLeave}
               >
                 {navigationSections.slice(1, -1).map((section, index) => { // Skip Dashboard and Contacts
@@ -157,7 +157,8 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                   const { section: sectionKey, icon: Icon, label } = section;
                   const isExpanded = expandedSection === sectionKey;
                   const shouldMoveRight = expandedIndex !== -1 && actualIndex > expandedIndex;
-                  const expandedViewsWidth = expandedSectionData ? (expandedSectionData.views.length * 120) : 0;
+                  // Calculate exact width needed for expanded views (button width + padding + gap)
+                  const expandedViewsWidth = expandedSectionData ? (expandedSectionData.views.length * 100 + (expandedSectionData.views.length - 1) * 8) : 0;
                   
                   return (
                     <div
@@ -165,7 +166,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                       className="flex items-center gap-2"
                       style={{
                         transform: shouldMoveRight ? `translateX(${expandedViewsWidth}px)` : 'translateX(0)',
-                        transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)'
+                        transition: 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
                     >
                       {/* Circular Button */}
@@ -187,7 +188,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                         <div 
                           className="flex items-center gap-2"
                           style={{
-                            animation: 'slideInRight 300ms cubic-bezier(0.4, 0, 0.2, 1)'
+                            animation: 'slideInRight 600ms cubic-bezier(0.4, 0, 0.2, 1)'
                           }}
                         >
                           {section.views.map(({ key, label: viewLabel }) => (
