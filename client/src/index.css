@@ -10,7 +10,7 @@
   --muted-foreground: 0 0% 35%; /* #595959 */
   --popover: 0 0% 98%; /* #fafafa */
   --popover-foreground: 0 0% 0%; /* #000000 */
-  --card: 0 0% 98%; /* #fafafa */
+  --card: 0 0% 87%; /* #dedede */
   --card-foreground: 0 0% 0%; /* #000000 */
   --border: 0 0% 70%; /* #b3b3b3 */
   --input: 0 0% 98%; /* #fafafa */
@@ -35,7 +35,7 @@
   /* Background hierarchy - Views, Primary Components, Secondary Cards */
   --background-views: 0 0% 82%; /* #d1d1d1 - Background for main views/pages */
   --background-primary: 0 0% 95%; /* #f2f2f2 - Primary components (buttons, inputs, search) */
-  --background-secondary: 0 0% 98%; /* #fafafa - Secondary elements (cards, containers) */
+  --background-secondary: 0 0% 87%; /* #dedede - Secondary elements (cards, containers) */
   
   /* Override specific backgrounds for light theme */
   --surface-views: 0 0% 82%; /* #d1d1d1 */
