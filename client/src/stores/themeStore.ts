@@ -1,21 +1,52 @@
 import { create } from 'zustand';
 
-// Dark mode only - simplified theme store
+// Theme store with light/dark mode support
 interface ThemeStore {
-  theme: 'dark';
+  theme: 'light' | 'dark';
   isLoading: boolean;
   initializeTheme: () => void;
+  toggleTheme: () => void;
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
-export const useThemeStore = create<ThemeStore>((set) => ({
+export const useThemeStore = create<ThemeStore>((set, get) => ({
   theme: 'dark',
   isLoading: false,
 
   initializeTheme: () => {
-    // Always force dark mode
-    document.documentElement.classList.remove('light');
-    document.documentElement.classList.add('dark');
-    document.body.style.backgroundColor = '#1e1e1e';
-    set({ theme: 'dark' });
+    // Check localStorage for saved theme preference, default to dark
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    const preferredTheme = savedTheme || 'dark';
+    
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(preferredTheme);
+    
+    if (preferredTheme === 'dark') {
+      document.body.style.backgroundColor = '#1e1e1e';
+    } else {
+      document.body.style.backgroundColor = '#ffffff';
+    }
+    
+    set({ theme: preferredTheme });
+  },
+
+  toggleTheme: () => {
+    const currentTheme = get().theme;
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    get().setTheme(newTheme);
+  },
+
+  setTheme: (theme: 'light' | 'dark') => {
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+    
+    if (theme === 'dark') {
+      document.body.style.backgroundColor = '#1e1e1e';
+    } else {
+      document.body.style.backgroundColor = '#ffffff';
+    }
+    
+    localStorage.setItem('theme', theme);
+    set({ theme });
   }
 }));

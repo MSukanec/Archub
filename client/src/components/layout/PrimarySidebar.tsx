@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import CircularButton from '@/components/ui/CircularButton';
+import { ProfilePopover } from '@/components/ui/ProfilePopover';
 
 const topNavigationItems = [
   { 
@@ -289,14 +290,16 @@ export default function PrimarySidebar() {
           </div>
         )}
 
-        {/* Profile button */}
-        <CircularButton
-          icon={User}
-          isActive={currentSection === 'profile'}
-          onClick={() => setSection('profile')}
-          section="profile"
-          label="Perfil"
-        />
+        {/* Profile button with popover */}
+        <ProfilePopover>
+          <CircularButton
+            icon={User}
+            isActive={currentSection === 'profile'}
+            onClick={() => {}} // onClick handled by popover
+            section="profile"
+            label="Perfil"
+          />
+        </ProfilePopover>
       </div>
     </div>
   );
