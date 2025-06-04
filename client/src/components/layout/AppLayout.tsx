@@ -162,7 +162,7 @@ export default function AppLayout() {
   const ViewComponent = viewComponents[currentView] || (() => <div>Vista no encontrada</div>);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-red-500">
+    <div className="flex h-screen overflow-hidden bg-surface-views">
       {isMobile ? (
         // Mobile Layout
         <>
@@ -177,7 +177,7 @@ export default function AppLayout() {
           
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden pt-14">
-            <main className="flex-1 overflow-auto relative bg-red-500">
+            <main className="flex-1 overflow-auto relative bg-surface-views">
               <div className="mx-auto px-1 py-1">
                 <ViewComponent />
               </div>
@@ -196,7 +196,7 @@ export default function AppLayout() {
           <FloatingHeader />
           
           <div className="flex-1 flex flex-col overflow-hidden" style={{ marginLeft: '55px', marginRight: '55px' }}>
-            <main className="flex-1 overflow-auto relative bg-red-500">
+            <main className="flex-1 overflow-auto relative bg-surface-views">
               <div className="w-full" style={{ paddingTop: '55px', paddingBottom: '37px' }}>
                 <ViewComponent />
               </div>

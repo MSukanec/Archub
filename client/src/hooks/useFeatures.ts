@@ -173,28 +173,43 @@ export function useFeatures() {
   };
 
   const getCurrentPlan = (): PlanType | null => {
+    // First try to get plan name from userWithPlan.plan.name
     const planName = userWithPlan?.plan?.name;
-    if (!planName) return null;
+    if (planName) {
+      return planName.toUpperCase() as PlanType;
+    }
     
-    // Convertir a uppercase para coincidir con los tipos esperados
-    return planName.toUpperCase() as PlanType;
+    // Fallback to userWithPlan.name (which seems to be working based on logs)
+    if (userWithPlan?.name) {
+      return userWithPlan.name.toUpperCase() as PlanType;
+    }
+    
+    return null;
   };
 
   const getPlanLimit = (limitName: string): number => {
     const planName = getCurrentPlan() || 'FREE';
     
-    // Si no hay plan cargado desde la BD, usar límites por defecto
-    if (!userWithPlan?.plan?.features) {
-      const defaultLimits: Record<string, Record<string, number>> = {
-        'FREE': { 'max_projects': 2 },
-        'PRO': { 'max_projects': -1 }, // -1 = ilimitado
-        'ENTERPRISE': { 'max_projects': -1 }
-      };
-      return defaultLimits[planName]?.[limitName] || 0;
+    // Always use default limits as the primary source since userWithPlan.plan seems to be null
+    const defaultLimits: Record<string, Record<string, number>> = {
+      'FREE': { 'max_projects': 2 },
+      'PRO': { 'max_projects': -1 }, // -1 = ilimitado
+      'ENTERPRISE': { 'max_projects': -1 }
+    };
+    
+    // First check default limits
+    const defaultLimit = defaultLimits[planName]?.[limitName];
+    if (defaultLimit !== undefined) {
+      return defaultLimit;
     }
     
-    const features = userWithPlan.plan.features as Record<string, any>;
-    return features[limitName] || 0;
+    // Fallback to features from database if available
+    if (userWithPlan?.plan?.features) {
+      const features = userWithPlan.plan.features as Record<string, any>;
+      return features[limitName] || 0;
+    }
+    
+    return 0;
   };
 
   const checkLimit = (limitName: string, currentCount: number): { 
