@@ -1,18 +1,16 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Edit, CreditCard } from 'lucide-react';
+import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Edit } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import OrganizationSettingsModal from '@/components/modals/OrganizationSettingsModal';
-import FinancialSettingsModal from '@/components/modals/FinancialSettingsModal';
 
 export default function OrganizationSettings() {
   const { organizationId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFinancialModalOpen, setIsFinancialModalOpen] = useState(false);
 
   // Fetch organization data
   const { data: organization, isLoading } = useQuery({
@@ -226,20 +224,11 @@ export default function OrganizationSettings() {
 
         {/* Configuración Regional */}
         <Card className="rounded-2xl shadow-md border-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
               <DollarSign className="w-5 h-5 text-primary" />
               Configuración Regional
             </CardTitle>
-            <Button
-              onClick={() => setIsFinancialModalOpen(true)}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <CreditCard className="h-4 w-4" />
-              Configurar Finanzas
-            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -250,20 +239,10 @@ export default function OrganizationSettings() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">Idioma por Defecto</label>
+              <label className="text-xs font-medium text-foreground">Billetera por Defecto</label>
               <div className="p-3 bg-muted rounded-xl text-sm">
-                {organization.default_language === 'es' ? 'Español' : 
-                 organization.default_language === 'en' ? 'English' :
-                 organization.default_language === 'pt' ? 'Português' :
-                 organization.default_language === 'fr' ? 'Français' :
-                 organization.default_language || 'Español'}
+                {defaultWallet?.name || 'No configurada'}
               </div>
-            </div>
-
-            <div className="pt-2 border-t border-border">
-              <p className="text-xs text-muted-foreground">
-                Usa el botón "Configurar Finanzas" para gestionar monedas, billeteras y configuración avanzada.
-              </p>
             </div>
           </CardContent>
         </Card>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Crown, Rocket, Lock } from 'lucide-react';
@@ -14,13 +15,15 @@ const PLAN_CONFIG: Record<PlanType, {
   color: string;
   bgColor: string;
   borderColor: string;
+  buttonBgColor: string;
   name: string;
 }> = {
   PRO: {
     icon: Crown,
-    color: 'text-yellow-400',
-    bgColor: 'bg-yellow-500/10',
-    borderColor: 'border-yellow-500/20',
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/20',
+    buttonBgColor: 'bg-blue-600 hover:bg-blue-700',
     name: 'Profesional'
   },
   ENTERPRISE: {
@@ -28,6 +31,7 @@ const PLAN_CONFIG: Record<PlanType, {
     color: 'text-purple-400',
     bgColor: 'bg-purple-500/10',
     borderColor: 'border-purple-500/20',
+    buttonBgColor: 'bg-purple-600 hover:bg-purple-700',
     name: 'Empresarial'
   },
   FREE: {
@@ -35,6 +39,7 @@ const PLAN_CONFIG: Record<PlanType, {
     color: 'text-gray-400',
     bgColor: 'bg-gray-500/10',
     borderColor: 'border-gray-500/20',
+    buttonBgColor: 'bg-gray-600 hover:bg-gray-700',
     name: 'Gratuito'
   }
 };
@@ -50,9 +55,12 @@ const FEATURE_MESSAGES: Record<FeatureName, string> = {
   priority_support: 'Recibe soporte prioritario de nuestro equipo',
   dedicated_support: 'Soporte dedicado 24/7 para tu organización',
   custom_training: 'Entrenamiento personalizado para tu equipo',
+  multiple_organizations: 'Gestiona múltiples organizaciones desde una cuenta',
+  multiple_members: 'Agrega más miembros a tu equipo de trabajo',
 };
 
 export function FeaturePopover({ feature, children, asChild = false }: FeaturePopoverProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const { getRequiredPlan } = useFeatures();
   const requiredPlan = getRequiredPlan(feature);
   const planConfig = PLAN_CONFIG[requiredPlan];
@@ -71,11 +79,21 @@ export function FeaturePopover({ feature, children, asChild = false }: FeaturePo
   );
 
   return (
-    <Popover>
-      <PopoverTrigger asChild={asChild}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger 
+        asChild={asChild}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+      >
         {trigger}
       </PopoverTrigger>
-      <PopoverContent className={`w-80 p-0 border ${planConfig.borderColor}`} side="top" align="center">
+      <PopoverContent 
+        className={`w-80 p-0 border ${planConfig.borderColor}`} 
+        side="top" 
+        align="center"
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+      >
         <div className={`${planConfig.bgColor} p-4 rounded-t-lg border-b ${planConfig.borderColor}`}>
           <div className="flex items-center gap-2 mb-2">
             <PlanIcon className={`h-5 w-5 ${planConfig.color}`} />
@@ -98,7 +116,7 @@ export function FeaturePopover({ feature, children, asChild = false }: FeaturePo
           
           <Button 
             onClick={handleUpgrade}
-            className="w-full bg-primary hover:bg-primary/90"
+            className={`w-full ${planConfig.buttonBgColor}`}
             size="sm"
           >
             Mejorar Plan
