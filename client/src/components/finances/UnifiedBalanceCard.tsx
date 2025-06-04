@@ -62,7 +62,9 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
             currencyCode,
             isIncome,
             conceptName: concept?.name,
-            parentConcept: parentConcept?.name
+            parentConcept: parentConcept?.name,
+            parentConceptCheck: parentConcept?.name === 'Ingresos',
+            conceptCheck: concept?.name === 'Ingresos'
           });
 
           if (currencyCode === 'ARS' || currencyCode === 'COP') {

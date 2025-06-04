@@ -57,7 +57,10 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
           isIncome,
           conceptName: concept?.name,
           parentConcept: parentConcept?.name,
-          hasParentId: !!concept?.parent_id
+          hasParentId: !!concept?.parent_id,
+          parentConceptCheck: parentConcept?.name === 'Ingresos',
+          conceptCheck: concept?.name === 'Ingresos',
+          rawMovement: movement
         });
 
         if (!walletMap.has(walletKey)) {
