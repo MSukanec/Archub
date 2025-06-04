@@ -1,19 +1,34 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { authService } from '@/lib/supabase';
-import { useAuthStore } from '@/stores/authStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+import { supabase } from "@/lib/supabase";
+import { authLinkingService } from "@/lib/authLinkingService";
+import { useAuthStore } from "@/stores/authStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -30,50 +45,73 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const { data: authData, error } = await authService.signIn(data.email, data.password);
-      
+      // 🔐 Paso 1: login con Supabase
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
       if (error) {
         toast({
-          title: 'Error de autenticación',
+          title: "Error de autenticación",
           description: error.message,
-          variant: 'destructive',
+          variant: "destructive",
         });
         return;
       }
 
-      if (authData.user) {
-        // Get user data from database table
-        const dbUser = await authService.getUserFromDatabase(authData.user.id);
-        
-        const authUser = {
-          id: authData.user.id,
-          email: authData.user.email || '',
-          firstName: authData.user.user_metadata?.first_name || '',
-          lastName: authData.user.user_metadata?.last_name || '',
-          role: dbUser?.role || 'user', // Use role from database table
-        };
-        
-        console.log('User from database:', dbUser);
-        setUser(authUser);
-        
+      const user = authData?.user;
+      if (!user) {
         toast({
-          title: 'Bienvenido',
-          description: 'Has iniciado sesión correctamente',
+          title: "Error",
+          description: "No se pudo obtener el usuario autenticado.",
+          variant: "destructive",
         });
+        return;
       }
+
+      // 🔗 Paso 2: vinculación con sistema interno (users + linked_accounts)
+      await authLinkingService.handleAuthLinking(user);
+
+      // 📥 Paso 3: obtener datos del usuario interno
+      const dbUser = await authLinkingService.getUserFromDatabase(user.id);
+
+      if (!dbUser) {
+        toast({
+          title: "Error",
+          description: "No se pudo vincular tu cuenta con el sistema interno.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // 🧠 Paso 4: guardar en store global
+      setUser({
+        id: user.id,
+        email: user.email || "",
+        firstName: dbUser.full_name || "",
+        lastName: "",
+        role: dbUser.role,
+        userId: dbUser.user_id, // ID de la tabla interna users
+      });
+
+      toast({
+        title: "Bienvenido",
+        description: "Has iniciado sesión correctamente",
+      });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Ocurrió un error inesperado',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Ocurrió un error inesperado",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -87,9 +125,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <span className="text-white font-bold text-2xl">A</span>
         </div>
         <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
-        <CardDescription>
-          Ingresa a tu cuenta de Archub
-        </CardDescription>
+        <CardDescription>Ingresa a tu cuenta de Archub</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -101,17 +137,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="email" 
-                      placeholder="tu@email.com"
-                      {...field} 
-                    />
+                    <Input type="email" placeholder="tu@email.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="password"
@@ -119,19 +151,15 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="••••••••"
-                      {...field} 
-                    />
+                    <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
@@ -143,7 +171,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            ¿No tienes cuenta?{' '}
+            ¿No tienes cuenta?{" "}
             <button
               onClick={onSwitchToRegister}
               className="text-primary hover:text-primary/90 font-medium"
