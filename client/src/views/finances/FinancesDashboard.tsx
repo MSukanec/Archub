@@ -8,9 +8,9 @@ import FinancialHealthIndicators from '@/components/finances/FinancialHealthIndi
 import BalanceForecastWidget from '@/components/finances/BalanceForecastWidget';
 
 export default function FinancesDashboard() {
-  const { activeProject } = useUserContextStore();
+  const { projectId } = useUserContextStore();
 
-  if (!activeProject?.id) {
+  if (!projectId) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-muted-foreground">Selecciona un proyecto para ver el dashboard financiero</p>
@@ -31,7 +31,7 @@ export default function FinancesDashboard() {
       </div>
 
       {/* Balance General */}
-      <UnifiedBalanceCard projectId={activeProject.id} />
+      <UnifiedBalanceCard projectId={projectId} />
 
       {/* Gráficos principales */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

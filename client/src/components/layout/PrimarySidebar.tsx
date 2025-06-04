@@ -253,7 +253,13 @@ export default function PrimarySidebar() {
             <CircularButton
               icon={icon}
               isActive={currentSection === section}
-              onClick={() => setSection(section)}
+              onClick={() => {
+                setSection(section);
+                // Auto-navigate to dashboard view when "movements" section is selected
+                if (section === 'movements') {
+                  setView('movements-dashboard');
+                }
+              }}
               section={section}
               label={label}
               description={description}

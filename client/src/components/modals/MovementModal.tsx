@@ -220,6 +220,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           .from('site_movements')
           .insert([{
             project_id: projectId,
+            organization_id: organizationId,
             concept_id: data.concept_id,
             created_at_local: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,

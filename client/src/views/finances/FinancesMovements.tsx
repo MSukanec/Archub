@@ -429,7 +429,7 @@ export default function Movements() {
                 Movimientos Financieros
               </h1>
               <p className="text-sm text-muted-foreground">
-                Registro de ingresos, egresos y ajustes del proyecto
+                Registro financiero del proyecto
               </p>
             </div>
           </div>
