@@ -121,8 +121,8 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
 
   return (
     <div className="min-h-screen bg-surface-views">
-      {/* Unified Header */}
-      <div className="bg-surface-primary border-b border-border">
+      {/* Unified Header - Fixed to top */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-surface-primary border-b border-border">
         <div className="w-full px-6 py-4">
           <div className="flex items-center w-full gap-6">
             {/* Left Section - Dashboard Only (10%) */}
@@ -157,8 +157,9 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                   const { section: sectionKey, icon: Icon, label } = section;
                   const isExpanded = expandedSection === sectionKey;
                   const shouldMoveRight = expandedIndex !== -1 && actualIndex > expandedIndex;
-                  // Calculate exact width needed for expanded views (button width + padding + gap)
-                  const expandedViewsWidth = expandedSectionData ? (expandedSectionData.views.length * 100 + (expandedSectionData.views.length - 1) * 8) : 0;
+                  // Calculate exact width needed for expanded views based on the expanded section
+                  const expandedViewsWidth = expandedSectionData && expandedIndex !== -1 && actualIndex > expandedIndex ? 
+                    (expandedSectionData.views.length * 88 + (expandedSectionData.views.length - 1) * 8) : 0;
                   
                   return (
                     <div
@@ -230,7 +231,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <main className="w-full">
+      <main className="w-full pt-20">
         {children}
       </main>
     </div>
