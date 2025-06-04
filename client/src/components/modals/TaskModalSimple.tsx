@@ -189,16 +189,16 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
 
         <div className="p-2 flex-1 overflow-hidden">
           <Tabs defaultValue="available" className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-2 bg-surface-primary">
+            <TabsList className="grid w-full grid-cols-2 bg-muted">
               <TabsTrigger 
                 value="available"
-                className="data-[state=active]:bg-surface-secondary data-[state=active]:text-foreground"
+                className="data-[state=active]:bg-card data-[state=active]:text-foreground"
               >
                 Tareas Disponibles ({filteredTasks.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="selected" 
-                className="relative data-[state=active]:bg-surface-secondary data-[state=active]:text-foreground"
+                className="relative data-[state=active]:bg-card data-[state=active]:text-foreground"
               >
                 Seleccionadas ({selectedTasks.length})
                 {selectedTasks.length > 0 && (
@@ -221,13 +221,13 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                     placeholder="Filtrar por nombre de tarea..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-surface-primary border-gray-300 focus:ring-primary focus:border-primary"
+                    className="pl-10 bg-muted border-gray-300 focus:ring-primary focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Tabla de tareas disponibles */}
-              <div className="border border-gray-300 rounded-lg bg-surface-primary flex-1 overflow-hidden flex flex-col">
+              <div className="border border-gray-300 rounded-lg bg-muted flex-1 overflow-hidden flex flex-col">
                 <div className="grid grid-cols-12 gap-2 p-3 border-b border-gray-300 bg-gray-100 font-medium text-sm">
                   <div className="col-span-1">Seleccionar</div>
                   <div className="col-span-6">Nombre de la tarea</div>
@@ -242,7 +242,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                     </div>
                   ) : (
                     filteredTasks.map((task) => (
-                      <div key={task.id} className="grid grid-cols-12 gap-2 p-3 border-b border-gray-200 last:border-b-0 hover:bg-surface-secondary">
+                      <div key={task.id} className="grid grid-cols-12 gap-2 p-3 border-b border-gray-200 last:border-b-0 hover:bg-card">
                         <div className="col-span-1 flex items-center">
                           <Checkbox
                             checked={isTaskSelected(task.id)}
@@ -265,7 +265,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                               min="1"
                               value={selectedTasks.find(t => t.id === task.id)?.quantity || 1}
                               onChange={(e) => handleQuantityChange(task.id, parseInt(e.target.value) || 1)}
-                              className="h-8 text-sm bg-surface-secondary"
+                              className="h-8 text-sm bg-card"
                             />
                           )}
                         </div>
@@ -294,7 +294,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                   </h3>
                   <div className="space-y-2">
                     {selectedTasks.map((task) => (
-                      <div key={task.id} className="bg-surface-primary border border-gray-300 rounded-lg p-4">
+                      <div key={task.id} className="bg-muted border border-gray-300 rounded-lg p-4">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <h4 className="font-medium text-foreground">
@@ -320,7 +320,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
                             min="1"
                             value={task.quantity}
                             onChange={(e) => handleQuantityChange(task.id, parseInt(e.target.value) || 1)}
-                            className="w-20 h-8 text-sm bg-surface-secondary"
+                            className="w-20 h-8 text-sm bg-card"
                           />
                           <span className="text-sm text-muted-foreground">
                             = ${(task.quantity * (task.unit_labor_price + task.unit_material_price)).toFixed(2)}
@@ -350,7 +350,7 @@ export function TaskModalSimple({ isOpen, onOpenChange }: TaskModalSimpleProps) 
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="bg-surface-secondary hover:bg-surface-secondary"
+            className="bg-card hover:bg-card"
           >
             Cancelar
           </Button>

@@ -157,7 +157,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
             variant="outline"
             onClick={handleClose}
             disabled={isSubmitting}
-            className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
+            className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
           >
             Cancelar
           </Button>
@@ -194,7 +194,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       <Input
                         {...field}
                         placeholder="Ingresa tu nombre"
-                        className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                        className="h-10 bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                       />
                     </FormControl>
                     <FormMessage />
@@ -214,7 +214,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       <Input
                         {...field}
                         placeholder="Ingresa tu apellido"
-                        className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                        className="h-10 bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                       />
                     </FormControl>
                     <FormMessage />
@@ -237,7 +237,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       {...field}
                       type="email"
                       placeholder="Ingresa tu email"
-                      className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                      className="h-10 bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                     />
                   </FormControl>
                   <FormMessage />
@@ -266,7 +266,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       {...field}
                       type="password"
                       placeholder="Ingresa tu contraseña actual"
-                      className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                      className="h-10 bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                     />
                   </FormControl>
                   <FormMessage />
@@ -288,7 +288,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                         {...field}
                         type="password"
                         placeholder="Nueva contraseña"
-                        className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                        className="h-10 bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                       />
                     </FormControl>
                     <FormMessage />
@@ -309,7 +309,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                         {...field}
                         type="password"
                         placeholder="Confirma la contraseña"
-                        className="h-10 bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                        className="h-10 bg-card border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                       />
                     </FormControl>
                     <FormMessage />

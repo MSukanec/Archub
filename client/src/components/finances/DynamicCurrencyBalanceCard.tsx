@@ -139,7 +139,7 @@ export default function DynamicCurrencyBalanceCard({ projectId }: DynamicCurrenc
           <div key={currency.currencyCode} className="space-y-4">
             {/* Header de moneda */}
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-surface-secondary rounded-lg flex items-center justify-center text-xs font-semibold text-foreground">
+              <div className="w-8 h-8 bg-card rounded-lg flex items-center justify-center text-xs font-semibold text-foreground">
                 {currency.currencyCode}
               </div>
               <div>

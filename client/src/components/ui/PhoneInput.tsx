@@ -25,7 +25,7 @@ const PhoneInputField = forwardRef<HTMLInputElement, PhoneInputFieldProps>(
           disabled={disabled}
           placeholder={placeholder || "Ingresa tu teléfono"}
           inputClass={cn(
-            "!w-full !h-10 !pl-12 !pr-3 !py-2 !text-sm !bg-surface-secondary !border !border-input !rounded-xl",
+            "!w-full !h-10 !pl-12 !pr-3 !py-2 !text-sm !bg-card !border !border-input !rounded-xl",
             "!text-foreground placeholder:!text-muted-foreground",
             "focus:!outline-none focus:!ring-1 focus:!ring-primary focus:!border-primary",
             "disabled:!cursor-not-allowed disabled:!opacity-50",
@@ -35,7 +35,7 @@ const PhoneInputField = forwardRef<HTMLInputElement, PhoneInputFieldProps>(
           )}
           containerClass="!w-full"
           buttonClass={cn(
-            "!bg-surface-secondary !border !border-input !border-r-0 !rounded-l-xl !rounded-r-none",
+            "!bg-card !border !border-input !border-r-0 !rounded-l-xl !rounded-r-none",
             "!h-10 !w-12 !flex !items-center !justify-center",
             "hover:!bg-muted !transition-colors shadow-lg",
             error && "!border-destructive"

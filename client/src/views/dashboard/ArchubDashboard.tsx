@@ -303,7 +303,7 @@ export default function ArchubDashboard() {
               {timelineEvents.slice(0, 5).map((event) => {
                 const Icon = event.icon;
                 return (
-                  <div key={event.id} className="flex items-center gap-4 p-3 rounded-xl bg-surface-secondary/50">
+                  <div key={event.id} className="flex items-center gap-4 p-3 rounded-xl bg-card/50">
                     <div 
                       className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${event.color}20` }}

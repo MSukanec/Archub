@@ -28,17 +28,7 @@
   /* Financial colors */
   --expense: 8 58% 52%; /* #c25b4a */
   
-  /* Surface variations for better hierarchy */
-  --surface: 0 0% 98%; /* #fafafa */
-  --surface-light: 0 0% 95%; /* #f2f2f2 */
-  
-  /* Background hierarchy - Views, Primary Components, Secondary Cards */
-  --background-views: 0 0% 82%; /* #d1d1d1 - Background for main views/pages */
-  --background-primary: 0 0% 95%; /* #f2f2f2 - Primary components (buttons, inputs, search) */
-  --background-secondary: 0 0% 87%; /* #dedede - Secondary elements (cards, containers) */
-  
-  /* Override specific backgrounds for light theme */
-  --surface-views: 0 0% 82%; /* #d1d1d1 */
+
 }
 
 .dark {
@@ -66,19 +56,7 @@
   /* Financial colors */
   --expense: 8 58% 52%; /* #c25b4a */
   
-  /* Surface variations for better hierarchy */
-  --surface: 0 0% 9%; /* #171717 */
-  --surface-light: 0 0% 15%; /* #262626 */
-  
-  /* Background hierarchy - Views, Primary Components, Secondary Cards */
-  --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
-  --background-primary: 0 0% 15%; /* #262626 - Primary components (buttons, inputs, search) */
-  --background-secondary: 0 0% 9%; /* #171717 - Secondary elements (cards, containers) */
-  
-  /* Surface variations for better hierarchy */
-  --surface-views: 0 0% 12%; /* #1e1e1e */
-  --surface-primary: 0 0% 15%; /* #262626 */
-  --surface-secondary: 0 0% 9%; /* #171717 */
+
 }
 
 /* Custom pressed effect - stays pressed on hover */

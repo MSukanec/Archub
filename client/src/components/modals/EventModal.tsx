@@ -113,7 +113,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
         variant="outline"
         onClick={handleClose}
         disabled={isSubmitting}
-        className="w-1/4 bg-transparent border-input text-foreground hover:bg-surface-secondary rounded-lg"
+        className="w-1/4 bg-transparent border-input text-foreground hover:bg-card rounded-lg"
       >
         Cancelar
       </Button>
@@ -158,7 +158,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                       <FormControl>
                         <Input 
                           placeholder="Ej: Reunión con cliente"
-                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                          className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                           {...field} 
                         />
                       </FormControl>
@@ -177,7 +177,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <Textarea
                           placeholder="Descripción del evento..."
                           rows={3}
-                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
+                          className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
                           {...field}
                         />
                       </FormControl>
@@ -207,7 +207,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormControl>
                           <Input 
                             type="date"
-                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                             {...field}
                           />
                         </FormControl>
@@ -225,7 +225,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormControl>
                           <Input 
                             type="time"
-                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                             {...field}
                           />
                         </FormControl>
@@ -244,11 +244,11 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormLabel className="text-xs font-medium text-foreground">Duración <span className="text-primary">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                            <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                               <SelectValue placeholder="Seleccionar duración" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-surface-primary border-input z-[10000]">
+                          <SelectContent className="bg-muted border-input z-[10000]">
                             <SelectItem value="15">15 minutos</SelectItem>
                             <SelectItem value="30">30 minutos</SelectItem>
                             <SelectItem value="45">45 minutos</SelectItem>
@@ -272,11 +272,11 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormLabel className="text-xs font-medium text-foreground">Tipo <span className="text-primary">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                            <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                               <SelectValue placeholder="Seleccionar tipo" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-surface-primary border-input z-[10000]">
+                          <SelectContent className="bg-muted border-input z-[10000]">
                             <SelectItem value="meeting">Reunión</SelectItem>
                             <SelectItem value="task">Tarea</SelectItem>
                             <SelectItem value="reminder">Recordatorio</SelectItem>
@@ -309,11 +309,11 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormLabel className="text-xs font-medium text-foreground">Prioridad <span className="text-primary">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
+                            <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg">
                               <SelectValue placeholder="Seleccionar prioridad" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-surface-primary border-input z-[10000]">
+                          <SelectContent className="bg-muted border-input z-[10000]">
                             <SelectItem value="low">Baja</SelectItem>
                             <SelectItem value="medium">Media</SelectItem>
                             <SelectItem value="high">Alta</SelectItem>
@@ -333,7 +333,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <FormControl>
                           <Input 
                             placeholder="Ubicación del evento"
-                            className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                            className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
                             {...field}
                           />
                         </FormControl>
@@ -353,7 +353,7 @@ export default function EventModal({ isOpen, onClose, event, onSubmit, isSubmitt
                         <Textarea
                           placeholder="Lista de asistentes (separados por comas)"
                           rows={2}
-                          className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
+                          className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none"
                           {...field}
                         />
                       </FormControl>

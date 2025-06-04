@@ -54,7 +54,7 @@ function ModalHeader({ title, subtitle, icon: Icon, onClose }: ModalHeaderProps)
         variant="ghost"
         size="sm"
         onClick={onClose}
-        className="h-8 w-8 p-0 rounded-lg hover:bg-surface-primary text-muted-foreground hover:text-foreground"
+        className="h-8 w-8 p-0 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
       >
         <X className="h-4 w-4" />
       </Button>
@@ -70,7 +70,7 @@ function ModalFooter({ onClose, confirmText = "Confirmar", onConfirm, isLoading 
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-9 sm:h-10 text-sm"
+          className="flex-1 bg-card border-input text-muted-foreground hover:bg-muted rounded-lg h-9 sm:h-10 text-sm"
           disabled={isLoading}
         >
           Cancelar
@@ -194,7 +194,7 @@ export function ModalAccordion({
       <button
         type="button"
         onClick={() => onToggle(id)}
-        className="w-full flex items-center justify-between p-4 bg-surface-views hover:bg-surface-primary transition-colors text-white flex-shrink-0 border-t border-b border-surface-primary"
+        className="w-full flex items-center justify-between p-4 bg-surface-views hover:bg-muted transition-colors text-white flex-shrink-0 border-t border-b border-surface-primary"
         style={{ borderWidth: '2px' }}
       >
         <div className="flex items-center gap-3">

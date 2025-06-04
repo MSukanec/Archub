@@ -155,7 +155,7 @@ export default function AdminActions() {
         </div>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -163,7 +163,7 @@ export default function AdminActions() {
               placeholder="Buscar acciones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-10 bg-surface-primary border-input rounded-xl"
+              className="pl-10 pr-10 bg-muted border-input rounded-xl"
             />
             {searchTerm && (
               <Button
@@ -180,13 +180,13 @@ export default function AdminActions() {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-[200px] justify-start text-left font-normal rounded-xl bg-surface-secondary border-input"
+                className="w-[200px] justify-start text-left font-normal rounded-xl bg-card border-input"
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 {sortOrder === 'newest' ? "Más reciente primero" : "Más antiguo primero"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-2 bg-surface-secondary">
+            <PopoverContent className="w-[200px] p-2 bg-card">
               <div className="space-y-1">
                 <Button
                   variant={sortOrder === 'newest' ? 'default' : 'ghost'}
@@ -211,10 +211,10 @@ export default function AdminActions() {
         </div>
       </div>
 
-      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border bg-surface-primary">
+            <TableRow className="border-border bg-muted">
               <TableHead className="text-foreground font-semibold h-12 text-center">Acción</TableHead>
               <TableHead className="text-foreground font-semibold text-center h-12">Acciones</TableHead>
             </TableRow>
@@ -231,7 +231,7 @@ export default function AdminActions() {
               </TableRow>
             ) : (
               paginatedActions.map((action: any) => (
-                <TableRow key={action.id} className="border-border bg-surface-secondary hover:bg-muted/30 transition-colors">
+                <TableRow key={action.id} className="border-border bg-card hover:bg-muted/30 transition-colors">
                   <TableCell className="py-2 text-center">
                     <div className="font-medium text-foreground">{action.name}</div>
                   </TableCell>
@@ -241,7 +241,7 @@ export default function AdminActions() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(action)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-surface-secondary bg-surface-primary h-8 w-8 p-0 rounded-lg"
+                        className="text-muted-foreground hover:text-foreground hover:bg-card bg-muted h-8 w-8 p-0 rounded-lg"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -310,7 +310,7 @@ export default function AdminActions() {
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-surface-secondary border-border rounded-2xl">
+        <AlertDialogContent className="bg-card border-border rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground text-xl font-semibold">¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -320,7 +320,7 @@ export default function AdminActions() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-surface-primary border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl">
+            <AlertDialogCancel className="bg-muted border-input shadow-lg hover:shadow-xl text-foreground hover:bg-muted rounded-xl">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
@@ -384,14 +384,14 @@ function AdminActionsSkeleton() {
         <div className="h-10 w-40 bg-muted rounded-xl animate-pulse"></div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
+      <div className="rounded-2xl shadow-md bg-card p-6 border-0">
         <div className="flex gap-4">
           <div className="h-10 flex-1 bg-muted rounded-xl animate-pulse"></div>
           <div className="h-10 w-48 bg-muted rounded-xl animate-pulse"></div>
         </div>
       </div>
       
-      <div className="rounded-2xl shadow-md bg-surface-secondary border-0 overflow-hidden">
+      <div className="rounded-2xl shadow-md bg-card border-0 overflow-hidden">
         <div className="p-6">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (

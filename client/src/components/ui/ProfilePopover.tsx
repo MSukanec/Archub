@@ -65,7 +65,7 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
 
       {isOpen && (
         <div 
-          className="fixed bottom-4 left-16 w-44 bg-surface-secondary border border-border rounded-lg shadow-xl z-50"
+          className="fixed bottom-4 left-16 w-44 bg-card border border-border rounded-lg shadow-xl z-50"
         >
           {/* Menu Items - Compact */}
           <div className="py-1">

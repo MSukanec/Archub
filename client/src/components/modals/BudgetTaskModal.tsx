@@ -206,7 +206,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
         <Button
           variant="outline"
           onClick={onClose}
-          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-muted-foreground hover:bg-surface-secondary"
+          className="flex-[0_0_25%] rounded-xl bg-[#e0e0e0] border-[#919191] text-muted-foreground hover:bg-card"
         >
           Cancelar
         </Button>
@@ -250,7 +250,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                   placeholder="Buscar tareas..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                  className="pl-10 bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                 />
               </div>
 
@@ -338,7 +338,7 @@ export function BudgetTaskModal({ isOpen, onClose }: BudgetTaskModalProps) {
                             onChange={(e) => handleQuantityChange(task.id, parseFloat(e.target.value) || 0.01)}
                             min="0.01"
                             step="0.01"
-                            className="w-16 h-7 text-center bg-surface-primary border-input rounded-lg text-xs"
+                            className="w-16 h-7 text-center bg-muted border-input rounded-lg text-xs"
                           />
                           <div className="text-right text-xs min-w-[60px]">
                             <div className="font-medium text-foreground">

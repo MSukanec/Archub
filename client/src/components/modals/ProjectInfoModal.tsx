@@ -60,7 +60,7 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
     >
       <div className="space-y-3">
         {/* Client */}
-        <div className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-card rounded-lg">
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
             <User className="w-4 h-4 text-primary" />
           </div>
@@ -108,7 +108,7 @@ export default function ProjectInfoModal({ isOpen, onClose, project }: ProjectIn
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-3 p-3 bg-surface-secondary rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-card rounded-lg">
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
             <MapPin className="w-4 h-4 text-primary" />
           </div>

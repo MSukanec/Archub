@@ -499,7 +499,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 {/* Acordeón de Configuración de Página */}
                 <div className="border-2 border-border rounded-lg overflow-hidden mb-4">
                   <div 
-                    className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover transition-colors"
+                    className="flex items-center justify-between p-3 bg-card cursor-pointer hover:bg-surface-hover transition-colors"
                     onClick={() => toggleAccordion('page-config')}
                   >
                     <div className="flex items-center space-x-3">
@@ -657,7 +657,7 @@ export default function PDFExportPreview({ isOpen, onClose, title, data, type }:
                 ].map((section) => (
                   <div key={section.id} className="border-2 border-border rounded-lg overflow-hidden">
                     <div 
-                      className="flex items-center justify-between p-3 bg-surface-secondary cursor-pointer hover:bg-surface-hover transition-colors"
+                      className="flex items-center justify-between p-3 bg-card cursor-pointer hover:bg-surface-hover transition-colors"
                       onClick={() => toggleAccordion(section.id)}
                     >
                       <div className="flex items-center space-x-3">

@@ -407,7 +407,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         type="date" 
                         value={field.value || ''}
                         onChange={(e) => field.onChange(e.target.value)}
-                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                        className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                       />
                     </FormControl>
                     <FormMessage />
@@ -429,11 +429,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         form.setValue('concept_id', '');
                       }} value={selectedTypeId} disabled={false}>
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
+                          <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder="Seleccionar tipo" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-surface-primary border-input z-[9999]">
+                        <SelectContent className="bg-muted border-input z-[9999]">
                           {movementTypes.map((type) => (
                             <SelectItem key={type.id} value={type.id} className="[&>span:first-child]:hidden">
                               {type.name}
@@ -459,7 +459,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         disabled={!selectedTypeId || conceptsLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
+                          <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder={
                               conceptsLoading ? "Cargando categorías..." :
                               !selectedTypeId ? "Primero selecciona un tipo" :
@@ -468,7 +468,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                             } />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-surface-primary border-input z-[9999]">
+                        <SelectContent className="bg-muted border-input z-[9999]">
                           {movementCategories.map((category) => (
                             <SelectItem key={category.id} value={category.id} className="[&>span:first-child]:hidden">
                               {category.name}
@@ -492,7 +492,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                     <FormControl>
                       <Textarea
                         placeholder="Describe el detalle del movimiento... (opcional)"
-                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
+                        className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
                         rows={3}
                         {...field}
                       />
@@ -522,11 +522,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Moneda <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
+                          <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder="Seleccionar moneda" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-surface-primary border-input z-[9999]">
+                        <SelectContent className="bg-muted border-input z-[9999]">
                           {availableCurrencies.map((currency) => (
                             <SelectItem 
                               key={currency.currency_id || currency.code} 
@@ -554,11 +554,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                       <FormLabel className="text-xs font-medium text-foreground">Billetera <span className="text-primary">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
+                          <SelectTrigger className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm ">
                             <SelectValue placeholder="Seleccionar billetera" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-surface-primary border-input z-[9999]">
+                        <SelectContent className="bg-muted border-input z-[9999]">
                           {organizationWallets?.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
                               {wallet.name}
@@ -589,7 +589,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           const numericValue = parseFloat(e.target.value);
                           field.onChange(isNaN(numericValue) ? 0 : numericValue);
                         }}
-                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
+                        className="bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm"
                       />
                     </FormControl>
                     <FormMessage />
@@ -620,7 +620,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           <Button
                             variant="outline"
                             role="combobox"
-                            className="w-full justify-between bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm  h-10 font-normal"
+                            className="w-full justify-between bg-muted border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm  h-10 font-normal"
                           >
                             <span className="truncate">
                               {field.value 
@@ -649,15 +649,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-[10000] bg-surface-primary border-input" align="start">
-                        <Command className="bg-surface-primary">
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-[10000] bg-muted border-input" align="start">
+                        <Command className="bg-muted">
                           <CommandInput 
                             placeholder="Escribir para buscar..."
                             value={contactSearchTerm}
                             onValueChange={setContactSearchTerm}
-                            className="bg-surface-primary border-none"
+                            className="bg-muted border-none"
                           />
-                          <CommandList className="bg-surface-primary">
+                          <CommandList className="bg-muted">
                             <CommandEmpty className="text-muted-foreground text-sm p-2">
                               {contactSearchTerm.length < 3 
                                 ? "Escribir al menos 3 caracteres"
@@ -717,7 +717,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           variant="outline"
           onClick={handleClose}
           disabled={createMovementMutation.isPending}
-          className="flex-1 bg-surface-secondary border-input text-muted-foreground hover:bg-surface-primary rounded-lg h-10"
+          className="flex-1 bg-card border-input text-muted-foreground hover:bg-muted rounded-lg h-10"
         >
           Cancelar
         </Button>

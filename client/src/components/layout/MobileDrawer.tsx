@@ -227,13 +227,13 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               </button>
               
               {showProjectMenu && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-surface-secondary rounded-lg border border-input shadow-lg z-10">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-lg border border-input shadow-lg z-10">
                   {currentProjects?.map((project) => (
                     <button
                       key={project.id}
                       onClick={() => handleProjectChange(project.id)}
                       className={cn(
-                        "w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-surface-secondary first:rounded-t-lg last:rounded-b-lg",
+                        "w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-card first:rounded-t-lg last:rounded-b-lg",
                         project.id === projectId ? "bg-black text-white" : "text-foreground"
                       )}
                     >
@@ -272,7 +272,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                           "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
                           isActive
                             ? "bg-black text-white"
-                            : "text-white hover:bg-black/20 bg-surface-secondary"
+                            : "text-white hover:bg-black/20 bg-card"
                         )}
                       >
                         <div className="flex items-center space-x-3">
@@ -300,7 +300,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                   "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
                                   isSubActive
                                     ? "bg-black text-white"
-                                    : "text-white hover:bg-black/20 bg-surface-secondary"
+                                    : "text-white hover:bg-black/20 bg-card"
                                 )}
                               >
                                 <span className="text-sm">{subItem.label}</span>
@@ -334,7 +334,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                             "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
                             isActive
                               ? "bg-black text-white"
-                              : "text-[#333] hover:bg-black/5 bg-surface-secondary"
+                              : "text-[#333] hover:bg-black/5 bg-card"
                           )}
                         >
                           <div className="flex items-center space-x-3">
@@ -362,7 +362,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                     "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
                                     isSubActive
                                       ? "bg-black text-white"
-                                      : "text-[#666] hover:bg-black/5 bg-surface-secondary"
+                                      : "text-[#666] hover:bg-black/5 bg-card"
                                   )}
                                 >
                                   <span className="text-sm">{subItem.label}</span>
@@ -397,7 +397,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                             "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left group",
                             isActive
                               ? "bg-black text-white"
-                              : "text-[#333] hover:bg-black/5 bg-surface-secondary"
+                              : "text-[#333] hover:bg-black/5 bg-card"
                           )}
                         >
                           <div className="flex items-center space-x-3">
@@ -425,7 +425,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                     "w-full flex items-center px-3 py-2 rounded-md transition-colors text-left",
                                     isSubActive
                                       ? "bg-black text-white"
-                                      : "text-[#666] hover:bg-black/5 bg-surface-secondary"
+                                      : "text-[#666] hover:bg-black/5 bg-card"
                                   )}
                                 >
                                   <span className="text-sm">{subItem.label}</span>
