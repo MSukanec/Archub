@@ -297,29 +297,9 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
       subtitle="Gestiona la información y configuración de tu organización"
       icon={Settings}
 
-      footer={
-        <div className="flex gap-2 w-full">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={updateOrganizationMutation.isPending}
-            className="w-1/4 bg-surface-secondary hover:bg-muted text-muted-foreground border-input rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={updateOrganizationMutation.isPending || isLoading}
-            className="w-3/4 bg-[#4f9eff] hover:bg-[#3d8bef] text-white border-[#4f9eff] rounded-xl"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {updateOrganizationMutation.isPending ? 'Guardando...' : 'Guardar Configuración'}
-          </Button>
-        </div>
-      }
+      confirmText="Guardar Configuración"
+      onConfirm={form.handleSubmit(onSubmit)}
+      isLoading={updateOrganizationMutation.isPending}
     >
       <Form {...form}>
         <div className="space-y-4">
