@@ -282,7 +282,17 @@ export default function PrimarySidebar() {
   const toggleTheme = async () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    
+    // Apply theme classes and styles
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(newTheme);
+    
+    // Apply background colors directly
+    if (newTheme === 'dark') {
+      document.body.style.backgroundColor = '#1e1e1e';
+    } else {
+      document.body.style.backgroundColor = '#d1d1d1';
+    }
     
     // Save theme preference to database
     try {
@@ -294,12 +304,18 @@ export default function PrimarySidebar() {
   
   // Load theme from preferences on component mount and when preferences change
   useEffect(() => {
-    if (preferences?.theme) {
-      setTheme(preferences.theme);
-      document.documentElement.classList.toggle('dark', preferences.theme === 'dark');
+    const currentTheme = preferences?.theme || 'dark';
+    setTheme(currentTheme);
+    
+    // Apply theme classes and styles
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(currentTheme);
+    
+    // Apply background colors directly
+    if (currentTheme === 'dark') {
+      document.body.style.backgroundColor = '#1e1e1e';
     } else {
-      // Default to dark theme
-      document.documentElement.classList.add('dark');
+      document.body.style.backgroundColor = '#d1d1d1';
     }
   }, [preferences?.theme]);
 
