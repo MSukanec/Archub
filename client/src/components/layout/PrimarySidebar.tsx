@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
@@ -115,6 +115,7 @@ export default function PrimarySidebar() {
   const { currentSection, currentView, setSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isDocked, setIsDocked] = useState(false);
 
   // Handle navigation
   const handleNavigation = (section: Section, view?: View) => {
@@ -137,10 +138,26 @@ export default function PrimarySidebar() {
   };
 
   const handleContainerMouseLeave = () => {
-    // Only close when leaving the entire sidebar container
-    setTimeout(() => {
+    // Only close when leaving the entire sidebar container if not docked
+    if (!isDocked) {
+      setTimeout(() => {
+        setHoveredItem(null);
+      }, 100);
+    }
+  };
+
+  const toggleDock = () => {
+    setIsDocked(!isDocked);
+    if (!isDocked && !hoveredItem) {
+      // If docking and no item is hovered, show the first available section
+      const firstSection = navigationItems[0]?.section || (user?.role === 'admin' ? adminItems[0]?.section : null);
+      if (firstSection) {
+        setHoveredItem(firstSection);
+      }
+    } else if (isDocked) {
+      // If undocking, hide the sidebar
       setHoveredItem(null);
-    }, 100);
+    }
   };
 
   const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
@@ -179,7 +196,7 @@ export default function PrimarySidebar() {
           })}
         </div>
 
-        {/* Bottom Section - Admin buttons + Profile */}
+        {/* Bottom Section - Admin buttons + Dock toggle + Profile */}
         <div className="flex flex-col mt-auto">
           {/* Admin Section */}
           {user?.role === 'admin' && adminItems.map((item) => {
@@ -204,6 +221,24 @@ export default function PrimarySidebar() {
             );
           })}
 
+          {/* Dock Toggle Button */}
+          <button
+            className={cn(
+              "w-[40px] h-[39px] flex items-center justify-center transition-colors",
+              isDocked
+                ? "text-primary" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            onClick={toggleDock}
+            title={isDocked ? "Undock sidebar" : "Dock sidebar"}
+          >
+            {isDocked ? (
+              <PanelLeftClose className="w-[20px] h-[20px]" />
+            ) : (
+              <PanelLeftOpen className="w-[20px] h-[20px]" />
+            )}
+          </button>
+
           {/* Profile Button */}
           <button
             className={cn(
@@ -220,10 +255,10 @@ export default function PrimarySidebar() {
       </div>
 
       {/* Secondary Sidebar */}
-      {hoveredItem && (
+      {(hoveredItem || isDocked) && (
         <div className="h-full bg-background border-r border-border w-[250px] min-w-[250px] max-w-[250px] z-10">
           {allItems
-            .filter(item => item.section === hoveredItem)
+            .filter(item => item.section === (hoveredItem || (isDocked ? navigationItems[0]?.section : null)))
             .map((item) => (
               <div key={item.section} className="h-full flex flex-col">
                 <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
@@ -238,7 +273,7 @@ export default function PrimarySidebar() {
                       <button
                         key={subItem.view}
                         className={cn(
-                          "w-full px-4 py-3 text-left text-sm flex items-center gap-3 transition-colors",
+                          "w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors",
                           isSubActive
                             ? "text-primary"
                             : "text-muted-foreground hover:text-foreground"
