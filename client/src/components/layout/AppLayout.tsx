@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useThemeStore } from '@/stores/themeStore';
@@ -86,36 +85,13 @@ const viewComponents = {
 
 export default function AppLayout() {
   const { setUser, setLoading } = useAuthStore();
-  const { currentView, setView } = useNavigationStore();
+  const { currentView } = useNavigationStore();
   const { setSecondarySidebarVisible } = useSidebarStore();
   const { initializeUserContext, userId } = useUserContextStore();
   const { initializeTheme } = useThemeStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
-  const [location] = useLocation();
-
-  // URL to view mapping
-  const urlToViewMap: Record<string, string> = {
-    '/': 'dashboard-timeline',
-    '/dashboard': 'dashboard-timeline',
-    '/organization': 'organization-overview',
-    '/projects': 'projects-list',
-    '/budgets': 'budgets-tasks-multiple',
-    '/finances/movements': 'movements-main',
-    '/finances/dashboard': 'movements-dashboard',
-    '/contacts': 'contacts',
-    '/calendar': 'calendar',
-    '/profile': 'profile-info',
-  };
-
-  // Handle URL-based navigation
-  useEffect(() => {
-    const targetView = urlToViewMap[location];
-    if (targetView && currentView !== targetView) {
-      setView(targetView as any);
-    }
-  }, [location, currentView, setView]);
 
   useEffect(() => {
     let mounted = true;
