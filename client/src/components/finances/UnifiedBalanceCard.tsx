@@ -91,7 +91,7 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
   const totalUSDBalance = dollarsBalance + pesosInUSD;
 
   return (
-    <Card className="p-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+    <Card className="p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">

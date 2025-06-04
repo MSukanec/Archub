@@ -41,6 +41,9 @@ export default function FinancesDashboard() {
       {/* Balance General */}
       <UnifiedBalanceCard projectId={projectId} />
 
+      {/* Tabla resumen de billeteras */}
+      <WalletSummaryTable projectId={projectId} />
+
       {/* Gráficos principales */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <WalletBalancePieChart projectId={projectId} />
@@ -55,9 +58,6 @@ export default function FinancesDashboard() {
         <FinancialHealthIndicators projectId={projectId} />
         <BalanceForecastWidget projectId={projectId} />
       </div>
-
-      {/* Tabla resumen */}
-      <WalletSummaryTable projectId={projectId} />
     </div>
   );
 }
