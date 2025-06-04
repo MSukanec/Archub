@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield } from 'lucide-react';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
+import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
-import { ProfilePopover } from '@/components/ui/ProfilePopover';
 
 interface SubMenuItem {
   view: View;
@@ -84,10 +84,37 @@ const navigationItems: NavigationItem[] = [
   }
 ];
 
+const adminItems: NavigationItem[] = [
+  { 
+    section: 'admin-community',
+    icon: Users,
+    label: 'Comunidad',
+    subItems: [
+      { view: 'admin-organizations', label: 'Organizaciones', icon: Building2 },
+      { view: 'admin-users', label: 'Usuarios', icon: Users }
+    ]
+  },
+  { 
+    section: 'admin-library',
+    icon: Library,
+    label: 'Biblioteca',
+    subItems: [
+      { view: 'admin-categories', label: 'Categorías', icon: Settings },
+      { view: 'admin-material-categories', label: 'Categorías de Materiales', icon: Library },
+      { view: 'admin-materials', label: 'Materiales', icon: Contact },
+      { view: 'admin-units', label: 'Unidades', icon: Settings },
+      { view: 'admin-elements', label: 'Elementos', icon: FolderKanban },
+      { view: 'admin-actions', label: 'Acciones', icon: Settings },
+      { view: 'admin-tasks', label: 'Tareas', icon: ClipboardList },
+      { view: 'admin-permissions', label: 'Permisos', icon: Shield }
+    ]
+  }
+];
+
 export default function PrimarySidebar() {
   const { currentSection, currentView, setSection, setView } = useNavigationStore();
+  const { user } = useAuthStore();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [submenuPosition, setSubmenuPosition] = useState({ top: 0, left: 0 });
 
   // Handle navigation
   const handleNavigation = (section: Section, view?: View) => {
@@ -98,93 +125,141 @@ export default function PrimarySidebar() {
     setHoveredItem(null);
   };
 
-  // Handle hover for submenu
-  const handleMouseEnter = (section: string, event: React.MouseEvent) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setSubmenuPosition({
-      top: rect.top,
-      left: rect.right + 5
-    });
+  // Handle profile navigation
+  const handleProfileClick = () => {
+    setSection('profile');
+    setView('profile-main');
+  };
+
+  // Handle hover for secondary sidebar
+  const handleMouseEnter = (section: string) => {
     setHoveredItem(section);
   };
 
   const handleMouseLeave = () => {
     setTimeout(() => {
       setHoveredItem(null);
-    }, 100);
+    }, 200);
   };
 
+  const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
+
   return (
-    <div className="h-full bg-background border-r border-border flex flex-col w-[40px] min-w-[40px] max-w-[40px]">
-      {/* Main Navigation Items */}
-      <div className="flex flex-col">
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentSection === item.section;
-          
-          return (
-            <div key={item.section} className="relative">
-              <button
-                className={cn(
-                  "w-[39px] h-[39px] flex items-center justify-center transition-colors border-b border-border/50",
-                  isActive 
-                    ? "bg-primary/10 text-primary" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                )}
-                onClick={() => handleNavigation(item.section)}
-                onMouseEnter={(e) => handleMouseEnter(item.section, e)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Icon className="w-[20px] h-[20px]" />
-              </button>
-              
-              {/* Submenu */}
-              {hoveredItem === item.section && (
-                <div
-                  className="fixed bg-popover border border-border rounded-md shadow-md z-50 w-[250px] py-2"
-                  style={{
-                    top: submenuPosition.top,
-                    left: submenuPosition.left,
-                  }}
-                  onMouseEnter={() => setHoveredItem(item.section)}
+    <div className="flex h-full">
+      {/* Primary Sidebar */}
+      <div className="h-full bg-background border-r border-border flex flex-col w-[40px] min-w-[40px] max-w-[40px]">
+        {/* Main Navigation Items */}
+        <div className="flex flex-col">
+          {navigationItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = currentSection === item.section;
+            const isDashboard = item.section === 'dashboard';
+            
+            return (
+              <div key={item.section} className="relative">
+                <button
+                  className={cn(
+                    "w-[40px] h-[39px] flex items-center justify-center transition-colors",
+                    isDashboard && "border-b border-border/50",
+                    isActive 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                  onClick={() => handleNavigation(item.section)}
+                  onMouseEnter={() => handleMouseEnter(item.section)}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <div className="px-3 py-2 border-b border-border">
-                    <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
-                  </div>
-                  <div className="py-1">
-                    {item.subItems.map((subItem) => {
-                      const SubIcon = subItem.icon;
-                      const isSubActive = currentView === subItem.view;
-                      
-                      return (
-                        <button
-                          key={subItem.view}
-                          className={cn(
-                            "w-full px-3 py-2 text-left text-sm flex items-center gap-3 transition-colors",
-                            isSubActive
-                              ? "bg-primary/10 text-primary"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                          )}
-                          onClick={() => handleNavigation(item.section, subItem.view)}
-                        >
-                          <SubIcon className="w-4 h-4" />
-                          {subItem.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <Icon className="w-[20px] h-[20px]" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Admin Section */}
+        {user?.role === 'admin' && (
+          <div className="flex flex-col mt-auto">
+            {adminItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentSection === item.section;
+              
+              return (
+                <div key={item.section} className="relative">
+                  <button
+                    className={cn(
+                      "w-[40px] h-[39px] flex items-center justify-center transition-colors",
+                      isActive 
+                        ? "bg-primary/10 text-primary" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    )}
+                    onClick={() => handleNavigation(item.section)}
+                    onMouseEnter={() => handleMouseEnter(item.section)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <Icon className="w-[20px] h-[20px]" />
+                  </button>
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
+
+        {/* Profile Button */}
+        <div className="flex flex-col mt-auto">
+          <button
+            className={cn(
+              "w-[40px] h-[39px] flex items-center justify-center transition-colors",
+              currentSection === 'profile'
+                ? "bg-primary/10 text-primary" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+            onClick={handleProfileClick}
+          >
+            <User className="w-[20px] h-[20px]" />
+          </button>
+        </div>
       </div>
 
-      {/* Bottom Section - Profile */}
-      <div className="flex flex-col mt-auto">
-        <ProfilePopover />
-      </div>
+      {/* Secondary Sidebar */}
+      {hoveredItem && (
+        <div
+          className="h-full bg-background border-r border-border w-[250px] min-w-[250px] max-w-[250px] z-10"
+          onMouseEnter={() => setHoveredItem(hoveredItem)}
+          onMouseLeave={handleMouseLeave}
+        >
+          {allItems
+            .filter(item => item.section === hoveredItem)
+            .map((item) => (
+              <div key={item.section} className="h-full flex flex-col">
+                <div className="px-4 py-3 border-b border-border bg-muted/30">
+                  <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
+                </div>
+                <div className="flex-1 py-2">
+                  {item.subItems.map((subItem) => {
+                    const SubIcon = subItem.icon;
+                    const isSubActive = currentView === subItem.view;
+                    
+                    return (
+                      <button
+                        key={subItem.view}
+                        className={cn(
+                          "w-full px-4 py-3 text-left text-sm flex items-center gap-3 transition-colors",
+                          isSubActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        )}
+                        onClick={() => handleNavigation(item.section, subItem.view)}
+                      >
+                        <SubIcon className="w-4 h-4" />
+                        {subItem.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }
