@@ -197,6 +197,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       }
 
       // Save tasks
+      console.log('Form data.tasks:', data.tasks);
       if (data.tasks) {
         // First delete existing tasks for this site log
         await supabase
@@ -214,13 +215,24 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
             notes: taskData.notes || null,
           }));
 
+        console.log('Tasks to insert:', tasksToInsert);
+
         if (tasksToInsert.length > 0) {
           const { error: tasksError } = await supabase
             .from('site_log_tasks')
             .insert(tasksToInsert);
 
-          if (tasksError) throw tasksError;
+          if (tasksError) {
+            console.error('Error saving tasks:', tasksError);
+            throw tasksError;
+          } else {
+            console.log('Tasks saved successfully');
+          }
+        } else {
+          console.log('No tasks selected to save');
         }
+      } else {
+        console.log('No tasks data in form');
       }
 
       return { id: siteLogId };
