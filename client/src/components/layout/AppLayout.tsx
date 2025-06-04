@@ -165,9 +165,11 @@ export default function AppLayout() {
 
   const ViewComponent = viewComponents[currentView] || ArchubDashboard;
 
-  // Render ArchubLayout independently for organization-dashboard
-  if (currentView === 'organization-dashboard') {
-    return <OrganizationDashboard />;
+  // Views that use ArchubLayout should render without traditional layout
+  const archubViews = ['organization-dashboard', 'movements-dashboard', 'movements-main'];
+  
+  if (archubViews.includes(currentView)) {
+    return <ViewComponent />;
   }
 
   return (
