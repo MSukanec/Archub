@@ -159,12 +159,7 @@ export default function AppLayout() {
     };
   }, []);
 
-  const ViewComponent = viewComponents[currentView] || ArchubDashboard;
-
-  // Render ArchubDashboard without layout wrapper
-  if (currentView === 'dashboard-main') {
-    return <ArchubDashboard />;
-  }
+  const ViewComponent = viewComponents[currentView] || (() => <div>Vista no encontrada</div>);
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface-views">
