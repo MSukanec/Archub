@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus } from 'lucide-react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { queryClient } from '@/lib/queryClient';
+import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 
 interface SubMenuItem {
@@ -241,10 +242,19 @@ export default function PrimarySidebar() {
     // You can trigger the modal here if needed
   };
 
+  const handleLogout = () => {
+    // Clear auth state and redirect to login
+    const { setUser } = useAuthStore.getState();
+    setUser(null);
+    window.location.href = '/login';
+  };
+
+  const { theme, toggleTheme } = useTheme();
+
   const renderDashboardSidebar = () => (
     <div className="h-full flex flex-col">
       <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
-        <h3 className="font-medium text-sm text-foreground">Proyectos</h3>
+        <h3 className="font-medium text-sm text-foreground">Dashboard</h3>
       </div>
       <div className="flex-1 overflow-y-auto">
         {(projects as any[]).map((project: any) => {
@@ -404,6 +414,8 @@ export default function PrimarySidebar() {
         <div className="h-full bg-background border-r border-border w-[200px] min-w-[200px] max-w-[200px] z-10">
           {hoveredItem === 'dashboard'
             ? renderDashboardSidebar()
+            : hoveredItem === 'profile'
+            ? renderProfileSidebar()
             : allItems
                 .filter(item => item.section === hoveredItem)
                 .map((item) => (
