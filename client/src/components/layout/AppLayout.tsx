@@ -164,7 +164,10 @@ export default function AppLayout() {
 
   const ViewComponent = viewComponents[currentView] || ArchubDashboard;
 
-  // Removemos la renderización sin layout para dashboard-timeline
+  // Render ArchubLayout independently for organization-dashboard
+  if (currentView === 'organization-dashboard') {
+    return <OrganizationDashboard />;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface-views">
