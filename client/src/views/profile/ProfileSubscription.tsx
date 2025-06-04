@@ -60,7 +60,7 @@ export default function ProfileSubscription() {
       case 'pro':
         return [
           'Todo lo FREE más:',
-          '∞ proyectos',
+          'Proyectos ilimitados',
           'PDFs personalizados',
           'Asesor IA',
           'Soporte 24/7'

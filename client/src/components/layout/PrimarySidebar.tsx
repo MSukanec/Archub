@@ -479,9 +479,9 @@ export default function PrimarySidebar() {
           >
             {(() => {
               const currentPlan = userPlan?.name?.toLowerCase() || 'free';
-              if (currentPlan === 'pro') return <Crown className="w-[20px] h-[20px]" />;
-              if (currentPlan === 'enterprise') return <Rocket className="w-[20px] h-[20px]" />;
-              return <Zap className="w-[20px] h-[20px]" />;
+              if (currentPlan === 'pro') return <Crown className="w-[20px] h-[20px] text-primary" />;
+              if (currentPlan === 'enterprise') return <Rocket className="w-[20px] h-[20px] text-primary" />;
+              return <Zap className="w-[20px] h-[20px] text-primary" />;
             })()}
           </button>
 
