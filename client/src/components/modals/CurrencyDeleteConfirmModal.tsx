@@ -173,7 +173,7 @@ export default function CurrencyDeleteConfirmModal({
                         type="radio"
                         checked={deleteOption === 'replace_with_default'}
                         onChange={() => setDeleteOption('replace_with_default')}
-                        className="text-primary"
+                        className="accent-primary text-primary focus:ring-primary focus:ring-2 focus:ring-offset-0"
                       />
                       <div className="flex-1">
                         <p className="font-medium text-sm">
@@ -208,7 +208,7 @@ export default function CurrencyDeleteConfirmModal({
                           type="radio"
                           checked={deleteOption === 'replace_with_selected'}
                           onChange={() => setDeleteOption('replace_with_selected')}
-                          className="text-primary"
+                          className="accent-primary text-primary focus:ring-primary focus:ring-2 focus:ring-offset-0"
                         />
                         <div className="flex-1 space-y-3">
                           <div>

@@ -140,7 +140,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
       if (error) throw error;
       
       // Return only non-default currencies (secondary currencies)
-      return data?.filter(oc => !oc.is_default).map(oc => oc.currencies?.code).filter(Boolean) || [];
+      return data?.filter(oc => !oc.is_default).map(oc => oc.currencies.code).filter(Boolean) || [];
     },
     enabled: !!organizationId && isOpen,
     retry: 1,
@@ -833,10 +833,13 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                                     if (e.target.checked) {
                                       field.onChange([...currentValues, currency.code]);
                                     } else {
-                                      field.onChange(currentValues.filter(code => code !== currency.code));
+                                      // Si se está destildando, mostrar modal de confirmación
+                                      e.preventDefault();
+                                      e.target.checked = true; // Revertir el cambio temporalmente
+                                      handleDeleteCurrency(currency);
                                     }
                                   }}
-                                  className="rounded border-input"
+                                  className="rounded border-input accent-primary text-primary focus:ring-primary focus:ring-2 focus:ring-offset-0"
                                 />
                                 <label
                                   htmlFor={`currency-${currency.code}`}
