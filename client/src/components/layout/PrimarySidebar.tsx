@@ -5,7 +5,7 @@ import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { queryClient } from '@/lib/queryClient';
-import { useTheme } from '@/hooks/useTheme';
+
 import { cn } from '@/lib/utils';
 
 interface SubMenuItem {
@@ -72,10 +72,10 @@ const navigationItems: NavigationItem[] = [
   },
   { 
     section: 'contacts',
-    icon: UserCheck,
+    icon: Users,
     label: 'Contactos',
     subItems: [
-      { view: 'contacts', label: 'Lista de Contactos', icon: UserCheck }
+      { view: 'contacts', label: 'Lista de Contactos', icon: Users }
     ]
   },
   { 
@@ -132,8 +132,7 @@ export default function PrimarySidebar() {
 
   // Handle profile navigation
   const handleProfileClick = () => {
-    setSection('profile');
-    setView('profile-main');
+    setHoveredItem('profile');
   };
 
   // Handle hover for secondary sidebar
@@ -249,7 +248,15 @@ export default function PrimarySidebar() {
     window.location.href = '/login';
   };
 
-  const { theme, toggleTheme } = useTheme();
+  // Simple theme toggle without hook for now
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
+
 
   const renderDashboardSidebar = () => (
     <div className="h-full flex flex-col">
@@ -284,6 +291,46 @@ export default function PrimarySidebar() {
           Nuevo Proyecto
         </button>
       </div>
+    </div>
+  );
+
+  const renderProfileSidebar = () => (
+    <div className="h-full flex flex-col">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
+        <h3 className="font-medium text-sm text-foreground">Perfil</h3>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {/* Mi Perfil Button */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
+          onClick={() => {
+            setSection('profile');
+            setView('profile-main');
+            setHoveredItem(null);
+          }}
+        >
+          <User className="w-4 h-4" />
+          Mi Perfil
+        </button>
+        
+        {/* Theme Toggle */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {theme === 'dark' ? 'Modo Claro' : 'Modo Oscuro'}
+        </button>
+      </div>
+      
+      {/* Logout Button at bottom */}
+      <button
+        className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-red-500 hover:text-red-400 border-t border-dashed border-border/50"
+        onClick={handleLogout}
+      >
+        <LogOut className="w-4 h-4" />
+        Cerrar Sesión
+      </button>
     </div>
   );
 
