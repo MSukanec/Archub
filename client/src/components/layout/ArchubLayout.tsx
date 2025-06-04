@@ -124,84 +124,96 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
       {/* Unified Header */}
       <div className="bg-surface-primary border-b border-border">
         <div className="w-full px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Navigation Sections with Inline Animation */}
-            <div 
-              className="flex items-center gap-2 relative"
-              onMouseLeave={handleMouseLeave}
-            >
-              {navigationSections.map((section, index) => {
-                const { section: sectionKey, icon: Icon, label } = section;
-                const isExpanded = expandedSection === sectionKey;
-                const shouldMoveRight = expandedIndex !== -1 && index > expandedIndex;
-                const expandedViewsWidth = expandedSectionData ? (expandedSectionData.views.length * 120) : 0;
-                
+          <div className="flex items-center w-full gap-6">
+            {/* Left Section - Dashboard Only (10%) */}
+            <div className="w-[10%] flex items-center">
+              {(() => {
+                const dashboardSection = navigationSections[0]; // Dashboard section
+                const { section: sectionKey, icon: Icon } = dashboardSection;
                 return (
-                  <div
-                    key={sectionKey}
-                    className="flex items-center gap-2"
-                    style={{
-                      transform: shouldMoveRight ? `translateX(${expandedViewsWidth}px)` : 'translateX(0)',
-                      transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
-                  >
-                    {/* Circular Button */}
-                    <button
-                      onMouseEnter={() => handleSectionHover(sectionKey, index)}
-                      onClick={() => handleSectionClick(sectionKey)}
-                      className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105",
-                        currentSection === sectionKey 
-                          ? "bg-primary text-white shadow-lg" 
-                          : "bg-surface-secondary text-muted-foreground hover:bg-surface-secondary/80"
-                      )}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </button>
-
-                    {/* Inline Views - appear after the hovered button */}
-                    {isExpanded && (
-                      <div 
-                        className="flex items-center gap-2"
-                        style={{
-                          animation: 'slideInRight 300ms cubic-bezier(0.4, 0, 0.2, 1)'
-                        }}
-                      >
-                        {section.views.map(({ key, label: viewLabel }) => (
-                          <button
-                            key={key}
-                            onClick={() => handleViewClick(sectionKey, key)}
-                            className={cn(
-                              "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap",
-                              currentView === key 
-                                ? "bg-primary text-white shadow-md" 
-                                : "bg-surface-secondary text-foreground hover:bg-surface-secondary/80"
-                            )}
-                          >
-                            {viewLabel}
-                          </button>
-                        ))}
-                      </div>
+                  <button
+                    onClick={() => handleSectionClick(sectionKey)}
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105",
+                      currentSection === sectionKey 
+                        ? "bg-primary text-white shadow-lg" 
+                        : "bg-surface-secondary text-muted-foreground hover:bg-surface-secondary/80"
                     )}
-                  </div>
+                  >
+                    <Icon className="w-5 h-5" />
+                  </button>
                 );
-              })}
+              })()}
             </div>
 
-            {/* Right Side - User Actions */}
-            <div className="flex items-center gap-3">
-              {/* Settings */}
-              <button
-                onClick={() => {
-                  setSection('organization');
-                  setView('organization-settings');
-                }}
-                className="w-10 h-10 rounded-full bg-surface-secondary text-muted-foreground hover:bg-surface-secondary/80 hover:text-foreground flex items-center justify-center transition-all duration-200 hover:scale-105"
+            {/* Center Section - Organization to Contacts (80%) */}
+            <div className="w-[80%] flex items-center justify-center">
+              <div 
+                className="flex items-center gap-2 relative"
+                onMouseLeave={handleMouseLeave}
               >
-                <Settings className="w-5 h-5" />
-              </button>
+                {navigationSections.slice(1, -1).map((section, index) => { // Skip Dashboard and Contacts
+                  const actualIndex = index + 1; // Adjust index for proper positioning
+                  const { section: sectionKey, icon: Icon, label } = section;
+                  const isExpanded = expandedSection === sectionKey;
+                  const shouldMoveRight = expandedIndex !== -1 && actualIndex > expandedIndex;
+                  const expandedViewsWidth = expandedSectionData ? (expandedSectionData.views.length * 120) : 0;
+                  
+                  return (
+                    <div
+                      key={sectionKey}
+                      className="flex items-center gap-2"
+                      style={{
+                        transform: shouldMoveRight ? `translateX(${expandedViewsWidth}px)` : 'translateX(0)',
+                        transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                    >
+                      {/* Circular Button */}
+                      <button
+                        onMouseEnter={() => handleSectionHover(sectionKey, actualIndex)}
+                        onClick={() => handleSectionClick(sectionKey)}
+                        className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105",
+                          currentSection === sectionKey 
+                            ? "bg-primary text-white shadow-lg" 
+                            : "bg-surface-secondary text-muted-foreground hover:bg-surface-secondary/80"
+                        )}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </button>
 
-              {/* Profile */}
+                      {/* Inline Views - appear after the hovered button */}
+                      {isExpanded && (
+                        <div 
+                          className="flex items-center gap-2"
+                          style={{
+                            animation: 'slideInRight 300ms cubic-bezier(0.4, 0, 0.2, 1)'
+                          }}
+                        >
+                          {section.views.map(({ key, label: viewLabel }) => (
+                            <button
+                              key={key}
+                              onClick={() => handleViewClick(sectionKey, key)}
+                              className={cn(
+                                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap",
+                                currentView === key 
+                                  ? "bg-primary text-white shadow-md" 
+                                  : "bg-surface-secondary text-foreground hover:bg-surface-secondary/80"
+                              )}
+                            >
+                              {viewLabel}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Section - Profile Only (10%) */}
+            <div className="w-[10%] flex items-center justify-end">
               <button
                 onClick={() => {
                   setSection('profile');
@@ -211,25 +223,8 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
               >
                 <User className="w-5 h-5" />
               </button>
-
-              {/* User Info */}
-              <div className="flex items-center gap-3 ml-2">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-foreground">
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{user?.email}</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">
-                    {user?.firstName?.[0]}{user?.lastName?.[0]}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
-
-
         </div>
       </div>
 
