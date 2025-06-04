@@ -1,164 +1,190 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Crown, Users, Building, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useAuthStore } from '@/stores/authStore';
+import { Crown, Zap, Rocket, Check } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
-import { plansService } from '@/lib/plansService';
+import { useAuthStore } from '@/stores/authStore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { supabase } from '@/lib/supabase';
+import { useFeatures } from '@/hooks/useFeatures';
 
 export default function SubscriptionTables() {
+  const { setView, setSection } = useNavigationStore();
   const { user } = useAuthStore();
-  const { setSection, setView } = useNavigationStore();
+  const { getCurrentPlan } = useFeatures();
+  const [isAnnual, setIsAnnual] = useState(false);
 
-  // Set navigation state when component mounts
   useEffect(() => {
     setSection('profile');
     setView('subscription-tables');
   }, [setSection, setView]);
 
-  // Fetch plans
-  const { data: plans = [], isLoading: plansLoading } = useQuery({
-    queryKey: ['plans'],
-    queryFn: plansService.getAll,
+  // Fetch all available plans
+  const { data: availablePlans = [] } = useQuery({
+    queryKey: ['/api/plans'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('plans')
+        .select('*')
+        .order('price');
+      if (error) throw error;
+      return data;
+    }
   });
 
   const getPlanIcon = (planName: string) => {
     switch (planName?.toLowerCase()) {
-      case 'free':
-        return Zap;
-      case 'pro':
-        return Users;
-      case 'enterprise':
-        return Building;
-      default:
-        return Crown;
+      case 'free': return Zap;
+      case 'pro': return Crown;
+      case 'enterprise': return Rocket;
+      default: return Zap;
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Planes de Suscripción
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Elige el plan perfecto para tu organización y lleva tus proyectos de construcción al siguiente nivel
-          </p>
-        </div>
+  const getPlanFeatures = (planName: string) => {
+    switch (planName?.toLowerCase()) {
+      case 'free':
+        return [
+          '1 usuario',
+          '2 proyectos',
+          'Presupuestos',
+          'Bitácora',
+          'Finanzas',
+          'Agenda',
+          'Contactos',
+          'Comunidad Discord'
+        ];
+      case 'pro':
+        return [
+          'Todo lo FREE más:',
+          '∞ proyectos',
+          'PDFs personalizados',
+          'Asesor IA',
+          'Soporte 24/7'
+        ];
+      case 'enterprise':
+        return [
+          'Todo lo PRO más:',
+          'Trabajos en equipo',
+          'Integraciones API'
+        ];
+      default:
+        return [];
+    }
+  };
 
-        {/* Pricing Toggle */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-white rounded-full p-1 shadow-lg">
-            <div className="flex">
-              <Button
-                variant="ghost"
-                className="rounded-full px-6 py-2 bg-gray-900 text-white"
-              >
-                Mensual
-              </Button>
-              <Button
-                variant="ghost"
-                className="rounded-full px-6 py-2 text-gray-600"
-              >
-                Anual
-                <Badge className="ml-2 bg-green-100 text-green-700">
-                  Ahorra 20%
-                </Badge>
-              </Button>
-            </div>
+  const calculatePrice = (basePrice: number) => {
+    if (isAnnual) {
+      return Math.round(basePrice * 12 * 0.8); // 20% discount for annual
+    }
+    return basePrice;
+  };
+
+  const currentPlanName = getCurrentPlan() || 'FREE';
+
+  return (
+    <div className="min-h-screen bg-surface-views p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Crown className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground">Planes de Suscripción</h1>
+            <p className="text-muted-foreground">
+              Elige el plan que mejor se adapte a tus necesidades
+            </p>
           </div>
         </div>
 
-        {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {plansLoading ? (
-            <div className="col-span-3 text-center py-12">
-              <p className="text-gray-500">Cargando planes disponibles...</p>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Rocket className="w-5 h-5" />
+              Planes Disponibles
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Billing Toggle */}
+            <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
+              <span className={`text-sm ${!isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
+                Mensual
+              </span>
+              <Switch
+                checked={isAnnual}
+                onCheckedChange={setIsAnnual}
+                className="data-[state=checked]:bg-primary"
+              />
+              <span className={`text-sm ${isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
+                Anual
+              </span>
+              {isAnnual && (
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                  20% descuento
+                </span>
+              )}
             </div>
-          ) : plans.length === 0 ? (
-            <div className="col-span-3 text-center py-12">
-              <p className="text-gray-500">No hay planes disponibles en este momento.</p>
-            </div>
-          ) : (
-            plans.map((plan, index) => {
-              const IconComponent = getPlanIcon(plan.name);
-              const isPopular = index === 1;
-              
-              return (
-                <div
-                  key={plan.id}
-                  className={`relative bg-white rounded-2xl shadow-xl p-8 ${
-                    isPopular ? 'ring-2 ring-blue-500 transform scale-105' : ''
-                  }`}
-                >
-                  {isPopular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-blue-500 text-white px-4 py-1">
-                        Más Popular
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-                      <IconComponent className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      {plan.name}
-                    </h3>
-                    <div className="mb-4">
-                      <span className="text-4xl font-bold text-gray-900">
-                        {String(plan.price) === '0' ? 'Gratis' : `US$${plan.price}`}
-                      </span>
-                      {String(plan.price) !== '0' && (
-                        <span className="text-gray-500">/mes</span>
-                      )}
-                    </div>
-                    <p className="text-gray-600">
-                      {plan.name === 'FREE' ? 'Perfecto para empezar' : 
-                       plan.name === 'PRO' ? 'Para equipos en crecimiento' :
-                       'Para empresas grandes'}
-                    </p>
-                  </div>
 
-                  <ul className="space-y-4 mb-8">
-                    {plan.features && Array.isArray(plan.features) && plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start">
-                        <div className="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        </div>
-                        <span className="ml-3 text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button
-                    className={`w-full py-3 rounded-xl font-semibold ${
-                      isPopular
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                        : 'bg-gray-900 hover:bg-gray-800 text-white'
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {availablePlans.map((plan) => {
+                const PlanIcon = getPlanIcon(plan.name);
+                const isCurrentPlan = plan.name.toLowerCase() === currentPlanName.toLowerCase();
+                const price = calculatePrice(plan.price);
+                const features = getPlanFeatures(plan.name);
+                
+                return (
+                  <div
+                    key={plan.id}
+                    className={`p-6 border rounded-lg ${
+                      isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border'
                     }`}
                   >
-                    Elegir Plan
-                  </Button>
-                </div>
-              );
-            })
-          )}
-        </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <PlanIcon className="w-5 h-5 text-primary" />
+                      <span className="font-medium text-lg">{plan.name}</span>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <div className="text-3xl font-bold">
+                        ${price}
+                        <span className="text-sm font-normal text-muted-foreground">
+                          /{isAnnual ? 'año' : 'mes'}
+                        </span>
+                      </div>
+                      {isAnnual && plan.price > 0 && (
+                        <div className="text-sm text-muted-foreground line-through">
+                          ${plan.price * 12}/año
+                        </div>
+                      )}
+                    </div>
 
-        {/* FAQ Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
-            Preguntas Frecuentes
-          </h2>
-          <p className="text-center text-gray-600">
-            ¿Tienes dudas? Aquí están las respuestas a las preguntas más comunes
-          </p>
-        </div>
+                    <div className="space-y-2 mb-6">
+                      {features.map((feature, index) => (
+                        <div key={index} className="flex items-start gap-2 text-sm">
+                          <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span className={feature.startsWith('Todo lo') ? 'font-medium' : ''}>
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {isCurrentPlan ? (
+                      <Button variant="outline" size="sm" disabled className="w-full">
+                        Plan Actual
+                      </Button>
+                    ) : (
+                      <Button size="sm" className="w-full">
+                        Seleccionar
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -90,9 +90,9 @@ export default function ProfileSubscription() {
 
   // Mock payment history - this would come from API
   const paymentHistory = [
-    { id: 1, date: '2024-11-01', amount: 19, status: 'Completado', method: 'Tarjeta terminada en 4242' },
-    { id: 2, date: '2024-10-01', amount: 19, status: 'Completado', method: 'Tarjeta terminada en 4242' },
-    { id: 3, date: '2024-09-01', amount: 19, status: 'Completado', method: 'Tarjeta terminada en 4242' },
+    { id: 1, date: '2024-11-01', amount: 20, status: 'Completado', method: 'Tarjeta terminada en 4242' },
+    { id: 2, date: '2024-10-01', amount: 20, status: 'Completado', method: 'Tarjeta terminada en 4242' },
+    { id: 3, date: '2024-09-01', amount: 20, status: 'Completado', method: 'Tarjeta terminada en 4242' },
   ];
 
   const currentPlanName = getCurrentPlan() || 'FREE';
