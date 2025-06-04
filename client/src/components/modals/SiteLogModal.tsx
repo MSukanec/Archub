@@ -285,8 +285,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                     <FormLabel className="text-xs font-medium text-foreground">Clima</FormLabel>
                     <Select value={field.value || ''} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10">
-                          <SelectValue placeholder="Seleccionar clima" />
+                        <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10 text-white dark:text-white">
+                          <SelectValue placeholder="Seleccionar clima" className="text-white dark:text-white" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-surface-primary border-input z-[9999]">
@@ -318,7 +318,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                     <FormControl>
                       <Textarea
                         placeholder="Describe las actividades del día, observaciones, incidentes, etc."
-                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none"
+                        className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm resize-none text-white dark:text-white"
                         rows={4}
                         {...field}
                       />
