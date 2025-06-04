@@ -136,17 +136,8 @@ export default function PrimarySidebar() {
     setHoveredItem(section);
   };
 
-  const handleMouseLeave = () => {
-    setTimeout(() => {
-      setHoveredItem(null);
-    }, 300);
-  };
-
-  const handleSecondarySidebarEnter = () => {
-    // Keep the secondary sidebar open when hovering over it
-  };
-
-  const handleSecondarySidebarLeave = () => {
+  const handleContainerMouseLeave = () => {
+    // Only close when leaving the entire sidebar container
     setTimeout(() => {
       setHoveredItem(null);
     }, 100);
@@ -155,7 +146,10 @@ export default function PrimarySidebar() {
   const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
 
   return (
-    <div className="flex h-full">
+    <div 
+      className="flex h-full" 
+      onMouseLeave={handleContainerMouseLeave}
+    >
       {/* Primary Sidebar */}
       <div className="h-full bg-background border-r border-border flex flex-col w-[40px] min-w-[40px] max-w-[40px]">
         {/* Main Navigation Items */}
@@ -170,14 +164,13 @@ export default function PrimarySidebar() {
                 <button
                   className={cn(
                     "w-[40px] h-[39px] flex items-center justify-center transition-colors",
-                    isDashboard && "border-b border-border/50",
+                    isDashboard && "border-b border-border",
                     isActive 
                       ? "text-primary" 
                       : "text-muted-foreground hover:text-foreground"
                   )}
                   onClick={() => handleNavigation(item.section)}
                   onMouseEnter={() => handleMouseEnter(item.section)}
-                  onMouseLeave={handleMouseLeave}
                 >
                   <Icon className="w-[20px] h-[20px]" />
                 </button>
@@ -204,7 +197,6 @@ export default function PrimarySidebar() {
                   )}
                   onClick={() => handleNavigation(item.section)}
                   onMouseEnter={() => handleMouseEnter(item.section)}
-                  onMouseLeave={handleMouseLeave}
                 >
                   <Icon className="w-[20px] h-[20px]" />
                 </button>
@@ -229,16 +221,12 @@ export default function PrimarySidebar() {
 
       {/* Secondary Sidebar */}
       {hoveredItem && (
-        <div
-          className="h-full bg-background border-r border-border w-[250px] min-w-[250px] max-w-[250px] z-10"
-          onMouseEnter={handleSecondarySidebarEnter}
-          onMouseLeave={handleSecondarySidebarLeave}
-        >
+        <div className="h-full bg-background border-r border-border w-[250px] min-w-[250px] max-w-[250px] z-10">
           {allItems
             .filter(item => item.section === hoveredItem)
             .map((item) => (
               <div key={item.section} className="h-full flex flex-col">
-                <div className="px-4 py-3 border-b border-border/50 bg-muted/30">
+                <div className="px-4 py-3 border-b border-border bg-muted/30">
                   <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
                 </div>
                 <div className="flex-1 py-2">
