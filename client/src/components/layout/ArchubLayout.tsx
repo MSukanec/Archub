@@ -147,19 +147,24 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
             </div>
 
             {/* Center Section - Organization to Contacts (80%) */}
-            <div className="w-[80%] flex items-center justify-center overflow-hidden">
+            <div className="w-[80%] flex items-center justify-center px-4">
               <div 
-                className="flex items-center gap-2 relative max-w-full"
+                className="flex items-center gap-2 relative overflow-hidden max-w-full"
                 onMouseLeave={handleMouseLeave}
+                style={{ width: 'fit-content', maxWidth: '100%' }}
               >
                 {navigationSections.slice(1, -1).map((section, index) => { // Skip Dashboard and Contacts
                   const actualIndex = index + 1; // Adjust index for proper positioning
                   const { section: sectionKey, icon: Icon, label } = section;
                   const isExpanded = expandedSection === sectionKey;
                   const shouldMoveRight = expandedIndex !== -1 && actualIndex > expandedIndex;
-                  // Calculate exact width needed for expanded views based on the expanded section
-                  const expandedViewsWidth = expandedSectionData && expandedIndex !== -1 && actualIndex > expandedIndex ? 
-                    (expandedSectionData.views.length * 88 + (expandedSectionData.views.length - 1) * 8) : 0;
+                  
+                  // Calculate exact width needed: each view button (75px min-width + padding) + gaps (8px between)
+                  let expandedViewsWidth = 0;
+                  if (expandedSectionData && expandedIndex !== -1 && actualIndex > expandedIndex) {
+                    const viewCount = expandedSectionData.views.length;
+                    expandedViewsWidth = (viewCount * 75) + ((viewCount - 1) * 8);
+                  }
                   
                   return (
                     <div
@@ -197,7 +202,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                               key={key}
                               onClick={() => handleViewClick(sectionKey, key)}
                               className={cn(
-                                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap",
+                                "px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap min-w-[75px]",
                                 currentView === key 
                                   ? "bg-primary text-white shadow-md" 
                                   : "bg-surface-secondary text-foreground hover:bg-surface-secondary/80"
