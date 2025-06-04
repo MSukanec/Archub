@@ -11,12 +11,22 @@ import {
 
 interface Movement {
   id: string;
-  type: string;
-  category: string;
-  detail: string;
-  amount: number;
-  currency: string;
-  date: string;
+  description: string;
+  amount: string;
+  created_at_local: string;
+  movement_concepts?: {
+    name: string;
+    parent_concept?: {
+      name: string;
+    };
+  };
+  currencies?: {
+    code: string;
+    symbol: string;
+  };
+  wallets?: {
+    name: string;
+  };
 }
 
 interface DeleteMovementModalProps {
@@ -46,19 +56,19 @@ export default function DeleteMovementModal({
         
         <div className="py-4 space-y-2">
           <div className="text-sm">
-            <span className="font-medium">Tipo:</span> {movement.type}
+            <span className="font-medium">Tipo:</span> {movement.movement_concepts?.parent_concept?.name || 'No especificado'}
           </div>
           <div className="text-sm">
-            <span className="font-medium">Categoría:</span> {movement.category}
+            <span className="font-medium">Categoría:</span> {movement.movement_concepts?.name || 'No especificado'}
           </div>
           <div className="text-sm">
-            <span className="font-medium">Detalle:</span> {movement.detail}
+            <span className="font-medium">Detalle:</span> {movement.description}
           </div>
           <div className="text-sm">
-            <span className="font-medium">Monto:</span> {movement.currency} {movement.amount.toLocaleString()}
+            <span className="font-medium">Monto:</span> {movement.currencies?.symbol || ''} {parseFloat(movement.amount || '0').toLocaleString()}
           </div>
           <div className="text-sm">
-            <span className="font-medium">Fecha:</span> {new Date(movement.date).toLocaleDateString('es-ES')}
+            <span className="font-medium">Fecha:</span> {movement.created_at_local ? new Date(movement.created_at_local).toLocaleDateString('es-ES') : 'No especificada'}
           </div>
         </div>
 
