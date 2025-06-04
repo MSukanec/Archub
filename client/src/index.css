@@ -36,6 +36,9 @@
   --background-views: 0 0% 82%; /* #d1d1d1 - Background for main views/pages */
   --background-primary: 0 0% 95%; /* #f2f2f2 - Primary components (buttons, inputs, search) */
   --background-secondary: 0 0% 98%; /* #fafafa - Secondary elements (cards, containers) */
+  
+  /* Override specific backgrounds for light theme */
+  --surface-views: 0 0% 82%; /* #d1d1d1 */
 }
 
 .dark {

@@ -1,12 +1,22 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 
+interface UserPreferences {
+  id: string;
+  user_id: string;
+  last_organization_id: string | null;
+  last_project_id: string | null;
+  last_budget_id: string | null;
+  theme: 'light' | 'dark';
+}
+
 interface UserContext {
   organizationId: string | null;
   projectId: string | null;
   budgetId: string | null;
   planId: string | null;
   userId: string | null; // Internal user ID
+  preferences: UserPreferences | null;
   // Cache for loaded data to avoid repeated queries
   organization: any | null;
   currentProjects: any[] | null;
@@ -24,6 +34,7 @@ interface UserContextStore extends UserContext {
   clearUserContext: () => void;
   initializeUserContext: () => Promise<void>;
   refreshData: () => Promise<void>;
+  updatePreferences: (updates: Partial<UserPreferences>) => Promise<void>;
   getOrganizationId: () => string | null;
   getProjectId: () => string | null;
   getBudgetId: () => string | null;
@@ -35,6 +46,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
   budgetId: null,
   planId: null,
   userId: null,
+  preferences: null,
   organization: null,
   currentProjects: null,
   lastDataFetch: null,
@@ -299,6 +311,7 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         budgetId: prefs.last_budget_id,
         planId: null,
         userId: dbUser.id,
+        preferences: prefs,
         isLoading: false,
         isInitialized: true,
       });
@@ -313,9 +326,33 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
         budgetId: null,
         planId: null,
         userId: null,
+        preferences: null,
         isLoading: false, 
         isInitialized: true 
       });
+    }
+  },
+
+  // Update preferences
+  updatePreferences: async (updates: Partial<UserPreferences>) => {
+    const state = get();
+    if (!state.userId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .update(updates)
+        .eq('user_id', state.userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      set({ preferences: data });
+      console.log('Preferences updated successfully:', data);
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+      throw error;
     }
   },
 }));

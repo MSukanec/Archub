@@ -78,8 +78,8 @@ const navigationItems: NavigationItem[] = [
     icon: DollarSign,
     label: 'Finanzas',
     subItems: [
-      { view: 'movements-main', label: 'Movimientos', icon: TrendingUp },
-      { view: 'transactions', label: 'Transacciones', icon: CreditCard }
+      { view: 'movements-dashboard', label: 'Dashboard', icon: BarChart3 },
+      { view: 'movements-main', label: 'Movimientos', icon: TrendingUp }
     ]
   },
   { 
@@ -143,6 +143,8 @@ export default function PrimarySidebar() {
       // Set default views for sections when no specific view is provided
       if (section === 'budgets') {
         setView('budgets-list');
+      } else if (section === 'movements') {
+        setView('movements-dashboard');
       }
     }
     
