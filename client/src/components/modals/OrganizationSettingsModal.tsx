@@ -138,7 +138,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
   // Update form when organization data loads
   useEffect(() => {
-    if (organization) {
+    if (organization && organizationCurrencies !== undefined) {
       form.reset({
         name: organization.name || '',
         description: organization.description || '',
@@ -151,18 +151,20 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         email: organization.email || '',
         website: organization.website || '',
         default_currency: organization.default_currency || 'USD',
+        secondary_currencies: organizationCurrencies || [],
         default_language: organization.default_language || 'es',
         tax_id: organization.tax_id || '',
         logo_url: organization.logo_url || '',
       });
     }
-  }, [organization, form]);
+  }, [organization, organizationCurrencies, form]);
 
   const updateOrganizationMutation = useMutation({
     mutationFn: async (data: OrganizationSettingsForm) => {
       if (!organizationId) throw new Error('No organization ID');
 
-      const { data: updatedOrg, error } = await supabase
+      // Update organization
+      const { data: updatedOrg, error: orgError } = await supabase
         .from('organizations')
         .update({
           name: data.name,
@@ -185,12 +187,37 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         .select()
         .single();
 
-      if (error) throw error;
+      if (orgError) throw orgError;
+
+      // Update organization currencies
+      // First, delete existing organization currencies
+      const { error: deleteError } = await supabase
+        .from('organization_currencies')
+        .delete()
+        .eq('organization_id', organizationId);
+
+      if (deleteError) throw deleteError;
+
+      // Then, insert new organization currencies if any
+      if (data.secondary_currencies && data.secondary_currencies.length > 0) {
+        const organizationCurrencies = data.secondary_currencies.map(currencyCode => ({
+          organization_id: organizationId,
+          currency_id: currencyCode,
+        }));
+
+        const { error: insertError } = await supabase
+          .from('organization_currencies')
+          .insert(organizationCurrencies);
+
+        if (insertError) throw insertError;
+      }
+
       return updatedOrg;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organization-details', organizationId] });
       queryClient.invalidateQueries({ queryKey: ['organization', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['organization-currencies', organizationId] });
       toast({
         description: 'Configuración de organización actualizada correctamente',
         duration: 2000,
@@ -212,7 +239,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
   };
 
   const handleClose = () => {
-    if (organization) {
+    if (organization && organizationCurrencies !== undefined) {
       form.reset({
         name: organization.name || '',
         description: organization.description || '',
@@ -225,6 +252,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         email: organization.email || '',
         website: organization.website || '',
         default_currency: organization.default_currency || 'USD',
+        secondary_currencies: organizationCurrencies || [],
         default_language: organization.default_language || 'es',
         tax_id: organization.tax_id || '',
         logo_url: organization.logo_url || '',
@@ -600,13 +628,52 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {currencies.map((currency) => (
+                        {(currencies || []).map((currency) => (
                           <SelectItem key={currency.code} value={currency.code}>
                             {currency.symbol} {currency.name} ({currency.code})
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="secondary_currencies"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Monedas Secundarias</FormLabel>
+                    <div className="space-y-2">
+                      <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
+                        {(currencies || []).map((currency) => (
+                          <div key={currency.code} className="flex items-center space-x-2 py-1">
+                            <input
+                              type="checkbox"
+                              id={`currency-${currency.code}`}
+                              checked={field.value?.includes(currency.code) || false}
+                              onChange={(e) => {
+                                const currentValues = field.value || [];
+                                if (e.target.checked) {
+                                  field.onChange([...currentValues, currency.code]);
+                                } else {
+                                  field.onChange(currentValues.filter(code => code !== currency.code));
+                                }
+                              }}
+                              className="rounded border-input"
+                            />
+                            <label
+                              htmlFor={`currency-${currency.code}`}
+                              className="text-sm cursor-pointer flex-1"
+                            >
+                              {currency.symbol} {currency.name} ({currency.code})
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
