@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin } from 'lucide-react';
+import { ClipboardList, Calendar, FileText, Plus, FileDown, Edit, Trash2, MoreHorizontal, MapPin, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useUserContextStore } from '@/stores/userContextStore';
@@ -8,6 +8,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -23,6 +24,13 @@ interface SiteLog {
   comments: string | null;
   weather: string | null;
   created_at: string;
+}
+
+interface User {
+  id: string;
+  first_name: string;
+  last_name: string;
+  avatar_url?: string | null;
 }
 
 export default function SiteLogs() {
@@ -155,6 +163,16 @@ export default function SiteLogs() {
     if (weatherLower.includes('nublado')) return '☁️';
     if (weatherLower.includes('lluvia')) return '🌧️';
     return '🌤️';
+  };
+
+  const getUserById = (userId: string | null): User | null => {
+    if (!userId) return null;
+    return users.find(user => user.id === userId) || null;
+  };
+
+  const getUserInitials = (user: User | null): string => {
+    if (!user) return 'AN';
+    return `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
   };
 
   if (!projectId) {

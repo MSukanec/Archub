@@ -18,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserContextStore } from '@/stores/userContextStore';
 
 import { cn } from '@/lib/utils';
 import type { SiteLog } from '@shared/schema';
@@ -50,6 +51,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const { userId } = useUserContextStore();
   const isEditing = !!siteLog;
 
   const form = useForm<SiteLogForm>({
@@ -80,7 +82,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         log_date: data.date.toISOString().split('T')[0],
         weather: data.weather || null,
         comments: data.comments || null,
-        author_id: null, // Set to null for now to match existing data
+        author_id: userId, // Use internal user UUID
       };
 
       if (siteLog?.id) {
