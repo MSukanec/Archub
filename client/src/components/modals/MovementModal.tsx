@@ -289,8 +289,15 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       }
     },
     onSuccess: () => {
+      // Invalidate all financial-related queries
       queryClient.invalidateQueries({ queryKey: ['movements'] });
       queryClient.invalidateQueries({ queryKey: ['timeline-events'] });
+      queryClient.invalidateQueries({ queryKey: ['dynamic-currency-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-balance-pie'] });
+      queryClient.invalidateQueries({ queryKey: ['monthly-cashflow'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-category-bar'] });
       
       toast({
         title: isEditing ? "Movimiento actualizado" : "Movimiento creado",

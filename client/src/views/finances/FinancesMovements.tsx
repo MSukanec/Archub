@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import MovementModal from '@/components/modals/MovementModal';
 import DeleteMovementModal from '@/components/modals/DeleteMovementModal';
+import DynamicCurrencyBalanceCard from '@/components/finances/DynamicCurrencyBalanceCard';
 
 interface Movement {
   id: string;
@@ -177,7 +178,16 @@ export default function Movements() {
       if (error) throw error;
     },
     onSuccess: () => {
+      // Invalidate all financial-related queries
       queryClient.invalidateQueries({ queryKey: ['movements', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['timeline-events'] });
+      queryClient.invalidateQueries({ queryKey: ['dynamic-currency-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['wallet-balance-pie'] });
+      queryClient.invalidateQueries({ queryKey: ['monthly-cashflow'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-category-bar'] });
+      
       toast({
         title: "Movimiento eliminado",
         description: "El movimiento se ha eliminado correctamente.",
@@ -454,96 +464,8 @@ export default function Movements() {
 
 
 
-        {/* Summary Cards - Modern Professional Style */}
-      <div className="grid grid-cols-2 gap-3 md:gap-6">
-        {/* Pesos Argentinos */}
-        <Card className="rounded-2xl shadow-md bg-surface-secondary p-4 border-0">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-6 h-6 bg-green-500/10 rounded-lg flex items-center justify-center">
-              <span className="text-sm">🇦🇷</span>
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-foreground">Pesos Argentinos</h3>
-              <p className="text-xs text-muted-foreground">ARS</p>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
-                <span className="text-xs text-muted-foreground">Ingresos</span>
-              </div>
-              <span className="text-sm font-bold text-emerald-500">
-                {formatCurrency(totalsByCurrency.pesos.ingresos, 'ARS')}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <TrendingDown className="w-3 h-3 text-rose-500" />
-                <span className="text-xs text-muted-foreground">Egresos</span>
-              </div>
-              <span className="text-sm font-bold text-rose-500">
-                {formatCurrency(totalsByCurrency.pesos.egresos, 'ARS')}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-foreground">Balance Total</span>
-              <span className="text-lg font-bold text-blue-500">
-                {formatCurrency(balancePesos, 'ARS')}
-              </span>
-            </div>
-            
-
-          </div>
-        </Card>
-
-        {/* Dólares */}
-        <Card className="rounded-2xl shadow-md bg-surface-secondary p-4 border-0">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-6 h-6 bg-blue-500/10 rounded-lg flex items-center justify-center">
-              <span className="text-sm">🇺🇸</span>
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-foreground">Dólares Estadounidenses</h3>
-              <p className="text-xs text-muted-foreground">USD</p>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
-                <span className="text-xs text-muted-foreground">Ingresos</span>
-              </div>
-              <span className="text-sm font-bold text-emerald-500">
-                {formatCurrency(totalsByCurrency.dolares.ingresos, 'USD')}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <TrendingDown className="w-3 h-3 text-rose-500" />
-                <span className="text-xs text-muted-foreground">Egresos</span>
-              </div>
-              <span className="text-sm font-bold text-rose-500">
-                {formatCurrency(totalsByCurrency.dolares.egresos, 'USD')}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-foreground">Balance Total</span>
-              <span className="text-lg font-bold text-blue-500">
-                {formatCurrency(balanceDolares, 'USD')}
-              </span>
-            </div>
-            
-
-          </div>
-        </Card>
-      </div>
+        {/* Dynamic Currency Balance Card */}
+        <DynamicCurrencyBalanceCard projectId={projectId} />
 
       {/* Filters and Search */}
       <div className="space-y-4">

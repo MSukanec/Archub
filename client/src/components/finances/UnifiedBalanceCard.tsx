@@ -118,8 +118,8 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
           <div className="flex items-center space-x-2 text-sm">
             {totalUSDBalance >= 0 ? (
               <>
-                <TrendingUp className="w-4 h-4 text-green-500" />
-                <span className="text-green-500">Positivo</span>
+                <TrendingUp className="w-4 h-4 text-primary" />
+                <span className="text-primary">Positivo</span>
               </>
             ) : (
               <>
