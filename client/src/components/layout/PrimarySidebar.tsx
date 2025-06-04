@@ -305,71 +305,41 @@ export default function PrimarySidebar() {
 
 
 
-  const renderDashboardSidebar = () => {
-    const dashboardItem = navigationItems.find(item => item.section === 'dashboard');
-    
-    return (
-      <div className="h-full flex flex-col">
-        <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
-          <h3 className="font-medium text-sm text-foreground">Dashboard</h3>
-        </div>
-        
-        {/* Navigation Options */}
-        <div className="border-b border-border">
-          {dashboardItem?.subItems.map((subItem: any) => {
-            const isSubActive = currentView === subItem.view;
-            
-            return (
-              <button
-                key={subItem.view}
-                className={`w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors border-r-2 ${
-                  isSubActive
-                    ? 'bg-primary/10 border-primary text-primary'
-                    : 'bg-surface hover:bg-surface-light border-transparent text-foreground'
-                }`}
-                onClick={() => handleNavigation('dashboard', subItem.view)}
-              >
-                <subItem.icon className={`w-4 h-4 ${
-                  isSubActive ? 'text-primary' : 'text-muted-foreground'
-                }`} />
-                {subItem.label}
-              </button>
-            );
-          })}
-        </div>
-        
-        {/* Projects Section */}
-        <div className="flex-1 overflow-y-auto">
-          {(projects as any[]).map((project: any) => {
-            const isActive = project.id === activeProjectId;
-            return (
-              <button
-                key={project.id}
-                className={`w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors ${
-                  isActive 
-                    ? 'text-primary border-r-2 border-primary bg-primary/5' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-                onClick={() => handleProjectSelect(project.id)}
-              >
-                <FolderKanban className="w-4 h-4" />
-                {project.name}
-              </button>
-            );
-          })}
-          
-          {/* New Project Button */}
-          <button
-            className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground border-t border-dashed border-border/50"
-            onClick={handleNewProject}
-          >
-            <Plus className="w-4 h-4" />
-            Nuevo Proyecto
-          </button>
-        </div>
+  const renderDashboardSidebar = () => (
+    <div className="h-full flex flex-col">
+      <div className="px-4 h-[39px] flex items-center border-b border-border bg-muted/30">
+        <h3 className="font-medium text-sm text-foreground">Dashboard</h3>
       </div>
-    );
-  };
+      <div className="flex-1 overflow-y-auto">
+        {(projects as any[]).map((project: any) => {
+          const isActive = project.id === activeProjectId;
+          return (
+            <button
+              key={project.id}
+              className={`w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors ${
+                isActive 
+                  ? 'text-primary border-r-2 border-primary bg-primary/5' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              onClick={() => handleProjectSelect(project.id)}
+            >
+              <FolderKanban className="w-4 h-4" />
+              {project.name}
+            </button>
+          );
+        })}
+        
+        {/* New Project Button */}
+        <button
+          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground border-t border-dashed border-border/50"
+          onClick={handleNewProject}
+        >
+          <Plus className="w-4 h-4" />
+          Nuevo Proyecto
+        </button>
+      </div>
+    </div>
+  );
 
   const renderProfileSidebar = () => (
     <div className="h-full flex flex-col">
