@@ -32,6 +32,8 @@ const organizationSettingsSchema = z.object({
   website: z.string().url('URL inválida').optional().or(z.literal('')),
   default_currency: z.string().default('USD'),
   secondary_currencies: z.array(z.string()).default([]),
+  default_wallet: z.string().optional(),
+  secondary_wallets: z.array(z.string()).default([]),
   default_language: z.string().default('es'),
   tax_id: z.string().optional(),
   logo_url: z.string().optional(),
@@ -106,6 +108,22 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     retry: 1,
   });
 
+  // Fetch all wallets from the database
+  const { data: wallets, isLoading: walletsLoading } = useQuery({
+    queryKey: ['wallets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wallets')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
+  });
+
   // Fallback currencies if database is not available
   const fallbackCurrencies = [
     { code: 'USD', name: 'Dólar Estadounidense', symbol: '$' },
@@ -146,6 +164,32 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     retry: 1,
   });
 
+  // Fetch organization wallets with IDs
+  const { data: organizationWallets, isLoading: orgWalletsLoading } = useQuery({
+    queryKey: ['organization-wallets', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const { data, error } = await supabase
+        .from('organization_wallets')
+        .select(`
+          wallet_id,
+          is_default,
+          is_active,
+          wallets!inner(id, name, description)
+        `)
+        .eq('organization_id', organizationId)
+        .eq('is_active', true);
+      
+      if (error) throw error;
+      
+      // Return only non-default wallets (secondary wallets)
+      return data?.filter(ow => !ow.is_default).map(ow => ow.wallet_id).filter(Boolean) || [];
+    },
+    enabled: !!organizationId && isOpen,
+    retry: 1,
+  });
+
   const form = useForm<OrganizationSettingsForm>({
     resolver: zodResolver(organizationSettingsSchema),
     defaultValues: {
@@ -161,6 +205,8 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
       website: '',
       default_currency: 'USD',
       secondary_currencies: [],
+      default_wallet: '',
+      secondary_wallets: [],
       default_language: 'es',
       tax_id: '',
       logo_url: '',
