@@ -10,14 +10,12 @@ import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawerFixed';
-import UnifiedHeader from './UnifiedHeader';
 import ArchubDashboard from '@/views/dashboard/ArchubDashboard';
 import CalendarView from '@/views/dashboard/Calendar';
 
 import Organization from '@/views/organization/Organization';
 import OrganizationTeam from '@/views/organization/OrganizationTeam';
 import OrganizationSettings from '@/views/organization/OrganizationSettings';
-import OrganizationDashboard from '@/views/organization/OrganizationDashboard';
 import ProjectsList from '@/views/project/ProjectsList';
 
 import SiteBudgets from '@/views/site/SiteBudgets';
@@ -25,7 +23,6 @@ import SiteMaterials from '@/views/site/SiteMaterials';
 import SiteLogs from '@/views/site/SiteLogs';
 import FinancesMovements from '@/views/finances/FinancesMovements';
 import FinancesDashboard from '@/views/finances/FinancesDashboard';
-
 import Contacts from '@/views/contacts/Contacts';
 
 import AdminOrganizations from '@/views/admin/AdminOrganizations';
@@ -55,7 +52,6 @@ const viewComponents = {
   'organization-team': OrganizationTeam,
   'organization-settings': OrganizationSettings,
   'organization-activity': Organization,
-  'organization-dashboard': OrganizationDashboard,
   'projects-overview': ProjectsList,
   'projects-list': ProjectsList,
   'budgets-list': SiteBudgets,
@@ -165,15 +161,10 @@ export default function AppLayout() {
 
   const ViewComponent = viewComponents[currentView] || ArchubDashboard;
 
-  // Views that use ArchubLayout should render without traditional layout
-  const archubViews = ['finances-dashboard', 'finances-movements'];
-  
-  if (archubViews.includes(currentView)) {
-    return <ViewComponent />;
-  }
+  // Removemos la renderización sin layout para dashboard-timeline
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#1e1e1e]">
+    <div className="flex h-screen overflow-hidden bg-surface-views">
       {isMobile ? (
         // Mobile Layout
         <>

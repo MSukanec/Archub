@@ -227,18 +227,24 @@ export default function ArchubDashboard() {
                     }
                   }}
                 >
-                  {/* Circular Event Node - all with primary color */}
-                  <div className="relative">
+                  {/* Circular Event Node with date/time info */}
+                  <div className="relative flex flex-col items-center">
+                    {/* Date/Time label above the node */}
+                    <div className="text-xs text-muted-foreground mb-1 text-center min-w-[60px]">
+                      <div className="font-medium">{format(event.date, 'dd/MM', { locale: es })}</div>
+                      <div>{format(event.date, 'HH:mm', { locale: es })}</div>
+                    </div>
+                    
                     <div className="w-8 h-8 rounded-full bg-primary border-2 border-surface-primary transition-all duration-300 flex items-center justify-center group-hover:scale-125 group-hover:shadow-lg relative z-10">
                       <Icon className="w-4 h-4 text-white" />
                     </div>
                     
-                    {/* Event Info Tooltip */}
-                    <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                    {/* Event Info Tooltip - positioned to the right */}
+                    <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                       <div className="bg-surface-secondary border border-border rounded-lg px-3 py-2 shadow-lg min-w-[140px] max-w-[200px]">
                         <div className="text-xs font-medium text-foreground truncate">{event.title}</div>
                         <div className="text-xs text-muted-foreground">
-                          {format(event.date, 'HH:mm', { locale: es })}
+                          {format(event.date, 'dd/MM/yyyy HH:mm', { locale: es })}
                         </div>
                         {event.projectName && (
                           <div className="text-xs text-primary truncate mt-1">{event.projectName}</div>
@@ -262,94 +268,94 @@ export default function ArchubDashboard() {
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards with integrated action buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0">
-            <CardContent className="p-6 pb-0">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
+            <CardContent className="p-9 pb-0">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-sm text-muted-foreground">Proyectos Activos</p>
-                  <p className="text-3xl font-bold text-foreground">
+                  <p className="text-base text-muted-foreground">Proyectos Activos</p>
+                  <p className="text-4xl font-bold text-foreground">
                     {stats?.totalProjects || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-blue-600" />
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Building2 className="w-8 h-8 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-1"
+              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-4 h-4" />
               Nuevo Proyecto
             </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0">
-            <CardContent className="p-6 pb-0">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
+            <CardContent className="p-9 pb-0">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-sm text-muted-foreground">Bitácoras</p>
-                  <p className="text-3xl font-bold text-foreground">
+                  <p className="text-base text-muted-foreground">Bitácoras</p>
+                  <p className="text-4xl font-bold text-foreground">
                     {stats?.totalSiteLogs || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-orange-600" />
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-1"
+              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-4 h-4" />
               Nueva Bitácora
             </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0">
-            <CardContent className="p-6 pb-0">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
+            <CardContent className="p-9 pb-0">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Movimientos</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-base text-muted-foreground">Total Movimientos</p>
+                  <p className="text-3xl font-bold text-foreground">
                     ${(stats?.totalMovements || 0).toLocaleString()}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-8 h-8 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateMovementModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-1"
+              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-4 h-4" />
               Nuevo Movimiento
             </button>
           </Card>
 
-          <Card className="rounded-2xl shadow-md overflow-hidden p-0">
-            <CardContent className="p-6 pb-0">
-              <div className="flex items-center justify-between mb-4">
+          <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-48">
+            <CardContent className="p-9 pb-0">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-sm text-muted-foreground">Contactos</p>
-                  <p className="text-3xl font-bold text-foreground">
+                  <p className="text-base text-muted-foreground">Contactos</p>
+                  <p className="text-4xl font-bold text-foreground">
                     {stats?.totalContacts || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-purple-600" />
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Users className="w-8 h-8 text-primary" />
                 </div>
               </div>
             </CardContent>
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('openCreateContactModal'))}
-              className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-1"
+              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors rounded-b-2xl flex items-center justify-center gap-2"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-4 h-4" />
               Nuevo Contacto
             </button>
           </Card>
