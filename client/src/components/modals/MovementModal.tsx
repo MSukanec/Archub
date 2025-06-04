@@ -136,30 +136,44 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       
       console.log('Fetching organization wallets for org:', organizationId);
       
-      const { data, error } = await supabase
+      // First get organization wallets
+      const { data: orgWallets, error: orgError } = await supabase
         .from('organization_wallets')
-        .select(`
-          wallet_id,
-          is_default,
-          is_active
-        `)
+        .select('wallet_id, is_default, is_active')
         .eq('organization_id', organizationId)
         .eq('is_active', true)
         .order('is_default', { ascending: false });
       
-      console.log('Organization wallets data:', data);
-      console.log('Organization wallets error:', error);
+      console.log('Organization wallets data:', orgWallets);
+      console.log('Organization wallets error:', orgError);
       
-      if (error) throw error;
+      if (orgError) throw orgError;
       
-      // Create simple wallet objects with IDs as names for now
-      const wallets = data?.map(ow => ({
-        id: ow.wallet_id,
-        name: `Billetera ${ow.wallet_id.slice(0, 8)}`,
-        description: ow.is_default ? 'Billetera por defecto' : 'Billetera secundaria'
-      })) || [];
+      // Then get wallet details for each wallet_id
+      const walletIds = orgWallets?.map(ow => ow.wallet_id) || [];
+      if (walletIds.length === 0) return { wallets: [], defaultWallet: null };
       
-      const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
+      const { data: walletDetails, error: walletError } = await supabase
+        .from('wallets')
+        .select('id, name')
+        .in('id', walletIds);
+      
+      console.log('Wallet details data:', walletDetails);
+      console.log('Wallet details error:', walletError);
+      
+      if (walletError) throw walletError;
+      
+      // Combine organization wallets with wallet details
+      const wallets = orgWallets?.map(ow => {
+        const walletDetail = walletDetails?.find(wd => wd.id === ow.wallet_id);
+        return {
+          id: ow.wallet_id,
+          name: walletDetail?.name || `Billetera ${ow.wallet_id.slice(0, 8)}`,
+          description: ow.is_default ? 'Billetera por defecto' : 'Billetera secundaria'
+        };
+      }) || [];
+      
+      const defaultWallet = orgWallets?.find(ow => ow.is_default)?.wallet_id || null;
       
       console.log('Processed wallets:', wallets);
       console.log('Default wallet:', defaultWallet);
