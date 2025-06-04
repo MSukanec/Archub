@@ -141,100 +141,21 @@ export default function ProfileSubscription() {
                   )}
                 </div>
               </div>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setSection('profile');
+                  setView('subscription-tables');
+                }}
+              >
                 Cambiar Plan
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Available Plans Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Rocket className="w-5 h-5" />
-              Planes Disponibles
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
-              <span className={`text-sm ${!isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
-                Mensual
-              </span>
-              <Switch
-                checked={isAnnual}
-                onCheckedChange={setIsAnnual}
-              />
-              <span className={`text-sm ${isAnnual ? 'font-medium' : 'text-muted-foreground'}`}>
-                Anual
-              </span>
-              {isAnnual && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  20% descuento
-                </span>
-              )}
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {availablePlans.map((plan) => {
-                const PlanIcon = getPlanIcon(plan.name);
-                const isCurrentPlan = plan.name.toLowerCase() === currentPlanName.toLowerCase();
-                const price = calculatePrice(plan.price);
-                const features = getPlanFeatures(plan.name);
-                
-                return (
-                  <div
-                    key={plan.id}
-                    className={`p-6 border rounded-lg ${
-                      isCurrentPlan ? 'border-primary bg-primary/5' : 'border-border'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <PlanIcon className="w-5 h-5 text-primary" />
-                      <span className="font-medium text-lg">{plan.name}</span>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <div className="text-3xl font-bold">
-                        ${price}
-                        <span className="text-sm font-normal text-muted-foreground">
-                          /{isAnnual ? 'año' : 'mes'}
-                        </span>
-                      </div>
-                      {isAnnual && plan.price > 0 && (
-                        <div className="text-sm text-muted-foreground line-through">
-                          ${plan.price * 12}/año
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-2 mb-6">
-                      {features.map((feature, index) => (
-                        <div key={index} className="flex items-start gap-2 text-sm">
-                          <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className={feature.startsWith('Todo lo') ? 'font-medium' : ''}>
-                            {feature}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {isCurrentPlan ? (
-                      <Button variant="outline" size="sm" disabled className="w-full">
-                        Plan Actual
-                      </Button>
-                    ) : (
-                      <Button size="sm" className="w-full">
-                        Seleccionar
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Payment History Card */}
         <Card>
