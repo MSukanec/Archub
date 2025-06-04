@@ -1,4 +1,5 @@
 import { useUserContextStore } from '@/stores/userContextStore';
+import { DollarSign } from 'lucide-react';
 import UnifiedBalanceCard from '@/components/finances/UnifiedBalanceCard';
 import WalletBalancePieChart from '@/components/finances/WalletBalancePieChart';
 import MonthlyCashflowLineChart from '@/components/finances/MonthlyCashflowLineChart';
@@ -19,14 +20,21 @@ export default function FinancesDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard de Finanzas</h1>
-          <p className="text-sm text-muted-foreground">
-            Análisis financiero completo del proyecto
-          </p>
+    <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
+      {/* Desktop Header */}
+      <div className="hidden md:flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <DollarSign className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              Dashboard Financiero
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Análisis completo del proyecto
+            </p>
+          </div>
         </div>
       </div>
 
