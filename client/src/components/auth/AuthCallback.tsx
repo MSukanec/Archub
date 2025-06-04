@@ -15,11 +15,12 @@ export default function AuthCallback() {
     const handleAuthCallback = async () => {
       try {
         console.log('AuthCallback: Starting OAuth callback handling...');
+        console.log('AuthCallback: Current URL:', window.location.href);
         
-        // Handle the OAuth callback by exchanging the code for a session
-        const { data, error } = await supabase.auth.getSession();
+        // First, let's handle the auth state change from Supabase
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        console.log('AuthCallback: Session data:', data);
+        console.log('AuthCallback: Current session:', session);
         console.log('AuthCallback: Session error:', error);
         
         if (error) {
@@ -33,45 +34,82 @@ export default function AuthCallback() {
           return;
         }
 
-        // If no session, try to get it from URL hash
-        if (!data.session) {
-          console.log('AuthCallback: No session found, checking URL for auth code...');
-          
-          // Check if we have auth tokens in URL
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          const refreshToken = hashParams.get('refresh_token');
-          
-          if (accessToken) {
-            console.log('AuthCallback: Found access token in URL, setting session...');
-            
-            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken || ''
-            });
-            
-            if (sessionError) {
-              console.error('Error setting session:', sessionError);
-              navigate('/auth');
-              return;
-            }
-            
-            if (sessionData.session?.user) {
-              await processUser(sessionData.session.user);
-              return;
-            }
-          }
-          
-          console.log('AuthCallback: No valid session or tokens found, redirecting to auth');
-          navigate('/auth');
+        if (session?.user) {
+          console.log('AuthCallback: Found valid session, processing user...');
+          await processUser(session.user);
           return;
         }
 
-        if (data.session?.user) {
-          await processUser(data.session.user);
-        } else {
-          navigate('/auth');
+        // If no session, check URL for auth fragments
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        
+        const accessToken = hashParams.get('access_token') || urlParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token') || urlParams.get('refresh_token');
+        const authCode = urlParams.get('code');
+        
+        console.log('AuthCallback: URL params check:', {
+          accessToken: !!accessToken,
+          refreshToken: !!refreshToken,
+          authCode: !!authCode
+        });
+        
+        if (accessToken) {
+          console.log('AuthCallback: Found access token, setting session...');
+          
+          const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || ''
+          });
+          
+          if (sessionError) {
+            console.error('Error setting session from tokens:', sessionError);
+            toast({
+              title: 'Error de autenticación',
+              description: 'No se pudieron procesar los tokens de Google.',
+              variant: 'destructive',
+            });
+            navigate('/auth');
+            return;
+          }
+          
+          if (sessionData.session?.user) {
+            await processUser(sessionData.session.user);
+            return;
+          }
         }
+        
+        // If we have an auth code, exchange it for tokens
+        if (authCode) {
+          console.log('AuthCallback: Found auth code, exchanging for session...');
+          
+          const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(authCode);
+          
+          if (sessionError) {
+            console.error('Error exchanging code for session:', sessionError);
+            toast({
+              title: 'Error de autenticación',
+              description: 'No se pudo intercambiar el código de autorización.',
+              variant: 'destructive',
+            });
+            navigate('/auth');
+            return;
+          }
+          
+          if (sessionData.session?.user) {
+            await processUser(sessionData.session.user);
+            return;
+          }
+        }
+        
+        console.log('AuthCallback: No valid session or tokens found, redirecting to auth');
+        toast({
+          title: 'Error de autenticación',
+          description: 'No se encontró una sesión válida.',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        
       } catch (error) {
         console.error('Error in auth callback:', error);
         toast({
