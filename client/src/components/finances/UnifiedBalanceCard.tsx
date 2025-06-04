@@ -15,24 +15,28 @@ interface BalanceData {
 }
 
 export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProps) {
-  const { data: balanceData, isLoading } = useQuery({
+  const { data: balanceData, isLoading, error } = useQuery({
     queryKey: ['unified-balance', projectId],
     queryFn: async (): Promise<BalanceData> => {
       const { data: movements, error } = await supabase
         .from('site_movements')
         .select(`
           amount,
-          currencies(code),
-          movement_concepts(
-            id,
+          currency_id,
+          concept_id,
+          currencies!inner(code),
+          movement_concepts!inner(
             name,
             parent_id,
-            parent_concept:movement_concepts!parent_id(name)
+            parent_concept:movement_concepts!parent_id!inner(name)
           )
         `)
         .eq('project_id', projectId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching movements for balance:', error);
+        throw error;
+      }
 
       let totalIncomePesos = 0;
       let totalExpensePesos = 0;
@@ -83,7 +87,37 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
     );
   }
 
-  if (!balanceData) return null;
+  if (error) {
+    return (
+      <Card className="p-6">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+            <DollarSign className="w-6 h-6 text-red-500" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Error al cargar datos</h3>
+            <p className="text-sm text-muted-foreground">No se pudo obtener el balance del proyecto</p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!balanceData) {
+    return (
+      <Card className="p-6">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <DollarSign className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Balance Total del Proyecto</h3>
+            <p className="text-sm text-muted-foreground">No hay movimientos registrados</p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   const pesosBalance = balanceData.totalIncomePesos - balanceData.totalExpensePesos;
   const dollarsBalance = balanceData.totalIncomeDollars - balanceData.totalExpenseDollars;

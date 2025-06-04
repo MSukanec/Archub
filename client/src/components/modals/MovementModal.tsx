@@ -168,8 +168,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         const walletDetail = walletDetails?.find(wd => wd.id === ow.wallet_id);
         return {
           id: ow.wallet_id,
-          name: walletDetail?.name || `Billetera ${ow.wallet_id.slice(0, 8)}`,
-          description: ow.is_default ? 'Billetera por defecto' : 'Billetera secundaria'
+          name: walletDetail?.name || `Billetera ${ow.wallet_id.slice(0, 8)}`
         };
       }) || [];
       
@@ -562,7 +561,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
                           {organizationWallets?.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id} className="[&>span:first-child]:hidden">
-                              {wallet.name} {wallet.description && `- ${wallet.description}`}
+                              {wallet.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
