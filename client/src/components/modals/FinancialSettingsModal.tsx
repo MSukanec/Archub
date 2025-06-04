@@ -124,10 +124,10 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
   });
 
   // Fetch organization wallets
-  const { data: organizationWallets } = useQuery({
+  const { data: organizationWalletsData } = useQuery({
     queryKey: ['organization-wallets', organizationId],
     queryFn: async () => {
-      if (!organizationId) return [];
+      if (!organizationId) return { default: null, secondary: [] };
       
       const { data, error } = await supabase
         .from('organization_wallets')
@@ -141,13 +141,20 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
       
       if (error) throw error;
       
-      // Return array of wallet IDs for secondary wallets (non-default)
-      return data?.filter(ow => !ow.is_default).map(ow => ow.wallet_id).filter(Boolean) || [];
+      const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
+      const secondaryWallets = data?.filter(ow => !ow.is_default).map(ow => ow.wallet_id).filter(Boolean) || [];
+      
+      return { default: defaultWallet, secondary: secondaryWallets };
     },
     enabled: !!organizationId && isOpen,
   });
 
   const availableCurrencies = currencies || [];
+  
+  // Find currency by code helper
+  const findCurrencyByCode = (code: string) => {
+    return availableCurrencies.find(c => c.code === code);
+  };
 
   const form = useForm<FinancialSettingsForm>({
     resolver: zodResolver(financialSettingsSchema),
@@ -162,21 +169,16 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
 
   // Update form when data is loaded
   useEffect(() => {
-    if (organization && organizationCurrencies !== undefined) {
-      const organizationWalletData = organizationWallets || [];
-      const defaultWallet = wallets?.find(w => 
-        organizationWalletData.some(ow => ow === w.id)
-      )?.id || '';
-
+    if (organization && organizationCurrencies !== undefined && organizationWalletsData) {
       form.reset({
         default_currency: organization.default_currency || 'USD',
         secondary_currencies: organizationCurrencies || [],
-        default_wallet: defaultWallet,
-        secondary_wallets: organizationWalletData || [],
+        default_wallet: organizationWalletsData.default || '',
+        secondary_wallets: organizationWalletsData.secondary || [],
         default_language: organization.default_language || 'es',
       });
     }
-  }, [organization, organizationCurrencies, organizationWallets, wallets, form]);
+  }, [organization, organizationCurrencies, organizationWalletsData, form]);
 
   // Delete currency mutation
   const deleteCurrencyMutation = useMutation({
@@ -383,17 +385,12 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
   };
 
   const handleClose = () => {
-    if (organization && organizationCurrencies !== undefined) {
-      const organizationWalletData = organizationWallets || [];
-      const defaultWallet = wallets?.find(w => 
-        organizationWalletData.some(ow => ow === w.id)
-      )?.id || '';
-
+    if (organization && organizationCurrencies !== undefined && organizationWalletsData) {
       form.reset({
         default_currency: organization.default_currency || 'USD',
         secondary_currencies: organizationCurrencies || [],
-        default_wallet: defaultWallet,
-        secondary_wallets: organizationWalletData || [],
+        default_wallet: organizationWalletsData.default || '',
+        secondary_wallets: organizationWalletsData.secondary || [],
         default_language: organization.default_language || 'es',
       });
     }
@@ -419,7 +416,7 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
         title="Configuración Financiera"
         subtitle="Gestiona monedas, billeteras y configuración regional"
         icon={DollarSign}
-        size="lg"
+
       >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -770,11 +767,7 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
           setIsDeleteModalOpen(false);
           setCurrencyToDelete(null);
         }}
-        currency={currencyToDelete}
-        availableCurrencies={availableCurrencies.filter(c => 
-          c.code !== currencyToDelete?.code && 
-          c.code !== organization?.default_currency
-        )}
+        currencyToDelete={currencyToDelete}
         onConfirm={confirmDeleteCurrency}
       />
     </>
