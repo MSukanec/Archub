@@ -76,11 +76,12 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
     queryFn: async () => {
       const { data, error } = await supabase
         .from('currencies')
-        .select('*')
+        .select('code, name, symbol')
+        .eq('is_active', true)
         .order('name');
       
       if (error) throw error;
-      return data || [];
+      return data as { code: string; name: string; symbol: string; }[] || [];
     },
   });
 
@@ -103,7 +104,7 @@ export default function FinancialSettingsModal({ isOpen, onClose }: FinancialSet
       if (error) throw error;
       
       // Return array of currency codes for secondary currencies (non-default)
-      return data?.filter(oc => !oc.is_default).map(oc => oc.currencies?.code).filter(Boolean) || [];
+      return data?.filter(oc => !oc.is_default).map(oc => (oc.currencies as any)?.code).filter(Boolean) || [];
     },
     enabled: !!organizationId && isOpen,
   });
