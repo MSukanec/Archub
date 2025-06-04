@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { User, LogOut, Moon, Sun, Settings } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
-import { useUserContextStore } from '@/stores/userContextStore';
+import { useThemeStore } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { authService } from '@/lib/supabase';
 import { Switch } from '@/components/ui/switch';
@@ -13,9 +13,8 @@ interface ProfilePopoverProps {
 export function ProfilePopover({ children }: ProfilePopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { setView } = useNavigationStore();
-  const { preferences, updatePreferences } = useUserContextStore();
+  const { theme, toggleTheme } = useThemeStore();
   const { user } = useAuthStore();
-  const [theme, setTheme] = useState<'light' | 'dark'>(preferences?.theme || 'dark');
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const handleProfileClick = () => {
@@ -32,52 +31,12 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
     }
   };
 
-  const toggleTheme = async () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    
-    // Apply theme classes and styles
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(newTheme);
-    
-    // Apply background colors directly
-    if (newTheme === 'dark') {
-      document.body.style.backgroundColor = '#1e1e1e';
-    } else {
-      document.body.style.backgroundColor = '#d1d1d1';
-    }
-    
-    // Save theme preference to database
-    try {
-      await updatePreferences({ theme: newTheme });
-    } catch (error) {
-      console.error('Error saving theme preference:', error);
-    }
-  };
-
   const getUserInitials = () => {
     if (!user) return 'U';
     const firstName = user.firstName || '';
     const lastName = user.lastName || '';
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
   };
-
-  // Load theme from preferences on component mount and when preferences change
-  useEffect(() => {
-    const currentTheme = preferences?.theme || 'dark';
-    setTheme(currentTheme);
-    
-    // Apply theme classes and styles
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(currentTheme);
-    
-    // Apply background colors directly
-    if (currentTheme === 'dark') {
-      document.body.style.backgroundColor = '#1e1e1e';
-    } else {
-      document.body.style.backgroundColor = '#d1d1d1';
-    }
-  }, [preferences?.theme]);
 
   // Close popover when clicking outside
   useEffect(() => {
