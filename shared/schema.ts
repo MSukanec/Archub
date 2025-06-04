@@ -397,6 +397,20 @@ export const insertCalendarEventSchema = createInsertSchema(calendarEvents).pick
   created_at_local: true,
 });
 
+export const insertWalletSchema = createInsertSchema(wallets).pick({
+  name: true,
+  description: true,
+  wallet_type: true,
+  is_active: true,
+});
+
+export const insertOrganizationWalletSchema = createInsertSchema(organizationWallets).pick({
+  organization_id: true,
+  wallet_id: true,
+  is_default: true,
+  is_active: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -448,3 +462,9 @@ export type InsertSiteMovement = z.infer<typeof insertSiteMovementSchema>;
 
 export type CalendarEvent = typeof calendarEvents.$inferSelect;
 export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
+
+export type Wallet = typeof wallets.$inferSelect;
+export type InsertWallet = z.infer<typeof insertWalletSchema>;
+
+export type OrganizationWallet = typeof organizationWallets.$inferSelect;
+export type InsertOrganizationWallet = z.infer<typeof insertOrganizationWalletSchema>;
