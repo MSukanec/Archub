@@ -26,6 +26,9 @@ import { cn } from '@/lib/utils';
 import type { SiteLog } from '@shared/schema';
 
 const siteLogSchema = z.object({
+  author_id: z.string({
+    required_error: "El creador del registro es requerido",
+  }),
   date: z.date({
     required_error: "La fecha es requerida",
   }),
@@ -67,6 +70,31 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
     name: string;
     description?: string;
   }
+
+  // Fetch organization members
+  const { data: organizationMembers = [] } = useQuery({
+    queryKey: ['organization-members', organizationId],
+    queryFn: async () => {
+      if (!organizationId) return [];
+      
+      const { data, error } = await supabase
+        .from('organization_members')
+        .select(`
+          users (
+            id,
+            first_name,
+            last_name,
+            email,
+            avatar_url
+          )
+        `)
+        .eq('organization_id', organizationId);
+      
+      if (error) throw error;
+      return data?.map(item => item.users).filter(Boolean) || [];
+    },
+    enabled: !!organizationId,
+  });
 
   // Fetch project tasks from budget_tasks
   const { data: projectTasks = [], isLoading: tasksLoading } = useQuery<ProjectTask[]>({
@@ -111,6 +139,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
     defaultValues: {
+      author_id: siteLog?.author_id || userId || '',
       date: siteLog ? new Date(siteLog.log_date) : new Date(),
       comments: siteLog?.comments || '',
       weather: siteLog?.weather || '',
@@ -122,13 +151,14 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   useEffect(() => {
     if (isOpen) {
       form.reset({
+        author_id: siteLog?.author_id || userId || '',
         date: siteLog ? new Date(siteLog.log_date) : new Date(),
         comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
         tasks: {},
       });
     }
-  }, [isOpen, siteLog, form]);
+  }, [isOpen, siteLog, form, userId]);
 
   // Create/Update mutation
   const createSiteLogMutation = useMutation({
@@ -138,7 +168,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         log_date: data.date.toISOString().split('T')[0],
         weather: data.weather || null,
         comments: data.comments || null,
-        author_id: userId, // Use internal user UUID
+        author_id: data.author_id, // Use selected author
       };
 
       let siteLogId: string;
@@ -233,6 +263,37 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
               icon={FileText}
             />
             <AccordionContent>
+              {/* Creador del Registro */}
+              <FormField
+                control={form.control}
+                name="author_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium text-foreground">Creador del Registro <span className="text-primary">*</span></FormLabel>
+                    <Select value={field.value || ''} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-surface-primary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-sm h-10 text-white dark:text-white">
+                          <SelectValue placeholder="Seleccionar creador" className="text-white dark:text-white" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-surface-primary border-input z-[9999]">
+                        {organizationMembers.map((member: any) => (
+                          <SelectItem key={member.id} value={member.id} className="[&>span:first-child]:hidden">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">
+                                {member.first_name?.[0]}{member.last_name?.[0]}
+                              </div>
+                              {member.first_name} {member.last_name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* Fecha */}
               <FormField
                 control={form.control}
@@ -398,7 +459,7 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                         min="0"
                                         max="100"
                                         step="5"
-                                        value={field.value || ''}
+                                        value={field.value?.toString() || ''}
                                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                                       />
                                     </FormControl>
@@ -417,7 +478,8 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
                                       <Input
                                         placeholder="Observaciones..."
                                         className="h-8 text-xs bg-surface-primary border-input text-white dark:text-white"
-                                        {...field}
+                                        value={field.value || ''}
+                                        onChange={field.onChange}
                                       />
                                     </FormControl>
                                   </FormItem>

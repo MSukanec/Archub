@@ -339,7 +339,7 @@ export default function SiteLogs() {
                     <div className={`relative z-10 transition-all group-hover:scale-110 ${
                       isToday ? 'ring-2 ring-primary/50' : ''
                     }`}>
-                      <Avatar className="h-12 w-12 border-2 border-border hover:border-primary/50 shadow-lg">
+                      <Avatar className="h-12 w-12 shadow-lg">
                         <AvatarImage src={author?.avatar_url || undefined} />
                         <AvatarFallback className={`text-sm font-medium ${
                           isToday 
@@ -368,7 +368,7 @@ export default function SiteLogs() {
                           <div>
                             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                               <Calendar className="h-4 w-4" />
-                              {format(logDate, 'dd MMMM yyyy', { locale: es })}
+                              {format(logDate, 'dd MMMM yyyy', { locale: es })} • {format(new Date(siteLog.created_at), 'HH:mm', { locale: es })}
                               {isToday && (
                                 <Badge variant="default" className="text-xs">
                                   Hoy
