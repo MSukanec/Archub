@@ -49,7 +49,7 @@ export default function SiteLogs() {
     setView('sitelog-main');
   }, [setSection, setView]);
 
-  // Query para obtener site logs con tareas
+  // Query para obtener site logs
   const { data: siteLogs = [], isLoading, error: siteLogsError } = useQuery({
     queryKey: ['site-logs', projectId],
     queryFn: async () => {
@@ -58,18 +58,7 @@ export default function SiteLogs() {
       console.log('Fetching site logs for project:', projectId);
       const { data, error } = await supabase
         .from('site_logs')
-        .select(`
-          *,
-          site_log_tasks (
-            task_id,
-            progress_percentage,
-            notes,
-            budget_tasks (
-              name,
-              description
-            )
-          )
-        `)
+        .select('*')
         .eq('project_id', projectId)
         .order('log_date', { ascending: false });
       
@@ -78,6 +67,30 @@ export default function SiteLogs() {
       return data || [];
     },
     enabled: !!projectId,
+  });
+
+  // Query para obtener tareas de cada site log
+  const { data: siteLogTasks = [] } = useQuery({
+    queryKey: ['site-log-tasks-all', projectId],
+    queryFn: async () => {
+      if (!projectId || !siteLogs.length) return [];
+      
+      const siteLogIds = siteLogs.map(log => log.id);
+      const { data, error } = await supabase
+        .from('site_log_tasks')
+        .select(`
+          *,
+          budget_tasks (
+            name,
+            description
+          )
+        `)
+        .in('site_log_id', siteLogIds);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!projectId && siteLogs.length > 0,
   });
 
   // Query para obtener proyectos (para verificar si existe el proyecto)
@@ -425,35 +438,38 @@ export default function SiteLogs() {
                         </div>
                         
                         {/* Tareas Realizadas */}
-                        {siteLog.site_log_tasks && siteLog.site_log_tasks.length > 0 && (
-                          <div className="bg-muted/20 rounded-xl p-4">
-                            <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4" />
-                              Tareas Realizadas ({siteLog.site_log_tasks.length})
-                            </h4>
-                            <div className="space-y-2">
-                              {siteLog.site_log_tasks.map((task: any, index: number) => (
-                                <div key={index} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
-                                  <div className="flex-1">
-                                    <p className="text-sm font-medium text-foreground">
-                                      {task.budget_tasks?.name || 'Tarea sin nombre'}
-                                    </p>
-                                    {task.notes && (
-                                      <p className="text-xs text-muted-foreground mt-1">
-                                        {task.notes}
+                        {(() => {
+                          const logTasks = siteLogTasks.filter(task => task.site_log_id === siteLog.id);
+                          return logTasks.length > 0 && (
+                            <div className="bg-muted/20 rounded-xl p-4">
+                              <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                                <CheckCircle2 className="h-4 w-4" />
+                                Tareas Realizadas ({logTasks.length})
+                              </h4>
+                              <div className="space-y-2">
+                                {logTasks.map((task: any, index: number) => (
+                                  <div key={index} className="flex items-center justify-between p-2 bg-surface-secondary rounded-lg">
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium text-foreground">
+                                        {task.budget_tasks?.name || 'Tarea sin nombre'}
                                       </p>
-                                    )}
+                                      {task.notes && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {task.notes}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-medium text-primary">
+                                        {task.progress_percentage}%
+                                      </span>
+                                    </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-primary">
-                                      {task.progress_percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
