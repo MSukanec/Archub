@@ -5,27 +5,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { z } from 'zod';
-import { CalendarIcon, Plus, X, Upload, FileText, Users, CheckSquare, Cloud, Sun, CloudRain, CloudSnow, Check } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow } from 'lucide-react';
+import ModernModal from '@/components/ui/modern-modal';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { siteLogsService } from '@/lib/siteLogsService';
 import { supabase } from '@/lib/supabase';
-import { tasksService } from '@/lib/tasksService';
-import { contactsService } from '@/lib/contactsService';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
-import type { SiteLog, Task, Contact, InsertSiteLogTask, InsertSiteLogAttendee } from '@shared/schema';
+import type { SiteLog } from '@shared/schema';
 
 const siteLogSchema = z.object({
   date: z.date({
@@ -55,12 +48,6 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  
-  const [selectedTasks, setSelectedTasks] = useState<Array<{ task: Task; quantity: string; notes: string }>>([]);
-  const [selectedAttendees, setSelectedAttendees] = useState<Array<{ contact: Contact; role: string }>>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ file: File; description: string }>>([]);
-  const [taskSelectValue, setTaskSelectValue] = useState<string>("");
-  const [attendeeSelectValue, setAttendeeSelectValue] = useState<string>("");
 
   const form = useForm<SiteLogForm>({
     resolver: zodResolver(siteLogSchema),
@@ -79,75 +66,45 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
         comments: siteLog?.comments || '',
         weather: siteLog?.weather || '',
       });
-      setSelectedTasks([]);
-      setSelectedAttendees([]);
-      setUploadedFiles([]);
-      setTaskSelectValue("");
-      setAttendeeSelectValue("");
     }
   }, [isOpen, siteLog, form]);
-
-  // Get tasks with error handling
-  const { data: tasks = [], isLoading: tasksLoading } = useQuery({
-    queryKey: ['/api/tasks'],
-    queryFn: () => tasksService.getAll(),
-    retry: 1,
-    refetchOnWindowFocus: false,
-  });
-
-  // Get contacts with error handling
-  const { data: contacts = [], isLoading: contactsLoading } = useQuery({
-    queryKey: ['/api/contacts'],
-    queryFn: () => contactsService.getAll(),
-    retry: 1,
-    refetchOnWindowFocus: false,
-  });
 
   // Create/Update mutation
   const mutation = useMutation({
     mutationFn: async (data: SiteLogForm) => {
-      console.log('Form data being submitted:', data);
-      console.log('Selected tasks:', selectedTasks);
-      console.log('Selected attendees:', selectedAttendees);
-      console.log('Active project ID:', projectId);
-
       const siteLogData = {
         project_id: projectId,
-        log_date: data.date.toISOString().split('T')[0], // Send only date part
-        weather: data.weather === 'none' ? null : data.weather || null,
+        log_date: data.date.toISOString().split('T')[0],
+        weather: data.weather || null,
         comments: data.comments || null,
-        author_id: user?.auth_id, // Add the current user as author
+        author_id: user?.auth_id,
       };
-
-      console.log('Creating site log with data:', siteLogData);
 
       if (siteLog?.id) {
         // Update existing
-        return siteLogsService.updateSiteLog(siteLog.id, siteLogData);
+        const { data: result, error } = await supabase
+          .from('site_logs')
+          .update(siteLogData)
+          .eq('id', siteLog.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return result;
       } else {
         // Create new
-        try {
-          const { data: result, error } = await supabase
-            .from('site_logs')
-            .insert([siteLogData])
-            .select()
-            .single();
+        const { data: result, error } = await supabase
+          .from('site_logs')
+          .insert([siteLogData])
+          .select()
+          .single();
 
-          if (error) {
-            console.error('Supabase error creating site log:', error);
-            throw error;
-          }
-
-          return result;
-        } catch (error) {
-          console.error('Error al guardar registro:', error);
-          console.error('Error details:', JSON.stringify(error, null, 2));
-          throw error;
-        }
+        if (error) throw error;
+        return result;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/site-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['site-logs'] });
       toast({
         title: siteLog ? 'Registro actualizado' : 'Registro creado',
         description: `El registro de obra ha sido ${siteLog ? 'actualizado' : 'creado'} correctamente.`,
@@ -155,7 +112,6 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
       onClose();
     },
     onError: (error: any) => {
-      console.error('Error saving site log:', error);
       toast({
         title: 'Error',
         description: 'No se pudo guardar el registro de obra.',
@@ -167,65 +123,6 @@ export default function SiteLogModal({ isOpen, onClose, siteLog, projectId }: Si
   const onSubmit = (data: SiteLogForm) => {
     mutation.mutate(data);
   };
-
-  const addTask = (taskId: string) => {
-    const task = tasks.find(t => t.id === Number(taskId));
-    if (task && !selectedTasks.find(st => st.task.id === task.id)) {
-      setSelectedTasks([...selectedTasks, { task, quantity: '1', notes: '' }]);
-      setTaskSelectValue("");
-    }
-  };
-
-  const removeTask = (taskId: number) => {
-    setSelectedTasks(selectedTasks.filter(st => st.task.id !== taskId));
-  };
-
-  const addAttendee = (contactId: string) => {
-    const contact = contacts.find(c => c.id === Number(contactId));
-    if (contact && !selectedAttendees.find(sa => sa.contact.id === contact.id)) {
-      setSelectedAttendees([...selectedAttendees, { contact, role: 'Obrero' }]);
-      setAttendeeSelectValue("");
-    }
-  };
-
-  const removeAttendee = (contactId: number) => {
-    setSelectedAttendees(selectedAttendees.filter(sa => sa.contact.id !== contactId));
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    const newFiles = files.map(file => ({ file, description: '' }));
-    setUploadedFiles([...uploadedFiles, ...newFiles]);
-  };
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
-  };
-
-  const updateFileDescription = (index: number, description: string) => {
-    const updated = [...uploadedFiles];
-    updated[index].description = description;
-    setUploadedFiles(updated);
-  };
-
-  // Show loading state
-  if (tasksLoading || contactsLoading) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Cargando...</DialogTitle>
-          </DialogHeader>
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">
-              Cargando información necesaria para el registro de obra...
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

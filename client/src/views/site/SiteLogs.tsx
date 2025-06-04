@@ -205,7 +205,7 @@ export default function SiteLogs() {
           </div>
           <Button onClick={handleCreateNew}>
             <Plus className="h-4 w-4 mr-2" />
-            Nuevo Registro
+            Nueva Bitácora
           </Button>
         </div>
 
@@ -256,10 +256,7 @@ export default function SiteLogs() {
             className="pl-10 h-10 bg-surface-primary border-input rounded-xl shadow-lg hover:shadow-xl w-full px-3 text-sm"
           />
         </div>
-        <Button size="sm" className="w-48">
-          <FileDown className="h-4 w-4 mr-2" />
-          Exportar PDF
-        </Button>
+
       </div>
 
       {/* Content - Unified Timeline */}
