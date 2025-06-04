@@ -910,7 +910,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                                   id={`currency-${currency.code}`}
                                   checked={isSelected}
                                   onChange={(e) => {
-                                    const currentValues = field.value || [];
+                                    const currentValues = Array.isArray(field.value) ? field.value : [];
                                     if (e.target.checked) {
                                       field.onChange([...currentValues, currency.code]);
                                     } else {
@@ -1042,7 +1042,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                                     id={`wallet-${wallet.id}`}
                                     checked={isSelected}
                                     onChange={(e) => {
-                                      const currentValues = field.value || [];
+                                      const currentValues = Array.isArray(field.value) ? field.value : [];
                                       if (e.target.checked) {
                                         field.onChange([...currentValues, wallet.id]);
                                       } else {

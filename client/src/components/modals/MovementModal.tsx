@@ -134,6 +134,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     queryFn: async () => {
       if (!organizationId) return { wallets: [], defaultWallet: null };
       
+      console.log('Fetching organization wallets for org:', organizationId);
+      
       const { data, error } = await supabase
         .from('organization_wallets')
         .select(`
@@ -146,6 +148,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .eq('is_active', true)
         .order('is_default', { ascending: false });
       
+      console.log('Organization wallets data:', data);
+      console.log('Organization wallets error:', error);
+      
       if (error) throw error;
       
       const wallets = data?.map(ow => ({
@@ -156,6 +161,9 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       })) || [];
       
       const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
+      
+      console.log('Processed wallets:', wallets);
+      console.log('Default wallet:', defaultWallet);
       
       return { wallets, defaultWallet };
     },
