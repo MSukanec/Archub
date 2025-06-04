@@ -37,20 +37,27 @@ export default function ExpenseCategoryBarChart({ projectId }: ExpenseCategoryBa
 
       const categoryMap = new Map<string, { totalARS: number; totalUSD: number }>();
 
-      movements?.forEach(movement => {
-        const parentConcept = movement.movement_concepts?.parent_concept;
+      movements?.forEach((movement: any) => {
+        const parentConcept = Array.isArray(movement.movement_concepts) 
+          ? movement.movement_concepts[0]?.parent_concept?.[0]
+          : movement.movement_concepts?.parent_concept;
         if (parentConcept && parentConcept.name === 'Egresos') {
-          const categoryName = movement.movement_concepts.name;
+          const categoryName = Array.isArray(movement.movement_concepts) 
+            ? movement.movement_concepts[0]?.name
+            : movement.movement_concepts?.name;
           const amount = movement.amount || 0;
+          const currencyCode = Array.isArray(movement.currencies) 
+            ? movement.currencies[0]?.code 
+            : movement.currencies?.code;
 
           if (!categoryMap.has(categoryName)) {
             categoryMap.set(categoryName, { totalARS: 0, totalUSD: 0 });
           }
 
           const categoryData = categoryMap.get(categoryName)!;
-          if (movement.currency === 'ARS') {
+          if (currencyCode === 'ARS') {
             categoryData.totalARS += amount;
-          } else if (movement.currency === 'USD') {
+          } else if (currencyCode === 'USD') {
             categoryData.totalUSD += amount;
           }
         }
