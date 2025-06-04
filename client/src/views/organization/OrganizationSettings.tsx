@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Edit } from 'lucide-react';
+import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Edit, CreditCard } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import OrganizationSettingsModal from '@/components/modals/OrganizationSettingsModal';
+import FinancialSettingsModal from '@/components/modals/FinancialSettingsModal';
 
 export default function OrganizationSettings() {
   const { organizationId } = useUserContextStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFinancialModalOpen, setIsFinancialModalOpen] = useState(false);
 
   // Fetch organization data
   const { data: organization, isLoading } = useQuery({
@@ -224,11 +226,20 @@ export default function OrganizationSettings() {
 
         {/* Configuración Regional */}
         <Card className="rounded-2xl shadow-md border-0">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               <DollarSign className="w-5 h-5 text-primary" />
               Configuración Regional
             </CardTitle>
+            <Button
+              onClick={() => setIsFinancialModalOpen(true)}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <CreditCard className="h-4 w-4" />
+              Configurar Finanzas
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -255,6 +266,12 @@ export default function OrganizationSettings() {
                 {formatField(organization.logo_url)}
               </div>
             </div>
+
+            <div className="pt-2 border-t border-border">
+              <p className="text-xs text-muted-foreground">
+                Usa el botón "Configurar Finanzas" para gestionar monedas, billeteras y configuración avanzada.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -263,6 +280,12 @@ export default function OrganizationSettings() {
       <OrganizationSettingsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      {/* Modal de configuración financiera */}
+      <FinancialSettingsModal
+        isOpen={isFinancialModalOpen}
+        onClose={() => setIsFinancialModalOpen(false)}
       />
     </div>
   );
