@@ -10,8 +10,7 @@ import SecondarySidebar from './SecondarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawerFixed';
-import Dashboard from '@/views/dashboard/Dashboard';
-import DashboardTimeline from '@/views/dashboard/DashboardTimeline';
+import ArchubDashboard from '@/views/dashboard/ArchubDashboard';
 import CalendarView from '@/views/dashboard/Calendar';
 
 import Organization from '@/views/organization/Organization';
@@ -47,8 +46,7 @@ import { useNavigationStore } from '@/stores/navigationStore';
 
 
 const viewComponents = {
-  'dashboard-main': Dashboard,
-  'dashboard-timeline': DashboardTimeline,
+  'dashboard-main': ArchubDashboard,
 
   'organization-overview': Organization,
   'organization-team': OrganizationTeam,
@@ -161,7 +159,7 @@ export default function AppLayout() {
     };
   }, []);
 
-  const ViewComponent = viewComponents[currentView] || Dashboard;
+  const ViewComponent = viewComponents[currentView] || ArchubDashboard;
 
   // Removemos la renderización sin layout para dashboard-timeline
 
