@@ -306,25 +306,25 @@ export default function SiteLogs() {
 
 
 
-        {/* Cards de estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
+        {/* Cards de estadísticas - Responsive: inline en mobile */}
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4 mb-6">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-4 md:p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Total de Registros</p>
-              <p className="text-2xl font-bold text-foreground">{siteLogs.length}</p>
+              <p className="text-xs md:text-sm font-medium text-muted-foreground">Total de Registros</p>
+              <p className="text-xl md:text-2xl font-bold text-foreground">{siteLogs.length}</p>
             </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary" />
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <FileText className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             </div>
           </div>
         </div>
         
-        <div className="rounded-2xl shadow-md bg-surface-secondary p-6 border-0">
+        <div className="rounded-2xl shadow-md bg-surface-secondary p-4 md:p-6 border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Registros Este Mes</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-xs md:text-sm font-medium text-muted-foreground">Registros Este Mes</p>
+              <p className="text-xl md:text-2xl font-bold text-foreground">
                 {siteLogs.filter(log => {
                   const logDate = new Date(log.log_date);
                   const currentDate = new Date();
@@ -333,8 +333,8 @@ export default function SiteLogs() {
                 }).length}
               </p>
             </div>
-            <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-green-500" />
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Calendar className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             </div>
           </div>
         </div>
@@ -397,33 +397,35 @@ export default function SiteLogs() {
               const author = getUserById(siteLog.author_id);
               
               return (
-                <div key={siteLog.id} className="flex gap-6 group">
-                  {/* Timeline Node with Avatar */}
-                  <div className="flex flex-col items-center">
-                    <div className="relative z-10 transition-all group-hover:scale-110">
-                      <Avatar className="h-12 w-12 shadow-lg">
-                        <AvatarImage src={author?.avatar_url || undefined} />
-                        <AvatarFallback className={`text-sm font-medium ${
-                          isToday 
-                            ? 'bg-primary text-white' 
-                            : 'bg-surface-secondary text-muted-foreground'
-                        }`}>
-                          {getUserInitials(author)}
-                        </AvatarFallback>
-                      </Avatar>
+                <div key={siteLog.id} className="group">
+                  {/* Desktop Layout - Timeline with Avatar */}
+                  <div className="hidden md:flex gap-6">
+                    {/* Timeline Node with Avatar */}
+                    <div className="flex flex-col items-center">
+                      <div className="relative z-10 transition-all group-hover:scale-110">
+                        <Avatar className="h-12 w-12 shadow-lg">
+                          <AvatarImage src={author?.avatar_url || undefined} />
+                          <AvatarFallback className={`text-sm font-medium ${
+                            isToday 
+                              ? 'bg-primary text-white' 
+                              : 'bg-surface-secondary text-muted-foreground'
+                          }`}>
+                            {getUserInitials(author)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      
+                      {/* Connecting Line */}
+                      {!isLast && (
+                        <div className="w-0.5 h-20 bg-gradient-to-b from-border to-transparent mt-4" />
+                      )}
                     </div>
                     
-                    {/* Connecting Line */}
-                    {!isLast && (
-                      <div className="w-0.5 h-20 bg-gradient-to-b from-border to-transparent mt-4" />
-                    )}
-                  </div>
-                  
-                  {/* Content Card */}
-                  <div className="flex-1 pb-12">
-                    <div className={`rounded-2xl shadow-md bg-surface-secondary p-6 border-0 transition-all hover:shadow-lg group-hover:shadow-xl ${
-                      isToday ? 'ring-2 ring-primary/20' : ''
-                    }`}>
+                    {/* Content Card */}
+                    <div className="flex-1 pb-12">
+                      <div className={`rounded-2xl shadow-md bg-surface-secondary p-6 border-0 transition-all hover:shadow-lg group-hover:shadow-xl ${
+                        isToday ? 'ring-2 ring-primary/20' : ''
+                      }`}>
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
@@ -550,6 +552,134 @@ export default function SiteLogs() {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Mobile Layout - Simple Cards */}
+                  <div className="md:hidden mb-4">
+                    <div className={`rounded-2xl shadow-md bg-surface-secondary p-4 border-0 transition-all hover:shadow-lg ${
+                      isToday ? 'ring-2 ring-primary/20' : ''
+                    }`}>
+                      {/* Header with Author Info */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10 shadow-lg">
+                            <AvatarImage src={author?.avatar_url || undefined} />
+                            <AvatarFallback className={`text-sm font-medium ${
+                              isToday 
+                                ? 'bg-primary text-white' 
+                                : 'bg-surface-secondary text-muted-foreground'
+                            }`}>
+                              {getUserInitials(author)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                              {format(logDate, 'dd MMM yyyy', { locale: es })} • {format(new Date(siteLog.created_at), 'HH:mm', { locale: es })}
+                              {isToday && (
+                                <Badge variant="default" className="text-xs">
+                                  Hoy
+                                </Badge>
+                              )}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              {siteLog.weather && (
+                                <>
+                                  <span className="text-sm">{getWeatherIcon(siteLog.weather)}</span>
+                                  <span>{siteLog.weather}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleEditSiteLog(siteLog)}
+                            className="h-8 w-8 p-0 hover:bg-primary/10"
+                          >
+                            <Edit className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDeleteSiteLog(siteLog)}
+                            className="h-8 w-8 p-0 hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="space-y-3">
+                        <div className="bg-muted/30 rounded-xl p-3">
+                          <p className="text-white dark:text-white leading-relaxed text-sm">
+                            {siteLog.comments || 'Sin comentarios registrados para este día.'}
+                          </p>
+                        </div>
+                        
+                        {/* Tareas Realizadas */}
+                        {(() => {
+                          const logTasks = siteLogTasks.filter(task => task.site_log_id === siteLog.id);
+                          return logTasks.length > 0 && (
+                            <div className="bg-muted/20 rounded-xl p-3 border-l-4 border-primary">
+                              <h4 className="text-xs font-medium text-foreground mb-2 flex items-center gap-2">
+                                <CheckCircle2 className="h-3 w-3 text-primary" />
+                                Tareas Realizadas ({logTasks.length})
+                              </h4>
+                              <div className="grid gap-2">
+                                {logTasks.map((task: any, index: number) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-surface-secondary rounded-lg border border-border">
+                                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                                      <CheckCircle2 className="h-3 w-3 text-primary" />
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-xs font-medium text-foreground">
+                                        {task.tasks?.name || 'Tarea sin nombre'}
+                                      </p>
+                                      {task.notes && (
+                                        <p className="text-xs text-muted-foreground">
+                                          {task.notes}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
+                                        {task.progress_percentage}%
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Asistentes */}
+                        {(() => {
+                          const logAttendees = siteLogAttendees.filter(attendee => attendee.log_id === siteLog.id);
+                          return logAttendees.length > 0 && (
+                            <div className="bg-muted/20 rounded-xl p-3 border-l-4 border-blue-500">
+                              <h4 className="text-xs font-medium text-foreground mb-2 flex items-center gap-2">
+                                <Users className="h-3 w-3 text-blue-500" />
+                                Asistentes ({logAttendees.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {logAttendees.map((attendee: any, index: number) => (
+                                  <div key={index} className="flex items-center gap-1 p-1 bg-blue-500/10 text-blue-500 rounded text-xs">
+                                    <User className="h-3 w-3" />
+                                    <span>{attendee.contacts ? `${attendee.contacts.first_name} ${attendee.contacts.last_name || ''}`.trim() : 'Sin nombre'}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             })}
@@ -557,27 +687,26 @@ export default function SiteLogs() {
         )}
       </div>
 
-        {/* Modals */}
-        <SiteLogModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          siteLog={selectedSiteLog}
-          projectId={projectId}
-        />
-        
-        <ConfirmDeleteModal
-          isOpen={isDeleteModalOpen}
-          onClose={cancelDelete}
-          onConfirm={confirmDelete}
-          title="¿Eliminar registro de bitácora?"
-          description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.log_date + 'T00:00:00').toLocaleDateString('es-ES', { 
-            day: 'numeric', 
-            month: 'long', 
-            year: 'numeric' 
-          }) : ''}? Esta acción no se puede deshacer.`}
-          isLoading={deleteMutation.isPending}
-        />
-      </div>
+      {/* Modals */}
+      <SiteLogModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        siteLog={selectedSiteLog}
+        projectId={projectId}
+      />
+      
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="¿Eliminar registro de bitácora?"
+        description={`¿Estás seguro de que quieres eliminar el registro del ${siteLogToDelete ? new Date(siteLogToDelete.log_date + 'T00:00:00').toLocaleDateString('es-ES', { 
+          day: 'numeric', 
+          month: 'long', 
+          year: 'numeric' 
+        }) : ''}? Esta acción no se puede deshacer.`}
+        isLoading={deleteMutation.isPending}
+      />
 
       {/* Floating Action Button for Mobile and Tablet */}
       <Button
