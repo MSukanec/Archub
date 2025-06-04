@@ -8,7 +8,7 @@
   --foreground: 0 0% 0%; /* #000000 */
   --muted: 0 0% 75%; /* #c0c0c0 */
   --muted-foreground: 0 0% 35%; /* #595959 */
-  --popover: 0 0% 98%; /* #fafafa */
+  --popover: 0 0% 87%; /* #dedede */
   --popover-foreground: 0 0% 0%; /* #000000 */
   --card: 0 0% 87%; /* #dedede */
   --card-foreground: 0 0% 0%; /* #000000 */
@@ -365,11 +365,11 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
 }
 
 .dark {
-  --background: 0 0% 16%; /* #282828 */
+  --background: 0 0% 12%; /* #1e1e1e */
   --foreground: 0 0% 100%; /* #ffffff */
   --muted: 0 0% 18%; /* #2d2d2d */
   --muted-foreground: 0 0% 75%; /* #bfbfbf */
-  --popover: 0 0% 16%; /* #282828 */
+  --popover: 0 0% 16%; /* #292929 */
   --popover-foreground: 0 0% 100%; /* #ffffff */
   --card: 0 0% 16%; /* #292929 */
   --card-foreground: 0 0% 100%; /* #ffffff */
