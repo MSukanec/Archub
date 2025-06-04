@@ -120,7 +120,8 @@ export function useFeatures() {
       }
       
       // For export_pdf and other PRO+ features
-      if (featureName === 'export_pdf' || featureName === 'financial_module' || featureName === 'advanced_reports') {
+      const proFeatures = ['export_pdf', 'financial_module', 'advanced_reports', 'unlimited_projects', 'team_collaboration', 'priority_support'];
+      if (proFeatures.includes(featureName)) {
         return planName === 'PRO' || planName === 'ENTERPRISE';
       }
       
