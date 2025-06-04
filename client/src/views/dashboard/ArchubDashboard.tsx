@@ -212,7 +212,7 @@ export default function ArchubDashboard() {
               </div>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('openCreateProjectModal'))}
-                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
               >
                 <Plus className="w-3 h-3" />
                 Nuevo Proyecto
@@ -235,7 +235,7 @@ export default function ArchubDashboard() {
               </div>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('openCreateSiteLogModal'))}
-                className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
+                className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium transition-colors rounded-lg flex items-center justify-center gap-2 mt-2"
               >
                 <Plus className="w-3 h-3" />
                 Nueva Bitácora
