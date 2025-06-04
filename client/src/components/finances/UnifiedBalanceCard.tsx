@@ -47,8 +47,11 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
       let totalExpenseDollars = 0;
 
       movements?.forEach((movement: any) => {
-        const parentConcept = movement.movement_concepts?.parent_concept;
-        const isIncome = parentConcept?.name === 'Ingresos';
+        const concept = movement.movement_concepts;
+        const parentConcept = concept?.parent_concept;
+        
+        // Verificar si es ingreso por el concepto padre o por el concepto mismo
+        const isIncome = parentConcept?.name === 'Ingresos' || concept?.name === 'Ingresos';
         const amount = parseFloat(movement.amount) || 0;
         const currencyCode = movement.currencies?.code;
 
@@ -56,7 +59,9 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
           amount,
           currencyCode,
           isIncome,
-          parentConcept: parentConcept?.name
+          conceptName: concept?.name,
+          parentConcept: parentConcept?.name,
+          hasParentId: !!concept?.parent_id
         });
 
         if (currencyCode === 'ARS' || currencyCode === 'COP') {

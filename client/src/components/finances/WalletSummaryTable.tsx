@@ -43,8 +43,11 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
         const currencyCode = movement.currencies?.code;
         const walletName = movement.wallets?.name;
         const walletKey = `${walletName}-${currencyCode}`;
-        const parentConcept = movement.movement_concepts?.parent_concept;
-        const isIncome = parentConcept?.name === 'Ingresos';
+        const concept = movement.movement_concepts;
+        const parentConcept = concept?.parent_concept;
+        
+        // Verificar si es ingreso por el concepto padre o por el concepto mismo
+        const isIncome = parentConcept?.name === 'Ingresos' || concept?.name === 'Ingresos';
         const amount = parseFloat(movement.amount) || 0;
 
         console.log('Processing movement in WalletSummaryTable:', {
@@ -52,7 +55,9 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
           currencyCode,
           amount,
           isIncome,
-          parentConcept: parentConcept?.name
+          conceptName: concept?.name,
+          parentConcept: parentConcept?.name,
+          hasParentId: !!concept?.parent_id
         });
 
         if (!walletMap.has(walletKey)) {
