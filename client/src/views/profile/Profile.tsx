@@ -37,7 +37,7 @@ export default function Profile() {
   // Set navigation state when component mounts
   useEffect(() => {
     setSection('profile');
-    setView('profile-info');
+    setView('profile-main');
   }, [setSection, setView]);
 
   // Initialize form with user data

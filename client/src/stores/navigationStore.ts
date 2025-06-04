@@ -28,10 +28,7 @@ export type View =
   | 'admin-actions'
   | 'admin-tasks'
   | 'admin-permissions'
-  | 'profile-info'
-  | 'profile-security'
-  | 'profile-subscription'
-  | 'profile-notifications'
+  | 'profile-main'
   | 'subscription-tables';
 
 interface NavigationState {
@@ -53,7 +50,7 @@ const sectionViewMap: Record<Section, View> = {
   calendar: 'calendar',
   'admin-community': 'admin-organizations',
   'admin-library': 'admin-tasks',
-  profile: 'profile-info',
+  profile: 'profile-main',
 };
 
 // Helper function to get section from view
@@ -68,7 +65,7 @@ const getSectionFromView = (view: View): Section => {
   if (view === 'calendar') return 'calendar';
   if (view === 'admin-organizations' || view === 'admin-users') return 'admin-community';
   if (view.startsWith('admin-') && view !== 'admin-organizations' && view !== 'admin-users') return 'admin-library';
-  if (view.startsWith('profile-') || view === 'subscription-tables') return 'profile';
+  if (view.startsWith('profile-')) return 'profile';
   return 'dashboard';
 };
 

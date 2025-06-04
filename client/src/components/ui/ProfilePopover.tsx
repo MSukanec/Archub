@@ -18,7 +18,7 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const handleProfileClick = () => {
-    setView('profile-info');
+    setView('profile-main');
     setIsOpen(false);
   };
 
