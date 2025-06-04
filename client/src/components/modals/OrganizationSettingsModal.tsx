@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import { PhoneInputField } from '@/components/ui/PhoneInput';
 import { FileUpload } from '@/components/ui/FileUpload';
+import CurrencyDeleteConfirmModal from './CurrencyDeleteConfirmModal';
 
 const organizationSettingsSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -63,6 +64,12 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     branding: false,
     regional: false,
   });
+  const [currencyToDelete, setCurrencyToDelete] = useState<{
+    code: string;
+    name: string;
+    symbol: string;
+  } | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Fetch organization data
   const { data: organization, isLoading } = useQuery({
@@ -183,6 +190,64 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     }
   }, [organization, organizationCurrencies, form]);
 
+  // Mutation for deleting currency with replacement
+  const deleteCurrencyMutation = useMutation({
+    mutationFn: async ({ currencyCode, replacementCurrency }: { currencyCode: string; replacementCurrency?: string }) => {
+      if (!organizationId) throw new Error('Organization ID not found');
+      
+      // Get default currency if no replacement specified
+      const finalReplacementCurrency = replacementCurrency || organization?.default_currency;
+      if (!finalReplacementCurrency) {
+        throw new Error('No replacement currency available');
+      }
+
+      // Update all movements that use this currency
+      const { error: movementsError } = await supabase
+        .from('movements')
+        .update({ currency: finalReplacementCurrency })
+        .eq('currency', currencyCode);
+
+      if (movementsError) throw movementsError;
+
+      // Remove currency from organization_currencies
+      const { error: deleteError } = await supabase
+        .from('organization_currencies')
+        .delete()
+        .eq('organization_id', organizationId)
+        .eq('currencies.code', currencyCode);
+
+      if (deleteError) throw deleteError;
+
+      return { currencyCode, replacementCurrency: finalReplacementCurrency };
+    },
+    onSuccess: ({ currencyCode, replacementCurrency }) => {
+      // Update form by removing the deleted currency from secondary currencies
+      const currentSecondary = form.getValues('secondary_currencies') || [];
+      const updatedSecondary = currentSecondary.filter(code => code !== currencyCode);
+      form.setValue('secondary_currencies', updatedSecondary);
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['organization-currencies', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['movements'] });
+      
+      toast({
+        description: `Moneda ${currencyCode} eliminada. ${replacementCurrency} ahora se usa en movimientos anteriores.`,
+        duration: 3000,
+      });
+      
+      setIsDeleteModalOpen(false);
+      setCurrencyToDelete(null);
+    },
+    onError: (error: any) => {
+      console.error('Error deleting currency:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Error al eliminar la moneda. Inténtalo de nuevo.',
+        duration: 3000,
+      });
+    },
+  });
+
   const updateOrganizationMutation = useMutation({
     mutationFn: async (data: OrganizationSettingsForm) => {
       if (!organizationId) throw new Error('No organization ID');
@@ -282,6 +347,30 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     updateOrganizationMutation.mutate(data);
   };
 
+  const handleDeleteCurrency = (currency: { code: string; name: string; symbol: string }) => {
+    // Prevent deletion of default currency
+    if (currency.code === organization?.default_currency) {
+      toast({
+        variant: 'destructive',
+        description: 'No puedes eliminar la moneda por defecto. Cambia primero la moneda por defecto.',
+        duration: 3000,
+      });
+      return;
+    }
+
+    setCurrencyToDelete(currency);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteCurrency = (replacementCurrency?: string) => {
+    if (!currencyToDelete) return;
+    
+    deleteCurrencyMutation.mutate({
+      currencyCode: currencyToDelete.code,
+      replacementCurrency,
+    });
+  };
+
   const handleClose = () => {
     if (organization && organizationCurrencies !== undefined) {
       form.reset({
@@ -319,6 +408,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
   };
 
   return (
+    <>
     <ModernModal
       isOpen={isOpen}
       onClose={handleClose}
@@ -703,8 +793,9 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    const newValues = field.value?.filter(code => code !== currencyCode) || [];
-                                    field.onChange(newValues);
+                                    if (currency) {
+                                      handleDeleteCurrency(currency);
+                                    }
                                   }}
                                   className="hover:bg-primary/20 rounded-full p-1 transition-colors"
                                 >
@@ -812,5 +903,17 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         </div>
       </Form>
     </ModernModal>
+
+    {/* Currency Delete Confirmation Modal */}
+    <CurrencyDeleteConfirmModal
+      isOpen={isDeleteModalOpen}
+      onClose={() => {
+        setIsDeleteModalOpen(false);
+        setCurrencyToDelete(null);
+      }}
+      currencyToDelete={currencyToDelete}
+      onConfirm={confirmDeleteCurrency}
+    />
+    </>
   );
 }
