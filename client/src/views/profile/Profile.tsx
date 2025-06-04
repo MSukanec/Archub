@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Mail, Lock, CreditCard, Save, Crown, Zap, Rocket, Moon, Sun } from 'lucide-react';
+import { User, Mail, Lock, CreditCard, Save, Crown, Zap, Rocket, Moon, Sun, Camera } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ComingSoon from '@/components/ui/ComingSoon';
 import { supabase } from '@/lib/supabase';
 import { useFeatures } from '@/hooks/useFeatures';
 
@@ -174,9 +176,18 @@ export default function Profile() {
 
   const currentPlanName = getCurrentPlan() || 'FREE';
 
+  const getUserInitials = () => {
+    if (!user) return 'U';
+    const firstName = user.firstName || '';
+    const lastName = user.lastName || '';
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
+  };
+
+  const fullName = `${profileForm.firstName} ${profileForm.lastName}`.trim();
+
   return (
-    <div className="min-h-screen bg-surface-views p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -198,27 +209,100 @@ export default function Profile() {
               Información Personal
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
-                <Input
-                  id="firstName"
-                  value={profileForm.firstName}
-                  onChange={(e) => setProfileForm(prev => ({ ...prev, firstName: e.target.value }))}
-                  placeholder="Tu nombre"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Apellido</Label>
-                <Input
-                  id="lastName"
-                  value={profileForm.lastName}
-                  onChange={(e) => setProfileForm(prev => ({ ...prev, lastName: e.target.value }))}
-                  placeholder="Tu apellido"
-                />
+          <CardContent className="space-y-6">
+            {/* Avatar */}
+            <div className="space-y-2">
+              <Label>Avatar</Label>
+              <div className="flex items-center gap-4">
+                <ComingSoon>
+                  <div className="relative cursor-pointer group">
+                    <Avatar className="w-20 h-20">
+                      <AvatarImage src="" />
+                      <AvatarFallback className="text-lg">{getUserInitials()}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Camera className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                </ComingSoon>
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">
+                    Esta es tu imagen de perfil.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Haz clic en el avatar para subir una imagen personalizada.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Un avatar es opcional pero muy recomendado.
+                  </p>
+                </div>
               </div>
             </div>
+
+            {/* First Name */}
+            <div className="space-y-2">
+              <Label htmlFor="firstName">Nombre</Label>
+              <Input
+                id="firstName"
+                value={profileForm.firstName}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, firstName: e.target.value }))}
+                placeholder="Tu nombre"
+              />
+            </div>
+
+            {/* Last Name */}
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Apellido</Label>
+              <Input
+                id="lastName"
+                value={profileForm.lastName}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, lastName: e.target.value }))}
+                placeholder="Tu apellido"
+              />
+            </div>
+
+            {/* Full Name (Read-only) */}
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nombre Completo</Label>
+              <Input
+                id="fullName"
+                value={fullName}
+                disabled
+                placeholder="Nombre completo"
+                className="bg-muted/50"
+              />
+              <p className="text-xs text-muted-foreground">
+                Este campo se genera automáticamente con tu nombre y apellido.
+              </p>
+            </div>
+
+            {/* Age */}
+            <div className="space-y-2">
+              <Label htmlFor="age">Edad</Label>
+              <ComingSoon>
+                <Input
+                  id="age"
+                  placeholder="Tu edad"
+                  className="cursor-pointer"
+                  readOnly
+                />
+              </ComingSoon>
+            </div>
+
+            {/* Country */}
+            <div className="space-y-2">
+              <Label htmlFor="country">País</Label>
+              <ComingSoon>
+                <Input
+                  id="country"
+                  placeholder="Tu país"
+                  className="cursor-pointer"
+                  readOnly
+                />
+              </ComingSoon>
+            </div>
+
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -229,6 +313,7 @@ export default function Profile() {
                 placeholder="tu@email.com"
               />
             </div>
+
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" size="sm">
                 Cancelar

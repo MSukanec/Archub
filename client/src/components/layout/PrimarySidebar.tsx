@@ -445,11 +445,11 @@ export default function PrimarySidebar() {
           <button
             className={cn(
               "w-[40px] h-[39px] flex items-center justify-center transition-colors",
-              currentSection === 'profile'
+              hoveredItem === 'profile' || currentSection === 'profile'
                 ? "text-primary" 
                 : "text-muted-foreground hover:text-foreground"
             )}
-            onClick={handleProfileClick}
+            onMouseEnter={() => handleMouseEnter('profile')}
           >
             <User className="w-[20px] h-[20px]" />
           </button>
