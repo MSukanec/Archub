@@ -119,6 +119,11 @@ export default function Movements() {
           wallets (
             id,
             name
+          ),
+          currencies (
+            code,
+            name,
+            symbol
           )
         `)
         .eq('project_id', projectId)
@@ -275,7 +280,7 @@ export default function Movements() {
           (typeFilter === 'ajustes' && movementType === 'ajustes');
         
         // Currency filtering
-        const matchesCurrency = currencyFilter === 'all' || movement.currency === currencyFilter;
+        const matchesCurrency = currencyFilter === 'all' || movement.currencies?.code === currencyFilter;
         
         // Category filtering
         const categoryName = movement.movement_concepts?.name?.toLowerCase() || '';
@@ -798,7 +803,7 @@ export default function Movements() {
                   </TableCell>
                   <TableCell className="text-center py-1">
                     <Badge variant="outline" className="bg-muted/50">
-                      {movement.currency}
+                      {movement.currencies?.code || 'N/A'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center py-1">
@@ -956,7 +961,7 @@ export default function Movements() {
                     movement.movement_concepts?.parent_concept?.name === 'Egresos' ? 'text-rose-500' :
                     'text-blue-500'
                   }`}>
-                    {formatCurrency(movement.amount, movement.currency)}
+                    {formatCurrency(movement.amount, movement.currencies?.code || 'ARS')}
                   </span>
                 </div>
               </div>

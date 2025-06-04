@@ -479,8 +479,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                           {availableCurrencies.map((currency) => (
                             <SelectItem 
                               key={currency.currency_id || currency.code} 
-                              value={currency.currency_id || currency.code} 
-                              className="[&>span:first-child]:hidden"
+                              value={currency.currency_id || currency.code}
                             >
                               {currency.code} - {currency.name}
                             </SelectItem>
