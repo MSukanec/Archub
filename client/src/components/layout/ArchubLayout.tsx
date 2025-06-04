@@ -122,8 +122,8 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
   return (
     <div className="min-h-screen bg-surface-views">
       {/* Unified Header - Fixed to top */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-surface-primary border-b border-border">
-        <div className="w-full px-6 py-4">
+      <div className="fixed top-0 left-0 right-0 z-50 h-[50px]">
+        <div className="w-full px-6 h-full flex items-center">
           <div className="flex items-center w-full gap-6">
             {/* Left Section - Dashboard Only (10%) */}
             <div className="w-[10%] flex items-center">
@@ -147,11 +147,11 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
             </div>
 
             {/* Center Section - Organization to Contacts (80%) */}
-            <div className="w-[80%] flex items-center justify-center px-4">
+            <div className="w-[80%] flex items-center justify-center overflow-hidden">
               <div 
-                className="flex items-center gap-2 relative overflow-hidden max-w-full"
+                className="flex items-center gap-2 relative w-full"
                 onMouseLeave={handleMouseLeave}
-                style={{ width: 'fit-content', maxWidth: '100%' }}
+                style={{ maxWidth: '100%' }}
               >
                 {navigationSections.slice(1, -1).map((section, index) => { // Skip Dashboard and Contacts
                   const actualIndex = index + 1; // Adjust index for proper positioning
@@ -236,7 +236,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <main className="w-full pt-20">
+      <main className="w-full pt-[50px]">
         {children}
       </main>
     </div>
