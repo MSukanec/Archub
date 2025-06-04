@@ -131,6 +131,11 @@ export default function MobileDrawerFixed({ isOpen, onClose }: MobileDrawerProps
           setView('site-budgets');
           onClose();
         }
+        // Auto-navigate to dashboard view when "movements" section is selected
+        if (section === 'movements') {
+          setView('movements-dashboard');
+          onClose();
+        }
       }
     } else {
       // For sections without subitems, navigate directly

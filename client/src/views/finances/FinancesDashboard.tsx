@@ -31,25 +31,25 @@ export default function FinancesDashboard() {
       </div>
 
       {/* Balance General */}
-      <UnifiedBalanceCard projectId={activeProjectId} />
+      <UnifiedBalanceCard projectId={activeProject.id} />
 
       {/* Gráficos principales */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <WalletBalancePieChart projectId={activeProjectId} />
-        <MonthlyCashflowLineChart projectId={activeProjectId} />
+        <WalletBalancePieChart projectId={activeProject.id} />
+        <MonthlyCashflowLineChart projectId={activeProject.id} />
       </div>
 
       {/* Análisis por categorías */}
-      <ExpenseCategoryBarChart projectId={activeProjectId} />
+      <ExpenseCategoryBarChart projectId={activeProject.id} />
 
       {/* Indicadores y pronósticos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FinancialHealthIndicators projectId={activeProjectId} />
-        <BalanceForecastWidget projectId={activeProjectId} />
+        <FinancialHealthIndicators projectId={activeProject.id} />
+        <BalanceForecastWidget projectId={activeProject.id} />
       </div>
 
       {/* Tabla resumen */}
-      <WalletSummaryTable projectId={activeProjectId} />
+      <WalletSummaryTable projectId={activeProject.id} />
     </div>
   );
 }
