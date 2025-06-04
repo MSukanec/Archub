@@ -1,305 +1,189 @@
-import { useEffect, useState } from 'react';
-import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Shield, Bell, Contact, Crown, Zap, Rocket, Star, Diamond, Calendar, UserCheck, Library, FolderOpen, ChevronDown, Plus, HardHat } from 'lucide-react';
-import { useNavigationStore, Section } from '@/stores/navigationStore';
-import { useAuthStore } from '@/stores/authStore';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { useState } from 'react';
+import { Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact } from 'lucide-react';
+import { useNavigationStore, Section, View } from '@/stores/navigationStore';
 import { cn } from '@/lib/utils';
-import CircularButton from '@/components/ui/CircularButton';
 import { ProfilePopover } from '@/components/ui/ProfilePopover';
 
-const topNavigationItems = [
+interface SubMenuItem {
+  view: View;
+  label: string;
+  icon: any;
+}
+
+interface NavigationItem {
+  section: Section;
+  icon: any;
+  label: string;
+  subItems: SubMenuItem[];
+}
+
+const navigationItems: NavigationItem[] = [
   { 
-    section: 'dashboard' as Section, 
-    icon: Home, 
+    section: 'dashboard',
+    icon: Home,
     label: 'Dashboard',
-    description: 'Vista general del proyecto, métricas y acceso rápido a funciones principales.',
-    hasTimeline: true
+    subItems: [
+      { view: 'dashboard-main', label: 'Vista Principal', icon: Home },
+      { view: 'dashboard-timeline', label: 'Timeline', icon: Calendar }
+    ]
   },
   { 
-    section: 'organization' as Section, 
-    icon: Building2, 
+    section: 'organization',
+    icon: Building2,
     label: 'Organización',
-    description: 'Gestión de la empresa, equipos de trabajo y estructura organizacional.',
-    hasTimeline: false
+    subItems: [
+      { view: 'organization-overview', label: 'Resumen', icon: Building2 },
+      { view: 'organization-team', label: 'Equipo', icon: Users },
+      { view: 'organization-activity', label: 'Actividad', icon: BarChart3 }
+    ]
   },
   { 
-    section: 'projects' as Section, 
-    icon: FolderOpen, 
+    section: 'projects',
+    icon: FolderOpen,
     label: 'Proyectos',
-    description: 'Gestión y administración de proyectos de construcción.',
-    hasTimeline: true
+    subItems: [
+      { view: 'projects-overview', label: 'Resumen', icon: FolderOpen },
+      { view: 'projects-list', label: 'Lista de Proyectos', icon: FolderKanban }
+    ]
   },
   { 
-    section: 'budgets' as Section, 
-    icon: HardHat, 
+    section: 'budgets',
+    icon: HardHat,
     label: 'Obra',
-    description: 'Elaboración y gestión de presupuestos, cómputos métricos y materiales.',
-    hasTimeline: true
+    subItems: [
+      { view: 'budgets-list', label: 'Presupuestos', icon: ClipboardList },
+      { view: 'budgets-tasks', label: 'Tareas', icon: Settings },
+      { view: 'budgets-materials', label: 'Materiales', icon: Library },
+      { view: 'sitelog-main', label: 'Bitácora', icon: Contact }
+    ]
   },
   { 
-    section: 'calendar' as Section, 
-    icon: Calendar, 
-    label: 'Calendario',
-    description: 'Calendario de eventos, reuniones y citas del proyecto.',
-    hasTimeline: true
-  },
-  { 
-    section: 'movements' as Section, 
-    icon: DollarSign, 
+    section: 'movements',
+    icon: DollarSign,
     label: 'Finanzas',
-    description: 'Control de ingresos, egresos y movimientos financieros del proyecto.',
-    hasTimeline: true
+    subItems: [
+      { view: 'movements-main', label: 'Movimientos', icon: TrendingUp },
+      { view: 'transactions', label: 'Transacciones', icon: CreditCard }
+    ]
   },
   { 
-    section: 'contacts' as Section, 
-    icon: UserCheck, 
+    section: 'contacts',
+    icon: UserCheck,
     label: 'Contactos',
-    description: 'Gestión de contactos, clientes y proveedores del proyecto.',
-    hasTimeline: false
+    subItems: [
+      { view: 'contacts', label: 'Lista de Contactos', icon: UserCheck }
+    ]
   },
+  { 
+    section: 'calendar',
+    icon: Calendar,
+    label: 'Calendario',
+    subItems: [
+      { view: 'calendar', label: 'Vista de Calendario', icon: Calendar }
+    ]
+  }
 ];
 
-
-
 export default function PrimarySidebar() {
-  const { currentSection, currentView, setSection, setHoveredSection, setView } = useNavigationStore();
-  const { user } = useAuthStore();
-  const { organizationId, projectId, setUserContext, currentProjects } = useUserContextStore();
-  const [showProjectMenu, setShowProjectMenu] = useState(false);
-  const [menuTimeout, setMenuTimeout] = useState<NodeJS.Timeout | null>(null);
+  const { currentSection, currentView, setSection, setView } = useNavigationStore();
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [submenuPosition, setSubmenuPosition] = useState({ top: 0, left: 0 });
 
-  // Use projects from the store instead of fetching again
-  const projects = currentProjects || [];
-  const currentProject = projects.find(p => p.id === projectId);
-
-  // Escuchar eventos de navegación desde el timeline
-  useEffect(() => {
-    const handleTimelineNavigation = (event: CustomEvent) => {
-      const { section, view } = event.detail;
-      setSection(section);
+  // Handle navigation
+  const handleNavigation = (section: Section, view?: View) => {
+    setSection(section);
+    if (view) {
       setView(view);
-    };
-
-    window.addEventListener('navigate-to-section', handleTimelineNavigation as EventListener);
-    return () => {
-      window.removeEventListener('navigate-to-section', handleTimelineNavigation as EventListener);
-    };
-  }, [setSection, setView]);
-
-  // Get project initials
-  const getProjectInitials = (project?: any) => {
-    if (!project) return 'P';
-    const words = project.name.split(' ');
-    if (words.length >= 2) {
-      return (words[0][0] + words[1][0]).toUpperCase();
     }
-    return project.name.substring(0, 2).toUpperCase();
+    setHoveredItem(null);
   };
 
-  // Function to get the plan icon based on plan name
-  const getPlanIcon = (planName: string) => {
-    const name = planName?.toLowerCase();
-    switch (name) {
-      case 'free':
-        return Zap;
-      case 'pro':
-        return Crown;
-      case 'enterprise':
-        return Rocket;
-      default:
-        return Zap;
-    }
-  };
-
-  // Function to get the plan color based on plan name
-  const getPlanColor = (planName: string) => {
-    const name = planName?.toLowerCase();
-    switch (name) {
-      case 'free':
-        return 'text-primary';
-      case 'pro':
-        return 'text-blue-600';
-      case 'enterprise':
-        return 'text-purple-600';
-      default:
-        return 'text-primary';
-    }
-  };
-
-  const handleProjectChange = (newProjectId: string) => {
-    setUserContext({ projectId: newProjectId });
-    setShowProjectMenu(false);
-  };
-
-  const handleMouseEnter = () => {
-    if (menuTimeout) {
-      clearTimeout(menuTimeout);
-      setMenuTimeout(null);
-    }
-    setShowProjectMenu(true);
+  // Handle hover for submenu
+  const handleMouseEnter = (section: string, event: React.MouseEvent) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setSubmenuPosition({
+      top: rect.top,
+      left: rect.right + 5
+    });
+    setHoveredItem(section);
   };
 
   const handleMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setShowProjectMenu(false);
-    }, 300);
-    setMenuTimeout(timeout);
+    setTimeout(() => {
+      setHoveredItem(null);
+    }, 100);
   };
-
-  const handlePlanClick = () => {
-    setView('subscription-tables');
-  };
-
-  // Obtener el plan actual del usuario
-  const { data: userPlan } = useQuery({
-    queryKey: ['/api/user-plan', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      
-      const { data, error } = await supabase
-        .from('users')
-        .select(`
-          plan_id,
-          plans (
-            name,
-            price
-          )
-        `)
-        .eq('auth_id', user.id)
-        .single();
-      
-      if (error) {
-        console.error('Error fetching user plan:', error);
-        return null;
-      }
-      
-      return data?.plans || null;
-    },
-    enabled: !!user?.id,
-    staleTime: 1 * 60 * 1000, // 1 minuto de cache para actualizaciones más rápidas
-    refetchOnWindowFocus: true, // Refrescar cuando la ventana recibe foco
-    refetchInterval: 30 * 1000, // Refrescar cada 30 segundos
-  });
 
   return (
-    <div className="w-[55px] flex flex-col relative z-30">
-      {/* Dashboard button - moved to top */}
-      <div className="flex items-center justify-center pt-2.5 pl-2.5">
-        <CircularButton
-          icon={Home}
-          isActive={currentSection === 'dashboard'}
-          onClick={() => setSection('dashboard')}
-          section="dashboard"
-          label="Dashboard"
-        />
-      </div>
-
-      {/* Project selector */}
-      <div className="flex items-center justify-center pt-2 pl-2.5 relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div className="w-11 h-11 rounded-full bg-surface-primary border-2 border-input shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group hover:pressed">
-          <span className="text-sm font-bold text-muted-foreground">
-            {getProjectInitials(currentProject)}
-          </span>
-          <ChevronDown className="w-3 h-3 text-gray-600 absolute -bottom-1 -right-1" />
-        </div>
-
-        {/* Project menu */}
-        {showProjectMenu && (
-          <div className="absolute top-0 left-full ml-3 bg-surface-secondary rounded-2xl shadow-lg z-50 pointer-events-auto max-w-[280px] min-w-[200px]">
-            <div className="p-4">
-              {/* Title in black */}
-              <div className="font-semibold text-sm text-foreground mb-2">
-                Seleccionar Proyecto
-              </div>
-              {/* Project list */}
-              <div className="space-y-2">
-                {projects.map((project) => (
-                  <button
-                    key={project.id}
-                    onClick={() => handleProjectChange(project.id)}
-                    className={`w-full text-left p-2 rounded-lg transition-colors ${
-                      project.id === projectId
-                        ? 'bg-black text-white'
-                        : 'hover:bg-black/5'
-                    }`}
-                  >
-                    <span className={`font-medium text-xs ${project.id === projectId ? 'text-white' : 'text-foreground'}`}>
-                      {project.name}
-                    </span>
-                    <p className={`text-xs mt-1 leading-relaxed whitespace-normal ${
-                      project.id === projectId ? 'text-white/70' : 'text-muted-foreground'
-                    }`}>
-                      {project.description}
-                    </p>
-                  </button>
-                ))}
-                <button className="w-full text-left p-2 rounded-lg hover:bg-black/5 border border-dashed border-input mt-2">
-                  <Plus className="w-3 h-3 inline mr-1 text-muted-foreground" />
-                  <span className="font-medium text-xs text-foreground">Crear Nuevo Proyecto</span>
-                </button>
-              </div>
+    <div className="h-full bg-background border-r border-border flex flex-col w-[40px] min-w-[40px] max-w-[40px]">
+      {/* Main Navigation Items */}
+      <div className="flex flex-col">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = currentSection === item.section;
+          
+          return (
+            <div key={item.section} className="relative">
+              <button
+                className={cn(
+                  "w-[39px] h-[39px] flex items-center justify-center transition-colors border-b border-border/50",
+                  isActive 
+                    ? "bg-primary/10 text-primary" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
+                onClick={() => handleNavigation(item.section)}
+                onMouseEnter={(e) => handleMouseEnter(item.section, e)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Icon className="w-[20px] h-[20px]" />
+              </button>
+              
+              {/* Submenu */}
+              {hoveredItem === item.section && (
+                <div
+                  className="fixed bg-popover border border-border rounded-md shadow-md z-50 w-[250px] py-2"
+                  style={{
+                    top: submenuPosition.top,
+                    left: submenuPosition.left,
+                  }}
+                  onMouseEnter={() => setHoveredItem(item.section)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <div className="px-3 py-2 border-b border-border">
+                    <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
+                  </div>
+                  <div className="py-1">
+                    {item.subItems.map((subItem) => {
+                      const SubIcon = subItem.icon;
+                      const isSubActive = currentView === subItem.view;
+                      
+                      return (
+                        <button
+                          key={subItem.view}
+                          className={cn(
+                            "w-full px-3 py-2 text-left text-sm flex items-center gap-3 transition-colors",
+                            isSubActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                          onClick={() => handleNavigation(item.section, subItem.view)}
+                        >
+                          <SubIcon className="w-4 h-4" />
+                          {subItem.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
-
-          </div>
-        )}
+          );
+        })}
       </div>
-      
-      {/* Center navigation buttons */}
-      <div className="flex-1 flex flex-col items-center justify-center space-y-2 pl-2.5">
-        {topNavigationItems.slice(1).map(({ section, icon, label, description, hasTimeline }) => (
-          <div key={section} className="relative">
-            <CircularButton
-              icon={icon}
-              isActive={currentSection === section}
-              onClick={() => {
-                setSection(section);
-                // Auto-navigate to dashboard view when "movements" section is selected
-                if (section === 'movements') {
-                  setView('movements-dashboard');
-                }
-              }}
-              section={section}
-              label={label}
-              description={description}
-            />
 
-          </div>
-        ))}
-      </div>
-      
-      {/* Bottom buttons section */}
-      <div className="flex flex-col items-center pb-2.5 pl-2.5 space-y-2">
-        {/* Plan button */}
-        {userPlan && (
-          <div 
-            className={`w-11 h-11 rounded-full bg-surface-primary shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group border-2 ${
-              userPlan.name?.toLowerCase() === 'free'
-                ? 'border-primary'
-                : userPlan.name?.toLowerCase() === 'pro'
-                  ? 'border-blue-600'
-                  : 'border-purple-600'
-            }`}
-            onClick={handlePlanClick}
-          >
-            {(() => {
-              const PlanIcon = getPlanIcon(userPlan.name);
-              return <PlanIcon className={`w-5 h-5 ${getPlanColor(userPlan.name)} group-hover:scale-110 transition-transform`} />;
-            })()}
-          </div>
-        )}
-
-        {/* Profile button with popover */}
-        <ProfilePopover>
-          <div 
-            className={`w-11 h-11 rounded-full bg-surface-primary shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center cursor-pointer group border-2 ${
-              currentSection === 'profile' ? 'border-primary' : 'border-transparent hover:border-muted-foreground/20'
-            }`}
-          >
-            <User className={`w-5 h-5 ${currentSection === 'profile' ? 'text-primary' : 'text-muted-foreground'} group-hover:scale-110 transition-transform`} />
-          </div>
-        </ProfilePopover>
+      {/* Bottom Section - Profile */}
+      <div className="flex flex-col mt-auto">
+        <ProfilePopover />
       </div>
     </div>
   );
