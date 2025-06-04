@@ -107,8 +107,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       
       if (error) throw error;
       
-      const currencies = data?.map(oc => oc.currencies).filter(Boolean) || [];
-      const defaultCurrency = data?.find(oc => oc.is_default)?.currencies?.code || null;
+      const currencies = data?.map(oc => ({
+        ...oc.currencies,
+        currency_id: oc.currency_id
+      })).filter(Boolean) || [];
+      const defaultCurrency = data?.find(oc => oc.is_default)?.currency_id || null;
       
       return { currencies, defaultCurrency };
     },
@@ -186,7 +189,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
           created_at: new Date().toISOString().split('T')[0],
           description: '',
           amount: 0,
-          currency: defaultCurrencyCode || availableCurrencies[0]?.code || 'ARS',
+          currency_id: '',
           wallet_id: '',
           related_contact_id: '',
           related_task_id: '',
@@ -245,7 +248,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
             created_at_local: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
-            currency: data.currency,
+            currency_id: data.currency_id,
             wallet_id: data.wallet_id,
             related_contact_id: data.related_contact_id || null,
             related_task_id: data.related_task_id || null,
@@ -266,7 +269,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
             created_at_local: data.created_at.includes('T') ? data.created_at : data.created_at + 'T00:00:00.000Z',
             description: data.description,
             amount: data.amount,
-            currency: data.currency,
+            currency_id: data.currency_id,
             wallet_id: data.wallet_id,
             related_contact_id: data.related_contact_id || null,
             related_task_id: data.related_task_id || null,
@@ -455,7 +458,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                 {/* Moneda */}
                 <FormField
                   control={form.control}
-                  name="currency"
+                  name="currency_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground">Moneda <span className="text-primary">*</span></FormLabel>
