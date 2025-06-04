@@ -51,7 +51,10 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
         const parentConcept = concept?.parent_concept;
         
         // Verificar si es ingreso por el concepto padre o por el concepto mismo
-        const isIncome = parentConcept?.name === 'Ingresos' || concept?.name === 'Ingresos';
+        const isIncome = parentConcept?.name === 'Ingresos' || 
+                         concept?.name === 'Ingresos' ||
+                         parentConcept?.name?.toLowerCase() === 'ingresos' ||
+                         concept?.name?.toLowerCase() === 'ingresos';
         const amount = parseFloat(movement.amount) || 0;
         const currencyCode = movement.currencies?.code;
 
