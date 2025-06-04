@@ -329,13 +329,17 @@ export default function PrimarySidebar() {
           );
         })}
         
-        {/* New Project Button */}
+        {/* Project Management Button */}
         <button
-          className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground border-t border-dashed border-border/50"
-          onClick={handleNewProject}
+          className={`w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors border-t border-dashed border-border/50 ${
+            currentView === 'projects-list' 
+              ? 'text-primary' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => handleNavigation('projects', 'projects-list')}
         >
-          <Plus className="w-4 h-4" />
-          Nuevo Proyecto
+          <FolderKanban className="w-4 h-4" />
+          Gestión de Proyectos
         </button>
       </div>
     </div>
