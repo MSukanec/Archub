@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/card';
-import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface UnifiedBalanceCardProps {
   projectId: string;
@@ -18,21 +18,83 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
   const { data: balanceData, isLoading, error } = useQuery({
     queryKey: ['unified-balance', projectId],
     queryFn: async (): Promise<BalanceData> => {
-      const { data: movements, error } = await supabase
-        .from('site_movements')
-        .select(`
-          amount,
-          currencies(code),
-          movement_concepts(
-            name,
-            parent_id,
-            parent_concept:movement_concepts!parent_id(name)
-          )
-        `)
-        .eq('project_id', projectId);
+      try {
+        // Consulta simple para obtener movimientos con joins básicos
+        const { data: movements, error } = await supabase
+          .from('site_movements')
+          .select(`
+            amount,
+            currencies(code),
+            movement_concepts(
+              name,
+              parent_id,
+              parent_concept:movement_concepts!parent_id(name)
+            )
+          `)
+          .eq('project_id', projectId);
 
-      if (error) {
-        console.error('Error fetching movements for balance:', error);
+        if (error) {
+          console.error('Error fetching movements:', error);
+          return {
+            totalIncomePesos: 0,
+            totalExpensePesos: 0,
+            totalIncomeDollars: 0,
+            totalExpenseDollars: 0
+          };
+        }
+
+        let totalIncomePesos = 0;
+        let totalExpensePesos = 0;
+        let totalIncomeDollars = 0;
+        let totalExpenseDollars = 0;
+
+        movements?.forEach((movement: any) => {
+          const concept = movement.movement_concepts;
+          const parentConcept = concept?.parent_concept;
+          
+          // Verificar si es ingreso
+          const isIncome = parentConcept?.name === 'Ingresos' || concept?.name === 'Ingresos';
+          const amount = parseFloat(movement.amount) || 0;
+          const currencyCode = movement.currencies?.code;
+
+          console.log('Processing movement in UnifiedBalanceCard:', {
+            amount,
+            currencyCode,
+            isIncome,
+            conceptName: concept?.name,
+            parentConcept: parentConcept?.name
+          });
+
+          if (currencyCode === 'ARS' || currencyCode === 'COP') {
+            if (isIncome) {
+              totalIncomePesos += amount;
+            } else {
+              totalExpensePesos += amount;
+            }
+          } else if (currencyCode === 'USD') {
+            if (isIncome) {
+              totalIncomeDollars += amount;
+            } else {
+              totalExpenseDollars += amount;
+            }
+          }
+        });
+
+        console.log('Final balance calculation:', {
+          totalIncomePesos,
+          totalExpensePesos,
+          totalIncomeDollars,
+          totalExpenseDollars
+        });
+
+        return {
+          totalIncomePesos,
+          totalExpensePesos,
+          totalIncomeDollars,
+          totalExpenseDollars
+        };
+      } catch (error) {
+        console.error('Error in balance calculation:', error);
         return {
           totalIncomePesos: 0,
           totalExpensePesos: 0,
@@ -40,61 +102,6 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
           totalExpenseDollars: 0
         };
       }
-
-      let totalIncomePesos = 0;
-      let totalExpensePesos = 0;
-      let totalIncomeDollars = 0;
-      let totalExpenseDollars = 0;
-
-      movements?.forEach((movement: any) => {
-        const concept = movement.movement_concepts;
-        const parentConcept = concept?.parent_concept;
-        
-        // Verificar si es ingreso por el concepto padre o por el concepto mismo
-        const isIncome = parentConcept?.name === 'Ingresos' || 
-                         concept?.name === 'Ingresos' ||
-                         parentConcept?.name?.toLowerCase() === 'ingresos' ||
-                         concept?.name?.toLowerCase() === 'ingresos';
-        const amount = parseFloat(movement.amount) || 0;
-        const currencyCode = movement.currencies?.code;
-
-        console.log('Processing movement in UnifiedBalanceCard:', {
-          amount,
-          currencyCode,
-          isIncome,
-          conceptName: concept?.name,
-          parentConcept: parentConcept?.name,
-          hasParentId: !!concept?.parent_id
-        });
-
-        if (currencyCode === 'ARS' || currencyCode === 'COP') {
-          if (isIncome) {
-            totalIncomePesos += amount;
-          } else {
-            totalExpensePesos += amount;
-          }
-        } else if (currencyCode === 'USD') {
-          if (isIncome) {
-            totalIncomeDollars += amount;
-          } else {
-            totalExpenseDollars += amount;
-          }
-        }
-      });
-
-      console.log('Final balance calculation:', {
-        totalIncomePesos,
-        totalExpensePesos,
-        totalIncomeDollars,
-        totalExpenseDollars
-      });
-
-      return {
-        totalIncomePesos,
-        totalExpensePesos,
-        totalIncomeDollars,
-        totalExpenseDollars
-      };
     }
   });
 
@@ -147,56 +154,41 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
   const pesosBalance = balanceData.totalIncomePesos - balanceData.totalExpensePesos;
   const dollarsBalance = balanceData.totalIncomeDollars - balanceData.totalExpenseDollars;
 
-  // Convertir todo a USD (usando tasa aproximada de 1000 ARS = 1 USD)
-  const exchangeRate = 1000;
-  const pesosInUSD = pesosBalance / exchangeRate;
-  const totalUSDBalance = dollarsBalance + pesosInUSD;
+  // Calcular el balance total en USD (asumiendo tasa de cambio aproximada)
+  const totalBalanceUSD = dollarsBalance + (pesosBalance / 1000); // Ajustar según tasa real
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-            <DollarSign className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">Balance Total del Proyecto</h3>
-            <p className="text-sm text-muted-foreground">Equivalente en USD</p>
-          </div>
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+          <DollarSign className="w-6 h-6 text-primary" />
         </div>
-        
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-foreground">Balance Total del Proyecto</h3>
+          <p className="text-sm text-muted-foreground">Equivalente en USD</p>
+        </div>
         <div className="text-right">
-          <div className="text-3xl font-bold text-foreground">
-            ${totalUSDBalance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+          <div className="text-2xl font-bold text-foreground">
+            ${totalBalanceUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </div>
-          <div className="flex items-center space-x-2 text-sm">
-            {totalUSDBalance >= 0 ? (
-              <>
-                <TrendingUp className="w-4 h-4 text-primary" />
-                <span className="text-primary">Positivo</span>
-              </>
-            ) : (
-              <>
-                <TrendingDown className="w-4 h-4 text-expense" />
-                <span className="text-expense">Negativo</span>
-              </>
-            )}
+          <div className={`text-sm font-medium ${totalBalanceUSD >= 0 ? 'text-primary' : 'text-expense'}`}>
+            {totalBalanceUSD >= 0 ? '↗ Positivo' : '↘ Negativo'}
           </div>
         </div>
       </div>
-
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        <div className="text-center p-4 bg-surface-primary rounded-lg">
-          <p className="text-sm text-muted-foreground">Pesos Argentinos</p>
-          <p className="text-xl font-semibold text-foreground">
+      
+      <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
+        <div>
+          <h4 className="font-medium text-foreground mb-2">Pesos Argentinos</h4>
+          <div className="text-lg font-semibold text-foreground">
             ${pesosBalance.toLocaleString('es-AR')}
-          </p>
+          </div>
         </div>
-        <div className="text-center p-4 bg-surface-primary rounded-lg">
-          <p className="text-sm text-muted-foreground">Dólares Estadounidenses</p>
-          <p className="text-xl font-semibold text-foreground">
-            ${dollarsBalance.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-          </p>
+        <div>
+          <h4 className="font-medium text-foreground mb-2">Dólares Estadounidenses</h4>
+          <div className="text-lg font-semibold text-foreground">
+            ${dollarsBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </div>
         </div>
       </div>
     </Card>
