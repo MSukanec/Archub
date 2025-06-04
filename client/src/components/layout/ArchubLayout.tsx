@@ -90,11 +90,20 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
 
   const handleSectionHover = (section: Section, sectionIndex: number) => {
     setExpandedSection(section);
-    setSection(section);
+    // No cambiar la sección actual, solo mostrar el menú
   };
 
   const handleMouseLeave = () => {
     setExpandedSection(null);
+  };
+
+  const handleSectionClick = (section: Section) => {
+    setSection(section);
+    // Navegar a la primera vista de la sección
+    const sectionData = navigationSections.find(s => s.section === section);
+    if (sectionData && sectionData.views.length > 0) {
+      setView(sectionData.views[0].key as any);
+    }
   };
 
   const handleViewClick = (section: Section, viewKey: string) => {
@@ -139,6 +148,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
                     {/* Circular Button */}
                     <button
                       onMouseEnter={() => handleSectionHover(sectionKey, index)}
+                      onClick={() => handleSectionClick(sectionKey)}
                       className={cn(
                         "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105",
                         currentSection === sectionKey 
