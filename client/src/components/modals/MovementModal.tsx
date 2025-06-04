@@ -141,8 +141,7 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .select(`
           wallet_id,
           is_default,
-          is_active,
-          wallets!inner(id, name, description, wallet_type)
+          is_active
         `)
         .eq('organization_id', organizationId)
         .eq('is_active', true)
@@ -153,11 +152,11 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
       
       if (error) throw error;
       
+      // Create simple wallet objects with IDs as names for now
       const wallets = data?.map(ow => ({
         id: ow.wallet_id,
-        name: ow.wallets.name,
-        description: ow.wallets.description,
-        wallet_type: ow.wallets.wallet_type
+        name: `Billetera ${ow.wallet_id.slice(0, 8)}`,
+        description: ow.is_default ? 'Billetera por defecto' : 'Billetera secundaria'
       })) || [];
       
       const defaultWallet = data?.find(ow => ow.is_default)?.wallet_id || null;
