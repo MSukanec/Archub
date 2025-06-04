@@ -22,13 +22,12 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
         .from('site_movements')
         .select(`
           amount,
-          currencies!inner(
-            code
-          ),
-          movement_concepts!inner(
-            parent_concept:parent_id(
-              name
-            )
+          currencies(code),
+          movement_concepts(
+            id,
+            name,
+            parent_id,
+            parent_concept:movement_concepts!parent_id(name)
           )
         `)
         .eq('project_id', projectId);
@@ -41,14 +40,10 @@ export default function UnifiedBalanceCard({ projectId }: UnifiedBalanceCardProp
       let totalExpenseDollars = 0;
 
       movements?.forEach((movement: any) => {
-        const parentConcept = Array.isArray(movement.movement_concepts) 
-          ? movement.movement_concepts[0]?.parent_concept?.[0]
-          : movement.movement_concepts?.parent_concept;
+        const parentConcept = movement.movement_concepts?.parent_concept;
         const isIncome = parentConcept?.name === 'Ingresos';
         const amount = movement.amount || 0;
-        const currencyCode = Array.isArray(movement.currencies) 
-          ? movement.currencies[0]?.code 
-          : movement.currencies?.code;
+        const currencyCode = movement.currencies?.code;
 
         if (currencyCode === 'ARS') {
           if (isIncome) {

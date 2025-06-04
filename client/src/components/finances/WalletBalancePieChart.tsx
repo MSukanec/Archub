@@ -135,7 +135,7 @@ export default function WalletBalancePieChart({ projectId }: WalletBalancePieCha
             <Tooltip formatter={formatTooltip} />
             <Legend 
               formatter={(value, entry) => 
-                `${value} (${entry.payload.currency})`
+                `${value} (${entry.payload?.currency || 'N/A'})`
               }
             />
           </PieChart>
