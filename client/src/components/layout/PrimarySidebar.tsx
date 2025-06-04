@@ -141,10 +141,12 @@ export default function PrimarySidebar() {
       setView(view);
     } else {
       // Set default views for sections when no specific view is provided
-      if (section === 'budgets') {
-        setView('budgets-list');
-      } else if (section === 'movements') {
-        setView('movements-dashboard');
+      const sectionItem = navigationItems.find(item => item.section === section);
+      if (sectionItem && sectionItem.subItems && sectionItem.subItems.length > 0) {
+        // Auto-select the first sub-item for all sections except dashboard
+        if (section !== 'dashboard') {
+          setView(sectionItem.subItems[0].view);
+        }
       }
     }
     
