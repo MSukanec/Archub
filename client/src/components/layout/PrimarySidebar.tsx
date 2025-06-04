@@ -301,29 +301,7 @@ export default function PrimarySidebar() {
           label="Test Archub"
         />
 
-        {/* Test Finanzas Dashboard Archub */}
-        <CircularButton
-          icon={DollarSign}
-          isActive={currentView === 'movements-dashboard-archub'}
-          onClick={() => {
-            setSection('movements');
-            setView('movements-dashboard-archub');
-          }}
-          section="movements"
-          label="Finanzas Dash"
-        />
 
-        {/* Test Finanzas Movimientos Archub */}
-        <CircularButton
-          icon={DollarSign}
-          isActive={currentView === 'movements-main-archub'}
-          onClick={() => {
-            setSection('movements');
-            setView('movements-main-archub');
-          }}
-          section="movements"
-          label="Finanzas Mov"
-        />
 
         {/* Profile button */}
         <CircularButton

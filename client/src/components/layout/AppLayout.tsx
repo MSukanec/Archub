@@ -25,8 +25,7 @@ import SiteMaterials from '@/views/site/SiteMaterials';
 import SiteLogs from '@/views/site/SiteLogs';
 import FinancesMovements from '@/views/finances/FinancesMovements';
 import FinancesDashboard from '@/views/finances/FinancesDashboard';
-import FinancesDashboardArchub from '@/views/finances/FinancesDashboardArchub';
-import FinancesMovementsArchub from '@/views/finances/FinancesMovementsArchub';
+
 import Contacts from '@/views/contacts/Contacts';
 
 import AdminOrganizations from '@/views/admin/AdminOrganizations';
@@ -66,8 +65,6 @@ const viewComponents = {
   'sitelog-main': SiteLogs,
   'movements-main': FinancesMovements,
   'movements-dashboard': FinancesDashboard,
-  'movements-dashboard-archub': FinancesDashboardArchub,
-  'movements-main-archub': FinancesMovementsArchub,
   'transactions': FinancesMovements,
   'contacts': Contacts,
   'calendar': CalendarView,

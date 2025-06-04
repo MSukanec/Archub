@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import ArchubLayout from '@/components/layout/ArchubLayout';
 import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download, ChevronLeft, ChevronRight, X, Filter, Tag, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -432,7 +433,7 @@ export default function Movements() {
   }
 
   return (
-    <>
+    <ArchubLayout>
       <div className="flex-1 p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between">
@@ -966,6 +967,6 @@ export default function Movements() {
       >
         <Plus className="h-6 w-6" />
       </Button>
-    </>
+    </ArchubLayout>
   );
 }
