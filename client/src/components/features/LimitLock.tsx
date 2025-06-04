@@ -53,28 +53,30 @@ export function LimitLock({
             </div>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-80 p-0" 
+            className="w-72 p-0 bg-surface-views border-border/50 shadow-xl" 
             side="top"
             onMouseEnter={() => setIsChildrenOpen(true)}
             onMouseLeave={() => setIsChildrenOpen(false)}
           >
-            <div className="p-4 border-b border-border bg-blue-500/10 border-blue-500/20">
+            <div className="bg-surface-primary p-3 border-b border-border/20">
               <div className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-blue-400" />
-                <h3 className="font-semibold text-sm">Actualización Requerida</h3>
+                <div className="p-1.5 rounded-full bg-blue-500/10">
+                  <Crown className="h-4 w-4 text-blue-400" />
+                </div>
+                <h3 className="font-medium text-sm text-foreground">Actualización Requerida</h3>
               </div>
             </div>
-            <div className="p-4 space-y-3">
-              <p className="text-sm text-muted-foreground">
+            <div className="p-3 bg-surface-views space-y-3">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {upgradeMessage}
               </p>
               <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent('navigate-to-subscription-tables'));
                 }}
               >
-                <Crown className="h-4 w-4 mr-2" />
+                <Crown className="h-3 w-3 mr-1" />
                 Actualizar a PRO
               </Button>
             </div>
