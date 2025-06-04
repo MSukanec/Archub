@@ -140,6 +140,11 @@ export default function PrimarySidebar() {
     setSection(section);
     if (view) {
       setView(view);
+    } else {
+      // Set default views for sections when no specific view is provided
+      if (section === 'budgets') {
+        setView('budgets-list');
+      }
     }
     
     // When sidebar is docked and we click on a navigation item, show its secondary sidebar
