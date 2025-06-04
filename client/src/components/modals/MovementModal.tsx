@@ -97,9 +97,13 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
         .from('organization_currencies')
         .select(`
           currency_id,
+          is_default,
+          is_active,
           currencies!inner(code, name, symbol)
         `)
-        .eq('organization_id', organizationId);
+        .eq('organization_id', organizationId)
+        .eq('is_active', true)
+        .order('is_default', { ascending: false }); // Default currency first
       
       if (error) throw error;
       return data?.map(oc => oc.currencies).filter(Boolean) || [];

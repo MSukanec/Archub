@@ -123,12 +123,17 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         .from('organization_currencies')
         .select(`
           currency_id,
+          is_default,
+          is_active,
           currencies!inner(code)
         `)
-        .eq('organization_id', organizationId);
+        .eq('organization_id', organizationId)
+        .eq('is_active', true);
       
       if (error) throw error;
-      return data?.map(oc => oc.currencies?.code).filter(Boolean) || [];
+      
+      // Return only non-default currencies (secondary currencies)
+      return data?.filter(oc => !oc.is_default).map(oc => oc.currencies?.code).filter(Boolean) || [];
     },
     enabled: !!organizationId && isOpen,
     retry: 1,
@@ -217,19 +222,29 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
       if (deleteError) throw deleteError;
 
-      // Then, insert new organization currencies if any
-      if (data.secondary_currencies && data.secondary_currencies.length > 0) {
-        // First, get the currency IDs from the codes
+      // Prepare all currencies to insert (default + secondary)
+      const allCurrencyCodes = [data.default_currency, ...(data.secondary_currencies || [])];
+      
+      if (allCurrencyCodes.length > 0) {
+        // Get the currency IDs from the codes
         const { data: currencyData, error: currencyError } = await supabase
           .from('currencies')
           .select('id, code')
-          .in('code', data.secondary_currencies);
+          .in('code', allCurrencyCodes);
 
         if (currencyError) throw currencyError;
+
+        // Validate that we have at least the default currency
+        const defaultCurrencyRecord = currencyData?.find(c => c.code === data.default_currency);
+        if (!defaultCurrencyRecord) {
+          throw new Error('Moneda por defecto no encontrada en la base de datos');
+        }
 
         const organizationCurrencies = currencyData?.map(currency => ({
           organization_id: organizationId,
           currency_id: currency.id,
+          is_default: currency.code === data.default_currency,
+          is_active: true,
         })) || [];
 
         if (organizationCurrencies.length > 0) {
@@ -628,7 +643,14 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                   <FormItem>
                     <FormLabel className="text-xs font-medium text-foreground">Moneda por Defecto</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        // Eliminar de monedas secundarias si está seleccionada
+                        const currentSecondary = form.getValues('secondary_currencies') || [];
+                        if (currentSecondary.includes(value)) {
+                          form.setValue('secondary_currencies', currentSecondary.filter(code => code !== value));
+                        }
+                      }}
                       value={field.value}
                     >
                       <FormControl>
@@ -652,40 +674,91 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
               <FormField
                 control={form.control}
                 name="secondary_currencies"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">Monedas Secundarias</FormLabel>
-                    <div className="space-y-2">
-                      <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
-                        {availableCurrencies.map((currency) => (
-                          <div key={currency.code} className="flex items-center space-x-2 py-1">
-                            <input
-                              type="checkbox"
-                              id={`currency-${currency.code}`}
-                              checked={field.value?.includes(currency.code) || false}
-                              onChange={(e) => {
-                                const currentValues = field.value || [];
-                                if (e.target.checked) {
-                                  field.onChange([...currentValues, currency.code]);
-                                } else {
-                                  field.onChange(currentValues.filter(code => code !== currency.code));
-                                }
-                              }}
-                              className="rounded border-input"
-                            />
-                            <label
-                              htmlFor={`currency-${currency.code}`}
-                              className="text-sm cursor-pointer flex-1"
-                            >
-                              {currency.symbol} {currency.name} ({currency.code})
-                            </label>
-                          </div>
-                        ))}
+                render={({ field }) => {
+                  const defaultCurrency = form.watch('default_currency');
+                  const availableSecondary = availableCurrencies.filter(c => c.code !== defaultCurrency);
+                  
+                  return (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">
+                        Monedas Secundarias
+                        <span className="text-muted-foreground ml-2 text-xs">
+                          (Solo monedas no seleccionadas como principal)
+                        </span>
+                      </FormLabel>
+                      
+                      {/* Selected currencies chips */}
+                      {field.value && field.value.length > 0 && (
+                        <div className="flex flex-wrap gap-2 p-3 bg-surface-primary rounded-xl border">
+                          {field.value.map((currencyCode) => {
+                            const currency = availableCurrencies.find(c => c.code === currencyCode);
+                            if (!currency) return null;
+                            
+                            return (
+                              <div
+                                key={currencyCode}
+                                className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm border border-primary/20"
+                              >
+                                <span>{currency.symbol} {currency.code}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newValues = field.value?.filter(code => code !== currencyCode) || [];
+                                    field.onChange(newValues);
+                                  }}
+                                  className="hover:bg-primary/20 rounded-full p-1 transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      
+                      {/* Available currencies to select */}
+                      <div className="space-y-2">
+                        <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
+                          {availableSecondary.map((currency) => {
+                            const isSelected = field.value?.includes(currency.code) || false;
+                            
+                            return (
+                              <div key={currency.code} className="flex items-center space-x-2 py-1">
+                                <input
+                                  type="checkbox"
+                                  id={`currency-${currency.code}`}
+                                  checked={isSelected}
+                                  onChange={(e) => {
+                                    const currentValues = field.value || [];
+                                    if (e.target.checked) {
+                                      field.onChange([...currentValues, currency.code]);
+                                    } else {
+                                      field.onChange(currentValues.filter(code => code !== currency.code));
+                                    }
+                                  }}
+                                  className="rounded border-input"
+                                />
+                                <label
+                                  htmlFor={`currency-${currency.code}`}
+                                  className="text-sm cursor-pointer flex-1"
+                                >
+                                  {currency.symbol} {currency.name} ({currency.code})
+                                </label>
+                              </div>
+                            );
+                          })}
+                          
+                          {availableSecondary.length === 0 && (
+                            <div className="text-center py-4 text-muted-foreground text-sm">
+                              No hay monedas adicionales disponibles
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
 
               <FormField
