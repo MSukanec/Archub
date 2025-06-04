@@ -319,7 +319,8 @@ export default function Movements() {
     
     filteredMovements.forEach(movement => {
       const amount = movement.amount;
-      const target = movement.currency === 'USD' ? dolares : pesos;
+      // Get currency from currency_id lookup (fallback to ARS for now)
+      const target = pesos; // TODO: Implement proper currency lookup based on currency_id
       
       // Obtener el tipo padre correctamente
       let parentType = null;

@@ -54,6 +54,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserContextStore } from '@/stores/userContextStore';
 import ModernModal from '@/components/ui/ModernModal';
 
+interface Currency {
+  code: string;
+  name: string;
+  symbol: string;
+  currency_id: string;
+}
+
 const movementSchema = z.object({
   type_id: z.string().min(1, 'El tipo es requerido'),
   concept_id: z.string().min(1, 'La categoría es requerida'),
@@ -118,16 +125,16 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
     enabled: !!organizationId && isOpen,
   });
 
-  const organizationCurrencies = organizationCurrenciesData?.currencies || [];
-  const defaultCurrencyCode = organizationCurrenciesData?.defaultCurrency;
+  const organizationCurrencies: Currency[] = (organizationCurrenciesData?.currencies || []) as Currency[];
+  const defaultCurrencyId = organizationCurrenciesData?.defaultCurrency;
 
   // Fallback currencies if none configured for organization
-  const fallbackCurrencies = [
-    { code: 'ARS', name: 'Peso Argentino', symbol: '$' },
-    { code: 'USD', name: 'Dólar Estadounidense', symbol: '$' },
+  const fallbackCurrencies: Currency[] = [
+    { code: 'ARS', name: 'Peso Argentino', symbol: '$', currency_id: 'fallback-ars' },
+    { code: 'USD', name: 'Dólar Estadounidense', symbol: '$', currency_id: 'fallback-usd' },
   ];
 
-  const availableCurrencies = organizationCurrencies && organizationCurrencies.length > 0 
+  const availableCurrencies: Currency[] = organizationCurrencies && organizationCurrencies.length > 0 
     ? organizationCurrencies 
     : fallbackCurrencies;
 
@@ -471,8 +478,8 @@ export default function MovementModal({ isOpen, onClose, movement, projectId }: 
                         <SelectContent className="bg-surface-primary border-input z-[9999]">
                           {availableCurrencies.map((currency) => (
                             <SelectItem 
-                              key={currency.code} 
-                              value={currency.code} 
+                              key={currency.currency_id || currency.code} 
+                              value={currency.currency_id || currency.code} 
                               className="[&>span:first-child]:hidden"
                             >
                               {currency.code} - {currency.name}
