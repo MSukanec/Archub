@@ -5,6 +5,7 @@ import { queryClient } from './lib/queryClient';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
 import AppLayout from '@/components/layout/AppLayout';
 import AuthPage from '@/pages/AuthPage';
 import LandingPage from '@/pages/LandingPage';
@@ -41,12 +42,63 @@ function Router() {
 }
 
 function App() {
-  const { setLoading } = useAuthStore();
+  const { setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
-    // Immediate initialization
-    setLoading(false);
-  }, [setLoading]);
+    let mounted = true;
+    
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
+      console.log('App: Auth state changed:', event, !!session);
+      
+      if (!mounted) return;
+      
+      if (session?.user) {
+        try {
+          // First, handle auth linking to ensure user exists in internal system
+          const { handleAuthLinking } = await import('./lib/authLinkingService');
+          await handleAuthLinking(session.user as any);
+          
+          // Get user data from database table
+          const { authService } = await import('./lib/supabase');
+          const dbUser = await authService.getUserFromDatabase(session.user.id);
+          
+          const authUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
+            lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+            role: dbUser?.role || 'user',
+          };
+          
+          console.log('App: Setting authenticated user:', authUser);
+          setUser(authUser);
+        } catch (error) {
+          console.error('App: Error during auth state change:', error);
+          
+          // Fallback to basic auth user creation
+          const authUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: session.user.user_metadata?.first_name || '',
+            lastName: session.user.user_metadata?.last_name || '',
+            role: 'user',
+          };
+          setUser(authUser);
+        }
+      } else {
+        console.log('App: No session, clearing user');
+        setUser(null);
+      }
+      
+      setLoading(false);
+    });
+
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, [setUser, setLoading]);
 
   return (
     <QueryClientProvider client={queryClient}>

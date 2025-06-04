@@ -90,44 +90,9 @@ export default function AppLayout() {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    let mounted = true;
-    
-    const init = async () => {
-      try {
-        const { user } = await authService.getCurrentUser();
-        if (!mounted) return;
-        
-        if (user) {
-          const dbUser = await authService.getUserFromDatabase(user.id);
-          if (!mounted) return;
-          
-          setUser({
-            id: user.id,
-            email: user.email || '',
-            firstName: user.user_metadata?.first_name || '',
-            lastName: user.user_metadata?.last_name || '',
-            role: dbUser?.role || 'user',
-          });
-          
-          if (mounted) {
-            await initializeUserContext();
-          }
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Init error:', error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    init();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    // Initialize theme on app load
+    initializeTheme();
+  }, [initializeTheme]);
 
   // Initialize theme when user context is ready
   useEffect(() => {

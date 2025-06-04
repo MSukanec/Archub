@@ -125,6 +125,10 @@ export default function AuthCallback() {
       try {
         console.log('AuthCallback: Processing user:', user);
         
+        // First, handle auth linking to ensure user exists in internal system
+        const { handleAuthLinking } = await import('@/lib/authLinkingService');
+        await handleAuthLinking(user);
+        
         // Get user data from database table with linking
         const dbUser = await authService.getUserFromDatabase(user.id);
         
@@ -139,15 +143,24 @@ export default function AuthCallback() {
         console.log('AuthCallback: Setting user in store:', authUser);
         setUser(authUser);
         
+        // Wait a bit to ensure user is set
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         toast({
           title: 'Bienvenido',
           description: 'Has iniciado sesión correctamente con Google.',
         });
         
         // Navigate to dashboard
+        console.log('AuthCallback: Navigating to dashboard...');
         navigate('/dashboard');
       } catch (error) {
         console.error('Error processing user:', error);
+        toast({
+          title: 'Error',
+          description: 'Error al procesar la autenticación.',
+          variant: 'destructive',
+        });
         navigate('/auth');
       }
     };
