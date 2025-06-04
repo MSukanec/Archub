@@ -82,8 +82,8 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
     enabled: !!organizationId && isOpen,
   });
 
-  // Fetch all currencies from the database
-  const { data: currencies, isLoading: currenciesLoading } = useQuery({
+  // Fetch all currencies from the database with fallback
+  const { data: currencies, isLoading: currenciesLoading, error: currenciesError } = useQuery({
     queryKey: ['currencies'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -96,7 +96,22 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
       return data;
     },
     enabled: isOpen,
+    retry: 1,
   });
+
+  // Fallback currencies if database is not available
+  const fallbackCurrencies = [
+    { code: 'USD', name: 'Dólar Estadounidense', symbol: '$' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'ARS', name: 'Peso Argentino', symbol: '$' },
+    { code: 'MXN', name: 'Peso Mexicano', symbol: '$' },
+    { code: 'CLP', name: 'Peso Chileno', symbol: '$' },
+    { code: 'COP', name: 'Peso Colombiano', symbol: '$' },
+    { code: 'PEN', name: 'Sol Peruano', symbol: 'S/' },
+    { code: 'BRL', name: 'Real Brasileño', symbol: 'R$' },
+  ];
+
+  const availableCurrencies = currenciesError ? fallbackCurrencies : (currencies || []);
 
   // Fetch organization currencies
   const { data: organizationCurrencies, isLoading: orgCurrenciesLoading } = useQuery({
@@ -628,7 +643,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {(currencies || []).map((currency) => (
+                        {availableCurrencies.map((currency) => (
                           <SelectItem key={currency.code} value={currency.code}>
                             {currency.symbol} {currency.name} ({currency.code})
                           </SelectItem>
@@ -648,7 +663,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                     <FormLabel className="text-xs font-medium text-foreground">Monedas Secundarias</FormLabel>
                     <div className="space-y-2">
                       <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
-                        {(currencies || []).map((currency) => (
+                        {availableCurrencies.map((currency) => (
                           <div key={currency.code} className="flex items-center space-x-2 py-1">
                             <input
                               type="checkbox"
