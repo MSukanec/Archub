@@ -209,23 +209,29 @@ export default function PrimarySidebar() {
   });
 
   const handleProjectSelect = async (projectId: string) => {
-    // Move selected project to top of list and set as active
+    // Update user preferences to set this as the active project
     try {
-      await fetch('/api/user-preferences', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ last_project_id: projectId })
-      });
+      const { supabase } = await import('@/lib/supabase');
+      const { setProjectId } = useUserContextStore.getState();
       
-      // Navigate to dashboard with selected project
-      setSection('dashboard');
-      setView('dashboard-main');
-      setHoveredItem(null);
+      // Update the user context store immediately
+      setProjectId(projectId);
       
-      // Refresh the page to update context
-      window.location.reload();
+      // Update user preferences in the database
+      const { error } = await supabase
+        .from('user_preferences')
+        .update({ last_project_id: projectId })
+        .eq('user_id', user?.id);
+      
+      if (error) {
+        console.error('Error updating user preferences:', error);
+      } else {
+        console.log('Project set as active:', projectId);
+        // Invalidate the projects query to trigger a re-fetch and reorder
+        queryClient.invalidateQueries({ queryKey: ['/api/projects', organizationId] });
+      }
     } catch (error) {
-      console.error('Error updating project:', error);
+      console.error('Error selecting project:', error);
     }
   };
 
@@ -241,16 +247,23 @@ export default function PrimarySidebar() {
         <h3 className="font-medium text-sm text-foreground">Proyectos</h3>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {(projects as any[]).map((project: any) => (
-          <button
-            key={project.id}
-            className="w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors text-muted-foreground hover:text-foreground"
-            onClick={() => handleProjectSelect(project.id)}
-          >
-            <FolderKanban className="w-4 h-4" />
-            {project.name}
-          </button>
-        ))}
+        {(projects as any[]).map((project: any) => {
+          const isActive = project.id === activeProjectId;
+          return (
+            <button
+              key={project.id}
+              className={`w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors ${
+                isActive 
+                  ? 'text-primary border-r-2 border-primary bg-primary/5' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              onClick={() => handleProjectSelect(project.id)}
+            >
+              <FolderKanban className="w-4 h-4" />
+              {project.name}
+            </button>
+          );
+        })}
         
         {/* New Project Button */}
         <button
