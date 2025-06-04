@@ -42,7 +42,8 @@ const navigationItems: NavigationItem[] = [
     label: 'Dashboard',
     subItems: [
       { view: 'dashboard-main', label: 'Vista Principal', icon: Home },
-      { view: 'dashboard-timeline', label: 'Timeline', icon: Calendar }
+      { view: 'dashboard-timeline', label: 'Timeline', icon: Calendar },
+      { view: 'projects-list', label: 'Gestión de Proyectos', icon: FolderKanban }
     ]
   },
   { 
@@ -59,10 +60,7 @@ const navigationItems: NavigationItem[] = [
     section: 'projects',
     icon: FolderOpen,
     label: 'Proyectos',
-    subItems: [
-      { view: 'projects-overview', label: 'Resumen', icon: FolderOpen },
-      { view: 'projects-list', label: 'Lista de Proyectos', icon: FolderKanban }
-    ]
+    subItems: []
   },
   { 
     section: 'budgets',
