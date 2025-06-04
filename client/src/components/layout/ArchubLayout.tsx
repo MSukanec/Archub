@@ -16,6 +16,9 @@ import {
 } from 'lucide-react';
 import { useNavigationStore, Section } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserContextStore } from '@/stores/userContextStore';
+import { useQuery } from '@tanstack/react-query';
+import { projectsService } from '@/lib/projectsService';
 import { cn } from '@/lib/utils';
 
 const navigationSections = [
@@ -89,16 +92,18 @@ interface ArchubLayoutProps {
 export default function ArchubLayout({ children }: ArchubLayoutProps) {
   const { currentSection, currentView, setSection, setView } = useNavigationStore();
   const { user } = useAuthStore();
+  const { projectId, setUserContext } = useUserContextStore();
   const [hoveredSection, setHoveredSection] = useState<Section | null>(null);
   const [showDashboardPopover, setShowDashboardPopover] = useState(false);
   const [showProfilePopover, setShowProfilePopover] = useState(false);
   
-  // Mock projects data
-  const projects = [
-    { id: '1', name: 'Casa Familiar' },
-    { id: '2', name: 'Edificio Comercial' },
-    { id: '3', name: 'Renovación Oficina' }
-  ];
+  // Fetch real projects data
+  const { data: projects = [] } = useQuery({
+    queryKey: ['/api/projects'],
+    queryFn: () => projectsService.getAll(),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const handleSectionHover = (section: Section) => {
     setHoveredSection(section);
@@ -134,55 +139,72 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
     setShowProfilePopover(false);
   };
 
+  const handleProjectSelect = (project: any) => {
+    setUserContext({ projectId: project.id });
+    setShowDashboardPopover(false);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-[#1e1e1e] text-white">
       {/* Header Principal - 50px height */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-[50px] flex items-center">
+      <header className="fixed top-0 left-0 right-0 z-50 h-[50px] flex items-center bg-[#1e1e1e]">
         <div className="w-full max-w-full mx-auto px-4 flex items-center">
           {/* Dashboard Button (10%) */}
           <div className="w-[10%] flex items-center justify-center relative">
-            <button
-              onClick={handleDashboardClick}
+            <div
               onMouseEnter={() => setShowDashboardPopover(true)}
               onMouseLeave={() => setShowDashboardPopover(false)}
-              className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
-                "bg-lime-500/20 hover:bg-lime-500/30 border border-lime-500/40"
-              )}
+              className="relative"
             >
-              <Home className="w-5 h-5 text-lime-400" />
-            </button>
+              <button
+                onClick={handleDashboardClick}
+                className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                  "bg-lime-500/20 hover:bg-lime-500/30 border border-lime-500/40"
+                )}
+              >
+                <Home className="w-5 h-5 text-lime-400" />
+              </button>
 
-            {/* Dashboard Popover */}
-            {showDashboardPopover && (
-              <div className="absolute top-12 left-0 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-3 min-w-[250px] z-60">
-                <div className="text-sm font-medium text-gray-300 mb-2">Proyectos</div>
-                {projects?.slice(0, 3).map((project: any) => (
-                  <button
-                    key={project.id}
-                    onClick={() => {
-                      // Navigate to project
-                      setShowDashboardPopover(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded transition-colors"
-                  >
-                    {project.name}
-                  </button>
-                ))}
-                <div className="border-t border-gray-700 mt-2 pt-2">
-                  <button
-                    onClick={() => {
-                      // Create new project
-                      setShowDashboardPopover(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-lime-400 hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Crear Proyecto
-                  </button>
+              {/* Dashboard Popover */}
+              {showDashboardPopover && (
+                <div className="absolute top-12 left-0 bg-[#2a2a2a] border border-gray-600 rounded-lg shadow-xl p-3 min-w-[280px] z-60">
+                  <div className="text-sm font-medium text-gray-300 mb-2">Proyectos</div>
+                  {projects?.slice(0, 5).map((project: any) => (
+                    <button
+                      key={project.id}
+                      onClick={() => handleProjectSelect(project)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 text-sm rounded transition-colors flex flex-col gap-1",
+                        project.id === projectId 
+                          ? "bg-lime-500/20 text-lime-400 border border-lime-500/40" 
+                          : "text-gray-200 hover:bg-gray-700"
+                      )}
+                    >
+                      <span className="font-medium">{project.name}</span>
+                      <span className="text-xs text-gray-400">{project.client_name}</span>
+                    </button>
+                  ))}
+                  {projects?.length > 5 && (
+                    <div className="text-xs text-gray-400 px-3 py-1">
+                      +{projects.length - 5} proyectos más
+                    </div>
+                  )}
+                  <div className="border-t border-gray-600 mt-2 pt-2">
+                    <button
+                      onClick={() => {
+                        window.dispatchEvent(new CustomEvent('openCreateProjectModal'));
+                        setShowDashboardPopover(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-lime-400 hover:bg-gray-700 rounded transition-colors flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Crear Proyecto
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Center Navigation (80%) */}
@@ -214,35 +236,39 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
 
           {/* Profile Button (10%) */}
           <div className="w-[10%] flex items-center justify-center relative">
-            <button
+            <div
               onMouseEnter={() => setShowProfilePopover(true)}
               onMouseLeave={() => setShowProfilePopover(false)}
-              className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
-                "bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white"
-              )}
+              className="relative"
             >
-              <User className="w-5 h-5" />
-            </button>
+              <button
+                className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                  "bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white"
+                )}
+              >
+                <User className="w-5 h-5" />
+              </button>
 
-            {/* Profile Popover */}
-            {showProfilePopover && (
-              <div className="absolute top-12 right-0 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-3 min-w-[200px] z-60">
-                <div className="text-sm font-medium text-gray-300 mb-2">
-                  {user?.firstName} {user?.lastName}
+              {/* Profile Popover */}
+              {showProfilePopover && (
+                <div className="absolute top-12 right-0 bg-[#2a2a2a] border border-gray-600 rounded-lg shadow-xl p-3 min-w-[220px] z-60">
+                  <div className="text-sm font-medium text-gray-300 mb-2 px-2">
+                    {user?.firstName} {user?.lastName}
+                  </div>
+                  {profileViews.map((view) => (
+                    <button
+                      key={view.key}
+                      onClick={() => handleProfileClick(view.key)}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 rounded transition-colors flex items-center gap-2"
+                    >
+                      <view.icon className="w-4 h-4" />
+                      {view.label}
+                    </button>
+                  ))}
                 </div>
-                {profileViews.map((view) => (
-                  <button
-                    key={view.key}
-                    onClick={() => handleProfileClick(view.key)}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded transition-colors flex items-center gap-2"
-                  >
-                    <view.icon className="w-4 h-4" />
-                    {view.label}
-                  </button>
-                ))}
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -250,7 +276,7 @@ export default function ArchubLayout({ children }: ArchubLayoutProps) {
       {/* Submenu Fixed - Appears on hover */}
       {hoveredSection && (
         <div 
-          className="fixed top-[50px] left-0 right-0 z-40 h-[50px] bg-gray-900/95 border-b border-gray-700/50 flex items-center"
+          className="fixed top-[50px] left-0 right-0 z-40 h-[50px] bg-[#1e1e1e] flex items-center"
           onMouseEnter={() => setHoveredSection(hoveredSection)}
           onMouseLeave={handleMouseLeave}
         >
