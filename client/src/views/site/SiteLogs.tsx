@@ -87,6 +87,19 @@ export default function SiteLogs() {
     enabled: !!projectId,
   });
 
+  // Fetch users for avatars
+  const { data: users = [] } = useQuery({
+    queryKey: ['/api/users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, avatar_url');
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Mutación para eliminar site log
   const deleteMutation = useMutation({
     mutationFn: async (siteLogId: string) => {
@@ -317,17 +330,25 @@ export default function SiteLogs() {
               const logDate = siteLog.log_date ? new Date(siteLog.log_date + 'T00:00:00') : new Date();
               const isToday = format(logDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               const isLast = index === siteLogs.length - 1;
+              const author = getUserById(siteLog.author_id);
               
               return (
                 <div key={siteLog.id} className="flex gap-6 group">
-                  {/* Timeline Node */}
+                  {/* Timeline Node with Avatar */}
                   <div className="flex flex-col items-center">
-                    <div className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-lg transition-all group-hover:scale-110 ${
-                      isToday 
-                        ? 'bg-primary border-primary text-white shadow-primary/25' 
-                        : 'bg-surface-secondary border-border text-muted-foreground hover:border-primary/50'
+                    <div className={`relative z-10 transition-all group-hover:scale-110 ${
+                      isToday ? 'ring-2 ring-primary/50' : ''
                     }`}>
-                      <FileText className="h-5 w-5" />
+                      <Avatar className="h-12 w-12 border-2 border-border hover:border-primary/50 shadow-lg">
+                        <AvatarImage src={author?.avatar_url || undefined} />
+                        <AvatarFallback className={`text-sm font-medium ${
+                          isToday 
+                            ? 'bg-primary text-white' 
+                            : 'bg-surface-secondary text-muted-foreground'
+                        }`}>
+                          {getUserInitials(author)}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                     
                     {/* Connecting Line */}

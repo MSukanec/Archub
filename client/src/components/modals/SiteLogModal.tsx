@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { z } from 'zod';
-import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow, Loader2 } from 'lucide-react';
+import { CalendarIcon, FileText, Cloud, Sun, CloudRain, CloudSnow, Loader2, Plus, X, CheckSquare } from 'lucide-react';
 import ModernModal from '@/components/ui/ModernModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -29,6 +31,13 @@ const siteLogSchema = z.object({
   }),
   weather: z.string().optional(),
   comments: z.string().optional(),
+  tasks: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    quantity: z.number().optional(),
+    notes: z.string().optional(),
+    completed: z.boolean().default(false),
+  })).optional(),
 });
 
 type SiteLogForm = z.infer<typeof siteLogSchema>;
