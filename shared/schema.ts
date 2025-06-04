@@ -235,6 +235,28 @@ export const calendarEvents = pgTable("calendar_events", {
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Wallets table for financial management
+export const wallets = pgTable("wallets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  wallet_type: text("wallet_type").notNull().default("bank"), // bank, cash, credit_card, investment, crypto
+  is_active: boolean("is_active").notNull().default(true),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Organization wallets table for linking wallets to organizations
+export const organizationWallets = pgTable("organization_wallets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  organization_id: uuid("organization_id").notNull(),
+  wallet_id: uuid("wallet_id").notNull().references(() => wallets.id),
+  is_default: boolean("is_default").notNull().default(false),
+  is_active: boolean("is_active").notNull().default(true),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,

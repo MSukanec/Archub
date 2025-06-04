@@ -215,7 +215,7 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
 
   // Update form when organization data loads
   useEffect(() => {
-    if (organization && organizationCurrencies !== undefined) {
+    if (organization && organizationCurrencies !== undefined && organizationWallets !== undefined) {
       form.reset({
         name: organization.name || '',
         description: organization.description || '',
@@ -229,12 +229,14 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         website: organization.website || '',
         default_currency: organization.default_currency || 'USD',
         secondary_currencies: organizationCurrencies || [],
+        default_wallet: organization.default_wallet || '',
+        secondary_wallets: organizationWallets || [],
         default_language: organization.default_language || 'es',
         tax_id: organization.tax_id || '',
         logo_url: organization.logo_url || '',
       });
     }
-  }, [organization, organizationCurrencies, form]);
+  }, [organization, organizationCurrencies, organizationWallets, form]);
 
   // Mutation for deleting currency with replacement
   const deleteCurrencyMutation = useMutation({
@@ -376,12 +378,45 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
         }
       }
 
+      // Update organization wallets
+      // First, delete existing organization wallets
+      if (data.default_wallet || (data.secondary_wallets && data.secondary_wallets.length > 0)) {
+        const { error: deleteWalletsError } = await supabase
+          .from('organization_wallets')
+          .delete()
+          .eq('organization_id', organizationId);
+
+        if (deleteWalletsError) throw deleteWalletsError;
+
+        // Prepare all wallets to insert (default + secondary)
+        const allWalletIds = [
+          ...(data.default_wallet ? [data.default_wallet] : []),
+          ...(data.secondary_wallets || [])
+        ];
+        
+        if (allWalletIds.length > 0) {
+          const organizationWallets = allWalletIds.map(walletId => ({
+            organization_id: organizationId,
+            wallet_id: walletId,
+            is_default: walletId === data.default_wallet,
+            is_active: true,
+          }));
+
+          const { error: insertWalletsError } = await supabase
+            .from('organization_wallets')
+            .insert(organizationWallets);
+
+          if (insertWalletsError) throw insertWalletsError;
+        }
+      }
+
       return updatedOrg;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organization-details', organizationId] });
       queryClient.invalidateQueries({ queryKey: ['organization', organizationId] });
       queryClient.invalidateQueries({ queryKey: ['organization-currencies', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['organization-wallets', organizationId] });
       toast({
         description: 'Configuración de organización actualizada correctamente',
         duration: 2000,
@@ -909,6 +944,136 @@ export default function OrganizationSettingsModal({ isOpen, onClose }: Organizat
                   );
                 }}
               />
+
+              {/* Wallet Management Section */}
+              <div className="border-t border-border pt-4 mt-6">
+                <h4 className="text-sm font-medium text-foreground mb-4">Gestión de Billeteras</h4>
+                
+                <FormField
+                  control={form.control}
+                  name="default_wallet"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground">Billetera por Defecto</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          // Eliminar de billeteras secundarias si está seleccionada
+                          const currentSecondary = form.getValues('secondary_wallets') || [];
+                          if (currentSecondary.includes(value)) {
+                            form.setValue('secondary_wallets', currentSecondary.filter(id => id !== value));
+                          }
+                        }}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-surface-secondary border-input focus:border-primary focus:ring-1 focus:ring-primary rounded-xl shadow-lg hover:shadow-xl h-10">
+                            <SelectValue placeholder="Selecciona una billetera" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {wallets?.map((wallet) => (
+                            <SelectItem key={wallet.id} value={wallet.id}>
+                              {wallet.name} {wallet.description && `- ${wallet.description}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="secondary_wallets"
+                  render={({ field }) => {
+                    const defaultWallet = form.watch('default_wallet');
+                    const availableSecondary = wallets?.filter(w => w.id !== defaultWallet) || [];
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel className="text-xs font-medium text-foreground">
+                          Billeteras Secundarias
+                          <span className="text-muted-foreground ml-2 text-xs">
+                            (Solo billeteras no seleccionadas como principal)
+                          </span>
+                        </FormLabel>
+                        
+                        {/* Selected wallets chips */}
+                        {field.value && field.value.length > 0 && (
+                          <div className="flex flex-wrap gap-2 p-3 bg-surface-primary rounded-xl border">
+                            {field.value.map((walletId) => {
+                              const wallet = wallets?.find(w => w.id === walletId);
+                              if (!wallet) return null;
+                              
+                              return (
+                                <div
+                                  key={walletId}
+                                  className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm border border-primary/20"
+                                >
+                                  <span>{wallet.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const currentValues = field.value || [];
+                                      field.onChange(currentValues.filter(id => id !== walletId));
+                                    }}
+                                    className="hover:bg-primary/20 rounded-full p-1 transition-colors"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        
+                        {/* Available wallets to select */}
+                        <div className="space-y-2">
+                          <div className="max-h-40 overflow-y-auto border rounded-xl p-3 bg-surface-secondary">
+                            {availableSecondary.map((wallet) => {
+                              const isSelected = field.value?.includes(wallet.id) || false;
+                              
+                              return (
+                                <div key={wallet.id} className="flex items-center space-x-2 py-1">
+                                  <input
+                                    type="checkbox"
+                                    id={`wallet-${wallet.id}`}
+                                    checked={isSelected}
+                                    onChange={(e) => {
+                                      const currentValues = field.value || [];
+                                      if (e.target.checked) {
+                                        field.onChange([...currentValues, wallet.id]);
+                                      } else {
+                                        field.onChange(currentValues.filter(id => id !== wallet.id));
+                                      }
+                                    }}
+                                    className="rounded border-input accent-primary text-primary focus:ring-primary focus:ring-2 focus:ring-offset-0"
+                                  />
+                                  <label
+                                    htmlFor={`wallet-${wallet.id}`}
+                                    className="text-sm cursor-pointer flex-1"
+                                  >
+                                    {wallet.name} {wallet.description && `- ${wallet.description}`}
+                                  </label>
+                                </div>
+                              );
+                            })}
+                            
+                            {availableSecondary.length === 0 && (
+                              <div className="text-center py-4 text-muted-foreground text-sm">
+                                No hay billeteras adicionales disponibles
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
 
               <FormField
                 control={form.control}
