@@ -578,6 +578,17 @@ export default function Movements() {
             </SelectContent>
           </Select>
 
+          <Select value={filterType} onValueChange={(value) => setFilterType(value as any)}>
+            <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
+              <SelectValue placeholder="Filtro por fecha" />
+            </SelectTrigger>
+            <SelectContent className="bg-surface-primary border-input">
+              <SelectItem value="all">Todas las fechas</SelectItem>
+              <SelectItem value="year">Por año</SelectItem>
+              <SelectItem value="date">Fecha específica</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger className="bg-surface-primary border-input rounded-xl shadow-lg">
               <SelectValue placeholder="Ordenar por" />
@@ -587,8 +598,6 @@ export default function Movements() {
               <SelectItem value="oldest">Más antiguo primero</SelectItem>
             </SelectContent>
           </Select>
-
-
         </div>
 
         {/* Desktop: Search bar second row */}
