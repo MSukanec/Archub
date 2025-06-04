@@ -139,7 +139,17 @@ export default function PrimarySidebar() {
   const handleMouseLeave = () => {
     setTimeout(() => {
       setHoveredItem(null);
-    }, 200);
+    }, 300);
+  };
+
+  const handleSecondarySidebarEnter = () => {
+    // Keep the secondary sidebar open when hovering over it
+  };
+
+  const handleSecondarySidebarLeave = () => {
+    setTimeout(() => {
+      setHoveredItem(null);
+    }, 100);
   };
 
   const allItems = [...navigationItems, ...(user?.role === 'admin' ? adminItems : [])];
@@ -162,8 +172,8 @@ export default function PrimarySidebar() {
                     "w-[40px] h-[39px] flex items-center justify-center transition-colors",
                     isDashboard && "border-b border-border/50",
                     isActive 
-                      ? "bg-primary/10 text-primary" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "text-primary" 
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                   onClick={() => handleNavigation(item.section)}
                   onMouseEnter={() => handleMouseEnter(item.section)}
@@ -176,42 +186,39 @@ export default function PrimarySidebar() {
           })}
         </div>
 
-        {/* Admin Section */}
-        {user?.role === 'admin' && (
-          <div className="flex flex-col mt-auto">
-            {adminItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = currentSection === item.section;
-              
-              return (
-                <div key={item.section} className="relative">
-                  <button
-                    className={cn(
-                      "w-[40px] h-[39px] flex items-center justify-center transition-colors",
-                      isActive 
-                        ? "bg-primary/10 text-primary" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    )}
-                    onClick={() => handleNavigation(item.section)}
-                    onMouseEnter={() => handleMouseEnter(item.section)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <Icon className="w-[20px] h-[20px]" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Profile Button */}
+        {/* Bottom Section - Admin buttons + Profile */}
         <div className="flex flex-col mt-auto">
+          {/* Admin Section */}
+          {user?.role === 'admin' && adminItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentSection === item.section;
+            
+            return (
+              <div key={item.section} className="relative">
+                <button
+                  className={cn(
+                    "w-[40px] h-[39px] flex items-center justify-center transition-colors",
+                    isActive 
+                      ? "text-primary" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  onClick={() => handleNavigation(item.section)}
+                  onMouseEnter={() => handleMouseEnter(item.section)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <Icon className="w-[20px] h-[20px]" />
+                </button>
+              </div>
+            );
+          })}
+
+          {/* Profile Button */}
           <button
             className={cn(
               "w-[40px] h-[39px] flex items-center justify-center transition-colors",
               currentSection === 'profile'
-                ? "bg-primary/10 text-primary" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                ? "text-primary" 
+                : "text-muted-foreground hover:text-foreground"
             )}
             onClick={handleProfileClick}
           >
@@ -224,14 +231,14 @@ export default function PrimarySidebar() {
       {hoveredItem && (
         <div
           className="h-full bg-background border-r border-border w-[250px] min-w-[250px] max-w-[250px] z-10"
-          onMouseEnter={() => setHoveredItem(hoveredItem)}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleSecondarySidebarEnter}
+          onMouseLeave={handleSecondarySidebarLeave}
         >
           {allItems
             .filter(item => item.section === hoveredItem)
             .map((item) => (
               <div key={item.section} className="h-full flex flex-col">
-                <div className="px-4 py-3 border-b border-border bg-muted/30">
+                <div className="px-4 py-3 border-b border-border/50 bg-muted/30">
                   <h3 className="font-medium text-sm text-foreground">{item.label}</h3>
                 </div>
                 <div className="flex-1 py-2">
