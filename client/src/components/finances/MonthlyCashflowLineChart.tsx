@@ -26,7 +26,7 @@ export default function MonthlyCashflowLineChart({ projectId }: MonthlyCashflowL
         .from('site_movements')
         .select(`
           amount,
-          currency,
+          currencies!inner(code),
           created_at_local,
           movement_concepts!inner(
             parent_concept:parent_id(name)
@@ -44,11 +44,17 @@ export default function MonthlyCashflowLineChart({ projectId }: MonthlyCashflowL
         egresosDolares: number;
       }>();
 
-      movements?.forEach(movement => {
+      movements?.forEach((movement: any) => {
         const date = new Date(movement.created_at_local);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        const isIncome = movement.movement_concepts?.parent_concept?.name === 'Ingresos';
+        const parentConcept = Array.isArray(movement.movement_concepts) 
+          ? movement.movement_concepts[0]?.parent_concept?.[0]
+          : movement.movement_concepts?.parent_concept;
+        const isIncome = parentConcept?.name === 'Ingresos';
         const amount = movement.amount || 0;
+        const currencyCode = Array.isArray(movement.currencies) 
+          ? movement.currencies[0]?.code 
+          : movement.currencies?.code;
 
         if (!monthlyMap.has(monthKey)) {
           monthlyMap.set(monthKey, {
@@ -61,13 +67,13 @@ export default function MonthlyCashflowLineChart({ projectId }: MonthlyCashflowL
 
         const monthData = monthlyMap.get(monthKey)!;
 
-        if (movement.currency === 'ARS') {
+        if (currencyCode === 'ARS') {
           if (isIncome) {
             monthData.ingresosPesos += amount;
           } else {
             monthData.egresosPesos += amount;
           }
-        } else if (movement.currency === 'USD') {
+        } else if (currencyCode === 'USD') {
           if (isIncome) {
             monthData.ingresosDolares += amount;
           } else {

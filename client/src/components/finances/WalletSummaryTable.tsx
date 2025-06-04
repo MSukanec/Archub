@@ -36,9 +36,17 @@ export default function WalletSummaryTable({ projectId }: WalletSummaryTableProp
 
       const walletMap = new Map<string, { ingresos: number; egresos: number }>();
 
-      movements?.forEach(movement => {
-        const walletKey = `${movement.wallets.name}-${movement.currency}`;
-        const parentConcept = movement.movement_concepts?.parent_concept;
+      movements?.forEach((movement: any) => {
+        const currencyCode = Array.isArray(movement.currencies) 
+          ? movement.currencies[0]?.code 
+          : movement.currencies?.code;
+        const walletName = Array.isArray(movement.wallets) 
+          ? movement.wallets[0]?.name 
+          : movement.wallets?.name;
+        const walletKey = `${walletName}-${currencyCode}`;
+        const parentConcept = Array.isArray(movement.movement_concepts) 
+          ? movement.movement_concepts[0]?.parent_concept?.[0]
+          : movement.movement_concepts?.parent_concept;
         const isIncome = parentConcept && parentConcept.name === 'Ingresos';
         const amount = movement.amount || 0;
 

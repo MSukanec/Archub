@@ -23,7 +23,7 @@ export default function ExpenseCategoryBarChart({ projectId }: ExpenseCategoryBa
         .from('site_movements')
         .select(`
           amount,
-          currency,
+          currencies!inner(code),
           movement_concepts!inner(
             name,
             parent_concept:parent_id!inner(

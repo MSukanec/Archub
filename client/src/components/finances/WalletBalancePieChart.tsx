@@ -25,7 +25,7 @@ export default function WalletBalancePieChart({ projectId }: WalletBalancePieCha
         .from('site_movements')
         .select(`
           amount,
-          currency,
+          currencies!inner(code),
           wallets!inner(name),
           movement_concepts!inner(
             parent_concept:parent_id(name)
@@ -37,15 +37,24 @@ export default function WalletBalancePieChart({ projectId }: WalletBalancePieCha
 
       const walletBalances = new Map<string, { balance: number; currency: string }>();
 
-      movements?.forEach(movement => {
-        const walletKey = `${movement.wallets.name}-${movement.currency}`;
-        const isIncome = movement.movement_concepts?.parent_concept?.name === 'Ingresos';
+      movements?.forEach((movement: any) => {
+        const currencyCode = Array.isArray(movement.currencies) 
+          ? movement.currencies[0]?.code 
+          : movement.currencies?.code;
+        const walletName = Array.isArray(movement.wallets) 
+          ? movement.wallets[0]?.name 
+          : movement.wallets?.name;
+        const walletKey = `${walletName}-${currencyCode}`;
+        const parentConcept = Array.isArray(movement.movement_concepts) 
+          ? movement.movement_concepts[0]?.parent_concept?.[0]
+          : movement.movement_concepts?.parent_concept;
+        const isIncome = parentConcept?.name === 'Ingresos';
         const amount = movement.amount || 0;
 
         if (!walletBalances.has(walletKey)) {
           walletBalances.set(walletKey, { 
             balance: 0, 
-            currency: movement.currency 
+            currency: currencyCode 
           });
         }
 
