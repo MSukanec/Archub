@@ -24,7 +24,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     if (preferredTheme === 'dark') {
       document.body.style.backgroundColor = '#1e1e1e';
     } else {
-      document.body.style.backgroundColor = '#ffffff';
+      document.body.style.backgroundColor = '#d1d1d1';
     }
     
     set({ theme: preferredTheme });
@@ -43,7 +43,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     if (theme === 'dark') {
       document.body.style.backgroundColor = '#1e1e1e';
     } else {
-      document.body.style.backgroundColor = '#ffffff';
+      document.body.style.backgroundColor = '#d1d1d1';
     }
     
     localStorage.setItem('theme', theme);

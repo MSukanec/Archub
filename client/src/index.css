@@ -74,6 +74,11 @@
   --background-views: 0 0% 12%; /* #1e1e1e - Background for main views/pages */
   --background-primary: 0 0% 15%; /* #262626 - Primary components (buttons, inputs, search) */
   --background-secondary: 0 0% 9%; /* #171717 - Secondary elements (cards, containers) */
+  
+  /* Surface variations for better hierarchy */
+  --surface-views: 0 0% 12%; /* #1e1e1e */
+  --surface-primary: 0 0% 15%; /* #262626 */
+  --surface-secondary: 0 0% 9%; /* #171717 */
 }
 
 /* Custom pressed effect - stays pressed on hover */
