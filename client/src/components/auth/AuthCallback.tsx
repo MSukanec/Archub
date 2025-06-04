@@ -14,8 +14,13 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get the session from the URL fragments
+        console.log('AuthCallback: Starting OAuth callback handling...');
+        
+        // Handle the OAuth callback by exchanging the code for a session
         const { data, error } = await supabase.auth.getSession();
+        
+        console.log('AuthCallback: Session data:', data);
+        console.log('AuthCallback: Session error:', error);
         
         if (error) {
           console.error('Error getting session:', error);
@@ -28,29 +33,42 @@ export default function AuthCallback() {
           return;
         }
 
+        // If no session, try to get it from URL hash
+        if (!data.session) {
+          console.log('AuthCallback: No session found, checking URL for auth code...');
+          
+          // Check if we have auth tokens in URL
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          
+          if (accessToken) {
+            console.log('AuthCallback: Found access token in URL, setting session...');
+            
+            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || ''
+            });
+            
+            if (sessionError) {
+              console.error('Error setting session:', sessionError);
+              navigate('/auth');
+              return;
+            }
+            
+            if (sessionData.session?.user) {
+              await processUser(sessionData.session.user);
+              return;
+            }
+          }
+          
+          console.log('AuthCallback: No valid session or tokens found, redirecting to auth');
+          navigate('/auth');
+          return;
+        }
+
         if (data.session?.user) {
-          const user = data.session.user;
-          
-          // Get user data from database table
-          const dbUser = await authService.getUserFromDatabase(user.id);
-          
-          const authUser = {
-            id: user.id,
-            email: user.email || '',
-            firstName: user.user_metadata?.first_name || user.user_metadata?.full_name?.split(' ')[0] || '',
-            lastName: user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            role: dbUser?.role || 'user',
-          };
-          
-          setUser(authUser);
-          
-          toast({
-            title: 'Bienvenido',
-            description: 'Has iniciado sesión correctamente con Google.',
-          });
-          
-          // Navigate to dashboard
-          navigate('/dashboard');
+          await processUser(data.session.user);
         } else {
           navigate('/auth');
         }
@@ -61,6 +79,37 @@ export default function AuthCallback() {
           description: 'Ocurrió un error durante la autenticación.',
           variant: 'destructive',
         });
+        navigate('/auth');
+      }
+    };
+
+    const processUser = async (user: any) => {
+      try {
+        console.log('AuthCallback: Processing user:', user);
+        
+        // Get user data from database table with linking
+        const dbUser = await authService.getUserFromDatabase(user.id);
+        
+        const authUser = {
+          id: user.id,
+          email: user.email || '',
+          firstName: user.user_metadata?.first_name || user.user_metadata?.full_name?.split(' ')[0] || '',
+          lastName: user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+          role: dbUser?.role || 'user',
+        };
+        
+        console.log('AuthCallback: Setting user in store:', authUser);
+        setUser(authUser);
+        
+        toast({
+          title: 'Bienvenido',
+          description: 'Has iniciado sesión correctamente con Google.',
+        });
+        
+        // Navigate to dashboard
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Error processing user:', error);
         navigate('/auth');
       }
     };
