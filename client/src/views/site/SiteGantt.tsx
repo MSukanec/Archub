@@ -68,34 +68,47 @@ export default function SiteGantt() {
         .select(`
           id,
           name,
-          start_date,
-          end_date,
-          status,
-          category_id,
-          categories (name, color)
+          created_at,
+          category_id
         `)
         .eq('project_id', projectId)
-        .order('start_date', { ascending: true });
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error('Error fetching tasks:', error);
         throw error;
       }
 
-      console.log('Raw tasks data:', data);
+      // Fetch categories separately
+      const { data: categoriesData } = await supabase
+        .from('material_categories')
+        .select('id, name, color');
 
-      return data?.map(task => ({
-        id: task.id,
-        name: task.name,
-        category: (task.categories as any)?.name || 'Otros',
-        start_date: task.start_date || format(new Date(), 'yyyy-MM-dd'),
-        end_date: task.end_date || format(addDays(new Date(), 7), 'yyyy-MM-dd'),
-        duration: task.start_date && task.end_date ? 
-          differenceInDays(parseISO(task.end_date), parseISO(task.start_date)) + 1 : 7,
-        status: task.status || 'Pendiente',
-        progress: 0,
-        color: (task.categories as any)?.color || categoryColors['Otros']
-      })) || [];
+      const categoriesMap = categoriesData?.reduce((acc, cat) => {
+        acc[cat.id] = cat;
+        return acc;
+      }, {} as Record<string, any>) || {};
+
+      console.log('Raw tasks data:', data);
+      console.log('Categories map:', categoriesMap);
+
+      return data?.map(task => {
+        const category = categoriesMap[task.category_id];
+        const startDate = task.created_at ? format(new Date(task.created_at), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
+        const endDate = format(addDays(new Date(startDate), 7), 'yyyy-MM-dd');
+        
+        return {
+          id: task.id,
+          name: task.name,
+          category: category?.name || 'Otros',
+          start_date: startDate,
+          end_date: endDate,
+          duration: 7,
+          status: 'Pendiente',
+          progress: Math.min((task.quantity || 0) * 10, 100),
+          color: category?.color || categoryColors['Otros']
+        };
+      }) || [];
     },
     enabled: !!projectId
   });
