@@ -127,45 +127,8 @@ function App() {
       
       // Handle sign in
       if (session?.user) {
-        console.log('App: Processing user session...');
-        
-        // Create basic auth user first to avoid hanging
-        const basicAuthUser = {
-          id: session.user.id,
-          email: session.user.email || '',
-          firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
-          lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-          role: session.user.id === '0f77f1c8-ecdf-4484-89a7-022c53f24d5a' ? 'admin' : 'user', // Admin hardcode for now
-        };
-        
-        console.log('App: Setting authenticated user:', basicAuthUser);
-        setUser(basicAuthUser);
-        setLoading(false);
-        
-        // Try to enhance with database data in background
-        setTimeout(async () => {
-          try {
-            const { data: userData } = await supabase
-              .from('users')
-              .select('role, first_name, last_name, full_name')
-              .eq('auth_id', session.user.id)
-              .single();
-            
-            if (userData && userData.role !== basicAuthUser.role) {
-              const enhancedUser = {
-                ...basicAuthUser,
-                firstName: userData.first_name || basicAuthUser.firstName,
-                lastName: userData.last_name || basicAuthUser.lastName,
-                role: userData.role,
-              };
-              
-              console.log('App: Enhancing user with database data:', enhancedUser);
-              setUser(enhancedUser);
-            }
-          } catch (error) {
-            console.log('Could not enhance user data from database:', error);
-          }
-        }, 100);
+        console.log('App: Processing user session from auth state change...');
+        processUserSession(session);
       }
     });
 
