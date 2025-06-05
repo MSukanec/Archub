@@ -29,6 +29,7 @@ interface UserContextStore extends UserContext {
   updateInProgress: boolean;
   pendingUpdates: NodeJS.Timeout | null;
   setUserContext: (context: Partial<UserContext>) => void;
+  setOrganizationId: (organizationId: string) => void;
   setProjectId: (projectId: string) => void;
   setBudgetId: (budgetId: string) => void;
   clearUserContext: () => void;
@@ -94,6 +95,15 @@ export const useUserContextStore = create<UserContextStore>((set, get) => ({
     }, 500);
     
     set({ pendingUpdates: timeout });
+  },
+
+  setOrganizationId: (organizationId: string) => {
+    const currentState = get();
+    set({ organizationId });
+    
+    if (!currentState.userId || currentState.updateInProgress) return;
+    
+    get().setUserContext({ organizationId });
   },
 
   setProjectId: (projectId: string) => {

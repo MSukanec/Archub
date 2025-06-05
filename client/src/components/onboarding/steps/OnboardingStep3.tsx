@@ -105,7 +105,7 @@ export function OnboardingStep3() {
       return organization;
     },
     onSuccess: (organization) => {
-      setOrganizationId(organization.id);
+      userContext.setOrganizationId(organization.id);
       queryClient.invalidateQueries({ queryKey: ['user-preferences'] });
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
       
