@@ -11,7 +11,7 @@ import AuthPage from '@/pages/AuthPage';
 import LandingPage from '@/pages/LandingPage';
 import AuthCallback from '@/components/auth/AuthCallback';
 import NotFound from '@/pages/not-found';
-import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { SimpleOnboardingWizard } from '@/components/onboarding/SimpleOnboardingWizard';
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuthStore();
@@ -118,7 +118,7 @@ function App() {
         <div className="dark">
           <Toaster />
           <Router />
-          <OnboardingWizard />
+          <SimpleOnboardingWizard />
         </div>
       </TooltipProvider>
     </QueryClientProvider>
