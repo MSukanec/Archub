@@ -16,38 +16,17 @@ export function useLinkedAccounts() {
   const { user } = useAuthStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [internalUserId, setInternalUserId] = useState<string | null>(null);
 
-  // Get internal user ID first
-  useEffect(() => {
-    async function getInternalUserId() {
-      if (!user?.id) return;
-      
-      try {
-        const { authLinkingService } = await import('@/lib/authLinkingService');
-        const userData = await authLinkingService.getUserFromDatabase(user.id);
-        
-        if (userData?.user_id) {
-          setInternalUserId(userData.user_id);
-        }
-      } catch (error) {
-        console.error('Error getting internal user ID:', error);
-      }
-    }
-
-    getInternalUserId();
-  }, [user?.id]);
-
-  // Fetch linked accounts
+  // Fetch linked accounts directly using auth_id
   const { data: linkedAccounts = [], isLoading, error } = useQuery({
-    queryKey: ['linked-accounts', internalUserId],
+    queryKey: ['linked-accounts', user?.id],
     queryFn: async () => {
-      if (!internalUserId) return [];
+      if (!user?.id) return [];
 
       const { data, error } = await supabase
         .from('linked_accounts')
         .select('*')
-        .eq('user_id', internalUserId)
+        .eq('auth_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -57,7 +36,7 @@ export function useLinkedAccounts() {
 
       return data as LinkedAccount[];
     },
-    enabled: !!internalUserId,
+    enabled: !!user?.id,
   });
 
   // Unlink account mutation
