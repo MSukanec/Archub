@@ -57,12 +57,13 @@ export default function SiteGantt() {
     type: null
   });
 
-  // Fetch tasks for the current project
+  // Fetch tasks for the current project using gantt_tasks_view
   const { data: tasks = [], isLoading } = useQuery({
-    queryKey: ['project-tasks-gantt', projectId],
+    queryKey: ['gantt-tasks', projectId],
     queryFn: async () => {
       if (!projectId) return [];
       
+      // Fetch budget tasks with enhanced fields (fallback until gantt_tasks_view is created)
       const { data, error } = await supabase
         .from('budget_tasks')
         .select(`
@@ -70,13 +71,19 @@ export default function SiteGantt() {
           task_id,
           created_at,
           budget_id,
-          quantity
+          quantity,
+          start_date,
+          end_date,
+          planned_days,
+          priority,
+          dependencies
         `)
         .eq('budget_id', budgetId || projectId)
+        .order('priority', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Error fetching tasks:', error);
+        console.error('Error fetching Gantt tasks:', error);
         throw error;
       }
 
@@ -90,24 +97,41 @@ export default function SiteGantt() {
         return acc;
       }, {} as Record<string, any>) || {};
 
-      console.log('Raw budget tasks data:', data);
+      // Fetch progress data from site_log_tasks
+      const { data: progressData } = await supabase
+        .from('site_log_tasks')
+        .select('budget_task_id, progress_percentage');
+
+      const progressMap = progressData?.reduce((acc, log) => {
+        if (!acc[log.budget_task_id]) acc[log.budget_task_id] = 0;
+        acc[log.budget_task_id] += log.progress_percentage || 0;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      console.log('Enhanced budget tasks data:', data);
       console.log('Tasks map:', tasksMap);
+      console.log('Progress map:', progressMap);
 
       return data?.map(budgetTask => {
         const task = tasksMap[budgetTask.task_id];
-        const startDate = budgetTask.created_at ? format(new Date(budgetTask.created_at), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
-        const endDate = format(addDays(new Date(startDate), 7), 'yyyy-MM-dd');
+        const startDate = budgetTask.start_date || format(new Date(), 'yyyy-MM-dd');
+        const endDate = budgetTask.end_date || format(addDays(new Date(startDate), budgetTask.planned_days || 7), 'yyyy-MM-dd');
+        const totalProgress = progressMap[budgetTask.id] || 0;
         
         return {
           id: budgetTask.id,
           name: task?.name || `Tarea ${budgetTask.task_id}`,
-          category: 'General',
+          category: `Prioridad ${budgetTask.priority || 1}`,
           start_date: startDate,
           end_date: endDate,
-          duration: 7,
-          status: 'Pendiente',
-          progress: Math.min((budgetTask.quantity || 0) * 10, 100),
-          color: categoryColors['Otros']
+          duration: budgetTask.planned_days || differenceInDays(new Date(endDate), new Date(startDate)) + 1,
+          status: totalProgress > 0 ? 'En Progreso' : 'Pendiente',
+          progress: Math.min(totalProgress, 100),
+          color: budgetTask.priority === 1 ? categoryColors['Estructura'] : 
+                budgetTask.priority === 2 ? categoryColors['Albañilería'] : 
+                budgetTask.priority === 3 ? categoryColors['Instalaciones'] : categoryColors['Otros'],
+          dependencies: budgetTask.dependencies || [],
+          priority: budgetTask.priority || 1
         };
       }) || [];
     },
@@ -122,7 +146,7 @@ export default function SiteGantt() {
       endDate: string; 
     }) => {
       const { error } = await supabase
-        .from('tasks')
+        .from('budget_tasks')
         .update({
           start_date: startDate,
           end_date: endDate
@@ -324,10 +348,16 @@ export default function SiteGantt() {
           <div className="space-y-6">
             {/* Timeline Header */}
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-4">
+              <div className="col-span-3">
                 <h3 className="font-medium text-sm text-muted-foreground">Tarea</h3>
               </div>
-              <div className="col-span-8">
+              <div className="col-span-1">
+                <h3 className="font-medium text-sm text-muted-foreground">Inicio</h3>
+              </div>
+              <div className="col-span-1">
+                <h3 className="font-medium text-sm text-muted-foreground">Fin</h3>
+              </div>
+              <div className="col-span-7">
                 <div className="grid grid-cols-7 gap-1 text-center">
                   {weekDays.map((day, index) => (
                     <div key={index} className="text-xs font-medium text-muted-foreground py-2">
