@@ -71,7 +71,7 @@ export default function SiteGantt() {
           start_date,
           end_date,
           status,
-          categories (name, color)
+          categories!inner (name, color)
         `)
         .eq('project_id', projectId)
         .order('start_date', { ascending: true });
@@ -81,14 +81,14 @@ export default function SiteGantt() {
       return data?.map(task => ({
         id: task.id,
         name: task.name,
-        category: task.categories?.name || 'Otros',
+        category: (task.categories as any)?.name || 'Otros',
         start_date: task.start_date || format(new Date(), 'yyyy-MM-dd'),
         end_date: task.end_date || format(addDays(new Date(), 7), 'yyyy-MM-dd'),
         duration: task.start_date && task.end_date ? 
           differenceInDays(parseISO(task.end_date), parseISO(task.start_date)) + 1 : 7,
         status: task.status || 'Pendiente',
         progress: 0,
-        color: task.categories?.color || categoryColors['Otros']
+        color: (task.categories as any)?.color || categoryColors['Otros']
       })) || [];
     },
     enabled: !!projectId
