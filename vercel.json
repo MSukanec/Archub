@@ -1,5 +1,5 @@
 {
-  "buildCommand": "vite build",
+  "buildCommand": "vite build --config vite.config.production.ts",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "framework": null,
@@ -19,5 +19,8 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

@@ -1,12 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
+import { env, validateEnv } from './env';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Validate environment on initialization
+validateEnv();
 
-console.log('Supabase URL:', supabaseUrl);
-console.log('Supabase Key exists:', !!supabaseAnonKey);
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
 export type AuthUser = {
   id: string;
