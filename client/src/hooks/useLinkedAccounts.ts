@@ -23,11 +23,15 @@ export function useLinkedAccounts() {
     queryFn: async () => {
       if (!user?.id) return [];
 
+      console.log('Fetching linked accounts for auth_id:', user.id);
+      
       const { data, error } = await supabase
         .from('linked_accounts')
         .select('*')
         .eq('auth_id', user.id)
         .order('created_at', { ascending: false });
+
+      console.log('Linked accounts query result:', { data, error });
 
       if (error) {
         console.error('Error fetching linked accounts:', error);
