@@ -21,7 +21,6 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import WelcomeButton from '@/components/onboarding/WelcomeButton';
 
 
 interface TimelineEvent {
@@ -194,19 +193,8 @@ export default function ArchubDashboard() {
 
   return (
       <div className="flex flex-col h-full bg-surface-views">
-      {/* Dashboard Header with Welcome Button */}
-      <div className="p-6 pb-0">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">Vista general de tus proyectos y actividad</p>
-          </div>
-          <WelcomeButton />
-        </div>
-      </div>
-      
       {/* Main Dashboard Content */}
-      <div className="flex-1 p-6 pt-0 space-y-6 overflow-y-auto">
+      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
         {/* Stats Cards with integrated action buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="rounded-2xl shadow-md overflow-hidden p-0 h-40 flex flex-col">

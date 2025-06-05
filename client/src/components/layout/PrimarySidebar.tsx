@@ -472,7 +472,7 @@ export default function PrimarySidebar() {
       onMouseLeave={handleContainerMouseLeave}
     >
       {/* Primary Sidebar */}
-      <div data-tour="sidebar" className="h-full bg-background border-r border-border flex flex-col w-[40px] min-w-[40px] max-w-[40px]">
+      <div className="h-full bg-background border-r border-border flex flex-col w-[40px] min-w-[40px] max-w-[40px]">
         {/* Main Navigation Items */}
         <div className="flex flex-col">
           {navigationItems.map((item, index) => {
@@ -480,19 +480,9 @@ export default function PrimarySidebar() {
             const isActive = currentSection === item.section;
             const isDashboard = item.section === 'dashboard';
             
-            const getTourAttribute = () => {
-              switch (item.section) {
-                case 'projects': return 'projects-nav';
-                case 'budget': return 'finances-nav';
-                case 'site-log': return 'site-logs-nav';
-                default: return undefined;
-              }
-            };
-            
             return (
               <div key={item.section} className="relative">
                 <button
-                  data-tour={getTourAttribute()}
                   className={cn(
                     "w-[40px] h-[39px] flex items-center justify-center transition-colors",
                     isDashboard && "border-b border-border",
@@ -577,7 +567,6 @@ export default function PrimarySidebar() {
 
           {/* Profile Button */}
           <button
-            data-tour="profile-button"
             className={cn(
               "w-[40px] h-[39px] flex items-center justify-center transition-colors",
               hoveredItem === 'profile' || currentSection === 'profile'
