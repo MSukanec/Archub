@@ -41,6 +41,8 @@ import ProfileSubscription from '@/views/profile/ProfileSubscription';
 import SubscriptionTables from '@/views/others/SubscriptionTables';
 import CreateProjectModal from '@/components/modals/CreateProjectModal';
 import { useNavigationStore } from '@/stores/navigationStore';
+import OnboardingTour from '@/components/onboarding/OnboardingTour';
+import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 
 
 const viewComponents = {
@@ -88,6 +90,9 @@ export default function AppLayout() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Onboarding tour functionality
+  const { showTour, isFirstVisit, completeTour, skipTour } = useOnboardingTour();
 
   useEffect(() => {
     // Initialize theme on app load
@@ -173,6 +178,13 @@ export default function AppLayout() {
       <CreateProjectModal 
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+      />
+      
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isVisible={showTour}
+        onComplete={completeTour}
+        onSkip={skipTour}
       />
     </div>
   );

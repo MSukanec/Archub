@@ -483,8 +483,8 @@ export default function PrimarySidebar() {
             const getTourAttribute = () => {
               switch (item.section) {
                 case 'projects': return 'projects-nav';
-                case 'finances': return 'finances-nav';
-                case 'site-logs': return 'site-logs-nav';
+                case 'budget': return 'finances-nav';
+                case 'site-log': return 'site-logs-nav';
                 default: return undefined;
               }
             };
@@ -577,6 +577,7 @@ export default function PrimarySidebar() {
 
           {/* Profile Button */}
           <button
+            data-tour="profile-button"
             className={cn(
               "w-[40px] h-[39px] flex items-center justify-center transition-colors",
               hoveredItem === 'profile' || currentSection === 'profile'
