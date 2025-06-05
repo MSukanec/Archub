@@ -342,12 +342,13 @@ export default function ArchubDashboard() {
         </Card>
       </div>
       </div>
+      </div>
 
       {/* Onboarding Modal */}
       <OnboardingModal 
         isOpen={showOnboarding} 
         onClose={() => setShowOnboarding(false)} 
       />
-    </div>
+    </>
   );
 }
