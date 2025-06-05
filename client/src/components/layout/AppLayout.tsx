@@ -59,6 +59,7 @@ const viewComponents = {
   'budgets-tasks-multiple': SiteBudgets,
   'budgets-materials': SiteMaterials,
   'sitelog-main': SiteLogs,
+  'site-gantt': SiteGantt,
   'movements-main': FinancesMovements,
   'movements-dashboard': FinancesDashboard,
   'transactions': FinancesMovements,

@@ -180,8 +180,7 @@ export default function Contacts() {
   }
 
   return (
-    <>
-      <div className="p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
+    <div className="p-6 md:p-6 p-3 space-y-6 md:space-y-6 space-y-3">
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -383,6 +382,53 @@ export default function Contacts() {
             )}
           </TableBody>
         </Table>
+        
+        {/* Paginación Desktop */}
+        {filteredAndSortedContacts.length > 0 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedContacts.length)} de {filteredAndSortedContacts.length} elementos
+            </div>
+            
+            {totalPages > 1 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8 h-8 p-0 rounded-lg"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="rounded-xl border-border"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Mobile Cards */}
@@ -462,54 +508,6 @@ export default function Contacts() {
           ))
         )}
       </div>
-        
-      {/* Paginación */}
-        {filteredAndSortedContacts.length > 0 && (
-          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
-              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredAndSortedContacts.length)} de {filteredAndSortedContacts.length} elementos
-            </div>
-            
-            {totalPages > 1 && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="rounded-xl border-border"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className="w-8 h-8 p-0 rounded-lg"
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="rounded-xl border-border"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
-        )}
-      </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-surface-secondary border-border rounded-2xl">
@@ -573,7 +571,7 @@ export default function Contacts() {
       >
         <Plus className="h-6 w-6" />
       </Button>
-    </>
+    </div>
   );
 }
 
