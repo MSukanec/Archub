@@ -50,11 +50,18 @@ function App() {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
       console.log('App: Auth state changed:', event, !!session);
-      console.log('App: Setting loading to false immediately');
-      setLoading(false);
       
       if (!mounted) return;
       
+      // Handle logout immediately
+      if (event === 'SIGNED_OUT' || !session?.user) {
+        console.log('App: User signed out, clearing state...');
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      
+      // Handle sign in
       if (session?.user) {
         console.log('App: Processing user session...');
         try {
@@ -80,6 +87,7 @@ function App() {
           
           console.log('App: Setting authenticated user:', authUser);
           setUser(authUser);
+          setLoading(false);
         } catch (error) {
           console.error('App: Error during auth state change:', error);
           
@@ -93,10 +101,8 @@ function App() {
           };
           console.log('App: Setting fallback user:', authUser);
           setUser(authUser);
+          setLoading(false);
         }
-      } else {
-        console.log('App: No session, clearing user');
-        setUser(null);
       }
     });
 
