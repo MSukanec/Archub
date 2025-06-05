@@ -41,8 +41,3 @@ ehthumbs.db
 # Replit specific (remove for production)
 .replit
 replit.nix
-attached_assets/
-
-# Production excludes
-server/
-migrations/
