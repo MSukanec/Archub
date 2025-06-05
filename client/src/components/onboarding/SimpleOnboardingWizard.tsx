@@ -178,13 +178,22 @@ export function SimpleOnboardingWizard() {
 
       if (orgPrefError) throw orgPrefError;
 
-      // Update user preferences to mark onboarding as completed and set organization
+      // Mark user onboarding as completed
+      const { error: userUpdateError } = await supabase
+        .from('users')
+        .update({
+          onboarding_completed: true
+        })
+        .eq('auth_id', user.id);
+
+      if (userUpdateError) throw userUpdateError;
+
+      // Update user preferences to set organization
       const { error: userPrefError } = await supabase
         .from('user_preferences')
         .upsert({
           user_id: user.id,
-          last_organization_id: organization.id,
-          onboarding_completed: true
+          last_organization_id: organization.id
         });
 
       if (userPrefError) throw userPrefError;
