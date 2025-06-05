@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { useFeatures } from '@/hooks/useFeatures';
 import { queryClient } from '@/lib/queryClient';
+import UserAvatar from '@/components/ui/UserAvatar';
 
 import { cn } from '@/lib/utils';
 import {
@@ -568,7 +569,7 @@ export default function PrimarySidebar() {
             )}
             onMouseEnter={() => handleMouseEnter('profile')}
           >
-            <User className="w-[20px] h-[20px]" />
+            <UserAvatar size="sm" className="ring-2 ring-transparent hover:ring-primary/20 transition-all" />
           </button>
         </div>
       </div>
