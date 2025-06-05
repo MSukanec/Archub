@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Mail, Lock, CreditCard, Save, Crown, Zap, Rocket, Moon, Sun, Camera } from 'lucide-react';
+import { User, Mail, Lock, CreditCard, Save, Crown, Zap, Rocket, Moon, Sun } from 'lucide-react';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ComingSoon from '@/components/ui/ComingSoon';
+import AvatarUpload from '@/components/profile/AvatarUpload';
 import { supabase } from '@/lib/supabase';
 import { useFeatures } from '@/hooks/useFeatures';
 
@@ -201,6 +202,9 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Avatar Upload Card */}
+        <AvatarUpload currentUser={currentUser} />
+
         {/* Profile Information Card */}
         <Card>
           <CardHeader>
@@ -210,34 +214,6 @@ export default function Profile() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Avatar */}
-            <div className="space-y-2">
-              <Label>Avatar</Label>
-              <div className="flex items-center gap-4">
-                <ComingSoon>
-                  <div className="relative cursor-pointer group">
-                    <Avatar className="w-20 h-20">
-                      <AvatarImage src="" />
-                      <AvatarFallback className="text-lg">{getUserInitials()}</AvatarFallback>
-                    </Avatar>
-                    <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Camera className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                </ComingSoon>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">
-                    Esta es tu imagen de perfil.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Haz clic en el avatar para subir una imagen personalizada.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Un avatar es opcional pero muy recomendado.
-                  </p>
-                </div>
-              </div>
-            </div>
 
             {/* First Name */}
             <div className="space-y-2">
