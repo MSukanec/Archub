@@ -98,7 +98,10 @@ export default function UserAvatar({ size = 'md', className = '', currentUser }:
           onError={(e) => {
             // If image fails to load, hide it and show fallback
             e.currentTarget.style.display = 'none';
-            e.currentTarget.nextSibling?.classList.remove('hidden');
+            const nextElement = e.currentTarget.nextSibling as HTMLElement;
+            if (nextElement) {
+              nextElement.classList.remove('hidden');
+            }
           }}
         />
         <div className={`hidden w-full h-full flex items-center justify-center bg-muted text-muted-foreground ${size === 'sm' ? 'text-xs' : size === 'md' ? 'text-sm' : 'text-lg'}`}>

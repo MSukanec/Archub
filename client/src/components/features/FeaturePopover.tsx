@@ -88,30 +88,30 @@ export function FeaturePopover({ feature, children, asChild = false }: FeaturePo
         {trigger}
       </PopoverTrigger>
       <PopoverContent 
-        className="w-72 p-0 bg-surface-views border-border/50 shadow-xl" 
+        className="w-72 p-0 bg-[#141414] border-border/50 shadow-xl" 
         side="top" 
         align="center"
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
-        <div className="bg-surface-primary p-3 rounded-t-lg border-b border-border/20">
+        <div className="bg-[#141414] p-3 rounded-t-lg border-b border-border/20">
           <div className="flex items-center gap-2 mb-1">
             <div className={`p-1.5 rounded-full ${planConfig.bgColor}`}>
               <PlanIcon className={`h-4 w-4 ${planConfig.color}`} />
             </div>
-            <span className="font-medium text-foreground text-sm">
+            <span className="font-medium text-white text-sm">
               Función {planConfig.name}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="text-xs text-gray-400 leading-relaxed">
             {featureMessage}
           </p>
         </div>
         
-        <div className="p-3 bg-surface-views">
+        <div className="p-3 bg-[#141414]">
           <div className="flex items-center gap-2 mb-3">
-            <Lock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">
+            <Lock className="h-3 w-3 text-gray-400" />
+            <span className="text-xs text-gray-400">
               Disponible en plan {planConfig.name}
             </span>
           </div>

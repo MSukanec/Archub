@@ -65,18 +65,44 @@ function App() {
       if (session?.user) {
         console.log('App: Processing user session...');
         
-        // Create simple auth user object
-        const authUser = {
-          id: session.user.id,
-          email: session.user.email || '',
-          firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
-          lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-          role: 'user', // Default role for now
-        };
-        
-        console.log('App: Setting authenticated user:', authUser);
-        setUser(authUser);
-        setLoading(false);
+        try {
+          // Get user role from database
+          const { handleAuthLinking } = await import('./lib/authLinkingService');
+          await handleAuthLinking(session.user as any);
+          
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('role, first_name, last_name, full_name')
+            .eq('auth_id', session.user.id)
+            .single();
+          
+          const authUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: userData?.first_name || session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
+            lastName: userData?.last_name || session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+            role: userData?.role || 'user', // Use role from database
+          };
+          
+          console.log('App: Setting authenticated user:', authUser);
+          setUser(authUser);
+          setLoading(false);
+        } catch (error) {
+          console.error('Error getting user data:', error);
+          
+          // Fallback to basic user creation
+          const authUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
+            lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+            role: 'user',
+          };
+          
+          console.log('App: Setting authenticated user (fallback):', authUser);
+          setUser(authUser);
+          setLoading(false);
+        }
       }
     });
 
