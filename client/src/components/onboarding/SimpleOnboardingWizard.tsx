@@ -41,19 +41,19 @@ export function SimpleOnboardingWizard() {
   });
 
   // Check if user needs onboarding
-  const { data: userPreferences } = useQuery({
-    queryKey: ['user-preferences-onboarding', user?.id],
+  const { data: userOnboarding } = useQuery({
+    queryKey: ['user-onboarding-status', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
       const { data, error } = await supabase
-        .from('user_preferences')
+        .from('users')
         .select('onboarding_completed')
-        .eq('user_id', user.id)
+        .eq('auth_id', user.id)
         .single();
       
       if (error) {
-        console.log('No user preferences found, onboarding needed');
+        console.log('No user found, onboarding needed');
         return { onboarding_completed: false };
       }
       
@@ -64,10 +64,10 @@ export function SimpleOnboardingWizard() {
 
   // Auto-open modal if onboarding not completed
   useEffect(() => {
-    if (userPreferences && !userPreferences.onboarding_completed && !isOpen) {
+    if (userOnboarding && !userOnboarding.onboarding_completed && !isOpen) {
       setIsOpen(true);
     }
-  }, [userPreferences, isOpen]);
+  }, [userOnboarding, isOpen]);
 
   // Fetch currencies
   const { data: currencies = [] } = useQuery({
