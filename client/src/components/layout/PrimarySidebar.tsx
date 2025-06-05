@@ -9,6 +9,7 @@ import { useUserContextStore } from '@/stores/userContextStore';
 import { useFeatures } from '@/hooks/useFeatures';
 import { queryClient } from '@/lib/queryClient';
 import UserAvatar from '@/components/ui/UserAvatar';
+import { useToast } from '@/hooks/use-toast';
 
 import { cn } from '@/lib/utils';
 import {
@@ -27,6 +28,7 @@ interface SubMenuItem {
   view: View;
   label: string;
   icon: any;
+  locked?: boolean;
 }
 
 interface NavigationItem {
@@ -71,7 +73,7 @@ const navigationItems: NavigationItem[] = [
       { view: 'budgets-list', label: 'Tareas', icon: ClipboardList },
       { view: 'budgets-materials', label: 'Materiales', icon: Library },
       { view: 'sitelog-main', label: 'Bitácora', icon: Contact },
-      { view: 'site-gantt', label: 'Gantt', icon: BarChart3 }
+      { view: 'site-gantt', label: 'Gantt', icon: BarChart3, locked: true }
     ]
   },
   { 
@@ -134,6 +136,7 @@ export default function PrimarySidebar() {
   const { userPlan } = useFeatures();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isDocked, setIsDocked] = useState(false);
+  const { toast } = useToast();
 
   // Query current user data for avatar
   const { data: currentUser } = useQuery({
@@ -446,20 +449,37 @@ export default function PrimarySidebar() {
         {item.subItems.map((subItem: any) => {
           const SubIcon = subItem.icon;
           const isSubActive = currentView === subItem.view;
+          const isLocked = subItem.locked && user?.role !== 'admin';
           
           return (
             <button
               key={subItem.view}
               className={cn(
-                "w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors",
+                "w-full px-4 h-[39px] text-left text-sm flex items-center gap-3 transition-colors relative",
                 isSubActive
                   ? "text-primary"
+                  : isLocked
+                  ? "text-muted-foreground/50 cursor-not-allowed"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              onClick={() => handleNavigation(item.section, subItem.view)}
+              onClick={() => {
+                if (isLocked) {
+                  toast({
+                    title: "Funcionalidad Próximamente",
+                    description: "Esta función estará disponible próximamente. Mantente atento a las actualizaciones.",
+                    duration: 3000,
+                  });
+                  return;
+                }
+                handleNavigation(item.section, subItem.view);
+              }}
+              disabled={isLocked}
             >
               <SubIcon className="w-4 h-4" />
               {subItem.label}
+              {isLocked && (
+                <LockIcon className="w-3 h-3 ml-auto text-muted-foreground/50" />
+              )}
             </button>
           );
         })}
