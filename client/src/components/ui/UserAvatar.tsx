@@ -86,20 +86,16 @@ export default function UserAvatar({ size = 'md', className = '', currentUser }:
   };
 
   const avatarUrl = getAvatarUrl();
-  console.log('UserAvatar - Final render:', { avatarUrl, currentUser, userToUse });
   
   // If we have an avatar URL, show the image directly, otherwise show initials
   if (avatarUrl) {
-    console.log('UserAvatar - Rendering image with URL:', avatarUrl);
     return (
       <div className={`${sizeClasses[size]} ${className} rounded-full overflow-hidden bg-muted flex items-center justify-center relative`}>
         <img 
           src={avatarUrl} 
           alt="Avatar del usuario"
           className="w-full h-full object-cover"
-          onLoad={() => console.log('Avatar image loaded successfully')}
           onError={(e) => {
-            console.log('Avatar image failed to load:', avatarUrl);
             // If image fails to load, hide it and show fallback
             e.currentTarget.style.display = 'none';
             const fallback = e.currentTarget.parentElement?.querySelector('.hidden') as HTMLElement;
