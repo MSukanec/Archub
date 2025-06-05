@@ -620,3 +620,5 @@ function AdminContactsSkeleton() {
     </div>
   );
 }
+
+export { AdminContactsSkeleton };
