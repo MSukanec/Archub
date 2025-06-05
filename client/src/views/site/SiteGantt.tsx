@@ -38,7 +38,7 @@ const categoryColors = {
 };
 
 export default function SiteGantt() {
-  const { projectId } = useUserContextStore();
+  const { projectId, budgetId } = useUserContextStore();
   const queryClient = useQueryClient();
   
   const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -64,14 +64,15 @@ export default function SiteGantt() {
       if (!projectId) return [];
       
       const { data, error } = await supabase
-        .from('tasks')
+        .from('budget_tasks')
         .select(`
           id,
-          name,
+          task_id,
           created_at,
-          category_id
+          budget_id,
+          quantity
         `)
-        .eq('project_id', projectId)
+        .eq('budget_id', budgetId || projectId)
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -79,34 +80,34 @@ export default function SiteGantt() {
         throw error;
       }
 
-      // Fetch categories separately
-      const { data: categoriesData } = await supabase
-        .from('material_categories')
-        .select('id, name, color');
+      // Fetch tasks separately to get names
+      const { data: tasksData } = await supabase
+        .from('tasks')
+        .select('id, name');
 
-      const categoriesMap = categoriesData?.reduce((acc, cat) => {
-        acc[cat.id] = cat;
+      const tasksMap = tasksData?.reduce((acc, task) => {
+        acc[task.id] = task;
         return acc;
       }, {} as Record<string, any>) || {};
 
-      console.log('Raw tasks data:', data);
-      console.log('Categories map:', categoriesMap);
+      console.log('Raw budget tasks data:', data);
+      console.log('Tasks map:', tasksMap);
 
-      return data?.map(task => {
-        const category = categoriesMap[task.category_id];
-        const startDate = task.created_at ? format(new Date(task.created_at), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
+      return data?.map(budgetTask => {
+        const task = tasksMap[budgetTask.task_id];
+        const startDate = budgetTask.created_at ? format(new Date(budgetTask.created_at), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
         const endDate = format(addDays(new Date(startDate), 7), 'yyyy-MM-dd');
         
         return {
-          id: task.id,
-          name: task.name,
-          category: category?.name || 'Otros',
+          id: budgetTask.id,
+          name: task?.name || `Tarea ${budgetTask.task_id}`,
+          category: 'General',
           start_date: startDate,
           end_date: endDate,
           duration: 7,
           status: 'Pendiente',
-          progress: 25, // Default progress
-          color: category?.color || categoryColors['Otros']
+          progress: Math.min((budgetTask.quantity || 0) * 10, 100),
+          color: categoryColors['Otros']
         };
       }) || [];
     },
