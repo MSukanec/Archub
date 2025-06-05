@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 
 interface OnboardingData {
+  firstName: string;
+  lastName: string;
   organizationName: string;
   defaultCurrencyId: string;
   defaultWalletId: string;
@@ -31,6 +33,8 @@ export function SimpleOnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<OnboardingData>({
+    firstName: '',
+    lastName: '',
     organizationName: '',
     defaultCurrencyId: '58c50aa7-b8b1-4035-b509-58028dd0e33f',
     defaultWalletId: '2658c575-0fa8-4cf6-85d7-6430ded7e188',
@@ -187,11 +191,14 @@ export function SimpleOnboardingWizard() {
 
       if (orgPrefError) throw orgPrefError;
 
-      // Mark user onboarding as completed
+      // Mark user onboarding as completed and update user info
       const { error: userUpdateError } = await supabase
         .from('users')
         .update({
-          onboarding_completed: true
+          onboarding_completed: true,
+          first_name: data.firstName,
+          last_name: data.lastName,
+          full_name: `${data.firstName} ${data.lastName}`.trim()
         })
         .eq('auth_id', user.id);
 
@@ -243,10 +250,10 @@ export function SimpleOnboardingWizard() {
       }
       setCurrentStep(2);
     } else if (currentStep === 2) {
-      if (!data.country || !data.discoveredBy) {
+      if (!data.firstName.trim() || !data.lastName.trim() || !data.country || !data.discoveredBy) {
         toast({
           title: "Campos requeridos",
-          description: "Por favor, completa todos los campos",
+          description: "Por favor, completa tu nombre, apellido, país y cómo conociste Archub",
           variant: "destructive",
         });
         return;
@@ -370,6 +377,28 @@ export function SimpleOnboardingWizard() {
       </div>
 
       <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="firstName">Nombre</Label>
+            <Input
+              id="firstName"
+              value={data.firstName}
+              onChange={(e) => updateData('firstName', e.target.value)}
+              placeholder="Juan"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Apellido</Label>
+            <Input
+              id="lastName"
+              value={data.lastName}
+              onChange={(e) => updateData('lastName', e.target.value)}
+              placeholder="Pérez"
+            />
+          </div>
+        </div>
+
         <div className="space-y-2">
           <Label>País</Label>
           <Select value={data.country} onValueChange={(value) => updateData('country', value)}>
