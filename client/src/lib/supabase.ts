@@ -120,8 +120,24 @@ export const authService = {
   },
 
   async signOut() {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      // Clear any local storage first
+      localStorage.removeItem('auth-storage');
+      localStorage.removeItem('sb-wtatvsgeivymcppowrfy-auth-token');
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      // Force a page reload to clear all state
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
+      
+      return { error };
+    } catch (err) {
+      console.error('Error during signOut:', err);
+      return { error: err as any };
+    }
   },
 
   async getCurrentUser() {

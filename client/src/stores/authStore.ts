@@ -49,6 +49,10 @@ export const useAuthStore = create<AuthState>()(
         // Clear user context first
         useUserContextStore.getState().clearUserContext();
         
+        // Clear persisted storage
+        localStorage.removeItem('auth-storage');
+        localStorage.removeItem('user-context-storage');
+        
         // Then clear auth state
         set({
           user: null,
