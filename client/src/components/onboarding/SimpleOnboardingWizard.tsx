@@ -13,6 +13,8 @@ import { supabase } from '@/lib/supabase';
 
 interface OnboardingData {
   organizationName: string;
+  defaultCurrencyId: string;
+  defaultWalletId: string;
   country: string;
   age: number | null;
   discoveredBy: string;
@@ -30,6 +32,8 @@ export function SimpleOnboardingWizard() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<OnboardingData>({
     organizationName: '',
+    defaultCurrencyId: '',
+    defaultWalletId: '',
     country: '',
     age: null,
     discoveredBy: '',
@@ -65,6 +69,34 @@ export function SimpleOnboardingWizard() {
     }
   }, [userPreferences, isOpen]);
 
+  // Fetch currencies
+  const { data: currencies = [] } = useQuery({
+    queryKey: ['currencies'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('currencies')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Fetch wallets
+  const { data: wallets = [] } = useQuery({
+    queryKey: ['wallets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wallets')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   const updateData = (field: keyof OnboardingData, value: any) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
@@ -82,12 +114,17 @@ export function SimpleOnboardingWizard() {
     { value: 'other', label: 'Otro' }
   ];
 
-  const predefinedAvatars = [
-    'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=100&h=100&fit=crop&crop=face'
-  ];
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        updateData('avatarUrl', result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const submitOnboarding = useMutation({
     mutationFn: async () => {
@@ -142,10 +179,10 @@ export function SimpleOnboardingWizard() {
 
   const handleNext = () => {
     if (currentStep === 1) {
-      if (!data.organizationName.trim()) {
+      if (!data.organizationName.trim() || !data.defaultCurrencyId || !data.defaultWalletId) {
         toast({
-          title: "Campo requerido",
-          description: "Por favor, ingresa el nombre de la organización",
+          title: "Campos requeridos",
+          description: "Por favor, completa el nombre de la organización, moneda y billetera",
           variant: "destructive",
         });
         return;
@@ -181,6 +218,12 @@ export function SimpleOnboardingWizard() {
         <p className="text-sm text-muted-foreground">Paso 1 de 3</p>
       </div>
 
+      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
+        <p className="text-sm text-blue-700 dark:text-blue-300">
+          💡 Todos estos datos podrán ser modificados posteriormente en la configuración de tu organización.
+        </p>
+      </div>
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="orgName">Nombre de la Organización</Label>
@@ -190,6 +233,44 @@ export function SimpleOnboardingWizard() {
             onChange={(e) => updateData('organizationName', e.target.value)}
             placeholder="Ej: Constructora ABC"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Moneda Predeterminada</Label>
+          <Select
+            value={data.defaultCurrencyId}
+            onValueChange={(value) => updateData('defaultCurrencyId', value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona una moneda" />
+            </SelectTrigger>
+            <SelectContent>
+              {currencies.map((currency) => (
+                <SelectItem key={currency.id} value={currency.id}>
+                  {currency.code} - {currency.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Billetera Predeterminada</Label>
+          <Select
+            value={data.defaultWalletId}
+            onValueChange={(value) => updateData('defaultWalletId', value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona una billetera" />
+            </SelectTrigger>
+            <SelectContent>
+              {wallets.map((wallet) => (
+                <SelectItem key={wallet.id} value={wallet.id}>
+                  {wallet.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
@@ -203,18 +284,26 @@ export function SimpleOnboardingWizard() {
               />
             </div>
           )}
-          <div className="grid grid-cols-4 gap-2">
-            {predefinedAvatars.map((url, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => updateData('avatarUrl', url)}
-                className="w-12 h-12 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-colors"
-              >
-                <img src={url} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover" />
-              </button>
-            ))}
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => document.getElementById('avatar-upload')?.click()}
+              className="w-full"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              Subir Imagen
+            </Button>
           </div>
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleAvatarUpload}
+          />
         </div>
       </div>
     </div>
@@ -277,34 +366,43 @@ export function SimpleOnboardingWizard() {
     </div>
   );
 
-  const renderStep3 = () => (
-    <div className="space-y-6">
-      <div className="text-center">
-        <CheckCircle className="w-12 h-12 mx-auto text-primary mb-2" />
-        <h3 className="text-lg font-semibold">Confirma tu Configuración</h3>
-        <p className="text-sm text-muted-foreground">Paso 3 de 3</p>
-      </div>
+  const renderStep3 = () => {
+    const selectedCurrency = currencies.find(c => c.id === data.defaultCurrencyId);
+    const selectedWallet = wallets.find(w => w.id === data.defaultWalletId);
+    
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <CheckCircle className="w-12 h-12 mx-auto text-primary mb-2" />
+          <h3 className="text-lg font-semibold">Confirma tu Configuración</h3>
+          <p className="text-sm text-muted-foreground">Paso 3 de 3</p>
+        </div>
 
-      <div className="space-y-4">
-        <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-          <h4 className="font-medium">Organización</h4>
-          <div className="flex items-center gap-3">
-            {data.avatarUrl && (
-              <img src={data.avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
-            )}
-            <span className="font-medium">{data.organizationName}</span>
+        <div className="space-y-4">
+          <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+            <h4 className="font-medium">Organización</h4>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                {data.avatarUrl && (
+                  <img src={data.avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+                )}
+                <span className="font-medium">{data.organizationName}</span>
+              </div>
+              <p><span className="text-muted-foreground">Moneda:</span> {selectedCurrency ? `${selectedCurrency.code} - ${selectedCurrency.name}` : 'No seleccionada'}</p>
+              <p><span className="text-muted-foreground">Billetera:</span> {selectedWallet ? selectedWallet.name : 'No seleccionada'}</p>
+            </div>
+          </div>
+
+          <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+            <h4 className="font-medium">Tu Perfil</h4>
+            <p><span className="text-muted-foreground">País:</span> {data.country}</p>
+            {data.age && <p><span className="text-muted-foreground">Edad:</span> {data.age} años</p>}
+            <p><span className="text-muted-foreground">Conociste Archub por:</span> {discoveredByOptions.find(opt => opt.value === data.discoveredBy)?.label}</p>
           </div>
         </div>
-
-        <div className="bg-muted/30 rounded-lg p-4 space-y-2">
-          <h4 className="font-medium">Tu Perfil</h4>
-          <p><span className="text-muted-foreground">País:</span> {data.country}</p>
-          {data.age && <p><span className="text-muted-foreground">Edad:</span> {data.age} años</p>}
-          <p><span className="text-muted-foreground">Conociste Archub por:</span> {discoveredByOptions.find(opt => opt.value === data.discoveredBy)?.label}</p>
-        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -319,10 +417,10 @@ export function SimpleOnboardingWizard() {
       )}
 
       <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-gray-900 dark:border-gray-700 dark:text-white">
           <DialogHeader>
-            <DialogTitle>Configuración Inicial</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-foreground dark:text-white">Configuración Inicial</DialogTitle>
+            <DialogDescription className="text-muted-foreground dark:text-gray-300">
               Configura tu espacio de trabajo en Archub
             </DialogDescription>
           </DialogHeader>
