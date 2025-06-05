@@ -32,8 +32,8 @@ export function SimpleOnboardingWizard() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<OnboardingData>({
     organizationName: '',
-    defaultCurrencyId: '',
-    defaultWalletId: '',
+    defaultCurrencyId: '58c50aa7-b8b1-4035-b509-58028dd0e33f',
+    defaultWalletId: '2658c575-0fa8-4cf6-85d7-6430ded7e188',
     country: '',
     age: null,
     discoveredBy: '',
@@ -109,6 +109,7 @@ export function SimpleOnboardingWizard() {
 
   const discoveredByOptions = [
     { value: 'google', label: 'Google' },
+    { value: 'youtube', label: 'YouTube' },
     { value: 'instagram', label: 'Instagram' },
     { value: 'recommended', label: 'Recomendado' },
     { value: 'other', label: 'Otro' }
@@ -218,8 +219,8 @@ export function SimpleOnboardingWizard() {
         <p className="text-sm text-muted-foreground">Paso 1 de 3</p>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
-        <p className="text-sm text-blue-700 dark:text-blue-300">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-4">
+        <p className="text-sm text-primary">
           💡 Todos estos datos podrán ser modificados posteriormente en la configuración de tu organización.
         </p>
       </div>
@@ -274,7 +275,7 @@ export function SimpleOnboardingWizard() {
         </div>
 
         <div className="space-y-2">
-          <Label>Avatar de la Organización (Opcional)</Label>
+          <Label>Logo de la Organización (Opcional)</Label>
           {data.avatarUrl && (
             <div className="flex justify-center mb-2">
               <img
@@ -417,7 +418,7 @@ export function SimpleOnboardingWizard() {
       )}
 
       <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-gray-900 dark:border-gray-700 dark:text-white">
+        <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-[#1e1e1e] dark:border-gray-700 dark:text-white">
           <DialogHeader>
             <DialogTitle className="text-foreground dark:text-white">Configuración Inicial</DialogTitle>
             <DialogDescription className="text-muted-foreground dark:text-gray-300">
