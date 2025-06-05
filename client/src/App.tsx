@@ -64,45 +64,19 @@ function App() {
       // Handle sign in
       if (session?.user) {
         console.log('App: Processing user session...');
-        try {
-          // First, handle auth linking to ensure user exists in internal system
-          console.log('App: Importing auth linking service...');
-          const { handleAuthLinking } = await import('./lib/authLinkingService');
-          console.log('App: Handling auth linking...');
-          await handleAuthLinking(session.user as any);
-          
-          // Get user data from database table
-          console.log('App: Importing auth service...');
-          const { authService } = await import('./lib/supabase');
-          console.log('App: Getting user from database...');
-          const dbUser = await authService.getUserFromDatabase(session.user.id);
-          
-          const authUser = {
-            id: session.user.id,
-            email: session.user.email || '',
-            firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
-            lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            role: dbUser?.role || 'user',
-          };
-          
-          console.log('App: Setting authenticated user:', authUser);
-          setUser(authUser);
-          setLoading(false);
-        } catch (error) {
-          console.error('App: Error during auth state change:', error);
-          
-          // Fallback to basic auth user creation
-          const authUser = {
-            id: session.user.id,
-            email: session.user.email || '',
-            firstName: session.user.user_metadata?.first_name || '',
-            lastName: session.user.user_metadata?.last_name || '',
-            role: 'user',
-          };
-          console.log('App: Setting fallback user:', authUser);
-          setUser(authUser);
-          setLoading(false);
-        }
+        
+        // Create simple auth user object
+        const authUser = {
+          id: session.user.id,
+          email: session.user.email || '',
+          firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
+          lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+          role: 'user', // Default role for now
+        };
+        
+        console.log('App: Setting authenticated user:', authUser);
+        setUser(authUser);
+        setLoading(false);
       }
     });
 
