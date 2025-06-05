@@ -136,19 +136,22 @@ export function SimpleOnboardingWizard() {
         .from('organizations')
         .insert({
           name: data.organizationName,
-          avatar_url: data.avatarUrl || null
+          default_currency_id: data.defaultCurrencyId,
+          default_wallet_id: data.defaultWalletId,
+          created_by: user.id
         })
         .select()
         .single();
 
       if (orgError) throw orgError;
 
-      // Create organization preferences with default PDF template
+      // Create organization preferences with default PDF template and avatar
       const { error: orgPrefError } = await supabase
         .from('organization_preferences')
         .insert({
           organization_id: organization.id,
-          pdf_template_id: 'b6266a04-9b03-4f3a-af2d-f6ee6d0a948b'
+          pdf_template_id: 'b6266a04-9b03-4f3a-af2d-f6ee6d0a948b',
+          default_avatar_url: data.avatarUrl || null
         });
 
       if (orgPrefError) throw orgPrefError;
