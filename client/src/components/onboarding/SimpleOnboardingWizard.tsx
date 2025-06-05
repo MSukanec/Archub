@@ -418,7 +418,10 @@ export function SimpleOnboardingWizard() {
 
 
       <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-[#1e1e1e] dark:border-gray-700 dark:text-white">
+        <DialogContent 
+          hideCloseButton={true}
+          className="max-w-md bg-background border-border text-foreground dark:bg-[#1e1e1e] dark:border-gray-700 dark:text-white"
+        >
           <DialogHeader>
             <DialogTitle className="text-foreground dark:text-white">Configuración Inicial</DialogTitle>
             <DialogDescription className="text-muted-foreground dark:text-gray-300">
