@@ -279,11 +279,26 @@ export default function PrimarySidebar() {
     // You can trigger the modal here if needed
   };
 
-  const handleLogout = () => {
-    // Clear auth state and redirect to landing page
-    const { setUser } = useAuthStore.getState();
-    setUser(null);
-    window.location.href = '/';
+  const handleLogout = async () => {
+    try {
+      // Import supabase and authService
+      const { authService } = await import('@/lib/supabase');
+      
+      // Clear auth state first
+      const { logout } = useAuthStore.getState();
+      logout();
+      
+      // Sign out from Supabase (this will trigger the auth state change)
+      await authService.signOut();
+      
+    } catch (error) {
+      console.error('Error during logout:', error);
+      
+      // Fallback: Force clear everything and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
+    }
   };
 
   // Theme management with persistence

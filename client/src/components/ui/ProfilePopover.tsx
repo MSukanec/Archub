@@ -24,10 +24,20 @@ export function ProfilePopover({ children }: ProfilePopoverProps) {
 
   const handleLogout = async () => {
     try {
+      // Clear auth state first
+      const { logout } = useAuthStore.getState();
+      logout();
+      
+      // Sign out from Supabase (this will trigger the auth state change)
       await authService.signOut();
-      // The auth state will be updated by the auth listener
+      
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Error during logout:', error);
+      
+      // Fallback: Force clear everything and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
     }
   };
 
