@@ -1,7 +1,6 @@
 {
-  "buildCommand": "npm run build:client",
+  "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "dist/public",
-  "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": null,
   "rewrites": [
@@ -20,8 +19,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
