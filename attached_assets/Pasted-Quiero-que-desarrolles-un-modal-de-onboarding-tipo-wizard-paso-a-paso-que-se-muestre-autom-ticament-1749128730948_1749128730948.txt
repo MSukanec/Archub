@@ -1,0 +1,87 @@
+Quiero que desarrolles un modal de onboarding tipo wizard paso a paso, que se muestre automáticamente la primera vez que el usuario se registra. Debe estar integrado con Supabase y construido con React, Tailwind y Zustand.
+
+📌 Estructura general
+El wizard tendrá 2 pasos principales, más un paso de confirmación final. Todo debe guardarse en Supabase mediante upsert en las tablas correspondientes.
+
+👣 Paso 1: Datos de la organización (tabla organization_preferences)
+name → Nombre de la organización (input)
+
+default_currency_id → Lista desplegable (dropdown con datos de currencies)
+
+default_wallet_id → Lista desplegable (dropdown con datos de wallets)
+
+pdf_template_id → Lista desplegable (dropdown con datos de pdf_templates)
+
+avatar_url → Opción de subir imagen o elegir una predeterminada
+
+👣 Paso 2: Información de perfil del usuario (tabla user_profile_data)
+country → Campo de texto o lista de países
+
+age → Número entero
+
+discovered_by → Dropdown con opciones: “Google”, “Instagram”, “Recomendado”, “Otro”
+
+✅ Paso final: Confirmación
+Mostrar resumen editable de los datos ingresados
+
+Botón "Confirmar y continuar"
+
+Al confirmar:
+
+Hacer upserts en:
+
+organization_preferences
+
+user_profile_data
+
+user_preferences.onboarding_completed = true
+
+Cerrar el modal
+
+🔒 Lógica condicional
+Solo se muestra si user_preferences.onboarding_completed es false o null
+
+Que pueda forzarse su apertura con un botón flotante para pruebas (modo desarrollo)
+
+🧠 Técnicamente
+Usar Zustand para manejar el estado del wizard (paso actual, datos, errores, etc.)
+
+Usar Supabase client para consultar e insertar datos
+
+Validar que todos los campos estén completos antes de permitir avanzar
+
+Usar React Hook Form o similar si querés estructurar los formularios
+
+Usar Tailwind para estilizar el modal con buen diseño, modo oscuro compatible
+
+Mostrar feedback visual: loading al enviar, toasts de éxito o error
+
+🖥 UI deseada
+Modal centrado, animado, con fondo oscuro desenfocado
+
+Layout tipo formulario multipaso, con navegación "Siguiente / Anterior"
+
+Título e ícono para cada paso
+
+Preview visual del avatar cargado
+
+⚠️ Importante:
+
+Todas las tablas ya existen en Supabase: organization_preferences, user_profile_data, user_preferences
+
+El usuario ya está autenticado (auth.user()), pero todavía no tiene una organización creada.
+Por eso, el primer paso del onboarding será crear la organización y luego usar su id para guardar los siguientes datos:
+
+Insertar en organizations con el nombre
+
+Guardar ese organization_id como last_organization_id en user_preferences
+
+Luego usar ese organization_id para insertar en:
+
+organization_preferences
+
+organization_wallets (si se desea)
+
+organization_currencies (si se desea)
+
+Usá useAuth() o useUser() para obtener los datos necesarios
