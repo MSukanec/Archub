@@ -143,6 +143,16 @@ export function SimpleOnboardingWizard() {
 
       if (orgError) throw orgError;
 
+      // Create organization preferences with default PDF template
+      const { error: orgPrefError } = await supabase
+        .from('organization_preferences')
+        .insert({
+          organization_id: organization.id,
+          pdf_template_id: 'b6266a04-9b03-4f3a-af2d-f6ee6d0a948b'
+        });
+
+      if (orgPrefError) throw orgPrefError;
+
       // Update user preferences to mark onboarding as completed and set organization
       const { error: userPrefError } = await supabase
         .from('user_preferences')
@@ -207,9 +217,7 @@ export function SimpleOnboardingWizard() {
     submitOnboarding.mutate();
   };
 
-  const handleForceOpen = () => {
-    setIsOpen(true);
-  };
+
 
   const renderStep1 = () => (
     <div className="space-y-6">
@@ -407,15 +415,7 @@ export function SimpleOnboardingWizard() {
 
   return (
     <>
-      {/* Development force-open button */}
-      {process.env.NODE_ENV === 'development' && (
-        <button
-          onClick={handleForceOpen}
-          className="fixed bottom-4 right-4 z-50 bg-primary text-white px-4 py-2 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
-        >
-          Open Onboarding
-        </button>
-      )}
+
 
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-[#1e1e1e] dark:border-gray-700 dark:text-white">
