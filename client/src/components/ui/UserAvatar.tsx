@@ -68,23 +68,18 @@ export default function UserAvatar({ size = 'md', className = '', currentUser }:
   // Get current avatar URL
   const getAvatarUrl = () => {
     // Prioritize the data from the provided currentUser prop
-    if (currentUser) {
-      if (currentUser.avatar_source === 'google' && googleAvatarUrl) {
-        return googleAvatarUrl;
-      }
-      if (currentUser.avatar_url) {
-        return currentUser.avatar_url;
-      }
+    if (currentUser && currentUser.avatar_url) {
+      return currentUser.avatar_url;
     }
     
     // Fallback to userData from query
-    if (userToUse) {
-      if ((userToUse as any)?.avatar_source === 'google' && googleAvatarUrl) {
-        return googleAvatarUrl;
-      }
-      if ((userToUse as any)?.avatar_url) {
-        return (userToUse as any)?.avatar_url;
-      }
+    if (userToUse && (userToUse as any)?.avatar_url) {
+      return (userToUse as any)?.avatar_url;
+    }
+    
+    // Google avatar fallback
+    if (googleAvatarUrl) {
+      return googleAvatarUrl;
     }
     
     return '';
