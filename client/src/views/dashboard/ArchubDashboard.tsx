@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
-import { useOnboardingStatus } from '@/hooks/useOnboardingStatus';
-import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import { format, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { 
@@ -43,16 +41,6 @@ export default function ArchubDashboard() {
   const { organizationId } = useUserContextStore();
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  // Check onboarding status
-  const { data: onboardingStatus, isLoading: onboardingLoading } = useOnboardingStatus();
-
-  useEffect(() => {
-    if (!onboardingLoading && onboardingStatus?.needsOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, [onboardingStatus, onboardingLoading]);
 
   // Fetch timeline events from last 30 days
   const { data: timelineEvents = [] } = useQuery<TimelineEvent[]>({
@@ -204,7 +192,6 @@ export default function ArchubDashboard() {
   }
 
   return (
-    <>
       <div className="flex flex-col h-full bg-surface-views">
       {/* Main Dashboard Content */}
       <div className="flex-1 p-6 space-y-6 overflow-y-auto">
@@ -342,13 +329,5 @@ export default function ArchubDashboard() {
         </Card>
       </div>
       </div>
-      </div>
-
-      {/* Onboarding Modal */}
-      <OnboardingModal 
-        isOpen={showOnboarding} 
-        onClose={() => setShowOnboarding(false)} 
-      />
-    </>
   );
 }
