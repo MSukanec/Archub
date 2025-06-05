@@ -105,7 +105,7 @@ export default function SiteGantt() {
           end_date: endDate,
           duration: 7,
           status: 'Pendiente',
-          progress: Math.min((task.quantity || 0) * 10, 100),
+          progress: 25, // Default progress
           color: category?.color || categoryColors['Otros']
         };
       }) || [];
