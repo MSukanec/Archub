@@ -136,14 +136,36 @@ export function SimpleOnboardingWizard() {
         .from('organizations')
         .insert({
           name: data.organizationName,
-          currency_id: data.defaultCurrencyId,
-          wallet_id: data.defaultWalletId,
           is_active: true
         })
         .select()
         .single();
 
       if (orgError) throw orgError;
+
+      // Create organization currency relation
+      const { error: orgCurrencyError } = await supabase
+        .from('organization_currencies')
+        .insert({
+          organization_id: organization.id,
+          currency_id: data.defaultCurrencyId,
+          is_active: true,
+          is_default: true
+        });
+
+      if (orgCurrencyError) throw orgCurrencyError;
+
+      // Create organization wallet relation
+      const { error: orgWalletError } = await supabase
+        .from('organization_wallets')
+        .insert({
+          organization_id: organization.id,
+          wallet_id: data.defaultWalletId,
+          is_active: true,
+          is_default: true
+        });
+
+      if (orgWalletError) throw orgWalletError;
 
       // Create organization preferences with default PDF template and avatar
       const { error: orgPrefError } = await supabase
