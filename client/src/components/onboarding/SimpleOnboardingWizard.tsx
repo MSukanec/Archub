@@ -136,9 +136,9 @@ export function SimpleOnboardingWizard() {
         .from('organizations')
         .insert({
           name: data.organizationName,
-          default_currency_id: data.defaultCurrencyId,
-          default_wallet_id: data.defaultWalletId,
-          created_by: user.id
+          currency_id: data.defaultCurrencyId,
+          wallet_id: data.defaultWalletId,
+          is_active: true
         })
         .select()
         .single();
@@ -150,7 +150,7 @@ export function SimpleOnboardingWizard() {
         .from('organization_preferences')
         .insert({
           organization_id: organization.id,
-          pdf_template_id: 'b6266a04-9b03-4f3a-af2d-f6ee6d0a948b',
+          default_pdf_template_id: 'b6266a04-9b03-4f3a-af2d-f6ee6d0a948b',
           default_avatar_url: data.avatarUrl || null
         });
 
