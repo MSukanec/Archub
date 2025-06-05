@@ -61,7 +61,7 @@ export const authService = {
     }
   },
 
-  async signUp(email: string, password: string, firstName: string, lastName: string, organizationName?: string) {
+  async signUp(email: string, password: string, firstName: string, lastName: string) {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -71,7 +71,6 @@ export const authService = {
             first_name: firstName,
             last_name: lastName,
             role: 'user', // Rol por defecto
-            organization: organizationName,
           },
         },
       });
