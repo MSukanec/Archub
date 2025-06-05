@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Camera, Upload, Loader2 } from 'lucide-react';
+import { Camera, Upload, Loader2, Trash2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -136,6 +136,64 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
     }
   });
 
+  // Delete avatar mutation
+  const deleteAvatarMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      setUploading(true);
+
+      // Delete from Supabase Storage
+      const fileName = `${user.id}/avatar.png`;
+      const { error: deleteError } = await supabase.storage
+        .from('avatars')
+        .remove([fileName]);
+
+      if (deleteError) {
+        console.error('Storage delete error:', deleteError);
+        // Continue even if file doesn't exist
+      }
+
+      // Update user record in database to remove avatar
+      const { data: updateData, error: updateError } = await supabase
+        .from('users')
+        .update({
+          avatar_url: null,
+          avatar_source: null
+        })
+        .eq('auth_id', user.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('Database update error:', updateError);
+        throw new Error('Error al eliminar el avatar');
+      }
+
+      return updateData;
+    },
+    onSuccess: () => {
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
+      queryClient.invalidateQueries({ queryKey: ['user-avatar'] });
+      
+      toast({
+        title: 'Avatar eliminado',
+        description: 'Tu imagen de perfil ha sido eliminada correctamente.',
+      });
+      setUploading(false);
+    },
+    onError: (error: Error) => {
+      console.error('Avatar delete error:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'No se pudo eliminar el avatar.',
+        variant: 'destructive',
+      });
+      setUploading(false);
+    }
+  });
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -149,6 +207,10 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleDeleteAvatar = () => {
+    deleteAvatarMutation.mutate();
   };
 
   return (
@@ -220,30 +282,49 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
           </div>
         </div>
 
-        {/* Upload Button */}
+        {/* Upload and Delete Buttons */}
         <div className="flex justify-between items-center pt-4 border-t">
           <p className="text-sm text-muted-foreground">
             {currentUser?.avatar_url ? 'Reemplazar imagen actual' : 'Subir nueva imagen'}
           </p>
           
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleAvatarClick}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Subiendo...
-              </>
-            ) : (
-              <>
-                <Upload className="w-4 h-4 mr-2" />
-                Seleccionar Imagen
-              </>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleAvatarClick}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Seleccionar Imagen
+                </>
+              )}
+            </Button>
+
+            {/* Delete Button - only show if user has avatar */}
+            {currentUser?.avatar_url && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleDeleteAvatar}
+                disabled={uploading}
+                className="text-destructive hover:text-destructive"
+              >
+                {uploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+              </Button>
             )}
-          </Button>
+          </div>
         </div>
 
         {/* Hidden file input */}

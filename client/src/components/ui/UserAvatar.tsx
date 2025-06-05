@@ -56,25 +56,48 @@ export default function UserAvatar({ size = 'md', className = '', currentUser }:
   // Get user initials for fallback
   const getUserInitials = () => {
     if (!userToUse && !user) return 'U';
-    const firstName = (userToUse as any)?.first_name || user?.firstName || '';
-    const lastName = (userToUse as any)?.last_name || user?.lastName || '';
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
+    
+    // Priority: user context store data, then userToUse data, then auth store data
+    const firstName = user?.firstName || (userToUse as any)?.first_name || '';
+    const lastName = user?.lastName || (userToUse as any)?.last_name || '';
+    
+    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    return initials || 'U';
   };
 
   // Get current avatar URL
   const getAvatarUrl = () => {
-    if (!userToUse) return '';
+    console.log('UserAvatar getAvatarUrl - currentUser:', currentUser);
+    console.log('UserAvatar getAvatarUrl - userToUse:', userToUse);
+    console.log('UserAvatar getAvatarUrl - googleAvatarUrl:', googleAvatarUrl);
     
-    // If avatar source is Google, use the Google avatar
-    if ((userToUse as any)?.avatar_source === 'google' && googleAvatarUrl) {
-      return googleAvatarUrl;
+    // Prioritize the data from the provided currentUser prop
+    if (currentUser) {
+      console.log('UserAvatar - Using currentUser data');
+      if (currentUser.avatar_source === 'google' && googleAvatarUrl) {
+        console.log('UserAvatar - Returning Google avatar:', googleAvatarUrl);
+        return googleAvatarUrl;
+      }
+      if (currentUser.avatar_url) {
+        console.log('UserAvatar - Returning custom avatar:', currentUser.avatar_url);
+        return currentUser.avatar_url;
+      }
     }
     
-    // If custom avatar, use the stored URL
-    if ((userToUse as any)?.avatar_url) {
-      return (userToUse as any)?.avatar_url;
+    // Fallback to userData from query
+    if (userToUse) {
+      console.log('UserAvatar - Using userToUse data');
+      if ((userToUse as any)?.avatar_source === 'google' && googleAvatarUrl) {
+        console.log('UserAvatar - Returning Google avatar from userToUse:', googleAvatarUrl);
+        return googleAvatarUrl;
+      }
+      if ((userToUse as any)?.avatar_url) {
+        console.log('UserAvatar - Returning custom avatar from userToUse:', (userToUse as any)?.avatar_url);
+        return (userToUse as any)?.avatar_url;
+      }
     }
     
+    console.log('UserAvatar - No avatar found, returning empty string');
     return '';
   };
 
