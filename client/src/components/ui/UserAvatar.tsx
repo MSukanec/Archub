@@ -85,12 +85,31 @@ export default function UserAvatar({ size = 'md', className = '', currentUser }:
     return '';
   };
 
+  const avatarUrl = getAvatarUrl();
+  
+  // If we have an avatar URL, show the image directly, otherwise show initials
+  if (avatarUrl) {
+    return (
+      <div className={`${sizeClasses[size]} ${className} rounded-full overflow-hidden bg-muted flex items-center justify-center`}>
+        <img 
+          src={avatarUrl} 
+          alt="Avatar del usuario"
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // If image fails to load, hide it and show fallback
+            e.currentTarget.style.display = 'none';
+            e.currentTarget.nextSibling?.classList.remove('hidden');
+          }}
+        />
+        <div className={`hidden w-full h-full flex items-center justify-center bg-muted text-muted-foreground ${size === 'sm' ? 'text-xs' : size === 'md' ? 'text-sm' : 'text-lg'}`}>
+          {getUserInitials()}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Avatar className={`${sizeClasses[size]} ${className}`}>
-      <AvatarImage 
-        src={getAvatarUrl()} 
-        alt="Avatar del usuario"
-      />
       <AvatarFallback className={size === 'sm' ? 'text-xs' : size === 'md' ? 'text-sm' : 'text-lg'}>
         {getUserInitials()}
       </AvatarFallback>
