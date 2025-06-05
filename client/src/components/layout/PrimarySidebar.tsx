@@ -134,6 +134,12 @@ export default function PrimarySidebar() {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isDocked, setIsDocked] = useState(false);
 
+  // Query current user data for avatar
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user'],
+    enabled: !!user?.id
+  });
+
   // Handle navigation
   const handleNavigation = (section: Section, view?: View) => {
     setSection(section);
@@ -567,9 +573,14 @@ export default function PrimarySidebar() {
                 ? "text-primary" 
                 : "text-muted-foreground hover:text-foreground"
             )}
+            onClick={() => handleNavigation('profile', 'profile-main')}
             onMouseEnter={() => handleMouseEnter('profile')}
           >
-            <UserAvatar size="sm" className="ring-2 ring-transparent hover:ring-primary/20 transition-all" />
+            <UserAvatar 
+              size="sm" 
+              className="ring-2 ring-transparent hover:ring-primary/20 transition-all" 
+              currentUser={currentUser as any}
+            />
           </button>
         </div>
       </div>

@@ -67,37 +67,26 @@ export default function UserAvatar({ size = 'md', className = '', currentUser }:
 
   // Get current avatar URL
   const getAvatarUrl = () => {
-    console.log('UserAvatar getAvatarUrl - currentUser:', currentUser);
-    console.log('UserAvatar getAvatarUrl - userToUse:', userToUse);
-    console.log('UserAvatar getAvatarUrl - googleAvatarUrl:', googleAvatarUrl);
-    
     // Prioritize the data from the provided currentUser prop
     if (currentUser) {
-      console.log('UserAvatar - Using currentUser data');
       if (currentUser.avatar_source === 'google' && googleAvatarUrl) {
-        console.log('UserAvatar - Returning Google avatar:', googleAvatarUrl);
         return googleAvatarUrl;
       }
       if (currentUser.avatar_url) {
-        console.log('UserAvatar - Returning custom avatar:', currentUser.avatar_url);
         return currentUser.avatar_url;
       }
     }
     
     // Fallback to userData from query
     if (userToUse) {
-      console.log('UserAvatar - Using userToUse data');
       if ((userToUse as any)?.avatar_source === 'google' && googleAvatarUrl) {
-        console.log('UserAvatar - Returning Google avatar from userToUse:', googleAvatarUrl);
         return googleAvatarUrl;
       }
       if ((userToUse as any)?.avatar_url) {
-        console.log('UserAvatar - Returning custom avatar from userToUse:', (userToUse as any)?.avatar_url);
         return (userToUse as any)?.avatar_url;
       }
     }
     
-    console.log('UserAvatar - No avatar found, returning empty string');
     return '';
   };
 
