@@ -6,12 +6,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
+      "@": path.resolve(__dirname, "./src"),
       "@shared": path.resolve(__dirname, "../shared"),
-      "@assets": path.resolve(__dirname, "src/assets"),
+      "@assets": path.resolve(__dirname, "./src/assets"),
     },
   },
-  root: "./client",
   build: {
     outDir: "../dist/public",
     emptyOutDir: true,
@@ -26,7 +25,8 @@ export default defineConfig({
       },
     },
   },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production'),
+  server: {
+    port: 5173,
+    host: true,
   },
 });
