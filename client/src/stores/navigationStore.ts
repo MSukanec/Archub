@@ -15,6 +15,7 @@ export type View =
   | 'budgets-tasks-multiple'
   | 'budgets-materials'
   | 'sitelog-main'
+  | 'site-gantt'
   | 'movements-dashboard'
   | 'movements-main'
   | 'transactions'
@@ -63,7 +64,7 @@ const getSectionFromView = (view: View): Section => {
   if (view.startsWith('organization-')) return 'organization';
   if (view.startsWith('projects-')) return 'projects';
   if (view.startsWith('budgets-')) return 'budgets';
-  if (view.startsWith('sitelog-')) return 'budgets';
+  if (view.startsWith('sitelog-') || view === 'site-gantt') return 'budgets';
   if (view.startsWith('movements-') || view === 'transactions') return 'movements';
   if (view === 'contacts') return 'contacts';
   if (view === 'calendar') return 'calendar';

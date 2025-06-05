@@ -60,7 +60,7 @@ const navigationItems: NavigationItem[] = [
   { 
     section: 'projects',
     icon: FolderOpen,
-    label: 'Proyectos',
+    label: 'Diseño',
     subItems: []
   },
   { 
@@ -70,7 +70,8 @@ const navigationItems: NavigationItem[] = [
     subItems: [
       { view: 'budgets-list', label: 'Tareas', icon: ClipboardList },
       { view: 'budgets-materials', label: 'Materiales', icon: Library },
-      { view: 'sitelog-main', label: 'Bitácora', icon: Contact }
+      { view: 'sitelog-main', label: 'Bitácora', icon: Contact },
+      { view: 'site-gantt', label: 'Gantt', icon: BarChart3 }
     ]
   },
   { 
