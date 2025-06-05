@@ -77,29 +77,6 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
 
       setUploading(true);
 
-      // First, ensure the avatars bucket exists and is public
-      try {
-        const { data: buckets } = await supabase.storage.listBuckets();
-        const avatarBucket = buckets?.find(bucket => bucket.name === 'avatars');
-        
-        if (!avatarBucket) {
-          console.log('Creating avatars bucket...');
-          const { error: createError } = await supabase.storage.createBucket('avatars', {
-            public: true,
-            allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg'],
-            fileSizeLimit: 2097152 // 2MB
-          });
-          
-          if (createError) {
-            console.error('Bucket creation error:', createError);
-            throw new Error('Error al crear el bucket de avatares');
-          }
-        }
-      } catch (bucketError) {
-        console.error('Bucket check/creation error:', bucketError);
-        // Continue with upload attempt
-      }
-
       // Upload to Supabase Storage
       const fileName = `${user.id}/avatar.png`;
       const { data: uploadData, error: uploadError } = await supabase.storage
