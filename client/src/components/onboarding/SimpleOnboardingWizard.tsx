@@ -131,6 +131,15 @@ export function SimpleOnboardingWizard() {
     mutationFn: async () => {
       if (!user?.id) throw new Error('Usuario no autenticado');
 
+      // Get internal user ID
+      const { data: internalUser, error: userQueryError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (userQueryError || !internalUser) throw new Error('Usuario interno no encontrado');
+
       // Create organization
       const { data: organization, error: orgError } = await supabase
         .from('organizations')
@@ -192,7 +201,7 @@ export function SimpleOnboardingWizard() {
       const { error: userPrefError } = await supabase
         .from('user_preferences')
         .upsert({
-          user_id: user.id,
+          user_id: internalUser.id,
           last_organization_id: organization.id
         });
 
