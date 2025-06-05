@@ -227,12 +227,15 @@ export function SimpleOnboardingWizard() {
         <p className="text-sm text-muted-foreground">Paso 1 de 3</p>
       </div>
 
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-4">
+        <p className="text-sm text-primary">
+          💡 Todos estos datos podrán ser modificados posteriormente en la configuración de tu organización.
+        </p>
+      </div>
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="orgName">Nombre de la Organización</Label>
-          <p className="text-sm text-muted-foreground">
-            El nombre de tu empresa o organización. Aparecerá en reportes y documentos. Puedes modificarlo después.
-          </p>
           <Input
             id="orgName"
             value={data.organizationName}
@@ -243,9 +246,6 @@ export function SimpleOnboardingWizard() {
 
         <div className="space-y-2">
           <Label>Moneda Predeterminada</Label>
-          <p className="text-sm text-muted-foreground">
-            La moneda principal para tus presupuestos y reportes financieros. Se puede cambiar posteriormente.
-          </p>
           <Select
             value={data.defaultCurrencyId}
             onValueChange={(value) => updateData('defaultCurrencyId', value)}
@@ -265,9 +265,6 @@ export function SimpleOnboardingWizard() {
 
         <div className="space-y-2">
           <Label>Billetera Predeterminada</Label>
-          <p className="text-sm text-muted-foreground">
-            El método de pago principal para registrar gastos y movimientos financieros. Configurable después.
-          </p>
           <Select
             value={data.defaultWalletId}
             onValueChange={(value) => updateData('defaultWalletId', value)}
@@ -287,9 +284,6 @@ export function SimpleOnboardingWizard() {
 
         <div className="space-y-2">
           <Label>Logo de la Organización (Opcional)</Label>
-          <p className="text-sm text-muted-foreground">
-            Imagen o logo que representará tu organización en documentos y reportes. Se puede actualizar después.
-          </p>
           {data.avatarUrl && (
             <div className="flex justify-center mb-2">
               <img
@@ -335,9 +329,6 @@ export function SimpleOnboardingWizard() {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label>País</Label>
-          <p className="text-sm text-muted-foreground">
-            Tu ubicación geográfica para configurar formatos locales y regulaciones. Modificable después.
-          </p>
           <Select value={data.country} onValueChange={(value) => updateData('country', value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecciona tu país" />
@@ -354,9 +345,6 @@ export function SimpleOnboardingWizard() {
 
         <div className="space-y-2">
           <Label htmlFor="age">Edad (Opcional)</Label>
-          <p className="text-sm text-muted-foreground">
-            Información opcional para personalizar tu experiencia. Solo para uso estadístico interno.
-          </p>
           <Input
             id="age"
             type="number"
@@ -370,9 +358,6 @@ export function SimpleOnboardingWizard() {
 
         <div className="space-y-2">
           <Label>¿Cómo conociste Archub?</Label>
-          <p className="text-sm text-muted-foreground">
-            Nos ayuda a entender cómo llegan los usuarios a nuestra plataforma para mejorar nuestros servicios.
-          </p>
           <Select value={data.discoveredBy} onValueChange={(value) => updateData('discoveredBy', value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecciona una opción" />
@@ -433,7 +418,7 @@ export function SimpleOnboardingWizard() {
 
 
       <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-[#1e1e1e] dark:border-gray-700 dark:text-white" hideCloseButton>
+        <DialogContent className="max-w-md bg-background border-border text-foreground dark:bg-[#1e1e1e] dark:border-gray-700 dark:text-white">
           <DialogHeader>
             <DialogTitle className="text-foreground dark:text-white">Configuración Inicial</DialogTitle>
             <DialogDescription className="text-muted-foreground dark:text-gray-300">
