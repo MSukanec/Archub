@@ -196,7 +196,7 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
       });
       
       // Update context with new organization
-      setOrganizationId(organization.id);
+      setUserContext({ organizationId: organization.id });
       
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['organizations'] });

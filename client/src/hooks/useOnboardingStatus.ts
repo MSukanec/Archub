@@ -17,16 +17,16 @@ export function useOnboardingStatus() {
         .from('user_preferences')
         .select('onboarding_completed')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching onboarding status:', error);
-        // If no preferences exist, user needs onboarding
         return { needsOnboarding: true };
       }
 
+      // If no preferences exist or onboarding_completed is false/null, user needs onboarding
       return { 
-        needsOnboarding: !data?.onboarding_completed 
+        needsOnboarding: !data || !data.onboarding_completed 
       };
     },
     enabled: !!user?.id,
