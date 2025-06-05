@@ -50,17 +50,24 @@ function App() {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
       console.log('App: Auth state changed:', event, !!session);
+      console.log('App: Setting loading to false immediately');
+      setLoading(false);
       
       if (!mounted) return;
       
       if (session?.user) {
+        console.log('App: Processing user session...');
         try {
           // First, handle auth linking to ensure user exists in internal system
+          console.log('App: Importing auth linking service...');
           const { handleAuthLinking } = await import('./lib/authLinkingService');
+          console.log('App: Handling auth linking...');
           await handleAuthLinking(session.user as any);
           
           // Get user data from database table
+          console.log('App: Importing auth service...');
           const { authService } = await import('./lib/supabase');
+          console.log('App: Getting user from database...');
           const dbUser = await authService.getUserFromDatabase(session.user.id);
           
           const authUser = {
@@ -84,14 +91,13 @@ function App() {
             lastName: session.user.user_metadata?.last_name || '',
             role: 'user',
           };
+          console.log('App: Setting fallback user:', authUser);
           setUser(authUser);
         }
       } else {
         console.log('App: No session, clearing user');
         setUser(null);
       }
-      
-      setLoading(false);
     });
 
     return () => {
