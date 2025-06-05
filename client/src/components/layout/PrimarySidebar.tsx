@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { 
-  Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon, Crown, Zap, Rocket
+  Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon, Crown, Zap, Rocket, FileText
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigationStore, Section, View } from '@/stores/navigationStore';
@@ -59,7 +59,7 @@ const navigationItems: NavigationItem[] = [
   },
   { 
     section: 'projects',
-    icon: FolderOpen,
+    icon: FileText,
     label: 'Diseño',
     subItems: []
   },

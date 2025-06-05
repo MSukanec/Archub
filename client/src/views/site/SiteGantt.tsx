@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ChevronLeft, ChevronRight, Save, Edit3 } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Save, Edit3, BarChart3 } from 'lucide-react';
 import { useUserContextStore } from '@/stores/userContextStore';
 import { supabase } from '@/lib/supabase';
 import { format, addDays, startOfWeek, endOfWeek, differenceInDays, parseISO, isValid } from 'date-fns';
@@ -71,12 +71,18 @@ export default function SiteGantt() {
           start_date,
           end_date,
           status,
-          categories!inner (name, color)
+          category_id,
+          categories (name, color)
         `)
         .eq('project_id', projectId)
         .order('start_date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tasks:', error);
+        throw error;
+      }
+
+      console.log('Raw tasks data:', data);
 
       return data?.map(task => ({
         id: task.id,
@@ -255,9 +261,14 @@ export default function SiteGantt() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Diagrama de Gantt</h1>
-          <p className="text-muted-foreground">Planificación temporal de tareas del proyecto</p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <BarChart3 className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Diagrama de Gantt</h1>
+            <p className="text-muted-foreground">Planificación temporal de tareas del proyecto</p>
+          </div>
         </div>
         
         <div className="flex items-center gap-2">
