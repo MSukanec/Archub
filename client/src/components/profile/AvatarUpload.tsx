@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import UserAvatar from '@/components/ui/UserAvatar';
 import { supabase } from '@/lib/supabase';
 
 interface AvatarUploadProps {
@@ -54,30 +54,7 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
     fetchAndSyncGoogleAvatar();
   }, [user?.id, currentUser]);
 
-  // Get user initials for fallback
-  const getUserInitials = () => {
-    if (!currentUser && !user) return 'U';
-    const firstName = currentUser?.first_name || user?.firstName || '';
-    const lastName = currentUser?.last_name || user?.lastName || '';
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
-  };
 
-  // Get current avatar URL
-  const getAvatarUrl = () => {
-    if (!currentUser) return '';
-    
-    // If avatar source is Google, use the Google avatar
-    if (currentUser.avatar_source === 'google') {
-      return googleAvatarUrl;
-    }
-    
-    // If custom avatar, use the stored URL
-    if (currentUser.avatar_source === 'custom' && currentUser.avatar_url) {
-      return currentUser.avatar_url;
-    }
-    
-    return '';
-  };
 
   // Upload avatar mutation
   const uploadAvatarMutation = useMutation({
@@ -138,7 +115,10 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
       return { uploadData, updateData, publicUrl };
     },
     onSuccess: ({ publicUrl }) => {
+      // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['current-user'] });
+      queryClient.invalidateQueries({ queryKey: ['user-avatar'] });
+      
       toast({
         title: 'Avatar actualizado',
         description: 'Tu imagen de perfil ha sido actualizada correctamente.',
@@ -187,15 +167,10 @@ export default function AvatarUpload({ currentUser }: AvatarUploadProps) {
               className="relative cursor-pointer group"
               onClick={handleAvatarClick}
             >
-              <Avatar className="w-24 h-24">
-                <AvatarImage 
-                  src={getAvatarUrl()} 
-                  alt="Avatar"
-                />
-                <AvatarFallback className="text-xl">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar 
+                size="xl" 
+                currentUser={currentUser}
+              />
               
               {/* Overlay on hover */}
               <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
