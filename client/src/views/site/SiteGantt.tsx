@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, ChevronLeft, ChevronRight, Save, Edit3, BarChart3 } from 'lucide-react';
-import { useUserContextStore } from "../../stores/userContextStore';
-import { supabase } from "../../lib/supabase';
+import { useUserContextStore } from "../../stores/userContextStore";
+import { supabase } from "../../lib/supabase";
 import { format, addDays, startOfWeek, endOfWeek, differenceInDays, parseISO, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 

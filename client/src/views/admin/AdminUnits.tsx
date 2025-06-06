@@ -28,10 +28,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { cn } from "../../lib/utils';
-import { supabase } from "../../lib/supabase';
-import { unitsService } from "../../lib/unitsService';
-import AdminUnitsModal from "../../components/modals/AdminUnitsModal';
+import { cn } from "../../lib/utils";
+import { supabase } from "../../lib/supabase";
+import { unitsService } from "../../lib/unitsService";
+import AdminUnitsModal from "../../components/modals/AdminUnitsModal";
 
 export default function AdminUnits() {
   const [searchTerm, setSearchTerm] = useState('');

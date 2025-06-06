@@ -29,10 +29,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { cn } from "../../lib/utils';
-import { supabase } from "../../lib/supabase';
-import { materialCategoriesService } from "../../lib/materialCategoriesService';
-import AdminMaterialCategoriesModal from "../../components/modals/AdminMaterialCategoriesModal';
+import { cn } from "../../lib/utils";
+import { supabase } from "../../lib/supabase";
+import { materialCategoriesService } from "../../lib/materialCategoriesService";
+import AdminMaterialCategoriesModal from "../../components/modals/AdminMaterialCategoriesModal";
 
 export default function AdminMaterialCategories() {
   // State for search and filters

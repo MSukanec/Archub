@@ -36,10 +36,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "../../lib/utils';
-import { supabase } from "../../lib/supabase';
-import { materialsService } from "../../lib/materialsService';
-import AdminMaterialsModal from "../../components/modals/AdminMaterialsModal';
+import { cn } from "../../lib/utils";
+import { supabase } from "../../lib/supabase";
+import { materialsService } from "../../lib/materialsService";
+import AdminMaterialsModal from "../../components/modals/AdminMaterialsModal";
 
 export default function AdminMaterials() {
   // State for search and filters

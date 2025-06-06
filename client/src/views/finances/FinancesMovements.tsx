@@ -7,15 +7,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "../../hooks/use-toast';
-import { useUserContextStore } from "../../stores/userContextStore';
-import { useNavigationStore } from "../../stores/navigationStore';
-import { supabase } from "../../lib/supabase';
+import { useToast } from "../../hooks/use-toast";
+import { useUserContextStore } from "../../stores/userContextStore";
+import { useNavigationStore } from "../../stores/navigationStore";
+import { supabase } from "../../lib/supabase";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import MovementModal from "../../components/modals/MovementModal';
-import DeleteMovementModal from "../../components/modals/DeleteMovementModal';
-import DynamicCurrencyBalanceCard from "../../components/finances/DynamicCurrencyBalanceCard';
+import MovementModal from "../../components/modals/MovementModal";
+import DeleteMovementModal from "../../components/modals/DeleteMovementModal";
+import DynamicCurrencyBalanceCard from "../../components/finances/DynamicCurrencyBalanceCard";
 
 interface Movement {
   id: string;

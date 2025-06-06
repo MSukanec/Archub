@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { supabase } from "../../lib/supabase';
+import { supabase } from "../../lib/supabase";
 import { FolderOpen, Search, Plus, Edit, Trash2, ChevronRight, ChevronDown, GripVertical } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "../../hooks/use-toast';
+import { useToast } from "../../hooks/use-toast";
 import { 
   DndContext, 
   closestCenter, 
@@ -41,7 +41,7 @@ import {
   useSortable 
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import AdminCategoriesModal from "../../components/modals/AdminCategoriesModal';
+import AdminCategoriesModal from "../../components/modals/AdminCategoriesModal";
 
 interface Category {
   id: string;

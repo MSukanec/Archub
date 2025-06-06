@@ -30,8 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "../../hooks/use-toast';
-import AdminTasksModal from "../../components/modals/AdminTasksModal';
+import { useToast } from "../../hooks/use-toast";
+import AdminTasksModal from "../../components/modals/AdminTasksModal";
 
 const TASKS_PER_PAGE = 15;
 

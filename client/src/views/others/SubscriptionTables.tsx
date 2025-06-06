@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Crown, Zap, Rocket, Check } from 'lucide-react';
-import { useNavigationStore } from "../../stores/navigationStore';
-import { useAuthStore } from "../../stores/authStore';
+import { useNavigationStore } from "../../stores/navigationStore";
+import { useAuthStore } from "../../stores/authStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { supabase } from "../../lib/supabase';
-import { useFeatures } from "../../hooks/useFeatures';
+import { supabase } from "../../lib/supabase";
+import { useFeatures } from "../../hooks/useFeatures";
 
 export default function SubscriptionTables() {
   const { setView, setSection } = useNavigationStore();

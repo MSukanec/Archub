@@ -28,12 +28,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { cn } from "../../lib/utils';
-import { useToast } from "../../hooks/use-toast';
-import { contactsService, Contact } from "../../lib/contactsService';
-import { contactTypesService } from "../../lib/contactTypesService';
-import AdminContactsModal from "../../components/modals/AdminContactsModal';
-import ContactActionsModal from "../../components/modals/ContactActionsModal';
+import { cn } from "../../lib/utils";
+import { useToast } from "../../hooks/use-toast";
+import { contactsService, Contact } from "../../lib/contactsService";
+import { contactTypesService } from "../../lib/contactTypesService";
+import AdminContactsModal from "../../components/modals/AdminContactsModal";
+import ContactActionsModal from "../../components/modals/ContactActionsModal";
 import { ContactTypeDisplay } from "@/components/ui/ContactTypeDisplay";
 
 export default function Contacts() {

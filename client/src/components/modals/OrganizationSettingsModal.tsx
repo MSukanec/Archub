@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import AddressAutocomplete from '../components/AddressAutocomplete';
+import AddressAutocomplete from '../AddressAutocomplete';
 import { PhoneInputField } from "@/components/ui/PhoneInput";
 import { FileUpload } from "@/components/ui/FileUpload";
 import CurrencyDeleteConfirmModal from './CurrencyDeleteConfirmModal';

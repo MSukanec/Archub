@@ -17,9 +17,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "../../hooks/use-toast';
-import { useUserContextStore } from "../../stores/userContextStore';
-import { supabase } from "../../lib/supabase';
+import { useToast } from "../../hooks/use-toast";
+import { useUserContextStore } from "../../stores/userContextStore";
+import { supabase } from "../../lib/supabase";
 
 interface Material {
   id: string;

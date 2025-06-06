@@ -3,10 +3,10 @@ import { useMutation } from '@tanstack/react-query';
 import { Lock, Save, Shield, Mail, MoreHorizontal, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { useNavigationStore } from "../../stores/navigationStore';
-import { useAuthStore } from "../../stores/authStore';
-import { useToast } from "../../hooks/use-toast';
-import { useLinkedAccounts } from "../../hooks/useLinkedAccounts';
+import { useNavigationStore } from "../../stores/navigationStore";
+import { useAuthStore } from "../../stores/authStore";
+import { useToast } from "../../hooks/use-toast";
+import { useLinkedAccounts } from "../../hooks/useLinkedAccounts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { supabase } from "../../lib/supabase';
+import { supabase } from "../../lib/supabase";
 
 interface ProviderInfo {
   name: string;

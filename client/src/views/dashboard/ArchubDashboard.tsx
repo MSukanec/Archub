@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useUserContextStore } from "../../stores/userContextStore';
-import { supabase } from "../../lib/supabase';
+import { useUserContextStore } from "../../stores/userContextStore";
+import { supabase } from "../../lib/supabase";
 import { format, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { 

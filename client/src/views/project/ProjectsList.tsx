@@ -32,13 +32,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { projectsService } from "../../lib/projectsService';
-import { useUserContextStore } from "../../stores/userContextStore';
-import { useToast } from "../../hooks/use-toast';
-import { useFeatures } from "../../hooks/useFeatures';
-import CreateProjectModal from "../../components/modals/CreateProjectModal';
-import ProjectInfoModal from "../../components/modals/ProjectInfoModal';
-import { FeatureLock } from "../../components/features/FeatureLock';
+import { projectsService } from "../../lib/projectsService";
+import { useUserContextStore } from "../../stores/userContextStore";
+import { useToast } from "../../hooks/use-toast";
+import { useFeatures } from "../../hooks/useFeatures";
+import CreateProjectModal from "../../components/modals/CreateProjectModal";
+import ProjectInfoModal from "../../components/modals/ProjectInfoModal";
+import { FeatureLock } from "../../components/features/FeatureLock";
 
 type Project = any;
 
