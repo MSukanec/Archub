@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Crown, Zap, Rocket, Check } from 'lucide-react';
 import { useNavigationStore } from '../stores/navigationStore';
 import { useAuthStore } from '../stores/authStore';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Switch } from '../components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Switch } from '../ui/switch';
 import { supabase } from '../lib/supabase';
 import { useFeatures } from '../hooks/useFeatures';
 

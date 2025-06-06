@@ -8,7 +8,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useFeatures } from '../../hooks/useFeatures';
 import { queryClient } from '../../lib/queryClient';
-import UserAvatar from '../components/ui/UserAvatar';
+import UserAvatar from '../ui/UserAvatar';
 import { useToast } from '../../hooks/use-toast';
 
 import { cn } from '../../lib/utils';
@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../components/ui/alert-dialog";
+} from "../ui/alert-dialog";
 
 interface SubMenuItem {
   view: View;

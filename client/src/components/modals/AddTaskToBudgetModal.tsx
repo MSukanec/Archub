@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
+} from '../ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,16 +17,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
+} from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
+} from '../ui/select';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';

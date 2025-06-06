@@ -5,13 +5,13 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useUserContextStore } from '../stores/userContextStore';
 import { useNavigationStore } from '../stores/navigationStore';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Skeleton } from '../components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Skeleton } from '../ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useToast } from '../hooks/use-toast';
 import { supabase } from '../lib/supabase';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import SiteLogModal from '../components/modals/SiteLogModal';
 import ConfirmDeleteModal from '../components/modals/ConfirmDeleteModal';
 

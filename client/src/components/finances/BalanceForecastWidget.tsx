@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
-import { Card } from '../components/ui/card';
+import { Card } from '../ui/card';
 import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
 interface BalanceForecastWidgetProps {

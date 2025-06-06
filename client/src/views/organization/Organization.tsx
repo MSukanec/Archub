@@ -3,8 +3,8 @@ import { Activity, BarChart3, Calendar, TrendingUp, Building2, Plus, FileText, U
 import { useUserContextStore } from '../stores/userContextStore';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 import CreateOrganizationModal from '../components/modals/CreateOrganizationModal';
 import { FeatureLock } from '../components/features';
 

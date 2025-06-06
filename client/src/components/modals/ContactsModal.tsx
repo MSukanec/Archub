@@ -4,17 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { User, Building2, Mail, Phone, MapPin, FileText, Tags } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Checkbox } from '../components/ui/checkbox';
+import { Button } from '../ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Checkbox } from '../ui/checkbox';
 import { useToast } from '../../hooks/use-toast';
 import { contactsService, Contact, CreateContactData } from '../../lib/contactsService';
 import { contactTypesService, ContactType } from '../../lib/contactTypesService';
-import ModernModal from '../components/ui/ModernModal';
+import ModernModal from '../ui/ModernModal';
 
 const contactSchema = z.object({
   first_name: z.string().min(1, "El nombre es requerido"),
