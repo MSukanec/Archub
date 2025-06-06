@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import ModernModal from './ui/ModernModal';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
-import { Textarea } from './ui/textarea';
+import ModernModal from "./components/ui/ModernModal";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./components/ui/form";
+import { Textarea } from "./components/ui/textarea";
 import { useToast } from '../../hooks/use-toast';
 import { tasksService, Task, CreateTaskData } from '../../lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
@@ -17,8 +17,8 @@ import { useHierarchicalConcepts, setHierarchicalFormValues } from '../../hooks/
 
 import { z } from 'zod';
 import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { Badge } from "./components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./components/ui/accordion";
 
 const createTaskSchema = z.object({
   name: z.string().min(1, "Nombre es requerido"),

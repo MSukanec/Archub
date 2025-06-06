@@ -6,9 +6,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsService, Project } from '../../lib/projectsService';
 import { Organization } from '../../lib/organizationsService';
 import { supabase } from '../../lib/supabase';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { PhoneInputField } from './ui/PhoneInput';
+import { Input } from "./components/ui/input";
+import { Textarea } from "./components/ui/textarea";
+import { PhoneInputField } from "./components/ui/PhoneInput";
 import { 
   Form, 
   FormControl, 
@@ -16,14 +16,14 @@ import {
   FormItem, 
   FormLabel, 
   FormMessage 
-} from './ui/form';
+} from "./components/ui/form";
 import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
+} from "./components/ui/select";
 import { 
   Loader2, 
   Building,
@@ -37,7 +37,7 @@ import {
 import { useToast } from '../../hooks/use-toast';
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useAuthStore } from '../../stores/authStore';
-import ModernModal, { useModalAccordion, ModalAccordion } from './ui/ModernModal';
+import ModernModal, { useModalAccordion, ModalAccordion } from "./components/ui/ModernModal";
 import AddressAutocomplete from '../components/AddressAutocomplete';
 
 const createProjectSchema = z.object({

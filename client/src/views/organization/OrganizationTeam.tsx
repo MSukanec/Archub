@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Users, UserPlus, Settings, Mail, Calendar, Crown, Shield, User, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Skeleton } from './ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Skeleton } from '../../components/ui/skeleton';
 import { useUserContextStore } from '../stores/userContextStore';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../lib/supabase';

@@ -10,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
+} from "./components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -18,16 +18,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from './ui/form';
+} from "./components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+} from "./components/ui/select";
+import { Input } from "./components/ui/input";
+import { Button } from "./components/ui/button";
 import { useToast } from '../../hooks/use-toast';
 import { organizationsService } from '../../lib/organizationsService';
 import { usersService } from '../../lib/usersService';

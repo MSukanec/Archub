@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Zap, Search, Plus, Edit, Trash2, Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table';
+} from "./components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,13 +21,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './ui/alert-dialog';
+} from "./components/ui/alert-dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from './ui/popover';
-import { Calendar as CalendarComponent } from './ui/calendar';
+} from "./components/ui/popover";
+import { Calendar as CalendarComponent } from "./components/ui/calendar";
 import { cn } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 import AdminActionsModal from '../components/modals/AdminActionsModal';

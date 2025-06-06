@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Package2, Search, Plus, Trash2, Calculator, Filter, FileDown } from 'lucide-react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Input } from './ui/input';
+import { Button } from "./components/ui/button";
+import { Badge } from "./components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
+import { Input } from "./components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +15,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './ui/alert-dialog';
-import { Skeleton } from './ui/skeleton';
+} from "./components/ui/alert-dialog";
+import { Skeleton } from "./components/ui/skeleton";
 import { useToast } from '../hooks/use-toast';
 import { useUserContextStore } from '../stores/userContextStore';
 import { supabase } from '../lib/supabase';
