@@ -2,9 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
-  "framework": null,
   "functions": {
-    "server/index.ts": {
+    "dist/index.js": {
       "runtime": "nodejs18.x"
     }
   },
