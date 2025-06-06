@@ -28,7 +28,7 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { Calendar as CalendarComponent } from "../../components/ui/calendar";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import { useToast } from "../../hooks/use-toast";
 import { contactsService, Contact } from "../../lib/contactsService";
 import { contactTypesService } from "../../lib/contactTypesService";

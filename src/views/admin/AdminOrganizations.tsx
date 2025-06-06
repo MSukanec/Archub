@@ -31,7 +31,7 @@ import {
 import { Calendar as CalendarComponent } from "../../components/ui/calendar";
 import { useToast } from "../../hooks/use-toast";
 import { organizationsService } from "../../lib/organizationsService";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import AdminOrganizationsModal from "../../components/modals/AdminOrganizationsModal";
 
 export default function AdminOrganizations() {

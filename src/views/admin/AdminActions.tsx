@@ -28,7 +28,7 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { Calendar as CalendarComponent } from "../../components/ui/calendar";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import { supabase } from "../../lib/supabase";
 import AdminActionsModal from "../../components/modals/AdminActionsModal";
 

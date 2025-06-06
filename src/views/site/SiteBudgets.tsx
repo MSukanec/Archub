@@ -11,7 +11,7 @@ import { Badge } from "../../components/ui/badge";
 import { useToast } from "../../hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../components/ui/collapsible";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../../components/ui/alert-dialog";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import { supabase } from "../../lib/supabase";
 import CreateBudgetModal from "../../components/modals/CreateBudgetModal";
 import { BudgetTaskModal } from "../../components/modals/BudgetTaskModal";

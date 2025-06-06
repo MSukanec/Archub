@@ -30,7 +30,7 @@ import {
 } from "../../components/ui/popover";
 import { Calendar as CalendarComponent } from "../../components/ui/calendar";
 import { useToast } from "../../hooks/use-toast";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import { supabase } from "../../lib/supabase";
 import AdminUsersModal from "../../components/modals/AdminUsersModal";
 

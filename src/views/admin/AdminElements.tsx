@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import { supabase } from "../../lib/supabase";
 import { useToast } from "../../hooks/use-toast";
 import AdminElementsModal from "../../components/modals/AdminElementsModal";

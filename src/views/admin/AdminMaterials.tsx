@@ -36,7 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 import { supabase } from "../../lib/supabase";
 import { materialsService } from "../../lib/materialsService";
 import AdminMaterialsModal from "../../components/modals/AdminMaterialsModal";
