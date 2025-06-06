@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image, AlertCircle } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from './button';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';
 

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Check, ChevronDown } from 'lucide-react';
-import { Button } from './ui/button';
-import { Checkbox } from './ui/checkbox';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Button } from './button';
+import { Checkbox } from './checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { cn } from '../../lib/utils';
 import { contactTypesService, ContactType } from '../../lib/contactTypesService';
 

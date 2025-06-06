@@ -4,7 +4,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "./ui/popover";
+} from "./popover";
 
 interface ComingSoonProps {
   children: React.ReactNode;

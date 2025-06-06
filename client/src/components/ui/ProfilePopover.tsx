@@ -4,7 +4,7 @@ import { useNavigationStore } from '../../stores/navigationStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { authService } from '../../lib/supabase';
-import { Switch } from './ui/switch';
+import { Switch } from './switch';
 
 interface ProfilePopoverProps {
   children: React.ReactNode;
