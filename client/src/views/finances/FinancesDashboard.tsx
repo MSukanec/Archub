@@ -1,12 +1,12 @@
-import { useUserContextStore } from '@/stores/userContextStore';
+import { useUserContextStore } from '../../stores/userContextStore';
 import { DollarSign } from 'lucide-react';
-import UnifiedBalanceCard from '@/components/finances/UnifiedBalanceCard';
-import WalletBalancePieChart from '@/components/finances/WalletBalancePieChart';
-import MonthlyCashflowLineChart from '@/components/finances/MonthlyCashflowLineChart';
-import ExpenseCategoryBarChart from '@/components/finances/ExpenseCategoryBarChart';
-import WalletSummaryTable from '@/components/finances/WalletSummaryTable';
-import FinancialHealthIndicators from '@/components/finances/FinancialHealthIndicators';
-import BalanceForecastWidget from '@/components/finances/BalanceForecastWidget';
+import UnifiedBalanceCard from '../../components/finances/UnifiedBalanceCard';
+import WalletBalancePieChart from '../../components/finances/WalletBalancePieChart';
+import MonthlyCashflowLineChart from '../../components/finances/MonthlyCashflowLineChart';
+import ExpenseCategoryBarChart from '../../components/finances/ExpenseCategoryBarChart';
+import WalletSummaryTable from '../../components/finances/WalletSummaryTable';
+import FinancialHealthIndicators from '../../components/finances/FinancialHealthIndicators';
+import BalanceForecastWidget from '../../components/finances/BalanceForecastWidget';
 
 export default function FinancesDashboard() {
   const { projectId } = useUserContextStore();

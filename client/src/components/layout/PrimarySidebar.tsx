@@ -3,15 +3,15 @@ import {
   Home, Building2, FolderKanban, CreditCard, ClipboardList, DollarSign, Users, Settings, User, Calendar, UserCheck, Library, FolderOpen, HardHat, BarChart3, TrendingUp, Contact, Shield, PanelLeftOpen, PanelLeftClose, Plus, Globe, LogOut, Moon, Sun, Lock as LockIcon, Crown, Zap, Rocket, FileText
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigationStore, Section, View } from '@/stores/navigationStore';
-import { useAuthStore } from '@/stores/authStore';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useFeatures } from '@/hooks/useFeatures';
-import { queryClient } from '@/lib/queryClient';
-import UserAvatar from '@/components/ui/UserAvatar';
-import { useToast } from '@/hooks/use-toast';
+import { useNavigationStore, Section, View } from '../../stores/navigationStore';
+import { useAuthStore } from '../../stores/authStore';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useFeatures } from '../../hooks/useFeatures';
+import { queryClient } from '../../lib/queryClient';
+import UserAvatar from '../../components/ui/UserAvatar';
+import { useToast } from '../../hooks/use-toast';
 
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "../../components/ui/alert-dialog";
 
 interface SubMenuItem {
   view: View;
@@ -214,7 +214,7 @@ export default function PrimarySidebar() {
       if (!organizationId) return [];
       
       // Use the same Supabase client that's working elsewhere in the app
-      const { supabase } = await import('@/lib/supabase');
+      const { supabase } = await import('../../lib/supabase');
       
       const { data, error } = await supabase
         .from('projects')
@@ -249,7 +249,7 @@ export default function PrimarySidebar() {
   const handleProjectSelect = async (projectId: string) => {
     // Update user preferences to set this as the active project
     try {
-      const { supabase } = await import('@/lib/supabase');
+      const { supabase } = await import('../../lib/supabase');
       const { setProjectId } = useUserContextStore.getState();
       
       // Update the user context store immediately
@@ -282,7 +282,7 @@ export default function PrimarySidebar() {
   const handleLogout = async () => {
     try {
       // Import supabase and authService
-      const { authService } = await import('@/lib/supabase');
+      const { authService } = await import('../../lib/supabase');
       
       // Clear auth state first
       const { logout } = useAuthStore.getState();

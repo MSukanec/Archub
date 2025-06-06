@@ -4,16 +4,16 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Users, User, Phone, MapPin, FileText, Info } from 'lucide-react';
-import ModernModal, { ModalAccordion, useModalAccordion } from '@/components/ui/ModernModal';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { PhoneInputField } from '@/components/ui/PhoneInput';
-import { SimpleMultiSelectContactTypes } from '@/components/ui/SimpleMultiSelectContactTypes';
-import { useToast } from '@/hooks/use-toast';
-import { contactsService, CreateContactData } from '@/lib/contactsService';
-import { contactTypesService } from '@/lib/contactTypesService';
+import ModernModal, { ModalAccordion, useModalAccordion } from '../../components/ui/ModernModal';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
+import { PhoneInputField } from '../../components/ui/PhoneInput';
+import { SimpleMultiSelectContactTypes } from '../../components/ui/SimpleMultiSelectContactTypes';
+import { useToast } from '../../hooks/use-toast';
+import { contactsService, CreateContactData } from '../../lib/contactsService';
+import { contactTypesService } from '../../lib/contactTypesService';
 
 const contactSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),

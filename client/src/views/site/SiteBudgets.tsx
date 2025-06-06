@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { Calculator, Search, Filter, Plus, ChevronDown, ChevronRight, FileText, Trash2, FileDown, Edit } from 'lucide-react';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useNavigationStore } from '@/stores/navigationStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
-import CreateBudgetModal from '@/components/modals/CreateBudgetModal';
-import { BudgetTaskModal } from '@/components/modals/BudgetTaskModal';
-import PDFExportPreview from '@/components/modals/PDFExportPreview';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Skeleton } from '../../components/ui/skeleton';
+import { Badge } from '../../components/ui/badge';
+import { useToast } from '../../hooks/use-toast';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../components/ui/collapsible';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../components/ui/alert-dialog';
+import { cn } from '../../lib/utils';
+import { supabase } from '../../lib/supabase';
+import CreateBudgetModal from '../../components/modals/CreateBudgetModal';
+import { BudgetTaskModal } from '../../components/modals/BudgetTaskModal';
+import PDFExportPreview from '../../components/modals/PDFExportPreview';
 
 // Types
 interface Budget {

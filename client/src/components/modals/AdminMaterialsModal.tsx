@@ -3,15 +3,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import ModernModal from '@/components/ui/ModernModal';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { materialsService, type Material, type CreateMaterialData } from '@/lib/materialsService';
-import { unitsService } from '@/lib/unitsService';
-import { materialCategoriesService } from '@/lib/materialCategoriesService';
+import ModernModal from '../../components/ui/ModernModal';
+import { Button } from '../../components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
+import { Input } from '../../components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { useToast } from '../../hooks/use-toast';
+import { materialsService, type Material, type CreateMaterialData } from '../../lib/materialsService';
+import { unitsService } from '../../lib/unitsService';
+import { materialCategoriesService } from '../../lib/materialCategoriesService';
 import { Package } from 'lucide-react';
 
 const materialSchema = z.object({

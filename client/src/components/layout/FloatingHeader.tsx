@@ -1,5 +1,5 @@
-import { useNavigationStore } from '@/stores/navigationStore';
-import { cn } from '@/lib/utils';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { cn } from '../../lib/utils';
 
 // Define las vistas disponibles para cada sección
 const sectionViews: Record<string, Array<{ id: string; label: string }>> = {

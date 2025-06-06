@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileText, DollarSign, Calculator, Target, FolderOpen } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 interface TimelineSidebarProps {
   className?: string;

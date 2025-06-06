@@ -1,7 +1,7 @@
 import { Building, MapPin, User, Share2, Phone, Mail, ExternalLink } from 'lucide-react';
-import { Project } from '@/lib/projectsService';
-import ModernModal from '@/components/ui/ModernModal';
-import { Button } from '@/components/ui/button';
+import { Project } from '../../lib/projectsService';
+import ModernModal from '../../components/ui/ModernModal';
+import { Button } from '../../components/ui/button';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 

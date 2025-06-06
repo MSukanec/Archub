@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { useUserContextStore } from '@/stores/userContextStore';
+import { useUserContextStore } from '../../stores/userContextStore';
 
 export interface Project {
   id: string;

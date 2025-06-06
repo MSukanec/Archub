@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { supabase } from '@/lib/supabase';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useNavigationStore } from '@/stores/navigationStore';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from '../../components/ui/button';
+import { Switch } from '../../components/ui/switch';
+import { supabase } from '../../lib/supabase';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { useToast } from '../../hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { DefaultTemplate, ModernTemplate, TEMPLATE_OPTIONS, TemplateType } from '@/components/pdf-templates';
+import { DefaultTemplate, ModernTemplate, TEMPLATE_OPTIONS, TemplateType } from '../../components/pdf-templates';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;

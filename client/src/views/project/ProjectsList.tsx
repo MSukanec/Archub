@@ -11,17 +11,17 @@ import {
   Activity,
   TrendingUp
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Card, CardContent } from '../../components/ui/card';
+import { Badge } from '../../components/ui/badge';
 import { 
   Select, 
   SelectContent, 
   SelectItem, 
   SelectTrigger, 
   SelectValue 
-} from '@/components/ui/select';
+} from '../../components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,14 +31,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { projectsService } from '@/lib/projectsService';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useToast } from '@/hooks/use-toast';
-import { useFeatures } from '@/hooks/useFeatures';
-import CreateProjectModal from '@/components/modals/CreateProjectModal';
-import ProjectInfoModal from '@/components/modals/ProjectInfoModal';
-import { FeatureLock } from '@/components/features/FeatureLock';
+} from '../../components/ui/alert-dialog';
+import { projectsService } from '../../lib/projectsService';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useToast } from '../../hooks/use-toast';
+import { useFeatures } from '../../hooks/useFeatures';
+import CreateProjectModal from '../../components/modals/CreateProjectModal';
+import ProjectInfoModal from '../../components/modals/ProjectInfoModal';
+import { FeatureLock } from '../../components/features/FeatureLock';
 
 type Project = any;
 

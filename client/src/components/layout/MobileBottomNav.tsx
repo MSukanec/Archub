@@ -1,6 +1,6 @@
 import { Home, Calendar, CreditCard, User } from 'lucide-react';
-import { useNavigationStore } from '@/stores/navigationStore';
-import { cn } from '@/lib/utils';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { cn } from '../../lib/utils';
 
 const bottomNavItems = [
   { 

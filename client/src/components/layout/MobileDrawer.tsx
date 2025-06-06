@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { X, Home, Building2, ClipboardList, Calendar, DollarSign, CreditCard, User, ChevronDown, ChevronRight, FolderOpen, Shield } from 'lucide-react';
-import { useNavigationStore } from '@/stores/navigationStore';
-import { useAuthStore } from '@/stores/authStore';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { cn } from '@/lib/utils';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { useAuthStore } from '../../stores/authStore';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { cn } from '../../lib/utils';
 
 interface MobileDrawerProps {
   isOpen: boolean;

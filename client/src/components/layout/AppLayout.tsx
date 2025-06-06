@@ -18,30 +18,30 @@ import OrganizationSettings from '../../views/organization/OrganizationSettings'
 import ProjectsList from '../../views/project/ProjectsList';
 
 import SiteBudgets from '../../views/site/SiteBudgets';
-import SiteMaterials from '@/views/site/SiteMaterials';
-import SiteLogs from '@/views/site/SiteLogs';
-import SiteGantt from '@/views/site/SiteGantt';
-import FinancesMovements from '@/views/finances/FinancesMovements';
-import FinancesDashboard from '@/views/finances/FinancesDashboard';
-import Contacts from '@/views/contacts/Contacts';
+import SiteMaterials from '../../views/site/SiteMaterials';
+import SiteLogs from '../../views/site/SiteLogs';
+import SiteGantt from '../../views/site/SiteGantt';
+import FinancesMovements from '../../views/finances/FinancesMovements';
+import FinancesDashboard from '../../views/finances/FinancesDashboard';
+import Contacts from '../../views/contacts/Contacts';
 
-import AdminOrganizations from '@/views/admin/AdminOrganizations';
-import AdminUnits from '@/views/admin/AdminUnits';
-import AdminElements from '@/views/admin/AdminElements';
-import AdminActions from '@/views/admin/AdminActions';
-import AdminUsers from '@/views/admin/AdminUsers';
-import AdminCategories from '@/views/admin/AdminCategories';
-import AdminMaterialCategories from '@/views/admin/AdminMaterialCategories';
-import AdminMaterials from '@/views/admin/AdminMaterials';
-import AdminTasks from '@/views/admin/AdminTasks';
-import Calendar from '@/views/dashboard/Calendar';
+import AdminOrganizations from '../../views/admin/AdminOrganizations';
+import AdminUnits from '../../views/admin/AdminUnits';
+import AdminElements from '../../views/admin/AdminElements';
+import AdminActions from '../../views/admin/AdminActions';
+import AdminUsers from '../../views/admin/AdminUsers';
+import AdminCategories from '../../views/admin/AdminCategories';
+import AdminMaterialCategories from '../../views/admin/AdminMaterialCategories';
+import AdminMaterials from '../../views/admin/AdminMaterials';
+import AdminTasks from '../../views/admin/AdminTasks';
+import Calendar from '../../views/dashboard/Calendar';
 
-import Profile from '@/views/profile/Profile';
-import ProfileSecurity from '@/views/profile/ProfileSecurity';
-import ProfileSubscription from '@/views/profile/ProfileSubscription';
-import SubscriptionTables from '@/views/others/SubscriptionTables';
-import CreateProjectModal from '@/components/modals/CreateProjectModal';
-import { useNavigationStore } from '@/stores/navigationStore';
+import Profile from '../../views/profile/Profile';
+import ProfileSecurity from '../../views/profile/ProfileSecurity';
+import ProfileSubscription from '../../views/profile/ProfileSubscription';
+import SubscriptionTables from '../../views/others/SubscriptionTables';
+import CreateProjectModal from '../modals/CreateProjectModal';
+import { useNavigationStore } from '../../stores/navigationStore';
 
 
 const viewComponents = {

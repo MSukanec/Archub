@@ -3,12 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import ModernModal from '@/components/ui/ModernModal';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { materialCategoriesService, type MaterialCategory, type CreateMaterialCategoryData } from '@/lib/materialCategoriesService';
+import ModernModal from '../../components/ui/ModernModal';
+import { Button } from '../../components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
+import { Input } from '../../components/ui/input';
+import { useToast } from '../../hooks/use-toast';
+import { materialCategoriesService, type MaterialCategory, type CreateMaterialCategoryData } from '../../lib/materialCategoriesService';
 import { FolderOpen } from 'lucide-react';
 
 const materialCategorySchema = z.object({

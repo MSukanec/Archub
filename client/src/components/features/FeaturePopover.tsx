@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '../../components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { Crown, Rocket, Lock } from 'lucide-react';
-import { useFeatures, FeatureName, PlanType } from '@/hooks/useFeatures';
+import { useFeatures, FeatureName, PlanType } from '../../hooks/useFeatures';
 
 interface FeaturePopoverProps {
   feature: FeatureName;

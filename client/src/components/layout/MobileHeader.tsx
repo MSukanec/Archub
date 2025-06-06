@@ -1,5 +1,5 @@
 import { Menu } from 'lucide-react';
-import { useNavigationStore } from '@/stores/navigationStore';
+import { useNavigationStore } from '../../stores/navigationStore';
 
 interface MobileHeaderProps {
   onMenuClick: () => void;

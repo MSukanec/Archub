@@ -1,7 +1,7 @@
 import { Shield, Users, Library } from 'lucide-react';
-import { useNavigationStore } from '@/stores/navigationStore';
-import { useAuthStore } from '@/stores/authStore';
-import CircularButton from '@/components/ui/CircularButton';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { useAuthStore } from '../../stores/authStore';
+import CircularButton from '../../components/ui/CircularButton';
 
 export default function SecondarySidebar() {
   const { setView, currentView } = useNavigationStore();

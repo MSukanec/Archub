@@ -10,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '../../components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -18,19 +18,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '../../components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { organizationsService } from '@/lib/organizationsService';
-import { usersService } from '@/lib/usersService';
+} from '../../components/ui/select';
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
+import { useToast } from '../../hooks/use-toast';
+import { organizationsService } from '../../lib/organizationsService';
+import { usersService } from '../../lib/usersService';
 
 const organizationFormSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),

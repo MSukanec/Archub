@@ -2,8 +2,8 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { format, startOfWeek, addDays, isSameDay, differenceInDays, startOfDay, subDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar, FileText, DollarSign, CheckSquare, Paperclip, Users, Plus, User } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useNavigationStore } from '@/stores/navigationStore';
+import { cn } from '../../lib/utils';
+import { useNavigationStore } from '../../stores/navigationStore';
 
 interface GanttItem {
   id: string;
