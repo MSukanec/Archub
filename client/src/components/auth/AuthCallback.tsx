@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '../../hooks/use-toast';
 
 export default function AuthCallback() {
   const [, navigate] = useLocation();

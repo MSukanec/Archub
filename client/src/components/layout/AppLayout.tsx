@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/stores/authStore';
-import { useUserContextStore } from '@/stores/userContextStore';
-import { useThemeStore } from '@/stores/themeStore';
-import { useSidebarStore } from '@/stores/sidebarStore';
-import { authService } from '@/lib/supabase';
-import { useIsMobile } from '@/hooks/useMediaQuery';
+import { useAuthStore } from '../../stores/authStore';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useThemeStore } from '../../stores/themeStore';
+import { useSidebarStore } from '../../stores/sidebarStore';
+import { authService } from '../../lib/supabase';
+import { useIsMobile } from '../../hooks/useMediaQuery';
 import PrimarySidebar from './PrimarySidebar';
 import FloatingHeader from './FloatingHeader';
 import MobileHeader from './MobileHeader';
 import MobileDrawer from './MobileDrawerFixed';
-import ArchubDashboard from '@/views/dashboard/ArchubDashboard';
-import CalendarView from '@/views/dashboard/Calendar';
+import ArchubDashboard from '../../views/dashboard/ArchubDashboard';
+import CalendarView from '../../views/dashboard/Calendar';
 
-import Organization from '@/views/organization/Organization';
-import OrganizationTeam from '@/views/organization/OrganizationTeam';
-import OrganizationSettings from '@/views/organization/OrganizationSettings';
-import ProjectsList from '@/views/project/ProjectsList';
+import Organization from '../../views/organization/Organization';
+import OrganizationTeam from '../../views/organization/OrganizationTeam';
+import OrganizationSettings from '../../views/organization/OrganizationSettings';
+import ProjectsList from '../../views/project/ProjectsList';
 
-import SiteBudgets from '@/views/site/SiteBudgets';
+import SiteBudgets from '../../views/site/SiteBudgets';
 import SiteMaterials from '@/views/site/SiteMaterials';
 import SiteLogs from '@/views/site/SiteLogs';
 import SiteGantt from '@/views/site/SiteGantt';
