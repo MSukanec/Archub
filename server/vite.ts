@@ -40,25 +40,29 @@ export async function setupVite(app: Express, server: Server) {
     appType: "custom",
   });
 
+  // Usa Vite como middleware
   app.use(vite.middlewares);
-  app.use("*", async (req, res, next) => {
+
+  // Ruta para tu aplicación principal (SPA en /app)
+  app.use("/app", async (req, res, next) => {
     const url = req.originalUrl;
 
     try {
-      const clientTemplate = path.resolve(
+      const templatePath = path.resolve(
         import.meta.dirname,
         "..",
-        "index.html", // ✅ Ruta corregida
+        "index.html",
       );
+      let template = await fs.promises.readFile(templatePath, "utf-8");
 
-      // always reload the index.html file from disk in case it changes
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      // Forzar recarga del archivo main.tsx
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
-      const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+
+      const html = await vite.transformIndexHtml(url, template);
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
@@ -75,10 +79,11 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  // Sirve archivos estáticos desde /app
+  app.use("/app", express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
+  // Si no encuentra el archivo, devuelve el index.html para el SPA
+  app.use("/app/*", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
