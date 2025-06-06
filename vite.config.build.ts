@@ -7,12 +7,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@shared": path.resolve(__dirname, "../shared"),
+      "@shared": path.resolve(__dirname, "./shared"),
       "@assets": path.resolve(__dirname, "./src/assets"),
     },
   },
   build: {
-    outDir: "../dist/public",
+    outDir: "dist",
     emptyOutDir: true,
     sourcemap: false,
     rollupOptions: {

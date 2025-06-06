@@ -20,14 +20,14 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path mapping - Updated for production compatibility */
-    "baseUrl": "client",
+    /* Path mapping */
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@shared/*": ["../shared/*"],
+      "@shared/*": ["./shared/*"],
       "@assets/*": ["./src/assets/*"]
     }
   },
-  "include": ["client/src/**/*", "shared/**/*"],
+  "include": ["src/**/*", "shared/**/*"],
   "exclude": ["node_modules", "dist", "server"]
 }
