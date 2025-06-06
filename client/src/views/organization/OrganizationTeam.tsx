@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Users, UserPlus, Settings, Mail, Calendar, Crown, Shield, User, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Skeleton } from '../../components/ui/skeleton';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useAuthStore } from '../stores/authStore';
-import { supabase } from '../lib/supabase';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useUserContextStore } from "../../stores/userContextStore';
+import { useAuthStore } from "../../stores/authStore';
+import { supabase } from "../../lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import InviteTeamMemberModal from '../components/modals/InviteTeamMemberModal';
-import { FeatureLock } from '../components/features/FeatureLock';
+import InviteTeamMemberModal from "../../components/modals/InviteTeamMemberModal';
+import { FeatureLock } from "../../components/features/FeatureLock';
 
 interface TeamMember {
   id: string;

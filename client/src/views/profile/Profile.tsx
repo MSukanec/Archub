@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { User, Mail, Lock, CreditCard, Save, Crown, Zap, Rocket, Moon, Sun } from 'lucide-react';
-import { useNavigationStore } from '../stores/navigationStore';
-import { useAuthStore } from '../stores/authStore';
-import { useThemeStore } from '../stores/themeStore';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useToast } from '../hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Label } from "./components/ui/label";
-import { Switch } from "./components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
-import ComingSoon from "./components/ui/ComingSoon";
-import AvatarUpload from '../components/profile/AvatarUpload';
-import { supabase } from '../lib/supabase';
-import { useFeatures } from '../hooks/useFeatures';
+import { useNavigationStore } from "../../stores/navigationStore';
+import { useAuthStore } from "../../stores/authStore';
+import { useThemeStore } from "../../stores/themeStore';
+import { useUserContextStore } from "../../stores/userContextStore';
+import { useToast } from "../../hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ComingSoon from "@/components/ui/ComingSoon";
+import AvatarUpload from "../../components/profile/AvatarUpload';
+import { supabase } from "../../lib/supabase';
+import { useFeatures } from "../../hooks/useFeatures';
 
 export default function Profile() {
   const { setSection, setView } = useNavigationStore();

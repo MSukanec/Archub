@@ -11,22 +11,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./components/ui/form";
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import { Button } from "./components/ui/button";
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useToast } from '../../hooks/use-toast';
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase';
-import ModernModal, { ModalAccordion, useModalAccordion } from "./components/ui/ModernModal";
+import ModernModal, { ModalAccordion, useModalAccordion } from "@/components/ui/ModernModal";
 
 const budgetSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),

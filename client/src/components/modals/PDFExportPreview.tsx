@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Download, Settings, FileText, ChevronDown, ChevronRight, Building2, User, Briefcase, FileCheck, Table, Calculator, MessageSquare, PenTool, Save, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
-import { Button } from "./components/ui/button";
-import { Switch } from "./components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from '../../lib/supabase';
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useNavigationStore } from '../../stores/navigationStore';

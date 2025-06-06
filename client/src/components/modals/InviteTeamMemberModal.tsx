@@ -3,17 +3,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, User, Shield, UserPlus } from 'lucide-react';
-import { Input } from "./components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./components/ui/select";
+} from "@/components/ui/select";
 import { useToast } from '../../hooks/use-toast';
-import ModernModal, { useModalAccordion, ModalAccordion } from "./components/ui/ModernModal";
+import ModernModal, { useModalAccordion, ModalAccordion } from "@/components/ui/ModernModal";
 
 const inviteSchema = z.object({
   email: z.string().email('El email debe ser válido'),

@@ -1,21 +1,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit, Trash2, DollarSign, TrendingUp, TrendingDown, FileText, Search, Download, ChevronLeft, ChevronRight, X, Filter, Tag, ArrowUpDown } from 'lucide-react';
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import { Badge } from "../../components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { useToast } from '../hooks/use-toast';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useNavigationStore } from '../stores/navigationStore';
-import { supabase } from '../lib/supabase';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "../../hooks/use-toast';
+import { useUserContextStore } from "../../stores/userContextStore';
+import { useNavigationStore } from "../../stores/navigationStore';
+import { supabase } from "../../lib/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import MovementModal from '../components/modals/MovementModal';
-import DeleteMovementModal from '../components/modals/DeleteMovementModal';
-import DynamicCurrencyBalanceCard from '../components/finances/DynamicCurrencyBalanceCard';
+import MovementModal from "../../components/modals/MovementModal';
+import DeleteMovementModal from "../../components/modals/DeleteMovementModal';
+import DynamicCurrencyBalanceCard from "../../components/finances/DynamicCurrencyBalanceCard';
 
 interface Movement {
   id: string;
