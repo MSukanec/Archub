@@ -1,7 +1,7 @@
 import { Phone, Mail, MessageCircle } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { Contact } from '../../lib/contactsService';
-import ModernModal from "@/components/ui/ModernModal";
+import ModernModal from "../ui/ModernModal";
 
 interface ContactActionsModalProps {
   isOpen: boolean;

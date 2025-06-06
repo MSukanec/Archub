@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
-import { Card } from "@/components/ui/card";
+import { Card } from "../ui/card";
 import { AlertTriangle, CheckCircle, XCircle, Activity } from 'lucide-react';
 
 interface FinancialHealthIndicatorsProps {

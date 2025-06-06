@@ -4,10 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { authService } from '../../lib/supabase';
 import { useAuthStore } from '../../stores/authStore';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Loader2 } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 

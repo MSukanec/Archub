@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase';
 

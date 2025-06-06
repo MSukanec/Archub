@@ -6,9 +6,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useHierarchicalConcepts, setHierarchicalFormValues } from '../../hooks/useHierarchicalConcepts';
 import { contactsService } from '../../lib/contactsService';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 import { 
   Form, 
   FormControl, 
@@ -16,20 +16,20 @@ import {
   FormItem, 
   FormLabel, 
   FormMessage 
-} from "@/components/ui/form";
+} from "../ui/form";
 import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+} from "../ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "../ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -37,7 +37,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "../ui/command";
 import { 
   DollarSign, 
   FileText, 
@@ -52,7 +52,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { useUserContextStore } from '../../stores/userContextStore';
-import ModernModal from "@/components/ui/ModernModal";
+import ModernModal from "../ui/ModernModal";
 
 interface Currency {
   code: string;

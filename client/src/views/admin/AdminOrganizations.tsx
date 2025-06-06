@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Building2, Search, Plus, Edit, Trash2, Users, Calendar } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Badge } from "../../components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,13 +22,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "../../components/ui/alert-dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+} from "../../components/ui/popover";
+import { Calendar as CalendarComponent } from "../../components/ui/calendar";
 import { useToast } from "../../hooks/use-toast";
 import { organizationsService } from "../../lib/organizationsService";
 import { cn } from "../../lib/utils";

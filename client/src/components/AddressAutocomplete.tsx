@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { MapPin, X } from 'lucide-react';
 
 interface AddressAutocompleteProps {
