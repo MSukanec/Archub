@@ -2,16 +2,16 @@ import { useEffect } from 'react';
 import { Switch, Route } from 'wouter';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
-import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
-import AppLayout from '@/components/layout/AppLayout';
-import AuthPage from '@/pages/AuthPage';
-import LandingPage from '@/pages/LandingPage';
-import AuthCallback from '@/components/auth/AuthCallback';
-import NotFound from '@/pages/not-found';
-import { SimpleOnboardingWizard } from '@/components/onboarding/SimpleOnboardingWizard';
+import { Toaster } from './components/ui/toaster';
+import { TooltipProvider } from './components/ui/tooltip';
+import { useAuthStore } from './stores/authStore';
+import { supabase } from './lib/supabase';
+import AppLayout from './components/layout/AppLayout';
+import AuthPage from './pages/AuthPage';
+import LandingPage from './pages/LandingPage';
+import AuthCallback from './components/auth/AuthCallback';
+import NotFound from './pages/not-found';
+import { SimpleOnboardingWizard } from './components/onboarding/SimpleOnboardingWizard';
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuthStore();
