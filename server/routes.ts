@@ -5,11 +5,6 @@ import { insertProjectSchema, insertUserSchema, insertOrganizationSchema, insert
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Redirect root to app
-  app.get("/", (req, res) => {
-    res.redirect("/app");
-  });
-
   // Users routes
 
   app.get("/api/users", async (req, res) => {
