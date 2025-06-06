@@ -6,16 +6,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import { Input } from '../../components/ui/input';
-import { Button } from '../../components/ui/button';
-import { Checkbox } from '../../components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+} from '../components/ui/dialog';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Checkbox } from '../components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Search, X, ShoppingCart, Package } from 'lucide-react';
-import { useToast } from '../../hooks/use-toast';
-import { useUserContextStore } from '../../stores/userContextStore';
-import { supabase } from '../../lib/supabase';
-import { queryClient } from '../../lib/queryClient';
+import { useToast } from '../hooks/use-toast';
+import { useUserContextStore } from '../stores/userContextStore';
+import { supabase } from '../lib/supabase';
+import { queryClient } from '../lib/queryClient';
 
 interface TaskModalSimpleProps {
   isOpen: boolean;

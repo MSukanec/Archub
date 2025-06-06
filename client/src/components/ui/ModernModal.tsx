@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { X, LucideIcon, Plus, Minus } from 'lucide-react';
-import { Button } from '../../components/ui/button';
+import { Button } from '../components/ui/button';
 
 interface ModalHeaderProps {
   title: string;

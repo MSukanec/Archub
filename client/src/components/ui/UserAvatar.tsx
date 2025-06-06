@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { useAuthStore } from '../../stores/authStore';
-import { supabase } from '../../lib/supabase';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+import { useAuthStore } from '../stores/authStore';
+import { supabase } from '../lib/supabase';
 
 interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';

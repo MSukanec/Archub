@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image, AlertCircle } from 'lucide-react';
-import { Button } from '../../components/ui/button';
+import { Button } from '../components/ui/button';
 import { useToast } from '../../hooks/use-toast';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 interface FileUploadProps {
   bucket: string;

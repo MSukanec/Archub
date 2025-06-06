@@ -3,12 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../lib/supabase';
-import { useHierarchicalConcepts, setHierarchicalFormValues } from '../../hooks/useHierarchicalConcepts';
-import { contactsService } from '../../lib/contactsService';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
+import { supabase } from '../lib/supabase';
+import { useHierarchicalConcepts, setHierarchicalFormValues } from '../hooks/useHierarchicalConcepts';
+import { contactsService } from '../lib/contactsService';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import { 
   Form, 
   FormControl, 
@@ -16,20 +16,20 @@ import {
   FormItem, 
   FormLabel, 
   FormMessage 
-} from '../../components/ui/form';
+} from '../components/ui/form';
 import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../components/ui/accordion';
+} from '../components/ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../components/ui/popover";
+} from "../components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -37,7 +37,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../../components/ui/command";
+} from "../components/ui/command";
 import { 
   DollarSign, 
   FileText, 
@@ -50,9 +50,9 @@ import {
   X,
   Plus
 } from 'lucide-react';
-import { useToast } from '../../hooks/use-toast';
-import { useUserContextStore } from '../../stores/userContextStore';
-import ModernModal from '../../components/ui/ModernModal';
+import { useToast } from '../hooks/use-toast';
+import { useUserContextStore } from '../stores/userContextStore';
+import ModernModal from '../components/ui/ModernModal';
 
 interface Currency {
   code: string;

@@ -4,14 +4,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DollarSign, Save, X, Wallet } from 'lucide-react';
-import { useUserContextStore } from '../../stores/userContextStore';
-import { useToast } from '../../hooks/use-toast';
-import { supabase } from '../../lib/supabase';
-import ModernModal from '../../components/ui/ModernModal';
-import { ModalAccordion } from '../../components/ui/ModernModal';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Button } from '../../components/ui/button';
+import { useUserContextStore } from '../stores/userContextStore';
+import { useToast } from '../hooks/use-toast';
+import { supabase } from '../lib/supabase';
+import ModernModal from '../components/ui/ModernModal';
+import { ModalAccordion } from '../components/ui/ModernModal';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Button } from '../components/ui/button';
 import CurrencyDeleteConfirmModal from './CurrencyDeleteConfirmModal';
 
 const financialSettingsSchema = z.object({

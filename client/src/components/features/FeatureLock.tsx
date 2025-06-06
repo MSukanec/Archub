@@ -1,4 +1,4 @@
-import { useFeatures, FeatureName } from '../../hooks/useFeatures';
+import { useFeatures, FeatureName } from '../hooks/useFeatures';
 import { FeaturePopover } from './FeaturePopover';
 import { Lock } from 'lucide-react';
 import { cloneElement, isValidElement } from 'react';

@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Camera, Upload, Loader2, Trash2 } from 'lucide-react';
-import { useAuthStore } from '../../stores/authStore';
-import { useToast } from '../../hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import UserAvatar from '../../components/ui/UserAvatar';
-import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../stores/authStore';
+import { useToast } from '../hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import UserAvatar from '../components/ui/UserAvatar';
+import { supabase } from '../lib/supabase';
 
 interface AvatarUploadProps {
   currentUser?: {

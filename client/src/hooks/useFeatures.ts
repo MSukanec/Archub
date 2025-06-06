@@ -1,6 +1,6 @@
-import { useAuthStore } from '../../stores/authStore';
+import { useAuthStore } from '../stores/authStore';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 // Define feature types
 export type FeatureName = 

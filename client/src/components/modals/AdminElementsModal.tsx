@@ -4,12 +4,12 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Shapes } from 'lucide-react';
-import ModernModal from '../../components/ui/ModernModal';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
-import { useToast } from '../../hooks/use-toast';
-import { supabase } from '../../lib/supabase';
+import ModernModal from '../components/ui/ModernModal';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
+import { useToast } from '../hooks/use-toast';
+import { supabase } from '../lib/supabase';
 
 const elementSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),

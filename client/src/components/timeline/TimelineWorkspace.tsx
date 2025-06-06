@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useEffect, useRef, useState } from 'react';
 import DayCard from './DayCard';
-import { Skeleton } from '../../components/ui/skeleton';
+import { Skeleton } from '../components/ui/skeleton';
 
 interface DayEvent {
   date: string;

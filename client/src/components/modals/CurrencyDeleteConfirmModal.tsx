@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, DollarSign, ArrowRight, Trash2, RefreshCw } from 'lucide-react';
-import { useUserContextStore } from '../../stores/userContextStore';
-import { useToast } from '../../hooks/use-toast';
-import { supabase } from '../../lib/supabase';
-import ModernModal from '../../components/ui/ModernModal';
-import { Button } from '../../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Card, CardContent } from '../../components/ui/card';
+import { useUserContextStore } from '../stores/userContextStore';
+import { useToast } from '../hooks/use-toast';
+import { supabase } from '../lib/supabase';
+import ModernModal from '../components/ui/ModernModal';
+import { Button } from '../components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Card, CardContent } from '../components/ui/card';
 
 interface CurrencyDeleteConfirmModalProps {
   isOpen: boolean;

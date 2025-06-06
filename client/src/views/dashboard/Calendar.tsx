@@ -3,13 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Calendar as CalendarIcon, Clock, MapPin, Users, CheckCircle, DollarSign, FileText, Plus, Edit, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, isToday, isTomorrow, isAfter, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, addMonths, subMonths, getDay, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Button } from '../../components/ui/button';
-import { Separator } from '../../components/ui/separator';
-import { useUserContextStore } from '../../stores/userContextStore';
-import { supabase } from '../../lib/supabase';
-import EventModal from '../../components/modals/EventModal';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Separator } from '../components/ui/separator';
+import { useUserContextStore } from '../stores/userContextStore';
+import { supabase } from '../lib/supabase';
+import EventModal from '../components/modals/EventModal';
 
 interface Event {
   id: string;
