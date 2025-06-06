@@ -92,6 +92,20 @@ export const contacts = pgTable("contacts", {
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const contactTypes = pgTable("contact_types", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  organization_id: uuid("organization_id").references(() => organizations.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const contactTypeLinks = pgTable("contact_type_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  contact_id: integer("contact_id").notNull().references(() => contacts.id),
+  type_id: uuid("type_id").notNull().references(() => contactTypes.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const contactTaskLinks = pgTable("contact_task_links", {
   id: serial("id").primaryKey(),
   contact_id: integer("contact_id").notNull().references(() => contacts.id),
@@ -105,7 +119,7 @@ export const taskCategories = pgTable("task_categories", {
   code: text("code").notNull(),
   name: text("name").notNull(),
   position: integer("position").notNull(),
-  parent_id: uuid("parent_id").references(() => taskCategories.id),
+  parent_id: uuid("parent_id"),
 });
 
 export const materials = pgTable("materials", {
@@ -295,6 +309,16 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
   contact_type: true,
 });
 
+export const insertContactTypeSchema = createInsertSchema(contactTypes).pick({
+  name: true,
+  organization_id: true,
+});
+
+export const insertContactTypeLinkSchema = createInsertSchema(contactTypeLinks).pick({
+  contact_id: true,
+  type_id: true,
+});
+
 export const insertTaskCategorySchema = createInsertSchema(taskCategories).pick({
   code: true,
   name: true,
@@ -431,6 +455,12 @@ export type InsertAction = z.infer<typeof insertActionSchema>;
 
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
+
+export type ContactType = typeof contactTypes.$inferSelect;
+export type InsertContactType = z.infer<typeof insertContactTypeSchema>;
+
+export type ContactTypeLink = typeof contactTypeLinks.$inferSelect;
+export type InsertContactTypeLink = z.infer<typeof insertContactTypeLinkSchema>;
 
 export type ContactTaskLink = typeof contactTaskLinks.$inferSelect;
 
