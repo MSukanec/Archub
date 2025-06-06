@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Search, X, Plus, Calculator, CheckSquare, Wrench } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
-import { Badge } from '../ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { Badge } from './ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { useToast } from '../../hooks/use-toast';
 import { useUserContextStore } from '../../stores/userContextStore';
 import { supabase } from '../../lib/supabase';
 import { queryClient } from '../../lib/queryClient';
-import ModernModal from '../ui/ModernModal';
+import ModernModal from './ui/ModernModal';
 
 interface BudgetTaskModalProps {
   isOpen: boolean;

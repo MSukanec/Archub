@@ -10,19 +10,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
+} from './ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Button } from '../ui/button';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import ModernModal from '../ui/ModernModal';
+} from './ui/select';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Button } from './ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import ModernModal from './ui/ModernModal';
 
 // Schema for form validation
 const eventSchema = z.object({

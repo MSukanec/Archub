@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Camera, Upload, Loader2, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useToast } from '../../hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import UserAvatar from '../ui/UserAvatar';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import UserAvatar from './ui/UserAvatar';
 import { supabase } from '../../lib/supabase';
 
 interface AvatarUploadProps {

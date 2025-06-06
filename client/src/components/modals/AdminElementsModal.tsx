@@ -4,10 +4,10 @@ import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Shapes } from 'lucide-react';
-import ModernModal from '../ui/ModernModal';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import ModernModal from './ui/ModernModal';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';
 

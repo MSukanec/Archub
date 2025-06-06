@@ -7,7 +7,7 @@ import {
   AlertDialogFooter, 
   AlertDialogHeader, 
   AlertDialogTitle 
-} from '../ui/alert-dialog';
+} from './ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
 
 interface ConfirmDeleteModalProps {

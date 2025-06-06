@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { CreditCard, Crown, Zap, Rocket, Check, Calendar, Receipt } from 'lucide-react';
 import { useNavigationStore } from '../stores/navigationStore';
 import { useAuthStore } from '../stores/authStore';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Switch } from './ui/switch';
 import { supabase } from '../lib/supabase';
 import { useFeatures } from '../hooks/useFeatures';
 

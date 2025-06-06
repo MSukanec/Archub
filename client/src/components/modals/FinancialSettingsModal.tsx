@@ -7,11 +7,11 @@ import { DollarSign, Save, X, Wallet } from 'lucide-react';
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';
-import ModernModal from '../ui/ModernModal';
-import { ModalAccordion } from '../ui/ModernModal';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Button } from '../ui/button';
+import ModernModal from './ui/ModernModal';
+import { ModalAccordion } from './ui/ModernModal';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Button } from './ui/button';
 import CurrencyDeleteConfirmModal from './CurrencyDeleteConfirmModal';
 
 const financialSettingsSchema = z.object({

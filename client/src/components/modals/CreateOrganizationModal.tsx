@@ -3,13 +3,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Building2, Info, MapPin } from 'lucide-react';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../stores/authStore';
-import ModernModal, { ModalAccordion, useModalAccordion } from '../ui/ModernModal';
+import ModernModal, { ModalAccordion, useModalAccordion } from './ui/ModernModal';
 
 const createOrganizationSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),

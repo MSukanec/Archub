@@ -7,16 +7,16 @@ import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Save, X, I
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';
-import ModernModal from '../ui/ModernModal';
-import { ModalAccordion } from '../ui/ModernModal';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Button } from '../ui/button';
+import ModernModal from './ui/ModernModal';
+import { ModalAccordion } from './ui/ModernModal';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Button } from './ui/button';
 import AddressAutocomplete from '../components/AddressAutocomplete';
-import { PhoneInputField } from '../ui/PhoneInput';
-import { FileUpload } from '../ui/FileUpload';
+import { PhoneInputField } from './ui/PhoneInput';
+import { FileUpload } from './ui/FileUpload';
 import CurrencyDeleteConfirmModal from './CurrencyDeleteConfirmModal';
 
 const organizationSettingsSchema = z.object({

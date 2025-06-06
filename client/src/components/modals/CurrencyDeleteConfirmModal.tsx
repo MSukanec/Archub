@@ -4,10 +4,10 @@ import { AlertTriangle, DollarSign, ArrowRight, Trash2, RefreshCw } from 'lucide
 import { useUserContextStore } from '../../stores/userContextStore';
 import { useToast } from '../../hooks/use-toast';
 import { supabase } from '../../lib/supabase';
-import ModernModal from '../ui/ModernModal';
-import { Button } from '../ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Card, CardContent } from '../ui/card';
+import ModernModal from './ui/ModernModal';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Card, CardContent } from './ui/card';
 
 interface CurrencyDeleteConfirmModalProps {
   isOpen: boolean;

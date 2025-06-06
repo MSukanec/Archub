@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Settings, Building2, MapPin, Phone, Mail, Globe, DollarSign, Edit } from 'lucide-react';
 import { useUserContextStore } from '../stores/userContextStore';
 import { supabase } from '../lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Skeleton } from '../ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Skeleton } from './ui/skeleton';
 import OrganizationSettingsModal from '../components/modals/OrganizationSettingsModal';
 
 export default function OrganizationSettings() {

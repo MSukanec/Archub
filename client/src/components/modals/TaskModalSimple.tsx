@@ -6,11 +6,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+} from './ui/dialog';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Search, X, ShoppingCart, Package } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { useUserContextStore } from '../../stores/userContextStore';
