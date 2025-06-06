@@ -9,7 +9,7 @@ import { useNavigationStore } from '../../stores/navigationStore';
 import { useToast } from '../../hooks/use-toast';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { DefaultTemplate, ModernTemplate, TechnicalTemplate, TEMPLATE_OPTIONS, TemplateType } from '../components/pdf-templates';
+import { DefaultTemplate, ModernTemplate, TechnicalTemplate, TEMPLATE_OPTIONS, TemplateType } from '../pdf-templates';
 
 interface PDFExportPreviewProps {
   isOpen: boolean;
