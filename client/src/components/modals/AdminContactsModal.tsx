@@ -11,9 +11,9 @@ import { Textarea } from '../components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
 import { PhoneInputField } from '../components/ui/PhoneInput';
 import { SimpleMultiSelectContactTypes } from '../components/ui/SimpleMultiSelectContactTypes';
-import { useToast } from '../hooks/use-toast';
-import { contactsService, CreateContactData } from '../lib/contactsService';
-import { contactTypesService } from '../lib/contactTypesService';
+import { useToast } from '../../hooks/use-toast';
+import { contactsService, CreateContactData } from '../../lib/contactsService';
+import { contactTypesService } from '../../lib/contactTypesService';
 
 const contactSchema = z.object({
   first_name: z.string().min(1, 'El nombre es requerido'),

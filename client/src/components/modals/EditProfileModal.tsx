@@ -6,9 +6,9 @@ import { User, Mail, Lock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
-import { useAuthStore } from '../stores/authStore';
-import { useToast } from '../hooks/use-toast';
-import { supabase } from '../lib/supabase';
+import { useAuthStore } from '../../stores/authStore';
+import { useToast } from '../../hooks/use-toast';
+import { supabase } from '../../lib/supabase';
 import ModernModal from '../components/ui/ModernModal';
 
 const profileSchema = z.object({

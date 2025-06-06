@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useOnboardingStore } from '../stores/onboardingStore';
-import { useAuthStore } from '../stores/authStore';
-import { useUserContextStore } from '../stores/userContextStore';
+import { useOnboardingStore } from '../../stores/onboardingStore';
+import { useAuthStore } from '../../stores/authStore';
+import { useUserContextStore } from '../../stores/userContextStore';
 import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
 import { OnboardingStep1 } from './steps/OnboardingStep1';
 import { OnboardingStep2 } from './steps/OnboardingStep2';
 import { OnboardingStep3 } from './steps/OnboardingStep3';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 export function OnboardingWizard() {
   const { user } = useAuthStore();

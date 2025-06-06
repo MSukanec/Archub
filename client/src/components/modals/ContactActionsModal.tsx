@@ -1,6 +1,6 @@
 import { Phone, Mail, MessageCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Contact } from '../lib/contactsService';
+import { Contact } from '../../lib/contactsService';
 import ModernModal from '../components/ui/ModernModal';
 
 interface ContactActionsModalProps {

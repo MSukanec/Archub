@@ -13,9 +13,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Badge } from '../components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '../components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { useToast } from '../hooks/use-toast';
-import { contactsService, Contact, CreateContactData } from '../lib/contactsService';
-import { contactTypesService, ContactType } from '../lib/contactTypesService';
+import { useToast } from '../../hooks/use-toast';
+import { contactsService, Contact, CreateContactData } from '../../lib/contactsService';
+import { contactTypesService, ContactType } from '../../lib/contactTypesService';
 
 const contactSchema = z.object({
   first_name: z.string().min(1, "El nombre es requerido"),

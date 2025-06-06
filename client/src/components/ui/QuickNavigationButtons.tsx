@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Building2, FolderOpen, Plus } from 'lucide-react';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useAuthStore } from '../stores/authStore';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useAuthStore } from '../../stores/authStore';
 import { useFeatures } from '../../hooks/useFeatures';
-import { projectsService } from '../lib/projectsService';
-import { supabase } from '../lib/supabase';
+import { projectsService } from '../../lib/projectsService';
+import { supabase } from '../../lib/supabase';
 import { FeatureLock } from '../components/features/FeatureLock';
 
 interface Organization {

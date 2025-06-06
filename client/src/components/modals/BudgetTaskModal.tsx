@@ -6,10 +6,10 @@ import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
 import { Badge } from '../components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
-import { useToast } from '../hooks/use-toast';
-import { useUserContextStore } from '../stores/userContextStore';
-import { supabase } from '../lib/supabase';
-import { queryClient } from '../lib/queryClient';
+import { useToast } from '../../hooks/use-toast';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { supabase } from '../../lib/supabase';
+import { queryClient } from '../../lib/queryClient';
 import ModernModal from '../components/ui/ModernModal';
 
 interface BudgetTaskModalProps {

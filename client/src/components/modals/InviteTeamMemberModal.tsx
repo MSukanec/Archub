@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { useToast } from '../hooks/use-toast';
+import { useToast } from '../../hooks/use-toast';
 import ModernModal, { useModalAccordion, ModalAccordion } from '../components/ui/ModernModal';
 
 const inviteSchema = z.object({

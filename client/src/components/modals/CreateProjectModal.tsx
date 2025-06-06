@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectsService, Project } from '../lib/projectsService';
-import { Organization } from '../lib/organizationsService';
-import { supabase } from '../lib/supabase';
+import { projectsService, Project } from '../../lib/projectsService';
+import { Organization } from '../../lib/organizationsService';
+import { supabase } from '../../lib/supabase';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { PhoneInputField } from '../components/ui/PhoneInput';
@@ -34,9 +34,9 @@ import {
   User,
   FolderPlus
 } from 'lucide-react';
-import { useToast } from '../hooks/use-toast';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useAuthStore } from '../stores/authStore';
+import { useToast } from '../../hooks/use-toast';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useAuthStore } from '../../stores/authStore';
 import ModernModal, { useModalAccordion, ModalAccordion } from '../components/ui/ModernModal';
 import AddressAutocomplete from '../components/AddressAutocomplete';
 

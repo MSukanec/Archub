@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import { useHierarchicalConcepts, setHierarchicalFormValues } from '../hooks/useHierarchicalConcepts';
-import { contactsService } from '../lib/contactsService';
+import { supabase } from '../../lib/supabase';
+import { useHierarchicalConcepts, setHierarchicalFormValues } from '../../hooks/useHierarchicalConcepts';
+import { contactsService } from '../../lib/contactsService';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -50,8 +50,8 @@ import {
   X,
   Plus
 } from 'lucide-react';
-import { useToast } from '../hooks/use-toast';
-import { useUserContextStore } from '../stores/userContextStore';
+import { useToast } from '../../hooks/use-toast';
+import { useUserContextStore } from '../../stores/userContextStore';
 import ModernModal from '../components/ui/ModernModal';
 
 interface Currency {

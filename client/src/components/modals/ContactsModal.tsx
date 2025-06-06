@@ -11,9 +11,9 @@ import { Textarea } from '../components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Checkbox } from '../components/ui/checkbox';
-import { useToast } from '../hooks/use-toast';
-import { contactsService, Contact, CreateContactData } from '../lib/contactsService';
-import { contactTypesService, ContactType } from '../lib/contactTypesService';
+import { useToast } from '../../hooks/use-toast';
+import { contactsService, Contact, CreateContactData } from '../../lib/contactsService';
+import { contactTypesService, ContactType } from '../../lib/contactTypesService';
 import ModernModal from '../components/ui/ModernModal';
 
 const contactSchema = z.object({

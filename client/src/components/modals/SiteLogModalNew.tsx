@@ -15,13 +15,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
-import { useToast } from '../hooks/use-toast';
-import { siteLogsService } from '../lib/siteLogsService';
-import { supabase } from '../lib/supabase';
-import { tasksService } from '../lib/tasksService';
-import { contactsService } from '../lib/contactsService';
-import { useAuthStore } from '../stores/authStore';
-import { cn } from '../lib/utils';
+import { useToast } from '../../hooks/use-toast';
+import { siteLogsService } from '../../lib/siteLogsService';
+import { supabase } from '../../lib/supabase';
+import { tasksService } from '../../lib/tasksService';
+import { contactsService } from '../../lib/contactsService';
+import { useAuthStore } from '../../stores/authStore';
+import { cn } from '../../lib/utils';
 import ModernModal from '../components/ui/ModernModal';
 import type { SiteLog, Task, Contact, InsertSiteLogTask, InsertSiteLogAttendee } from '@shared/schema';
 

@@ -8,8 +8,8 @@ import ModernModal from '../components/ui/ModernModal';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
-import { useToast } from '../hooks/use-toast';
-import { supabase } from '../lib/supabase';
+import { useToast } from '../../hooks/use-toast';
+import { supabase } from '../../lib/supabase';
 
 const elementSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),

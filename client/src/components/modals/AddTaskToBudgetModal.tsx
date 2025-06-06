@@ -28,8 +28,8 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { useToast } from '../hooks/use-toast';
-import { supabase } from '../lib/supabase';
+import { useToast } from '../../hooks/use-toast';
+import { supabase } from '../../lib/supabase';
 
 const taskToBudgetSchema = z.object({
   task_id: z.string().min(1, 'Selecciona una tarea'),

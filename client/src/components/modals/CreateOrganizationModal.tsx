@@ -6,9 +6,9 @@ import { Building2, Info, MapPin } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { useToast } from '../hooks/use-toast';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../stores/authStore';
+import { useToast } from '../../hooks/use-toast';
+import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../../stores/authStore';
 import ModernModal, { ModalAccordion, useModalAccordion } from '../components/ui/ModernModal';
 
 const createOrganizationSchema = z.object({

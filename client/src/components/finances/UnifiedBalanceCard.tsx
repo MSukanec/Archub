@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '../components/ui/card';
 import { DollarSign } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 interface UnifiedBalanceCardProps {
   projectId: string;

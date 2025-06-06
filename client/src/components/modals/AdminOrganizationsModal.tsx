@@ -28,9 +28,9 @@ import {
 } from '../components/ui/select';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { useToast } from '../hooks/use-toast';
-import { organizationsService } from '../lib/organizationsService';
-import { usersService } from '../lib/usersService';
+import { useToast } from '../../hooks/use-toast';
+import { organizationsService } from '../../lib/organizationsService';
+import { usersService } from '../../lib/usersService';
 
 const organizationFormSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),

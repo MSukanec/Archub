@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { User, LogOut, Moon, Sun, Settings } from 'lucide-react';
-import { useNavigationStore } from '../stores/navigationStore';
-import { useThemeStore } from '../stores/themeStore';
-import { useAuthStore } from '../stores/authStore';
-import { authService } from '../lib/supabase';
+import { useNavigationStore } from '../../stores/navigationStore';
+import { useThemeStore } from '../../stores/themeStore';
+import { useAuthStore } from '../../stores/authStore';
+import { authService } from '../../lib/supabase';
 import { Switch } from '../components/ui/switch';
 
 interface ProfilePopoverProps {

@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { useFeatures } from '../hooks/useFeatures';
+import { useFeatures } from '../../hooks/useFeatures';
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Crown, Lock, Sparkles, Zap } from 'lucide-react';

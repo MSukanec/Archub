@@ -17,12 +17,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { Badge } from '../components/ui/badge';
 import { Checkbox } from '../components/ui/checkbox';
-import { useToast } from '../hooks/use-toast';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../stores/authStore';
-import { useUserContextStore } from '../stores/userContextStore';
+import { useToast } from '../../hooks/use-toast';
+import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../../stores/authStore';
+import { useUserContextStore } from '../../stores/userContextStore';
 
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 import type { SiteLog } from '@shared/schema';
 
 // Componente para seleccionar asistentes con búsqueda

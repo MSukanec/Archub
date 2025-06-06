@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { contactTypesService } from '../lib/contactTypesService';
+import { contactTypesService } from '../../lib/contactTypesService';
 
 interface ContactTypeDisplayProps {
   contactId: string;

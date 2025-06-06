@@ -22,10 +22,10 @@ import {
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
-import { useToast } from '../hooks/use-toast';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useAuthStore } from '../stores/authStore';
-import { supabase } from '../lib/supabase';
+import { useToast } from '../../hooks/use-toast';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useAuthStore } from '../../stores/authStore';
+import { supabase } from '../../lib/supabase';
 import ModernModal, { ModalAccordion, useModalAccordion } from '../components/ui/ModernModal';
 
 const budgetSchema = z.object({

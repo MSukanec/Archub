@@ -8,12 +8,12 @@ import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
 import { Textarea } from '../components/ui/textarea';
-import { useToast } from '../hooks/use-toast';
-import { tasksService, Task, CreateTaskData } from '../lib/tasksService';
+import { useToast } from '../../hooks/use-toast';
+import { tasksService, Task, CreateTaskData } from '../../lib/tasksService';
 import { insertTaskSchema } from '@shared/schema';
-import { supabase } from '../lib/supabase';
-import { useUserContextStore } from '../stores/userContextStore';
-import { useHierarchicalConcepts, setHierarchicalFormValues } from '../hooks/useHierarchicalConcepts';
+import { supabase } from '../../lib/supabase';
+import { useUserContextStore } from '../../stores/userContextStore';
+import { useHierarchicalConcepts, setHierarchicalFormValues } from '../../hooks/useHierarchicalConcepts';
 
 import { z } from 'zod';
 import { CheckSquare, X, Info, FolderTree, Package } from 'lucide-react';
